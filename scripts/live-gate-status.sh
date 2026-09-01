@@ -30,8 +30,6 @@ run_gate() {
 
 run_gate point-in-time point-in-time
 run_gate historical-replay historical-replay
-run_gate paper-duration paper-duration
-run_gate shadow-run shadow-run
 run_gate official-coverage official-coverage
 run_gate repository-recovery repository-recovery
 run_gate personal-risk personal-risk

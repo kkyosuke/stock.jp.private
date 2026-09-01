@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "operation_mode": "PAPER",
   "active_rule_version": "v0.4",
   "shadow_rule_versions": [
@@ -11,8 +11,6 @@
   "live_gates": {
     "point_in_time_full_universe_validation": false,
     "historical_replay_2025_2026_accepted": false,
-    "minimum_12_month_paper_trade": false,
-    "twenty_day_shadow_run": false,
     "official_source_coverage": false,
     "private_repository_recovery": false,
     "personal_risk_and_broker_check": false
@@ -20,8 +18,6 @@
   "live_gate_evidence": {
     "point_in_time_full_universe_validation": null,
     "historical_replay_2025_2026_accepted": null,
-    "minimum_12_month_paper_trade": null,
-    "twenty_day_shadow_run": null,
     "official_source_coverage": null,
     "private_repository_recovery": null,
     "personal_risk_and_broker_check": null

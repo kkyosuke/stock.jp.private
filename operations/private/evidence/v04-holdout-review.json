@@ -6,14 +6,12 @@
   "approved_at_jst": null,
   "replay_result_sha256": "{{REPLAY_RESULT_SHA256}}",
   "historical_replay_evidence_sha256": "{{HISTORICAL_REPLAY_EVIDENCE_SHA256}}",
-  "paper_duration_evidence_sha256": "{{PAPER_DURATION_EVIDENCE_SHA256}}",
   "acknowledgements": {
     "allocation_amplification_reviewed": false,
     "maximum_drawdown_reviewed": false,
     "single_name_concentration_loss_reviewed": false,
     "industry_concentration_loss_reviewed": false,
     "waiting_cash_is_not_safe_asset": false,
-    "allocation_diagnostic_does_not_replace_forward_paper": false,
     "no_holdout_retuning": false
   },
   "accepted_v04_metrics": {

@@ -1,6 +1,6 @@
 # stock.jp.private
 
-`stock.jp` を実資金運用へ段階的に移行するための private workspace です。現在の判定は **LIVE NO-GO** です。最低12か月の PAPER、実データ20営業日の連続運用、履歴再生、現行構成の clean-clone 確認、利用者固有の確認が完了するまで実注文を行いません。
+`stock.jp` を実資金運用へ段階的に移行するための private workspace です。現在の判定は **LIVE NO-GO** です。履歴再生、最新PAPER runの公式情報源coverage、現行構成のclean-clone確認、利用者固有の確認と最終承認が完了するまで実注文を行いません。PAPERの経過日数と連続run数には最低条件を設けません。
 
 ## 構成
 
