@@ -32,6 +32,22 @@ operation-YYYYMMDDTHHMMSS+0900.zip.age
 
 ルール、プログラム、テンプレート、公開可能な株価データは公開側を正本とします。保有数量、取得原価、資金、税、注文履歴、実行ログは公開側checkoutにあるGit管理外の`operations/private/`を正本とします。このリポジトリは、その暗号化スナップショットだけを保持します。
 
+## Markdown lint
+
+Node.js 22以上を用意し、依存関係とpre-commit hookをインストールします。
+
+```bash
+npm install
+npm run hooks:install
+```
+
+pre-commitでは、stage済みのMarkdownファイルだけを`markdownlint-cli2`で検査します。
+リポジトリ内のMarkdownファイルをまとめて検査する場合は、次を実行します。
+
+```bash
+npm run lint:markdown
+```
+
 ## アップロード
 
 公開リポジトリのルートで暗号化と復号検証を完了してから実行します。
