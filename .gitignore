@@ -1,3 +1,10 @@
 node_modules/
 .npm-cache/
 .usagi/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx

@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "overlap_minutes": 10,
+  "sources": {
+    "tdnet": {
+      "last_successful_cutoff_jst": null,
+      "last_published_at_jst": null,
+      "last_source_id": null
+    },
+    "edinet": {
+      "last_successful_cutoff_jst": null,
+      "last_published_at_jst": null,
+      "last_source_id": null
+    },
+    "company_ir": {
+      "last_successful_cutoff_jst": null,
+      "last_published_at_jst": null,
+      "last_source_id": null
+    },
+    "jpx": {
+      "last_successful_cutoff_jst": null,
+      "last_published_at_jst": null,
+      "last_source_id": null
+    }
+  }
+}

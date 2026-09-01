@@ -1,0 +1,1 @@
+run_id,attempt,started_at_jst,completed_at_jst,status,operation_mode,active_rule_version,source_cutoff_jst,price_date,report_path,order_count,alert_count,data_gap_count,next_run_at_jst,summary
