@@ -95,3 +95,9 @@ state や ledger の競合で片側を機械的に採用しません。
 - 不審なlogin、注文、出金を確認したら取引を止めてbrokerへ連絡する
 
 口座securityは strategy code の gate とは別に、[personal risk and broker check](../live-readiness.md#personal-risk-and-broker-check)の証跡へ記録します。
+
+## 8. 公式参照
+
+- [金融庁: インターネット取引サービスへの不正アクセス・不正取引への対策](https://www.fsa.go.jp/ordinary/chuui/chuui_phishing.html)
+- [JPX: 内国株の売買制度・売買時間](https://www.jpx.co.jp/equities/trading/domestic/01.html)
+- [JPX: 休業日一覧](https://www.jpx.co.jp/corporate/about-jpx/calendar/)
