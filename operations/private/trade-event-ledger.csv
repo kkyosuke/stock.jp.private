@@ -1,0 +1,1 @@
+event_id,occurred_at_jst,trade_date,ticket_id,decision_id,code,side,event_type,operation_mode,rule_version,order_type,limit_price,quantity_private,fill_price,fees,tax,cash_delta_private,q0_delta,resulting_quantity_private,resulting_q0_fraction,broker_order_id_private,evidence_path,notes

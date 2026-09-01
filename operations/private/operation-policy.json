@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.2",
+  "operation_mode": "PAPER",
+  "active_rule_version": "v0.4",
+  "shadow_rule_versions": [
+    "v0.2",
+    "v0.3"
+  ],
+  "broker_submission": "HUMAN_ONLY",
+  "effective_at_jst": "2026-08-31T00:00:00+09:00",
+  "live_gates": {
+    "point_in_time_full_universe_validation": false,
+    "historical_replay_2025_2026_accepted": false,
+    "minimum_12_month_paper_trade": false,
+    "twenty_day_shadow_run": false,
+    "official_source_coverage": false,
+    "private_repository_recovery": false,
+    "personal_risk_and_broker_check": false
+  },
+  "live_gate_evidence": {
+    "point_in_time_full_universe_validation": null,
+    "historical_replay_2025_2026_accepted": null,
+    "minimum_12_month_paper_trade": null,
+    "twenty_day_shadow_run": null,
+    "official_source_coverage": null,
+    "private_repository_recovery": null,
+    "personal_risk_and_broker_check": null
+  },
+  "v03_holdout_promotion": false,
+  "v04_holdout_promotion": false,
+  "approval": {
+    "approved_by": null,
+    "approved_at_jst": null,
+    "evidence_path": null
+  },
+  "next_rule_reviews": {
+    "monthly_operations": null,
+    "quarterly_performance": null,
+    "annual_promotion": null
+  }
+}
