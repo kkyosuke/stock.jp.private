@@ -46,6 +46,19 @@ credential、password、token、cookie、MFA recovery codeはprivateにも置か
 
 off-line 20日smoke、価格だけの過去data、CI成功は3・4・9を代替しない。
 
+## 変更の検証
+
+- public unit/integration test: 122件成功
+- public Python compile: 成功
+- off-line operation smoke: 20営業日成功、broker submission 0件
+- private Markdown lint: 0件
+- local Markdown link: public/privateとも全件解決
+- secret pattern scan: 候補0件
+- remote branchからprivateをclean cloneし、public submodule `e7a4fd6`を取得
+- clean cloneでsetup、state/ledger validate、PAPER readinessを再現
+
+このclean-cloneはPR候補branchと空の初期台帳に対する統合試験である。merge後の`main`、実runを蓄積した台帳、access-controlled mirrorから再度復旧して照合するまで、`private_repository_recovery` gateは`false`のままとする。
+
 ## PAPER readiness 実測
 
 2026-09-01 21:45 JSTを基準に、private rootからmigrate、validate、bootstrap checkを実行した。
