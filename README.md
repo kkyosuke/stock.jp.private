@@ -48,7 +48,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## 運用開始後の全体フロー
 
-`👤`が利用者の作業です。詳しい自動更新条件、失敗時の扱い、定期review、LIVE移行手順は[運用開始後の詳細スケジュール](docs/operations/post-launch-operation-schedule.md)を参照してください。
+オレンジ色の`👤`が利用者の作業です。詳しい自動更新条件、失敗時の扱い、定期review、LIVE移行手順は[運用開始後の詳細スケジュール](docs/operations/post-launch-operation-schedule.md)を参照してください。
 
 ~~~mermaid
 flowchart TD
@@ -74,7 +74,21 @@ flowchart TD
     WAIT --> L
     L --> A
     L -.-> M["👤 定期作業<br/>週末・月末・決算時のreview<br/>LIVE移行前の確認と承認"]
+
+    classDef human fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407
+    class STOP,C,WAIT,F,H,I,J,K,M human
 ~~~
+
+### 人の作業一覧
+
+| トリガー | 人がすること | しないこと |
+| --- | --- | --- |
+| 平日18:30のpublic data PRがmergeされた | 同日株価を使う場合はprivateの更新workflowを起動し、merge後に「今日の夜間運用を実行して」と依頼する | 未mergeのdataで運用しない |
+| workflow、data、readinessのどれかが失敗した | エラーまたはreportを確認し、原因を解消するまで`WAIT`にする | 推測で続行したり注文したりしない |
+| 夜間runが完了した | report、翌営業日のaction、privateへのpush完了を確認する | PAPERの注文候補を証券会社へ入力しない |
+| LIVEで注文候補が作成された | 翌営業日8:45〜8:55にpre-trade checkを行い、`SUBMIT / CANCEL / WAIT`を判断する | 確認できない日は注文しない |
+| `SUBMIT`と判断した | 証券会社へ注文を手入力し、判断・約定結果を運用記録へ反映する | 自動送信、未承認注文、裁量での成行化をしない |
+| 週末・月末・決算・LIVE移行前の期限が来た | 表示されたreview項目を確認し、LIVE移行時は全証跡を見て最後に明示承認する | 日次の都合だけでruleやgateを変更しない |
 
 ## 日次の最小確認
 
