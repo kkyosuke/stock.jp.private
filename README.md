@@ -46,6 +46,28 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - PAPER は `PAPER_PROPOSED`、LIVE でも broker submission は `HUMAN_ONLY` のままにする
 - readiness が1項目でも未達なら、新規・追加注文を作らない
 
+## 運用開始後のスケジュール
+
+PAPERの最低継続日数や最低連続run数は設けません。日次運用を続けながらLIVE gateを並行して確認し、すべての証跡と本人承認が揃った日を最短のLIVE移行日とします。
+
+| 時期 | 自動処理 | 利用者が行うこと |
+| --- | --- | --- |
+| 平日18:30 | publicが全市場の日次株価を取得し、検証済みdata PRを作成してauto-merge | workflowとPRの成功を確認する。失敗または未mergeなら、その日の運用を開始しない |
+| public data PRのmerge後 | 通常のprivate更新は翌朝7:00。先に手動起動した場合も、日次株価差分だけを検証したpointer PRをauto-merge | 同日の株価で運用する場合は、privateの`update-public-submodule` workflowを手動起動し、pointer PRのmerge後にcheckoutを同期する |
+| 同期後の夜 | 夜間runは自動では開始しない | 「今日の夜間運用を実行して」と依頼し、完了reportと人間作業を確認する。PAPER注文票は証券会社へ入力しない |
+| 各成功run後 | なし | state、台帳、run、採用public commitを照合し、1つのprivate commitとしてpushする |
+| 毎朝7:00 | privateがpublic `main`を確認し、安全な日次株価差分だけpointer PRでauto-merge | 同日夜に更新済みなら作業不要。失敗、未merge、code・rule変更だけ手動reviewする |
+| 最初の4週間の週末 | なし | `run-history.csv`を5分確認し、実行漏れ、失敗、data不足、重複処理、未照合注文を確認する |
+| 月末値の確定後 | 期限到来タスクを夜間runへ追加 | 候補抽出、価格・期限、集中、`MRS-v0.1`の結果をreviewする |
+| 四半期開示後5営業日以内 | 対象銘柄の再評価タスクを追加 | hard gate、score、主要KPI、希薄化、資金余力の判定をreviewする |
+| 本決算後10営業日以内 | 対象銘柄の全面更新タスクを追加 | SAM、SOM、競合、出口倍率、3年逆算の更新をreviewする |
+
+初回の正常なPAPER runが完了したら、そのrunの公式情報源coverageとrun integrityをLIVE証跡候補として確認します。LIVEの公式情報源coverageにはEDINET APIの実疎通が必要です。API keyがない間も手動一次資料fallbackでPAPERを続けられますが、このLIVE gateは完了しません。
+
+日次運用と並行してpoint-in-time全母集団検証、2025–2026履歴再生、clean-clone、v0.4 holdout reviewを進め、LIVE予定日の90日以内に個人・証券会社checklistを再確認します。365日または20営業日の経過を待つ必要はありません。全条件が合格した後だけ本人が最終承認し、`live_go: true`を確認してLIVEへ移行します。
+
+LIVE移行後も夜間runが行うのは`PROPOSED`注文票の作成までです。注文候補がある翌営業日の8:45〜8:55に本人がpre-trade checkを行い、`SUBMIT`と判断した注文だけを証券会社へ手入力します。確認時間を確保できない日、情報源を確認できない日、またはreadinessに異常がある日は`WAIT` / `NO-ACTION`とします。
+
 ## 日次の最小確認
 
 ~~~bash
