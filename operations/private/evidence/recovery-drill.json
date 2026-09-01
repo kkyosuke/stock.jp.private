@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "drill_id": "{{DRILL_ID}}",
+  "operator": "{{OPERATOR}}",
+  "repository_visibility": "PRIVATE",
+  "started_at_jst": "{{STARTED_AT_JST}}",
+  "completed_at_jst": "{{COMPLETED_AT_JST}}",
+  "source_private_commit": "{{SOURCE_PRIVATE_COMMIT}}",
+  "recovered_private_commit": "{{RECOVERED_PRIVATE_COMMIT}}",
+  "source_public_submodule_commit": "{{SOURCE_PUBLIC_SUBMODULE_COMMIT}}",
+  "recovered_public_submodule_commit": "{{RECOVERED_PUBLIC_SUBMODULE_COMMIT}}",
+  "checks": {
+    "clean_clone_with_submodules": false,
+    "workspace_setup": false,
+    "state_validation": false,
+    "paper_bootstrap_check": false,
+    "latest_successful_run": false,
+    "latest_handoff": false,
+    "all_ledgers": false,
+    "unreconciled_orders": false,
+    "private_remote_restore": false,
+    "access_controlled_mirror_restore": false
+  },
+  "result_notes": ""
+}

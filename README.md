@@ -8,6 +8,7 @@
 stock.jp.private/
 ├── docs/                         # private固有の設計、GO/NO-GO、レビュー
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
+├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
 ├── scripts/setup-workspace.sh     # submoduleとsymlinkの安全な初期化
 └── stock.jp/                      # publicコード・公開データのsubmodule
 ~~~
@@ -25,6 +26,7 @@ stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'certifi==2026.7.22' PyYAML
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py migrate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
+./scripts/live-gate-status.sh
 ~~~
 
 `scripts/setup-workspace.sh` は `stock.jp/operations/private -> ../../operations/private` を作り、private データの権限を補正します。既存の別ファイルを上書きしません。
@@ -50,6 +52,8 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 ~~~
 
 成功 run の状態、台帳、採用した public submodule commit を同じ private commit に含め、remote へ push してから別端末や次の run へ進みます。競合した台帳を機械的に片側採用しません。
+
+`live-gate-status.sh` は判定専用で、policyやevidenceを変更しません。未達項目が1つでもあれば終了code 1を返します。現在はLIVE条件が未達なので、この終了codeが正常です。
 
 ## 暗号化を使わない方針
 
