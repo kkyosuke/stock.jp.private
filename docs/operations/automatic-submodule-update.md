@@ -24,6 +24,7 @@ workflowは次をすべて満たした場合だけpointer PRを作成し、squas
 5. `operation_bootstrap.py check`が`paper_go: true`を返す
 6. broker submissionが`HUMAN_ONLY`のままである
 7. 検証処理が`operations/private/`を変更していない
+8. 生成したPR branch上の必須`format` checkが成功する
 
 code・rule・workflow変更、失敗、競合、権限不足、GitHub障害がある場合はprivate `main`を
 変更しません。失敗したjobや未merge PRを人が確認します。workflowは夜間PAPER run、
@@ -34,6 +35,9 @@ LIVE昇格、証券会社への送信を実行しません。
 `Settings > Actions > General > Workflow permissions`で`Read and write permissions`と
 `Allow GitHub Actions to create and approve pull requests`を有効にし、repositoryの
 auto-mergeも有効にします。標準`GITHUB_TOKEN`を使用し、永続credentialをGitへ保存しません。
+main rulesetは`format` checkを必須にします。標準`GITHUB_TOKEN`で作成したPRは通常の
+`pull_request` workflowを再起動しないため、更新workflowが生成branchを指定して
+`format-check.yml`を明示dispatchし、GitHubのauto-mergeが成功を待ちます。
 
 ## 手動fallback
 
