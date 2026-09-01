@@ -34,8 +34,6 @@ LIVE昇格、証券会社への送信を実行しません。
 `Settings > Actions > General > Workflow permissions`で`Read and write permissions`と
 `Allow GitHub Actions to create and approve pull requests`を有効にし、repositoryの
 auto-mergeも有効にします。標準`GITHUB_TOKEN`を使用し、永続credentialをGitへ保存しません。
-組織policyで標準tokenからPRを作れない場合だけ、ContentsとPull requestsの書込権限を持つ
-fine-grained PATまたはGitHub App tokenをsecret `PR_TOKEN`へ設定します。
 
 ## 手動fallback
 
