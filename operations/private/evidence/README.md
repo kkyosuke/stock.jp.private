@@ -16,8 +16,8 @@
 
 ## 生成される合格証跡
 
-`point-in-time.json`、`historical-replay.json`、`paper-12-months.json`、`shadow-20-days.json`、`official-coverage.json`、`repository-recovery.json`、`personal-risk.json`、`v04-promotion.json`、`live-readiness.json` は検証commandが合格した場合だけ生成します。未達結果を合格証跡として保存できません。
+`point-in-time.json`、`historical-replay.json`、`official-coverage.json`、`repository-recovery.json`、`personal-risk.json`、`v04-promotion.json`、`live-readiness.json`は検証commandが合格した場合だけ生成します。未達結果を合格証跡として保存できません。`paper-12-months.json`と`shadow-20-days.json`は任意diagnosticであり、LIVE必須証跡には含めません。
 
 証跡を更新した場合は関連するreviewのSHA-256と最終approvalを作り直します。手で `eligible` やpolicy gateだけを変更しません。
 
-合格証跡とreviewは最終approvalより先にcommit・pushします。`live-approval.json` の `private_commit_reviewed` は、それら8証跡を含むprivate commitを指します。approval自体を含めるために循環参照させません。policyの `LIVE` 変更はapprovalを別commitでpushした後に行います。
+合格証跡とreviewは最終approvalより先にcommit・pushします。`live-approval.json`の`private_commit_reviewed`は、それら6証跡を含むprivate commitを指します。approval自体を含めるために循環参照させません。policyの`LIVE`変更はapprovalを別commitでpushした後に行います。

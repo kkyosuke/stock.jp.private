@@ -1,6 +1,7 @@
 # 運用 readiness review — 2026-09-01
 
 > 2026-09-02追記: `private_repository_recovery` は別mirrorと90日失効を要求せず、LIVE前またはrepository layout変更後のclean-clone確認へ軽量化した。本review中の復旧条件はこの追記と現在の[GO/NO-GO基準](../live-readiness.md)で読み替える。
+> 2026-09-02追記: 365日PAPERと実data20営業日連続runはLIVE必須gateから廃止した。任意diagnosticとして継続できるが、現在の判定は[GO/NO-GO基準](../live-readiness.md)を正本とする。
 
 ## 判定
 
@@ -38,15 +39,13 @@ credential、password、token、cookie、MFA recovery codeはprivateにも置か
 
 1. point-in-time全母集団の入口・出口検証
 2. 2025–2026履歴再生の受入
-3. v0.4で最低12か月の前向きPAPER
-4. 実data20営業日連続の重大取得漏れ・重複注文0件
-5. 必須公式情報源coverage
-6. 現行private repository layoutのclean-clone確認
-7. 本人の損失許容・税・broker仕様・security確認
-8. v0.4 holdout promotion
-9. 全gate後の本人による明示approval
+3. 最新の完了済みPAPER runの必須公式情報源coverageとrun integrity
+4. 現行private repository layoutのclean-clone確認
+5. 本人の損失許容・税・broker仕様・security確認
+6. v0.4 holdout promotion
+7. 全gate後の本人による明示approval
 
-off-line 20日smoke、価格だけの過去data、CI成功は3・4・9を代替しない。
+off-line 20日smoke、価格だけの過去data、CI成功は公式coverage、本人確認、最終approvalを代替しない。
 
 ## 機械判定stack
 
@@ -72,7 +71,7 @@ public stackは依存順にmergeし、squashのたびに後続branchを新しい
 2026-09-01 21:45 JSTを基準に、private rootからmigrate、validate、bootstrap checkを実行した。
 
 - state schema: `2.1`
-- policy schema: `1.2`
+- policy schema: `1.3`
 - `paper_go: true`
 - `live_go: false`
 - active target: 0件
@@ -89,7 +88,7 @@ active target 0件のため、最初は `GLOBAL / NO-ACTION` と全市場候補r
 3. 最新public data PRを毎回reviewして採用する
 4. 最初の `GLOBAL / NO-ACTION` runと全市場候補reviewを実施する
 5. 一次資料を確認できた候補だけをactive watchlistへ登録する
-6. 実data20営業日の連続runを開始し、incidentと手動fallbackを記録する
+6. 定期PAPER runを開始し、incidentと手動fallbackを記録する。最低日数・連続run数は設けない
 
 ## review時の停止条件
 

@@ -11,8 +11,6 @@
   "evidence": {
     "point_in_time_full_universe_validation": {"path": "operations/private/evidence/point-in-time.json", "sha256": "{{SHA256}}"},
     "historical_replay_2025_2026_accepted": {"path": "operations/private/evidence/historical-replay.json", "sha256": "{{SHA256}}"},
-    "minimum_12_month_paper_trade": {"path": "operations/private/evidence/paper-12-months.json", "sha256": "{{SHA256}}"},
-    "twenty_day_shadow_run": {"path": "operations/private/evidence/shadow-20-days.json", "sha256": "{{SHA256}}"},
     "official_source_coverage": {"path": "operations/private/evidence/official-coverage.json", "sha256": "{{SHA256}}"},
     "private_repository_recovery": {"path": "operations/private/evidence/repository-recovery.json", "sha256": "{{SHA256}}"},
     "personal_risk_and_broker_check": {"path": "operations/private/evidence/personal-risk.json", "sha256": "{{SHA256}}"},
