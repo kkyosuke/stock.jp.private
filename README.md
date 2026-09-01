@@ -46,56 +46,35 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - PAPER は `PAPER_PROPOSED`、LIVE でも broker submission は `HUMAN_ONLY` のままにする
 - readiness が1項目でも未達なら、新規・追加注文を作らない
 
-## 運用開始後のスケジュール
+## 運用開始後の全体フロー
 
-PAPERの最低継続日数や最低連続run数は設けません。日次運用を続けながらLIVE gateを並行して確認し、すべての証跡と本人承認が揃った日を最短のLIVE移行日とします。
+`👤`が利用者の作業です。詳しい自動更新条件、失敗時の扱い、定期review、LIVE移行手順は[運用開始後の詳細スケジュール](docs/operations/post-launch-operation-schedule.md)を参照してください。
 
 ~~~mermaid
 flowchart TD
-    A["平日18:30<br/>publicが全市場の日次株価を取得"] --> B{"検証済みdata PRが<br/>auto-mergeされたか"}
-    B -->|"失敗・未merge"| STOP["STOP<br/>その日の新しい運用を開始しない"]
-    B -->|"merge済み"| C{"同日の株価で<br/>今夜運用するか"}
-    C -->|"はい"| D["privateのupdate-public-submoduleを<br/>手動起動"]
-    C -->|"いいえ"| E["翌朝7:00<br/>privateが自動確認"]
-    D --> F{"日次株価だけの<br/>安全な差分か"}
-    E --> F
-    F -->|"code・rule変更<br/>または検証失敗"| REVIEW["STOP<br/>auto-mergeせず手動review"]
-    F -->|"合格"| G["pointer PRをauto-merge<br/>checkoutとsubmoduleを同期"]
-    G --> H{"state・台帳・data・<br/>readinessは正常か"}
-    H -->|"異常あり"| WAIT["WAIT / NO-ACTION<br/>原因を解消してから再開"]
-    H -->|"正常"| I["利用者が<br/>「今日の夜間運用を実行して」と依頼"]
-    I --> J["公式情報源・期限到来task・<br/>翌営業日actionを確認"]
-    J --> K{"運用mode"}
-    K -->|"PAPER"| P["PAPER_PROPOSEDまで<br/>証券会社へ入力しない"]
-    K -->|"LIVE"| L["PROPOSEDまで<br/>自動送信しない"]
-    P --> R["夜間reportを確認<br/>state・台帳・run・public commitを照合"]
-    L --> R
-    R --> S["1つのprivate commitとしてpush"]
-    L -.->|"注文候補がある翌営業日"| M["8:45〜8:55<br/>本人がpre-trade check"]
-    M --> N{"本人の判断"}
-    N -->|"SUBMIT"| O["証券会社へ手入力"]
-    N -->|"CANCEL / WAIT"| Q["注文しない"]
-    O --> T["判断・約定結果を台帳へ反映してpush"]
-    Q --> T
-    S -.->|"最初の4週間は週末"| W["run-historyを5分review"]
-    S -.->|"月末値確定後"| X["候補・価格・集中・MRSをreview"]
-    S -.->|"四半期開示後5営業日以内"| Y["hard gate・score・KPIをreview"]
-    S -.->|"本決算後10営業日以内"| Z["SAM・SOM・競合・出口を全面review"]
-    S -.->|"PAPERと並行"| V1["LIVE準備<br/>point-in-time・履歴再生・公式source<br/>clean-clone・v0.4 holdout"]
-    V1 --> V2["LIVE予定日の90日以内<br/>個人・証券会社checklist"]
-    V2 --> V3{"全証跡と本人承認が<br/>揃ったか"}
-    V3 -->|"未達"| A
-    V3 -->|"合格"| V4["promote-live --apply<br/>live_go: trueを確認"]
-    V4 --> A
-    T --> A
-    S --> A
+    A["自動｜平日18:30<br/>public株価を更新・検証・merge"] --> B{"更新成功?"}
+    B -->|"いいえ"| STOP["👤 夜<br/>失敗を確認し、その日はWAIT"]
+    B -->|"はい"| C["👤 夜<br/>最新dataを同期して<br/>『今日の夜間運用を実行して』と依頼"]
+    C --> D["運用処理<br/>運用前check・公式情報確認・判定<br/>reportと注文候補を作成"]
+    D --> E{"問題なし?"}
+    E -->|"いいえ"| WAIT["👤 reportと失敗記録を確認<br/>解消するまで注文しない"]
+    E -->|"はい"| F["👤 夜<br/>reportとprivate push完了を確認"]
+    F --> G{"運用modeと注文候補"}
+    G -->|"PAPER"| P["証券会社へ入力しない<br/>仮想注文だけ"]
+    G -->|"LIVE・候補なし"| Q["NO-ACTION"]
+    G -->|"LIVE・候補あり"| H["👤 翌営業日8:45〜8:55<br/>pre-trade check"]
+    H --> I{"本人の判断"}
+    I -->|"SUBMIT"| J["👤 証券会社へ手入力"]
+    I -->|"CANCEL / WAIT"| Q
+    J --> K["👤 判断・約定結果を<br/>運用記録へ反映"]
+    P --> L["次の営業日まで待機"]
+    Q --> L
+    K --> L
+    STOP --> L
+    WAIT --> L
+    L --> A
+    L -.-> M["👤 定期作業<br/>週末・月末・決算時のreview<br/>LIVE移行前の確認と承認"]
 ~~~
-
-初回の正常なPAPER runが完了したら、そのrunの公式情報源coverageとrun integrityをLIVE証跡候補として確認します。LIVEの公式情報源coverageにはEDINET APIの実疎通が必要です。API keyがない間も手動一次資料fallbackでPAPERを続けられますが、このLIVE gateは完了しません。
-
-日次運用と並行してpoint-in-time全母集団検証、2025–2026履歴再生、clean-clone、v0.4 holdout reviewを進め、LIVE予定日の90日以内に個人・証券会社checklistを再確認します。365日または20営業日の経過を待つ必要はありません。全条件が合格した後だけ本人が最終承認し、`live_go: true`を確認してLIVEへ移行します。
-
-LIVE移行後も夜間runが行うのは`PROPOSED`注文票の作成までです。注文候補がある翌営業日の8:45〜8:55に本人がpre-trade checkを行い、`SUBMIT`と判断した注文だけを証券会社へ手入力します。確認時間を確保できない日、情報源を確認できない日、またはreadinessに異常がある日は`WAIT` / `NO-ACTION`とします。
 
 ## 日次の最小確認
 
