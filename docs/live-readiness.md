@@ -13,7 +13,7 @@
 | `minimum_12_month_paper_trade` | v0.4の有効な前向きPAPERを12か月以上完了 | 開始日、月次集計、失敗・逸脱・変更履歴 |
 | `twenty_day_shadow_run` | 実dataで20営業日連続、重大取得漏れ・重複注文0 | run-history、coverage、incident review |
 | `official_source_coverage` | 必須一次情報源を毎run網羅し、欠損時fail-close | provider health、source log、manual fallback記録 |
-| `private_repository_recovery` | clean clone/mirrorからstateとledgerを復旧 | recovery report、private/public commit、照合結果 |
+| `private_repository_recovery` | 現行layoutをclean cloneし、stateとledgerを照合 | clean-clone report、layout revision、private/public commit |
 | `personal_risk_and_broker_check` | 本人が損失許容・税・broker仕様・securityを確認 | 本人のsigned checklist |
 | `v04_holdout_promotion` | v0.4の集中riskをholdoutで受入 | comparison report、承認記録 |
 | `approval` | 全gate後に本人がLIVE、日時、対象版を明示 | approval file とpolicyの3項目 |
@@ -41,7 +41,7 @@ gate を `true` にする場合は、`operations/private/evidence/` 内の型付
 ## GO の手順
 
 1. point-in-time、履歴再生、12か月PAPER、20日shadow、公式coverageの各コマンドを合格させ、`--write-evidence` で保存する
-2. 90日以内の復旧訓練と本人checklistを合格させる
+2. 現行layoutのclean-clone確認と、90日以内の本人checklistを合格させる
 3. v0.4 holdout reviewを本人が `PROMOTE_V0_4_TO_LIVE` と明示する
 4. `operation_state.py validate` を成功させる
 5. `live-approval.json` に全証跡hash、private/public commit、現在のPAPER policy hash、本人の `LIVE` と日時を記録する

@@ -73,18 +73,18 @@ state や ledger の競合で片側を機械的に採用しません。
 
 同じ口座を複数端末から同時運用しないことを基本とします。
 
-## 6. clean-clone 復旧訓練
+## 6. clean-clone 確認
 
-四半期ごと、LIVE昇格前、schema変更前に、稼働中とは別の空ディレクトリで実施します。
+LIVE昇格前に一度、稼働中とは別の空ディレクトリで実施します。setup、submodule、状態schema、台帳構成を変えた場合はpublic validatorの `REPOSITORY_LAYOUT_REVISION` を上げ、変更後に再実施します。日次run、データ更新、経過日数だけでは再実施しません。
 
-1. private repository または access-controlled mirror を clone する
+1. 通常のprivate repositoryをcloneする
 2. submodule と symlink を setup する
 3. Python environment を再構築する
 4. state/ledger validate と readiness check を実行する
 5. 最新成功 run、handoff、未照合ticket、全ledgerを稼働中と照合する
-6. private/public commit、実施日時、結果、差異を evidence に残す
+6. layout revision、private/public commit、実施日時、結果、差異をevidenceに残す
 
-稼働中の directory を上書きしません。復旧できない間は PAPER/LIVE とも新しい注文候補を作りません。
+別媒体のmirrorは要求しません。稼働中のdirectoryを上書きしません。clean cloneできない間、またはGitHubを利用できない間は、PAPER/LIVEとも新しい注文候補を作りません。
 
 ## 7. access control
 

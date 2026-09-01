@@ -5,7 +5,7 @@
 | repository | 正本 | 自動化 |
 | --- | --- | --- |
 | public `stock.jp` | 汎用コード、公開データ、ルール、研究、空template | 公開情報の収集、品質検査、backtest、CI、更新PR |
-| private `stock.jp.private` | 実保有、資金、注文・約定、判断、run状態、個人の承認 | private checkout 上の日次処理、状態検証、復旧訓練 |
+| private `stock.jp.private` | 実保有、資金、注文・約定、判断、run状態、個人の承認 | private checkout 上の日次処理、状態検証、現行構成のclean-clone確認 |
 | Git外の認証情報管理 | API key、password、token、cookie、MFA回復コード | 実行時だけ環境変数等で注入 |
 
 public Actions は公開情報だけで完結する重い計算へ利用します。private の保有銘柄だけを抽出した結果、資金量を反映した注文数量、private state は public job の input、log、cache、artifact にしません。

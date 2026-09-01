@@ -1,6 +1,6 @@
 # stock.jp.private
 
-`stock.jp` を実資金運用へ段階的に移行するための private workspace です。現在の判定は **LIVE NO-GO** です。最低12か月の PAPER、実データ20営業日の連続運用、履歴再生、復旧訓練、利用者固有の確認が完了するまで実注文を行いません。
+`stock.jp` を実資金運用へ段階的に移行するための private workspace です。現在の判定は **LIVE NO-GO** です。最低12か月の PAPER、実データ20営業日の連続運用、履歴再生、現行構成の clean-clone 確認、利用者固有の確認が完了するまで実注文を行いません。
 
 ## 構成
 
@@ -57,7 +57,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## 暗号化を使わない方針
 
-`age`、`.zip.age`、backup 用 GitHub Release、復号鍵は新しい運用に使いません。復旧可能性は private repository の clean clone、submodule 初期化、状態検証、台帳照合で四半期ごとに確認します。旧 archive を廃棄する場合は、必要な内容が private Git に移行済みで clean clone から復元できることを先に確認します。
+`age`、`.zip.age`、backup 用 GitHub Release、復号鍵は新しい運用に使いません。LIVE 前に一度、または repository layout の変更後に、private repository の clean clone、submodule 初期化、状態検証、台帳照合を確認します。別mirrorと日数による再確認は要求しません。旧 archive を廃棄する場合は、必要な内容が private Git に移行済みで clean clone から復元できることを先に確認します。
 
 ## ドキュメント
 
