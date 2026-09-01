@@ -54,7 +54,7 @@ off-line 20日smoke、価格だけの過去data、CI成功は3・4・9を代替�
 - private Markdown lint: 0件
 - local Markdown link: public/privateとも全件解決
 - secret pattern scan: 候補0件
-- remote branchからprivateをclean cloneし、public submodule `e7a4fd6`を取得
+- public PR #20のsquash merge commit `901f05e`をsubmoduleとして取得
 - clean cloneでsetup、state/ledger validate、PAPER readinessを再現
 
 このclean-cloneはPR候補branchと空の初期台帳に対する統合試験である。merge後の`main`、実runを蓄積した台帳、access-controlled mirrorから再度復旧して照合するまで、`private_repository_recovery` gateは`false`のままとする。
@@ -76,7 +76,7 @@ active target 0件のため、最初は `GLOBAL / NO-ACTION` と全市場候補r
 
 ## PAPERを開始する次の作業
 
-1. public/private両PRをmergeし、private mainからclean cloneして復旧性を確認する
+1. private PRをmergeし、private mainからclean cloneして復旧性を確認する
 2. 実保有がある場合だけ正確な値をprivate ledgerへ登録する
 3. 最新public data PRを毎回reviewして採用する
 4. 最初の `GLOBAL / NO-ACTION` runと全市場候補reviewを実施する
