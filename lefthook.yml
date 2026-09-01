@@ -1,0 +1,7 @@
+glob_matcher: doublestar
+
+pre-commit:
+  commands:
+    markdownlint:
+      glob: "**/*.md"
+      run: npx --no-install markdownlint-cli2 -- {staged_files}

@@ -1,0 +1,15 @@
+{
+  "name": "stock.jp.private",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "hooks:install": "lefthook install",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#stock.jp/**\" \"#node_modules/**\""
+  },
+  "devDependencies": {
+    "lefthook": "2.1.12",
+    "markdownlint-cli2": "0.23.2"
+  }
+}
