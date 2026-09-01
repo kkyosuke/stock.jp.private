@@ -10,7 +10,7 @@ GitHub Releasesへ、次の形式の暗号化済みバックアップだけを�
 operation-YYYYMMDDTHHMMSS+0900.zip.age
 ```
 
-バックアップ本体はGitへcommitしません。このREADMEだけを通常のGit履歴で管理します。
+バックアップ本体はGitへcommitしません。このREADMEと公開リポジトリへのsubmodule参照だけを通常のGit履歴で管理します。
 
 ## 保存してはいけないもの
 
@@ -24,11 +24,11 @@ operation-YYYYMMDDTHHMMSS+0900.zip.age
 
 ## 公開リポジトリとの関係
 
-- 公開側: [`kkyosuke/stock.jp`](https://github.com/kkyosuke/stock.jp)
+- 公開側: [`kkyosuke/stock.jp`](https://github.com/kkyosuke/stock.jp)（`stock.jp/` submodule）
 - 非公開側: `kkyosuke/stock.jp.private`
-- 接続方法: GitHub Releaseのupload/downloadだけ
-- submodule: 使用しない
-- clone: バックアップ運用には不要
+- バックアップの接続方法: GitHub Releaseのupload/download
+- submodule: `stock.jp/`から公開側のソースコードを参照
+- clone: 公開側も同時に取得する場合は`git clone --recurse-submodules`
 
 ルール、プログラム、テンプレート、公開可能な株価データは公開側を正本とします。保有数量、取得原価、資金、税、注文履歴、実行ログは公開側checkoutにあるGit管理外の`operations/private/`を正本とします。このリポジトリは、その暗号化スナップショットだけを保持します。
 
