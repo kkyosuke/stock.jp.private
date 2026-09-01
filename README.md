@@ -7,6 +7,7 @@
 ~~~text
 stock.jp.private/
 ├── docs/                         # private固有の設計、GO/NO-GO、レビュー
+├── .github/workflows/             # 毎朝のpublic submodule自動更新
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
 ├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
 ├── scripts/setup-workspace.sh     # submoduleとsymlinkの安全な初期化
@@ -14,6 +15,10 @@ stock.jp.private/
 ~~~
 
 public/private の境界は[全体構成](docs/repository-layout.md)、実行順は[private 運用手順](docs/operations/private-operation-runbook.md)、LIVE 条件は[GO/NO-GO 基準](docs/live-readiness.md)を参照してください。
+
+平日18:30のpublic日次データPRは検証成功時だけauto-mergeし、privateは毎朝7:00にpublic
+`main`の日次株価差分だけをsubmodule pointer PRで検証してauto-mergeします。codeやruleの
+変更と検証失敗時はmainを変更せず、手動reviewへ戻します。
 
 ## 初回セットアップ
 

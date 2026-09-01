@@ -4,6 +4,7 @@
 
 - [リポジトリ全体構成](repository-layout.md): public/private の境界と配置
 - [private 運用手順](operations/private-operation-runbook.md): setup、日次、競合、復旧
+- [public submodule自動更新](operations/automatic-submodule-update.md): 毎朝のpointer PRとauto-merge
 - [LIVE GO/NO-GO 基準](live-readiness.md): gate、evidence、停止条件
 - [2026-09-01 readiness review](reviews/operation-readiness-review-2026-09-01.md): 現在地と次の作業
 

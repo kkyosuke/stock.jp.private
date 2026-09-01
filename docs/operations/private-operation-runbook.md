@@ -17,7 +17,12 @@ credential は shell history に値を残す引数で渡しません。必要な
 
 ## 2. public update の採用
 
-public の data PR と CI を review し、merge 済み commit だけを採用します。
+publicの日次data PRはpublic workflow自身が検証してauto-mergeします。privateは毎朝7:00 JSTの
+`update-public-submodule` workflowで、merge済みpublic `main`の日次株価差分だけを検証し、
+pointer PRをauto-mergeします。code、rule、workflow変更は自動採用しません。詳細は
+[public submodule自動更新](automatic-submodule-update.md)を参照します。
+
+自動化が失敗した場合だけ、次を手動実行します。
 
 ~~~bash
 git -C stock.jp fetch origin main
@@ -26,7 +31,9 @@ git add stock.jp
 git diff --cached --submodule=log -- stock.jp
 ~~~
 
-submodule 更新と、それに伴う schema migration・運用状態の変更を同じ private PR で review します。検証前の public branch tip を実運用へ直接追従させません。
+手動時はsubmodule更新と、それに伴うschema migration・運用状態の変更を同じprivate PRで
+reviewします。自動・手動のどちらも、検証前のpublic branch tipや未merge commitへ直接追従
+させません。
 
 ## 3. 夜間 run 前
 
