@@ -18,7 +18,13 @@
 | `v04_holdout_promotion` | v0.4の集中riskをholdoutで受入 | comparison report、承認記録 |
 | `approval` | 全gate後に本人がLIVE、日時、対象版を明示 | approval file とpolicyの3項目 |
 
-gate を `true` にする場合は、`operations/private/` 内の空でない evidence file を同時に指定します。予定、口頭確認、チャットだけを evidence にしません。
+gate を `true` にする場合は、`operations/private/evidence/` 内の型付き evidence file を同時に指定します。空ファイル、予定、口頭確認、チャット、真偽値だけの手編集は evidence にしません。
+
+現在地は次で確認します。このコマンドはファイルを変更しません。
+
+~~~bash
+./scripts/live-gate-status.sh
+~~~
 
 ## personal risk and broker check
 
@@ -34,13 +40,36 @@ gate を `true` にする場合は、`operations/private/` 内の空でない ev
 
 ## GO の手順
 
-1. すべての gate evidence を独立reviewする
-2. `operation_state.py validate` を成功させる
-3. `operation_bootstrap.py check` の `live_blockers` を0件にする
-4. v0.4、`HUMAN_ONLY`、開始日、専用資金、停止条件を本人が最終確認する
-5. approval evidence を作り、policy を `LIVE` に更新する
-6. 再度 check し、`live_go: true` を確認する
-7. 初回は最小の許容lotで、人間のpre-trade checkと手入力を行う
+1. point-in-time、履歴再生、12か月PAPER、20日shadow、公式coverageの各コマンドを合格させ、`--write-evidence` で保存する
+2. 90日以内の復旧訓練と本人checklistを合格させる
+3. v0.4 holdout reviewを本人が `PROMOTE_V0_4_TO_LIVE` と明示する
+4. `operation_state.py validate` を成功させる
+5. `live-approval.json` に全証跡hash、private/public commit、現在のPAPER policy hash、本人の `LIVE` と日時を記録する
+6. `live_gate_evidence.py --root stock.jp promote-live` が `eligible: true` であることを確認する
+7. 同じ入力のまま `promote-live --apply` を1回だけ実行する
+8. `operation_bootstrap.py check` の `live_go: true` を確認する
+9. 初回は個人checklistで定めた上限以下かつ戦略上許容される最小lotで、人間のpre-trade checkと手入力を行う
+
+`--apply` は全条件を元データから再計算してから、policyのmode、7 gate、v0.4 promotion、証跡path、承認を1回のatomic writeで更新します。不合格ならpolicyを変更しません。詳細なschemaとコマンドは[publicのLIVE gate証跡仕様](../stock.jp/docs/operations/live-gate-evidence.md)を正本とします。
+
+### 最終承認のcommit順
+
+最終承認とpolicy変更を同じ未追跡作業のまま進めず、次の3段階をprivate Gitへ残します。
+
+1. 8つの合格証跡と、最終承認以外のreviewをcommitしてprotected remoteへpushする
+2. そのprivate commit、採用public commit、PAPER policyと8証跡のSHA-256を `live-approval.json` に記入し、別commitでpushする
+3. `promote-live` をread-onlyで再実行し、本人が出力を確認してから `--apply` し、変更されたpolicyと `live-readiness.json` を3つ目のcommitでpushする
+
+commitとhashは次のread-only commandで取得します。出力を公開Issue、public PR、public Actionsへ貼りません。
+
+~~~bash
+git rev-parse HEAD
+git -C stock.jp rev-parse HEAD
+shasum -a 256 operations/private/operation-policy.json
+shasum -a 256 operations/private/evidence/{point-in-time,historical-replay,paper-12-months,shadow-20-days,official-coverage,repository-recovery,personal-risk,v04-promotion}.json
+~~~
+
+最終承認後に入力、policy、証跡を変更した場合はhash不一致になるため、影響する判定と承認をやり直します。force pushや履歴改変で一致させません。
 
 ## 即時 NO-GO / PAUSED 条件
 

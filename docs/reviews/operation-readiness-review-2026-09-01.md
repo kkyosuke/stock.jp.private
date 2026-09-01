@@ -46,6 +46,12 @@ credential、password、token、cookie、MFA recovery codeはprivateにも置か
 
 off-line 20日smoke、価格だけの過去data、CI成功は3・4・9を代替しない。
 
+## 機械判定stack
+
+各未完了条件を独立したstack PRに分け、point-in-timeから最終昇格までをfail-closeで判定する実装を用意した。private側には未承認の入力formとread-only status commandだけを置き、現在のgateとpolicyは変更していない。
+
+public stackは依存順にmergeし、squashのたびに後続branchを新しいmainへrestackする。private統合PRはpublic最上段がmainへ入った後、そのmerge commitへsubmoduleを更新してからmergeする。
+
 ## 変更の検証
 
 - public unit/integration test: 122件成功

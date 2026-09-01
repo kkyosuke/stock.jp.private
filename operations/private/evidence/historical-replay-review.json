@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "decision": "NOT_DECIDED",
+  "rule_version": "v0.4",
+  "accepted_by": null,
+  "accepted_at_jst": null,
+  "replay_result_sha256": "{{REPLAY_RESULT_SHA256}}",
+  "drawdown_reviewed": false,
+  "concentration_loss_reviewed": false,
+  "data_limitations_reviewed": false
+}
