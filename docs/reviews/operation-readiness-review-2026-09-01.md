@@ -1,5 +1,7 @@
 # 運用 readiness review — 2026-09-01
 
+> 2026-09-02追記: `private_repository_recovery` は別mirrorと90日失効を要求せず、LIVE前またはrepository layout変更後のclean-clone確認へ軽量化した。本review中の復旧条件はこの追記と現在の[GO/NO-GO基準](../live-readiness.md)で読み替える。
+
 ## 判定
 
 | mode | 判定 | 理由 |
@@ -19,7 +21,7 @@
 - `age`、encrypted archive、GitHub Release backup、31日backup gateを廃止した
 - LIVE gateを `private_repository_recovery` へ置換した
 - 旧state/policyのbackup項目はmigration時に除去・変換する
-- clean-clone復旧、private Git同期、競合解消を新しい運用手順にした
+- clean-clone確認、private Git同期、競合解消を新しい運用手順にした
 
 ## public/private 境界のreview
 
@@ -39,7 +41,7 @@ credential、password、token、cookie、MFA recovery codeはprivateにも置か
 3. v0.4で最低12か月の前向きPAPER
 4. 実data20営業日連続の重大取得漏れ・重複注文0件
 5. 必須公式情報源coverage
-6. private repository/mirrorのclean-clone復旧
+6. 現行private repository layoutのclean-clone確認
 7. 本人の損失許容・税・broker仕様・security確認
 8. v0.4 holdout promotion
 9. 全gate後の本人による明示approval
@@ -63,7 +65,7 @@ public stackは依存順にmergeし、squashのたびに後続branchを新しい
 - public PR #20のsquash merge commit `901f05e`をsubmoduleとして取得
 - clean cloneでsetup、state/ledger validate、PAPER readinessを再現
 
-このclean-cloneはPR候補branchと空の初期台帳に対する統合試験である。merge後の`main`、実runを蓄積した台帳、access-controlled mirrorから再度復旧して照合するまで、`private_repository_recovery` gateは`false`のままとする。
+このclean-cloneはPR候補branchと空の初期台帳に対する統合試験である。merge後の`main`と実runを蓄積した台帳を、現行layout revisionでclean cloneして照合するまで、`private_repository_recovery` gateは`false`のままとする。
 
 ## PAPER readiness 実測
 

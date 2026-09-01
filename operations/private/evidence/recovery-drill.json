@@ -1,8 +1,10 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "drill_id": "{{DRILL_ID}}",
   "operator": "{{OPERATOR}}",
   "repository_visibility": "PRIVATE",
+  "reason": "PRE_LIVE",
+  "repository_layout_revision": 1,
   "started_at_jst": "{{STARTED_AT_JST}}",
   "completed_at_jst": "{{COMPLETED_AT_JST}}",
   "source_private_commit": "{{SOURCE_PRIVATE_COMMIT}}",
@@ -17,9 +19,7 @@
     "latest_successful_run": false,
     "latest_handoff": false,
     "all_ledgers": false,
-    "unreconciled_orders": false,
-    "private_remote_restore": false,
-    "access_controlled_mirror_restore": false
+    "unreconciled_orders": false
   },
   "result_notes": ""
 }
