@@ -1,6 +1,6 @@
 # 運用開始後の詳細スケジュール
 
-この文書は、[READMEの全体フロー](../../README.md#運用開始後の全体フロー)を実行時刻、停止条件、定期review、LIVE移行まで展開した別紙です。日々はREADMEだけを確認し、失敗時や期限到来時にこの文書と[private運用手順](private-operation-runbook.md)を参照します。
+この文書は、[READMEの全体フロー](../../README.md#運用開始後の全体フロー)を実行時刻、停止条件、定期review、LIVE移行まで展開した別紙です。日々はREADMEだけを確認し、失敗時や期限到来時にこの文書と[private運用手順](private-operation-runbook.md)を参照します。フロー図のオレンジ色は利用者が担当する作業です。
 
 ## 詳細フロー
 
@@ -43,6 +43,9 @@ flowchart TD
     V4 --> A
     T --> A
     S --> A
+
+    classDef human fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407
+    class D,REVIEW,I,R,M,N,O,Q,T,W,X,Y,Z,V2,V3 human
 ~~~
 
 ## 利用者が行うこと
