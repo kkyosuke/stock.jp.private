@@ -11,6 +11,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -56,6 +57,16 @@ jobs:
             - broker submission: `HUMAN_ONLY`
           add-paths: |
             stock.jp
+
+      - name: Dispatch required format check
+        if: steps.pointer-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BRANCH: automation/update-public-submodule
+        run: |
+          gh workflow run format-check.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$PR_BRANCH"
 
       - name: Enable auto-merge after successful validation
         if: steps.pointer-pr.outputs.pull-request-number != ''
