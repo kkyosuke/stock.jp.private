@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-02",
+  "status": "COMPLETED",
+  "source_window": {
+    "from_exclusive_jst": null,
+    "through_inclusive_jst": "2026-09-02T21:55:11+09:00"
+  },
+  "universe": {
+    "holdings": {
+      "expected": [],
+      "checked": []
+    },
+    "pending_orders": {
+      "expected": [],
+      "checked": []
+    },
+    "watchlist": {
+      "expected": [],
+      "checked": []
+    },
+    "due_reviews": {
+      "expected": [],
+      "checked": []
+    }
+  },
+  "official_sources": {
+    "tdnet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "TDnetの日付別一覧全150件（最終更新19:00）を確認。実行開始時の保有・監視対象は0件。"
+    },
+    "edinet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "APIキー未設定のため書類簡易検索を手動確認。サービスは利用可能で、実行開始時の対象コードは0件。"
+    },
+    "company_ir": {
+      "required": false,
+      "status": "CHECKED",
+      "notes": "初回候補上位4社について会社作成の最新決算資料を確認。"
+    },
+    "jpx": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "取引日、当日売買停止、監理・整理銘柄一覧を確認。次回現物取引日は2026-09-03。"
+    }
+  },
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-02-edinet",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "edinet",
+      "impact": "statutory filings could be missing; all actions remain unverified",
+      "retry_after_jst": "2026-09-03T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-02T22:05:20+09:00",
+      "resolution_evidence": "edinet-manual-2026-09-02"
+    },
+    {
+      "gap_id": "2026-09-02-tdnet",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "tdnet",
+      "impact": "material timely disclosures could be missing; trade decisions are blocked",
+      "retry_after_jst": "2026-09-03T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-02T22:05:20+09:00",
+      "resolution_evidence": "tdnet-all-2026-09-02"
+    },
+    {
+      "gap_id": "2026-09-02-trading_calendar",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "trading_calendar",
+      "impact": "the next trading date is unconfirmed; order tickets are blocked",
+      "retry_after_jst": "2026-09-03T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-02T22:05:20+09:00",
+      "resolution_evidence": "jpx-calendar-2026"
+    }
+  ],
+  "completed_at_jst": "2026-09-02T22:13:55+09:00"
+}
