@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-02",
+  "generated_at_jst": "2026-09-02T21:55:11+09:00",
+  "tasks": [
+    {
+      "task_id": "manual-jpx-notices-2026-09-02",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check JPX trading halts, supervision/delisting, and market notices",
+      "source_ids": [
+        "jpx-halts-2026-09-02",
+        "jpx-supervision-2026-09-02"
+      ],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-halts-2026-09-02",
+        "jpx-supervision-2026-09-02"
+      ],
+      "decision_log_path": "operations/private/runs/2026-09-02/research-results.md",
+      "notes": "当日の売買停止は該当なし。監理・整理一覧も確認したが、実行開始時の対象コードは0件。"
+    },
+    {
+      "task_id": "manual-tdnet-2026-09-02",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check TDnet disclosures through the cutoff and attach query evidence",
+      "source_ids": [
+        "tdnet-all-2026-09-02"
+      ],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "tdnet-all-2026-09-02"
+      ],
+      "decision_log_path": "operations/private/runs/2026-09-02/research-results.md",
+      "notes": "2026-09-02の日付別一覧全150件、最終更新19:00までを確認。実行開始時の対象コードは0件。"
+    },
+    {
+      "task_id": "manual-trading_calendar-2026-09-02",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm the next cash-equity trading date with JPX calendar evidence",
+      "source_ids": [
+        "jpx-calendar-2026"
+      ],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-calendar-2026"
+      ],
+      "decision_log_path": "operations/private/runs/2026-09-02/research-results.md",
+      "notes": "2026-09-03は木曜日でJPX休業日一覧に含まれないため、次回現物取引日と確認。"
+    }
+  ]
+}

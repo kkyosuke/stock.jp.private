@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-02",
+  "input_mode": "LIVE_NETWORK",
+  "status": "PARTIAL",
+  "started_at_jst": "2026-09-02T21:55:11+09:00",
+  "completed_at_jst": "2026-09-02T21:55:11+09:00",
+  "providers": {
+    "yahoo_tracked_archive": {
+      "status": "OK",
+      "request_count": 0,
+      "record_count": 3672,
+      "error": ""
+    },
+    "edinet": {
+      "status": "MISSING_CREDENTIAL",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "EDINET_API_KEY is not set; PAPER manual primary-source fallback completed for an empty active universe"
+    },
+    "first_party_public_checks": {
+      "status": "OK",
+      "request_count": 13,
+      "record_count": 13,
+      "error": ""
+    }
+  },
+  "blocking_gaps": [],
+  "notes": [
+    "EDINET API自動取得は未構成。PAPERでは手動検索で補完し、対象コード0件を確認した。"
+  ]
+}
