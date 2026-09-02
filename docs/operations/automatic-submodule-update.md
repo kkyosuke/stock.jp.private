@@ -17,14 +17,15 @@ publicの平日18:30データ収集から十分に間隔を空けます。土日
 
 workflowは次をすべて満たした場合だけpointer PRを作成し、squash auto-mergeします。
 
-1. 現在のpointerからpublic `main`までがfast-forwardである
-2. 差分が日次株価CSVと`latest.json`だけである
-3. submoduleがpublic remoteの`main`と同じ40桁commitである
-4. privateのstateとledgerがvalidである
-5. `operation_bootstrap.py check`が`paper_go: true`を返す
-6. broker submissionが`HUMAN_ONLY`のままである
-7. 検証処理が`operations/private/`を変更していない
-8. 生成したPR branch上の必須`format` checkが成功する
+1. checkout時にpublic submoduleを再帰的に初期化する
+2. 現在のpointerからpublic `main`までがfast-forwardである
+3. 差分が日次株価CSVと`latest.json`だけである
+4. submoduleがpublic remoteの`main`と同じ40桁commitである
+5. privateのstateとledgerがvalidである
+6. `operation_bootstrap.py check`が`paper_go: true`を返す
+7. broker submissionが`HUMAN_ONLY`のままである
+8. 検証処理が`operations/private/`を変更していない
+9. 生成したPR branch上の必須`format` checkが成功する
 
 code・rule・workflow変更、失敗、競合、権限不足、GitHub障害がある場合はprivate `main`を
 変更しません。失敗したjobや未merge PRを人が確認します。workflowは夜間PAPER run、
@@ -38,6 +39,8 @@ auto-mergeも有効にします。標準`GITHUB_TOKEN`を使用し、永続crede
 main rulesetは`format` checkを必須にします。標準`GITHUB_TOKEN`で作成したPRは通常の
 `pull_request` workflowを再起動しないため、更新workflowが生成branchを指定して
 `format-check.yml`を明示dispatchし、GitHubのauto-mergeが成功を待ちます。
+`update-public-submodule.sh`と`setup-workspace.sh`も`stock.jp/.git`の有無で
+初期化状態を判定するため、空の`stock.jp/`を親repositoryのworktreeと誤認しません。
 
 ## 手動fallback
 

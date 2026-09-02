@@ -9,8 +9,8 @@ private_data="$private_root/operations/private"
 public_link="$public_root/operations/private"
 expected_target='../../operations/private'
 
-if ! git -C "$public_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  git -C "$private_root" submodule update --init --recursive
+if [ ! -e "$public_root/.git" ]; then
+  git -C "$private_root" submodule update --init --recursive -- stock.jp
 fi
 
 if [ ! -d "$public_root/operations" ]; then
