@@ -13,8 +13,8 @@ else
   python_executable=python
 fi
 
-if ! git -C "$public_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  git -C "$private_root" submodule update --init --recursive
+if [ ! -e "$public_root/.git" ]; then
+  git -C "$private_root" submodule update --init --recursive -- stock.jp
 fi
 "$private_root/scripts/setup-workspace.sh"
 
