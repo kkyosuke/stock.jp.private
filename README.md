@@ -27,7 +27,7 @@ git clone --recurse-submodules git@github.com:kkyosuke/stock.jp.private.git
 cd stock.jp.private
 ./scripts/setup-workspace.sh
 python3 -m venv stock.jp/.venv
-stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'certifi==2026.7.22' PyYAML
+stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.0.0' 'certifi==2026.7.22' PyYAML
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py migrate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
@@ -41,6 +41,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - public は汎用コード、公開データ、ルール、研究、CIを持つ
 - private は実保有、資金、注文、判断、状態、GO/NO-GO 証跡を持つ
 - private データは暗号化 archive にせず、private Git の通常ファイルとして追跡する
+- 会社別の希薄化・SAM/SOM・競合・KPI入力は`operations/private/research-inputs/investment-cases/`に置き、publicには値を出さない
 - API key、password、token、cookie、MFA 回復コードは private Git にも保存しない
 - GitHub Actions の public job へ private データを入力・出力しない
 - PAPER は `PAPER_PROPOSED`、LIVE でも broker submission は `HUMAN_ONLY` のままにする
@@ -86,6 +87,7 @@ flowchart TD
 | 平日18:30のpublic data PRがmergeされた | 同日株価を使う場合はprivateの更新workflowを起動し、merge後に「今日の夜間運用を実行して」と依頼する | 未mergeのdataで運用しない |
 | workflow、data、readinessのどれかが失敗した | エラーまたはreportを確認し、原因を解消するまで`WAIT`にする | 推測で続行したり注文したりしない |
 | 夜間runが完了した | report、翌営業日のaction、privateへのpush完了を確認する | PAPERの注文候補を証券会社へ入力しない |
+| `assessment-status.json`が`INCOMPLETE`または`STALE` | 表示された不足項目だけを一次資料から会社別入力へ補い、再実行する | 数値を推測で埋めない |
 | LIVEで注文候補が作成された | 翌営業日8:45〜8:55にpre-trade checkを行い、`SUBMIT / CANCEL / WAIT`を判断する | 確認できない日は注文しない |
 | `SUBMIT`と判断した | 証券会社へ注文を手入力し、判断・約定結果を運用記録へ反映する | 自動送信、未承認注文、裁量での成行化をしない |
 | 週末・月末・決算・LIVE移行前の期限が来た | 表示されたreview項目を確認し、LIVE移行時は全証跡を見て最後に明示承認する | 日次の都合だけでruleやgateを変更しない |
@@ -113,5 +115,6 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - [private ドキュメント索引](docs/README.md)
 - [現在の readiness review](docs/reviews/operation-readiness-review-2026-09-01.md)
 - [public の汎用ドキュメント](stock.jp/docs/README.md)
+- [MRS・希薄化・SAM/SOM・10倍経路の計算](stock.jp/docs/operations/decision-assessment-automation-v0.1.md)
 
 Markdown は `npm run lint:markdown` で検査します。

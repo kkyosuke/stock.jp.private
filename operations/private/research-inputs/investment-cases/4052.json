@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "code": "4052",
+  "company": "フィーチャ",
+  "as_of_jst": "2026-09-03T21:39:11+09:00",
+  "price": {
+    "value": 865,
+    "source_ids": [
+      "yahoo-price-2026-09-03-cc3a45050e92"
+    ]
+  },
+  "capital": {
+    "issued_shares": 5856107,
+    "treasury_shares": 8572,
+    "potential_securities": [
+      {
+        "id": "fy2025-stock-options",
+        "shares_at_10x_price": 22620,
+        "variable_strike": false,
+        "exercise_cash": null,
+        "source_ids": [
+          "company-4052-fy2025-annual",
+          "company-4052-h1-2026"
+        ]
+      }
+    ],
+    "planned_base_new_shares": null,
+    "planned_downside_new_shares": null,
+    "cash": 528738000,
+    "debt": 0,
+    "source_ids": [
+      "company-4052-fy2026",
+      "company-4052-fy2025-annual",
+      "company-4052-h1-2026"
+    ]
+  },
+  "financials": {
+    "ttm_revenue": 543871000,
+    "assumed_normalized_net_margin_pct": null,
+    "source_ids": [
+      "company-4052-fy2026"
+    ]
+  },
+  "market": {
+    "sam_3y": null,
+    "attainable_share_pct": null,
+    "capacity_revenue_limit": null,
+    "leader_share_pct": null,
+    "sam_evidence": "UNVERIFIABLE",
+    "capacity_evidence": "NARRATIVE",
+    "market_growth_verified": false,
+    "share_gain_verified": false,
+    "share_overtake_supported": false,
+    "source_ids": [
+      "company-4052-fy2026-presentation"
+    ]
+  },
+  "valuation": {
+    "proposed_exit_pe": null,
+    "n3_completeness": "PARTIAL",
+    "margin_exception_supported": false,
+    "competitor_scale_consistency": "UNSUPPORTED",
+    "direct_competitors": [],
+    "source_ids": [
+      "company-4052-fy2026",
+      "company-4052-fy2026-presentation"
+    ]
+  },
+  "kpi_path": {
+    "decomposition": "PARTIAL",
+    "year3_revenue": null,
+    "year3_net_margin_pct": null,
+    "drivers": [],
+    "source_ids": [
+      "company-4052-fy2026-presentation"
+    ]
+  },
+  "eligibility": {
+    "hard_gates_passed": false,
+    "other_score": null,
+    "liquidity_passed": null,
+    "source_ids": [
+      "company-4052-fy2026",
+      "company-4052-fy2025-annual",
+      "company-4052-h1-2026",
+      "company-4052-ransomware-final-2026-05-13"
+    ]
+  },
+  "risk": {
+    "unresolved_major_red_flags": [
+      "ランサムウェア被害でログ等が欠損し、外部流出範囲を特定できない"
+    ]
+  },
+  "notes": [
+    "865円は追跡済み非公式archiveの参考値で、BUYの価格根拠には使用しない",
+    "2026年9月28日予定の有価証券報告書後に潜在株式と監査意見を更新する",
+    "会社資料だけでは到達可能SAM/SOMと直接競合比較を確定できない"
+  ]
+}
