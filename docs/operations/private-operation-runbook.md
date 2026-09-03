@@ -8,7 +8,7 @@ private repository の root で実行します。
 git submodule update --init --recursive
 ./scripts/setup-workspace.sh
 python3 -m venv stock.jp/.venv
-stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'certifi==2026.7.22' PyYAML
+stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.0.0' 'certifi==2026.7.22' PyYAML
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py migrate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 ~~~
@@ -63,6 +63,7 @@ run 後に次を照合します。
 - `orders.csv` と `unreconciled_ticket_ids`
 - trade/capital/portfolio ledger の数量と残高
 - source coverage と data gap
+- `assessment-status.json`と会社別の希薄化・SAM/SOM・10倍経路。`INCOMPLETE`/`STALE`なら不足項目を一次資料から`research-inputs/investment-cases/<code>.json`へ補う
 - 変更した private file と public submodule commit
 
 実行の成功・失敗を private Git の1 commitへ記録し、push成功後に次の端末・runへ進みます。認証情報、一時 download、巨大な raw data が混入していないことを diff で確認します。
