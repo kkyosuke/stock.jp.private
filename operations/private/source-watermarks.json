@@ -3,24 +3,24 @@
   "overlap_minutes": 10,
   "sources": {
     "tdnet": {
-      "last_successful_cutoff_jst": "2026-09-02T21:55:11+09:00",
-      "last_published_at_jst": "2026-09-02T19:00:00+09:00",
-      "last_source_id": "tdnet-all-2026-09-02"
+      "last_successful_cutoff_jst": "2026-09-03T21:39:11+09:00",
+      "last_published_at_jst": "2026-09-03T19:00:00+09:00",
+      "last_source_id": "tdnet-all-2026-09-03"
     },
     "edinet": {
-      "last_successful_cutoff_jst": "2026-09-02T21:55:11+09:00",
-      "last_published_at_jst": "2026-09-02T00:00:00+09:00",
-      "last_source_id": "edinet-manual-2026-09-02"
+      "last_successful_cutoff_jst": "2026-09-03T21:39:11+09:00",
+      "last_published_at_jst": "2026-09-03T00:00:00+09:00",
+      "last_source_id": "edinet-manual-4052-2026-09-03"
     },
     "company_ir": {
-      "last_successful_cutoff_jst": "2026-09-02T21:55:11+09:00",
-      "last_published_at_jst": "2026-08-14T15:30:00+09:00",
-      "last_source_id": "company-4052-fy2026"
+      "last_successful_cutoff_jst": "2026-09-03T21:39:11+09:00",
+      "last_published_at_jst": "2026-09-03T00:00:00+09:00",
+      "last_source_id": "company-4052-ir-index-2026-09-03"
     },
     "jpx": {
-      "last_successful_cutoff_jst": "2026-09-02T21:55:11+09:00",
-      "last_published_at_jst": "2026-09-02T15:30:00+09:00",
-      "last_source_id": "jpx-supervision-2026-09-02"
+      "last_successful_cutoff_jst": "2026-09-03T21:39:11+09:00",
+      "last_published_at_jst": "2026-09-03T15:30:00+09:00",
+      "last_source_id": "jpx-halts-2026-09-03"
     }
   }
 }

@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-03",
+  "status": "COMPLETED",
+  "source_window": {
+    "from_exclusive_jst": "2026-09-02T21:55:11+09:00",
+    "through_inclusive_jst": "2026-09-03T21:39:11+09:00"
+  },
+  "universe": {
+    "holdings": {
+      "expected": [],
+      "checked": []
+    },
+    "pending_orders": {
+      "expected": [],
+      "checked": []
+    },
+    "watchlist": {
+      "expected": [
+        "4052"
+      ],
+      "checked": [
+        "4052"
+      ]
+    },
+    "due_reviews": {
+      "expected": [
+        "4052-full-review-2026-09-03"
+      ],
+      "checked": [
+        "4052-full-review-2026-09-03"
+      ]
+    }
+  },
+  "official_sources": {
+    "tdnet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "2026-09-03の日付別一覧全161件（最終更新19:00）を2ページとも確認し、4052の新規開示なし。"
+    },
+    "edinet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "APIキー未設定のためPAPER手動フォールバックを使用。書類簡易検索で40520とフィーチャを確認し、前回カットオフ後の新規提出なし。"
+    },
+    "company_ir": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "フィーチャ公式IR一覧を前回カットオフ後から今回カットオフまで確認し、新規掲載なし。最新決算、監査済み有報、半期報告、資本準備金、ランサムウェア最終報を精査。"
+    },
+    "jpx": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "4052の上場情報、当日売買停止、監理・整理銘柄、2026年休業日を確認。翌現物取引日は2026-09-04。JPX個別株価画面は401のため終値のみ非公式archiveを使用。"
+    }
+  },
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-03-edinet",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "edinet",
+      "impact": "statutory filings could be missing; all actions remain unverified",
+      "retry_after_jst": "2026-09-04T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-03T21:39:11+09:00",
+      "resolution_evidence": "edinet-manual-4052-2026-09-03"
+    },
+    {
+      "gap_id": "2026-09-03-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で公式終値を確認できない。非公式archiveの865円は参考値に限定し、新規・追加購入を禁止するためWAIT判断は安全側で完了可能。",
+      "retry_after_jst": "2026-09-04T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-03-tdnet",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "tdnet",
+      "impact": "material timely disclosures could be missing; trade decisions are blocked",
+      "retry_after_jst": "2026-09-04T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-03T21:39:11+09:00",
+      "resolution_evidence": "tdnet-all-2026-09-03"
+    },
+    {
+      "gap_id": "2026-09-03-trading_calendar",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "trading_calendar",
+      "impact": "the next trading date is unconfirmed; order tickets are blocked",
+      "retry_after_jst": "2026-09-04T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-03T21:39:11+09:00",
+      "resolution_evidence": "jpx-calendar-2026"
+    }
+  ],
+  "completed_at_jst": "2026-09-03T21:51:30+09:00"
+}

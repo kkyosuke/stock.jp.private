@@ -1,0 +1,34 @@
+{
+  "schema_version": "2.0",
+  "run_id": "2026-09-03",
+  "status": "completed",
+  "started_at_jst": "2026-09-03T21:39:11+09:00",
+  "completed_at_jst": "2026-09-03T21:51:30+09:00",
+  "previous_run_id": "2026-09-02",
+  "previous_disclosure_cutoff_jst": "2026-09-02T21:55:11+09:00",
+  "operation_mode": "PAPER",
+  "active_rule_version": "v0.4",
+  "source_cutoff_jst": "2026-09-03T21:39:11+09:00",
+  "price_date": "2026-09-03",
+  "pending_reviews": [
+    "4052-fy2026-annual-review-2026-09-29"
+  ],
+  "pending_orders": [],
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-03-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で公式終値を確認できない。非公式archiveの865円は参考値に限定し、新規・追加購入を禁止するためWAIT判断は安全側で完了可能。",
+      "retry_after_jst": "2026-09-04T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    }
+  ],
+  "next_run_at_jst": "2026-09-04T18:30:00+09:00",
+  "summary": "4052 WAIT; 正式MRS・最新完全希薄化入力・SAM/SOM未確定、10倍経路未立証; 注文0件",
+  "attempt": 1,
+  "attempt_started_at_jst": "2026-09-03T21:39:11+09:00",
+  "alert_count": 0
+}
