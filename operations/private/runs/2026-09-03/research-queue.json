@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-03",
+  "generated_at_jst": "2026-09-03T21:39:11+09:00",
+  "tasks": [
+    {
+      "task_id": "manual-company-ir-2026-09-03-4052",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "Check company IR through the cutoff and record query evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "company-4052-ir-index-2026-09-03",
+        "company-4052-fy2026",
+        "company-4052-fy2025-annual",
+        "company-4052-h1-2026",
+        "company-4052-capital-reserve-2026-08-28",
+        "company-4052-ransomware-final-2026-05-13"
+      ],
+      "decision_log_path": "operations/private/decisions/2026-09-03-4052-full-review.md",
+      "notes": "IR一覧に前回カットオフ後の新規掲載なし。最新一次資料でハードゲート、採点、10倍逆算を確認しWAIT。"
+    },
+    {
+      "task_id": "manual-jpx-notices-2026-09-03",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check JPX trading halts, supervision/delisting, and market notices",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-halts-2026-09-03",
+        "jpx-supervision-2026-09-03",
+        "jpx-listed-company-4052-2026-09-03"
+      ],
+      "decision_log_path": "operations/private/runs/2026-09-03/research-results.md",
+      "notes": "当日売買停止は該当なし。監理・整理銘柄一覧に4052なし。上場会社検索で銘柄同一性を確認。"
+    },
+    {
+      "task_id": "manual-official_market_data-2026-09-03",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm target prices and corporate actions with JPX, company IR, or brokerage evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-listed-company-4052-2026-09-03",
+        "company-4052-ir-index-2026-09-03",
+        "yahoo-price-2026-09-03-cc3a45050e92"
+      ],
+      "decision_log_path": "operations/private/decisions/2026-09-03-4052-full-review.md",
+      "notes": "JPX上場情報と会社IRで銘柄・コーポレートアクションを確認。JPX終値画面は401のため865円は非公式参考値。購入を禁止するWAIT判断のみ確定。"
+    },
+    {
+      "task_id": "manual-tdnet-2026-09-03",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check TDnet disclosures through the cutoff and attach query evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "tdnet-all-2026-09-03"
+      ],
+      "decision_log_path": "operations/private/runs/2026-09-03/research-results.md",
+      "notes": "2026-09-03の日付別一覧全161件、最終更新19:00までを確認。4052の新規開示なし。"
+    },
+    {
+      "task_id": "manual-trading-calendar-2026-09-03",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm the next cash-equity trading date with JPX calendar evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-calendar-2026"
+      ],
+      "decision_log_path": "operations/private/runs/2026-09-03/research-results.md",
+      "notes": "2026-09-04は金曜日でJPX休業日一覧に含まれず、次回現物取引日と確認。"
+    }
+  ]
+}

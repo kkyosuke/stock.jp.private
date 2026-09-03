@@ -1,2 +1,2 @@
 code,company,status,priority,reason,added_at_jst,next_full_review,latest_decision_id,active
-4052,フィーチャ,RESEARCH,HIGH,"初回全市場の価格・流動性代理条件と最新会社資料を確認。買い判断前にv0.4の全ハードゲート・70点採点・10倍逆算を完了する",2026-09-02T22:05:20+09:00,2026-09-03,operations/private/runs/2026-09-02/research-results.md,true
+4052,フィーチャ,WAIT,HIGH,"最新完全希薄化後株式数、SAM/SOM、正式MRSを確証できず採点NA。10倍経路未立証かつランサムウェアの情報流出範囲を特定不能。FY2026有報後に再確認",2026-09-02T22:05:20+09:00,2026-09-29,operations/private/decisions/2026-09-03-4052-full-review.md,true
