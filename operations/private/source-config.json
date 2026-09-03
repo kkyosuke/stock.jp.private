@@ -25,7 +25,10 @@
     ],
     "nikkei_vi_csv_url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
     "leading_ci_page_url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
-    "minimum_vi_observations": 500
+    "minimum_vi_observations": 500,
+    "breadth_lookback_sessions": 280,
+    "maximum_breadth_close_age_days": 7,
+    "minimum_breadth_coverage": 0.98
   },
   "manual_primary_sources": {
     "company_ir": true,
