@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "gate": "private_repository_recovery",
+  "evaluated_at_jst": "2026-09-05T20:07:40+09:00",
+  "eligible": true,
+  "blockers": [],
+  "metrics": {
+    "drill_id": "pre-live-e7915d8-20260905",
+    "completed_at_jst": "2026-09-05T20:06:54+09:00",
+    "repository_layout_revision": 1,
+    "required_check_count": 8,
+    "passed_check_count": 8
+  },
+  "inputs": [
+    {
+      "role": "recovery_drill",
+      "path": "operations/private/evidence/recovery-drill.json",
+      "sha256": "1c346ee3c09b3ef1a18f796b3948e8d87ec385e889f48519332c5aab956ac68a"
+    }
+  ]
+}
