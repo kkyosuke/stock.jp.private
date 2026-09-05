@@ -1,2 +1,2 @@
 code,company,status,priority,reason,added_at_jst,next_full_review,latest_decision_id,active
-4052,フィーチャ,WAIT,HIGH,"最新完全希薄化後株式数、SAM/SOM、正式MRSを確証できず採点NA。10倍経路未立証かつランサムウェアの情報流出範囲を特定不能。FY2026有報後に再確認",2026-09-02T22:05:20+09:00,2026-09-29,operations/private/decisions/2026-09-03-4052-full-review.md,true
+4052,フィーチャ,WAIT,HIGH,"最新完全希薄化の全入力、SAM/SOM、正式MRSを確証できず採点NA。10倍経路未立証、ランサムウェアの情報流出範囲不明、創業者保有比率低下を継続監視。FY2026有報後に再確認",2026-09-02T22:05:20+09:00,2026-09-29,operations/private/decisions/2026-09-04-4052-daily-review.md,true
