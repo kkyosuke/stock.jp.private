@@ -8,7 +8,7 @@ private repository の root で実行します。
 git submodule update --init --recursive
 ./scripts/setup-workspace.sh
 python3 -m venv stock.jp/.venv
-stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.0.0' 'certifi==2026.7.22' PyYAML
+stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.16.1' 'certifi==2026.7.22' PyYAML
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py migrate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 ~~~
