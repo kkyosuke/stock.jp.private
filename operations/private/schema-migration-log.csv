@@ -1,1 +1,2 @@
 migrated_at_jst,from_schema,to_schema,changed_paths,migration_snapshot_dir,result,notes
+2026-09-05T19:58:11+09:00,1.2,1.3,operations/private/source-config.json,operations/private/migrations/20260905T195811.628496+0900,SUCCESS,automatic non-destructive migration
