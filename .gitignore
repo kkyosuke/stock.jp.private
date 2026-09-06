@@ -8,3 +8,4 @@ node_modules/
 *.pem
 *.p12
 *.pfx
+operations/private/historical-replay/**/raw/
