@@ -21,11 +21,14 @@ flowchart TD
     I --> J["公式情報源・期限到来task・<br/>翌営業日actionを確認"]
     J --> K{"運用mode"}
     K -->|"PAPER"| P["PAPER_PROPOSEDまで<br/>証券会社へ入力しない"]
+    K -->|"LIMITED_LIVE"| LL["PROPOSEDまで<br/>資金3,000,000円上限・1 run 1新規"]
     K -->|"LIVE"| L["PROPOSEDまで<br/>自動送信しない"]
     P --> R["夜間reportを確認<br/>state・台帳・run・public commitを照合"]
+    LL --> R
     L --> R
     R --> S["1つのprivate commitとしてpush"]
     L -.->|"注文候補がある翌営業日"| M["8:45〜8:55<br/>本人がpre-trade check"]
+    LL -.->|"注文候補がある翌営業日"| M
     M --> N{"本人の判断"}
     N -->|"SUBMIT"| O["証券会社へ手入力"]
     N -->|"CANCEL / WAIT"| Q["注文しない"]
@@ -54,7 +57,7 @@ flowchart TD
 | --- | --- |
 | 平日18:30以降 | public data PRの成功を確認する。同日株価を使う場合はprivateの`update-public-submodule` workflowを手動起動し、pointer PRのmerge後にcheckoutを同期する |
 | 同期後の夜 | 「今日の夜間運用を実行して」と依頼し、完了reportとprivate pushを確認する。PAPER注文票は証券会社へ入力しない |
-| LIVEで注文候補がある翌営業日8:45〜8:55 | pre-trade checkを行い、`SUBMIT`だけを証券会社へ手入力する。`CANCEL / WAIT`なら注文しない |
+| LIMITED_LIVE/LIVEで注文候補がある翌営業日8:45〜8:55 | pre-trade checkを行い、`SUBMIT`だけを証券会社へ手入力する。`CANCEL / WAIT`なら注文しない |
 | 注文判断・約定後 | 判断、約定数量、価格、費用を運用記録へ反映する |
 | 最初の4週間の週末 | `run-history.csv`を5分確認し、実行漏れ、失敗、data不足、重複処理、未照合注文を確認する |
 | 月末値の確定後 | 候補抽出、価格・期限、集中、`MRS-v0.1`の結果をreviewする |
@@ -63,6 +66,12 @@ flowchart TD
 | LIVE移行前 | 全証跡を確認し、予定日の90日以内に個人・証券会社checklistを再確認して、最後に本人が明示承認する |
 
 ## LIVE移行の扱い
+
+LIMITED_LIVEは、専用資金3,000,000円、1 run 1新規注文、追加購入禁止、本人の累積損失停止を
+強制する少額観察段階です。実際の資金分離後に`LIMITED_LIVE_FUNDING`を台帳へ記録し、
+最新PAPER runの公式coverage、layout revision 3のclean-clone、個人checklist、
+2025年diagnosticの制約と最大DDを本人が確認した後だけ昇格します。
+通常LIVE gateは未完了のまま明示し、LIMITED_LIVEの経過だけで通常LIVEへ自動昇格しません。
 
 PAPERの最低継続日数や最低連続run数は設けません。初回の正常なPAPER runが完了したら、そのrunの公式情報源coverageとrun integrityをLIVE証跡候補として確認します。LIVEの公式情報源coverageにはEDINET APIの実疎通が必要です。API keyがない間も手動一次資料fallbackでPAPERを続けられますが、このLIVE gateは完了しません。
 

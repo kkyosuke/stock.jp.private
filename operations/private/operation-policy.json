@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "operation_mode": "PAPER",
   "active_rule_version": "v0.4",
   "shadow_rule_versions": [
@@ -24,6 +24,16 @@
   },
   "v03_holdout_promotion": false,
   "v04_holdout_promotion": false,
+  "limited_live": {
+    "capital_limit_jpy": 3000000,
+    "maximum_total_loss_pct": null,
+    "maximum_new_orders_per_run": 1,
+    "additional_purchases_enabled": false,
+    "approved_by": null,
+    "approved_at_jst": null,
+    "evidence_path": null,
+    "evidence_sha256": null
+  },
   "approval": {
     "approved_by": null,
     "approved_at_jst": null,

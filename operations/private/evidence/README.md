@@ -8,6 +8,7 @@
 
 | file | 用途 | 誰が確定するか |
 | --- | --- | --- |
+| `limited-live-plan.json` | 少額限定実運用の資金上限・損失停止・本人承認 | 利用者 |
 | `historical-replay-review.json` | 2025〜2026回顧的stress testの成績・制約受入 | 利用者 |
 | `recovery-drill.json` | 現行layoutのclean-clone確認結果 | 実施者 |
 | `personal-risk-and-broker.json` | 損失許容、税、broker、security | 利用者 |
@@ -22,3 +23,8 @@
 証跡を更新した場合は関連するreviewのSHA-256と最終approvalを作り直します。手で `eligible` やpolicy gateだけを変更しません。
 
 合格証跡とreviewは最終approvalより先にcommit・pushします。`live-approval.json`の`private_commit_reviewed`は、それら6証跡を含むprivate commitを指します。approval自体を含めるために循環参照させません。policyの`LIVE`変更はapprovalを別commitでpushした後に行います。
+
+`limited-live-plan.json`は通常LIVE証跡ではなく、`LIMITED_LIVE`の専用制限です。
+現在の専用資金上限は3,000,000円で、本人の累積損失停止率、個人checklist、
+`capital-ledger.csv`の単一`LIMITED_LIVE_FUNDING`記録、
+公式source coverage、layout revision 3のclean-clone、本人承認が未完了のため`DRAFT`です。
