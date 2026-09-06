@@ -66,6 +66,6 @@ flowchart TD
 
 PAPERの最低継続日数や最低連続run数は設けません。初回の正常なPAPER runが完了したら、そのrunの公式情報源coverageとrun integrityをLIVE証跡候補として確認します。LIVEの公式情報源coverageにはEDINET APIの実疎通が必要です。API keyがない間も手動一次資料fallbackでPAPERを続けられますが、このLIVE gateは完了しません。
 
-日次運用と並行してpoint-in-time全母集団検証、2025–2026履歴再生、clean-clone、v0.4 holdout reviewを進めます。365日または20営業日の経過を待つ必要はありません。全条件が合格した後だけ本人が最終承認し、`live_go: true`を確認してLIVEへ移行します。
+日次運用と並行してpoint-in-time全母集団検証、2025–2026回顧的履歴再生、clean-clone、v0.4 forward holdoutを進めます。一律の365日PAPERまたは20営業日shadowを待つ条件はありませんが、本人が事前固定したforward holdoutの期間と最低観測数は完了が必要です。全条件が合格した後だけ本人が最終承認し、`live_go: true`を確認してLIVEへ移行します。
 
 LIVE移行後も夜間runが行うのは`PROPOSED`注文票の作成までです。確認時間を確保できない日、情報源を確認できない日、またはreadinessに異常がある日は`WAIT` / `NO-ACTION`とします。

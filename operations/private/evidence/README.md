@@ -8,10 +8,11 @@
 
 | file | 用途 | 誰が確定するか |
 | --- | --- | --- |
-| `historical-replay-review.json` | 固定履歴再生の受入 | 利用者 |
+| `historical-replay-review.json` | 2025〜2026回顧的stress testの成績・制約受入 | 利用者 |
 | `recovery-drill.json` | 現行layoutのclean-clone確認結果 | 実施者 |
 | `personal-risk-and-broker.json` | 損失許容、税、broker、security | 利用者 |
 | `v04-holdout-review.json` | v0.4集中riskの昇格判断 | 利用者 |
+| `v04-holdout-plan.json` | v0.4凍結後の未観測期間と合格基準の事前固定 | 利用者 |
 | `live-approval.json` | 全条件後の最終LIVE判断 | 利用者 |
 
 ## 生成される合格証跡

@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "status": "DRAFT",
+  "generated_at_jst": "2026-09-06T11:12:53+09:00",
+  "evaluation_kind": "RETROSPECTIVE_STRESS_TEST",
+  "holdout_claimed": false,
+  "period": {
+    "from": "2025-01-01",
+    "through": "2026-08-31"
+  },
+  "initial_capital": 10000000,
+  "fee_rate": 0.0015,
+  "slippage_rate": 0.001,
+  "board_lot": 100,
+  "price_basis": "AS_TRADED_UNADJUSTED",
+  "certifications": {
+    "point_in_time_security_master": false,
+    "includes_delisted": false,
+    "includes_mergers": false,
+    "includes_corporate_actions": false,
+    "includes_all_material_disclosures": false,
+    "source_rights_reviewed": false,
+    "jquants_excluded": true,
+    "unofficial_prices_excluded": true
+  },
+  "datasets": [
+    {
+      "role": "source_register",
+      "path": "historical-replay/2025-2026/input/source-register.csv",
+      "sha256": "1169cd9b4f7bc370fefb7882f528cf9b2aec3b8439f8b0c66328c4431ea09fa6",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "security_master",
+      "path": "historical-replay/2025-2026/input/security-master.csv",
+      "sha256": "85e6142ad060ac7b35becd66baeebb9c96ff109b782ae9ea0a04755c2db81713",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "trading_calendar",
+      "path": "historical-replay/2025-2026/input/trading-calendar.csv",
+      "sha256": "35563213bb5e31cadf7e71b4de9e34096d7b3c46cde1303cd6e5bbaac76f339e",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "daily_prices",
+      "path": "historical-replay/2025-2026/input/daily-prices.csv",
+      "sha256": "d2ed86d6406b12d3de90344eb330b8b909b8f985ae6058738e59418c9cca5577",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "corporate_actions",
+      "path": "historical-replay/2025-2026/input/corporate-actions.csv",
+      "sha256": "9f14faf26037c41306e9800b34482107e882b01ff8278c1f71b2fe8471681ae3",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "review_events",
+      "path": "historical-replay/2025-2026/input/review-events.csv",
+      "sha256": "df344aaaa39b96cccca81b5660a43234e9298ac88605c92dbed719b178b64c14",
+      "provider": "DERIVED_FROM_OFFICIAL_PRIMARY_SOURCES",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "market_regime",
+      "path": "historical-replay/2025-2026/input/market-regime.csv",
+      "sha256": "16fa083d1880820a6f8b071d1637e9ec3a02d718a413de382f0649e492accecb",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "benchmark",
+      "path": "historical-replay/2025-2026/input/benchmark.csv",
+      "sha256": "ba155b985a46e8956ebed1cb1ea7a49b503db0eb773c538da0519253d95c8e3c",
+      "provider": "REPLACE_WITH_OFFICIAL_PROVIDER",
+      "official": false,
+      "replay_authorized": false
+    },
+    {
+      "role": "assessments",
+      "path": "historical-replay/2025-2026/input/assessments.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "provider": "DERIVED_FROM_OFFICIAL_PRIMARY_SOURCES",
+      "official": false,
+      "replay_authorized": false
+    }
+  ]
+}
