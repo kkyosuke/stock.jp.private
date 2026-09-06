@@ -1,6 +1,6 @@
 # stock.jp.private
 
-`stock.jp` を実資金運用へ段階的に移行するための private workspace です。現在の判定は **LIVE NO-GO** です。履歴再生、最新PAPER runの公式情報源coverage、現行構成のclean-clone確認、利用者固有の確認と最終承認が完了するまで実注文を行いません。PAPERの経過日数と連続run数には最低条件を設けません。
+`stock.jp` を実資金運用へ段階的に移行するための private workspace です。現在の判定は **LIMITED_LIVE/LIVE NO-GO** です。LIMITED_LIVEは3,000,000円の専用資金上限を事前記録済みですが、本人の損失停止と承認、公式coverage、clean-clone、個人checklist完了までPAPERを維持します。通常LIVEには履歴再生とforward holdoutも引き続き必要です。
 
 ## 構成
 
@@ -44,7 +44,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - 会社別の希薄化・SAM/SOM・競合・KPI入力は`operations/private/research-inputs/investment-cases/`に置き、publicには値を出さない
 - API key、password、token、cookie、MFA 回復コードは private Git にも保存しない
 - GitHub Actions の public job へ private データを入力・出力しない
-- PAPER は `PAPER_PROPOSED`、LIVE でも broker submission は `HUMAN_ONLY` のままにする
+- PAPER は `PAPER_PROPOSED`、LIMITED_LIVE/LIVE でも broker submission は `HUMAN_ONLY` のままにする
 - readiness が1項目でも未達なら、新規・追加注文を作らない
 
 ## 運用開始後の全体フロー
@@ -62,8 +62,8 @@ flowchart TD
     E -->|"はい"| F["👤 夜<br/>reportとprivate push完了を確認"]
     F --> G{"運用modeと注文候補"}
     G -->|"PAPER"| P["証券会社へ入力しない<br/>仮想注文だけ"]
-    G -->|"LIVE・候補なし"| Q["NO-ACTION"]
-    G -->|"LIVE・候補あり"| H["👤 翌営業日8:45〜8:55<br/>pre-trade check"]
+    G -->|"LIMITED_LIVE/LIVE・候補なし"| Q["NO-ACTION"]
+    G -->|"LIMITED_LIVE/LIVE・候補あり"| H["👤 翌営業日8:45〜8:55<br/>pre-trade check"]
     H --> I{"本人の判断"}
     I -->|"SUBMIT"| J["👤 証券会社へ手入力"]
     I -->|"CANCEL / WAIT"| Q
@@ -88,7 +88,7 @@ flowchart TD
 | workflow、data、readinessのどれかが失敗した | エラーまたはreportを確認し、原因を解消するまで`WAIT`にする | 推測で続行したり注文したりしない |
 | 夜間runが完了した | report、翌営業日のaction、privateへのpush完了を確認する | PAPERの注文候補を証券会社へ入力しない |
 | `assessment-status.json`が`INCOMPLETE`または`STALE` | 表示された不足項目だけを一次資料から会社別入力へ補い、再実行する | 数値を推測で埋めない |
-| LIVEで注文候補が作成された | 翌営業日8:45〜8:55にpre-trade checkを行い、`SUBMIT / CANCEL / WAIT`を判断する | 確認できない日は注文しない |
+| LIMITED_LIVE/LIVEで注文候補が作成された | 翌営業日8:45〜8:55にpre-trade checkを行い、`SUBMIT / CANCEL / WAIT`を判断する | 確認できない日は注文しない |
 | `SUBMIT`と判断した | 証券会社へ注文を手入力し、判断・約定結果を運用記録へ反映する | 自動送信、未承認注文、裁量での成行化をしない |
 | 週末・月末・決算・LIVE移行前の期限が来た | 表示されたreview項目を確認し、LIVE移行時は全証跡を見て最後に明示承認する | 日次の都合だけでruleやgateを変更しない |
 

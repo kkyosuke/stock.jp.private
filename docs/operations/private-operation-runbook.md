@@ -64,6 +64,27 @@ stock.jp/.venv/bin/python stock.jp/scripts/nightly_operation.py status
 
 PAPER は `paper_go: true`、LIVE は `live_go: true` が必要です。LIVE への昇格前は `operation_mode: PAPER` と `broker_submission: HUMAN_ONLY` を維持します。
 
+### LIMITED_LIVE
+
+少額限定実運用は3,000,000円の専用資金枠で行い、通常LIVEと分離します。
+`limited-live-plan.json`の累積損失停止率と本人項目を確定し、公式coverage、
+layout revision 3のclean-clone、個人checklistが合格した後だけ次を実行します。
+
+~~~bash
+stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp status
+stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp apply
+stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
+~~~
+
+資金を実際に分離した後、`apply`より前に`capital-ledger.csv`へ
+`event_type=LIMITED_LIVE_FUNDING`を1件だけ追記します。`amount_private`と
+`running_cash_private`はどちらも`3000000`とし、予定額や他戦略と混在した残高は記録しません。
+資金記録がない、一致しない、または複数ある場合は昇格と新規買付を停止します。
+
+`limited_live_go: true`を確認します。新規注文は1 run 1件、追加購入は禁止、発注は
+必ず本人の手入力です。損失停止、公式source不足、MRS不明、assessment未完了では
+新規購入を作らず、必要な縮小・売却を優先します。
+
 ## 4. run と commit
 
 `$japan-stock-operator` の汎用手順に従い、1つの run token を完了または失敗まで使います。注文候補は PAPER では `PAPER_PROPOSED`、LIVE でも `PROPOSED` に留め、broker へ自動送信しません。
@@ -140,7 +161,7 @@ LIVE昇格前に一度、稼働中とは別の空ディレクトリで実施し�
 
 別媒体のmirrorは要求しません。稼働中のdirectoryを上書きしません。clean cloneできない間、またはGitHubを利用できない間は、PAPER/LIVEとも新しい注文候補を作りません。
 
-今回のevidence schemaと配置変更によりlayout revisionは2です。revision 1の既存証跡を編集して
+今回のLIMITED_LIVE policy schemaと証跡追加によりlayout revisionは3です。過去の既存証跡を編集して
 流用せず、変更をcommit・pushした後に`REPOSITORY_LAYOUT_CHANGE`として再実施します。
 
 ## 8. access control

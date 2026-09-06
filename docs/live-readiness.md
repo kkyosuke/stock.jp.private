@@ -4,6 +4,33 @@
 
 **LIVE NO-GO**。`operation_bootstrap.py check` が `live_go: true` を返し、利用者が evidence を確認して明示承認するまで変更しません。CI、backtest、off-line smoke の成功だけでは GO にしません。
 
+**LIMITED_LIVEも現在NO-GO**。専用資金は3,000,000円を上限として事前記録しましたが、
+本人の累積損失停止率と承認、公式source coverage、layout revision 3のclean-clone、
+個人checklistが未完了です。`limited_live.py status`が`eligible: true`になるまでPAPERを維持します。
+
+## LIMITED_LIVEの条件
+
+LIMITED_LIVEは通常LIVE前の少額観察用です。通常LIVE gateを真にせず、次を独立に強制します。
+
+- 専用資金の絶対上限: 3,000,000円
+- 専用資金を実際に分離した後、`capital-ledger.csv`へ`LIMITED_LIVE_FUNDING`を1件記録し、
+  入金額・開始残高を3,000,000円へ一致させる
+- 1 runの新規・追加注文: 最大1件
+- 追加購入: 禁止
+- 本人が決めた累積損失停止率へ到達: 新規購入停止
+- MRSが`NORMAL`/`CAUTION`かつ会社assessmentが`PASS`: 購入の必須条件
+- 公式source coverage、clean-clone、90日以内の個人checklist: すべて必須
+- 発注: `HUMAN_ONLY`、翌朝8:45〜8:55の本人pre-trade check後の手入力のみ
+
+2025年診断の最大DD `-27.38132%`と、この診断がforward証跡でないことを
+`operations/private/evidence/limited-live-plan.json`で本人が確認します。通常LIVEへの昇格には、
+引き続point-in-time履歴、履歴replay、forward holdout、最終LIVE承認が必要です。
+
+~~~bash
+stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp status
+stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp apply
+~~~
+
 ## gate と完了条件
 
 | policy key | 完了条件 | private evidence の例 |
@@ -62,7 +89,7 @@ PAPERの経過日数と連続run数には最低条件を設けません。365日
 
 1. 公式履歴入力を投入してpoint-in-time、2025〜2026回顧的履歴再生、最新PAPER runの公式coverageの各コマンドを合格させ、`--write-evidence`で保存する
 2. v0.4凍結後の未観測期間と受入基準を`v04-holdout-plan.json`で事前固定し、期間終了まで再調整なしでforward replayを完了する
-3. 現行layout revision 2のclean-clone確認と、90日以内の本人checklistを合格させる
+3. 現行layout revision 3のclean-clone確認と、90日以内の本人checklistを合格させる
 4. v0.4 holdout reviewを本人が`PROMOTE_V0_4_TO_LIVE`と明示する
 5. `operation_state.py validate`を成功させる
 6. `live-approval.json`に全証跡hash、private/public commit、現在のPAPER policy hash、本人の`LIVE`と日時を記録する

@@ -6,6 +6,7 @@ script_directory=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 private_root=$(git -C "$script_directory/.." rev-parse --show-toplevel)
 python="$private_root/stock.jp/.venv/bin/python"
 validator="$private_root/stock.jp/scripts/live_gate_evidence.py"
+limited_validator="$private_root/stock.jp/scripts/limited_live.py"
 
 if [ ! -x "$python" ]; then
   echo "Python environment is missing: $python" >&2
@@ -14,6 +15,11 @@ fi
 
 if [ ! -f "$validator" ]; then
   echo "LIVE gate validator is missing: $validator" >&2
+  exit 1
+fi
+
+if [ ! -f "$limited_validator" ]; then
+  echo "LIMITED_LIVE gate validator is missing: $limited_validator" >&2
   exit 1
 fi
 
@@ -28,6 +34,14 @@ run_gate() {
   fi
 }
 
+run_limited_gate() {
+  printf '\n[limited-live]\n'
+  if ! "$python" "$limited_validator" --root "$private_root/stock.jp" status; then
+    overall=1
+  fi
+}
+
+run_limited_gate
 run_gate point-in-time point-in-time
 run_gate historical-replay historical-replay
 run_gate official-coverage official-coverage
