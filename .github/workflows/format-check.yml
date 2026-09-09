@@ -40,6 +40,9 @@ jobs:
       - name: Check shell syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -n1 sh -n
 
+      - name: Test submodule update failure handling
+        run: python3 -m unittest discover -s tests -v
+
       - name: Check YAML syntax
         run: |
           ruby -e '
