@@ -35,19 +35,25 @@ LIVE昇格、証券会社への送信を実行しません。
 
 初回だけ、次の設定を行います。
 
-1. 自動更新用GitHub Appに`Contents: Read and write`と`Pull requests: Read and write`を付け、
-   このprivate repositoryへinstallします。publicと同じAppを使う場合も、install対象を明示します。
-2. `Settings > Secrets and variables > Actions`のVariablesに`AUTOMATION_APP_CLIENT_ID`
-   （AppのClient ID）、Secretsに`AUTOMATION_APP_PRIVATE_KEY`（生成した秘密鍵の全文）を登録します。
-   秘密鍵はGitやログへ保存しません。未設定なら検証開始前に設定名を表示して失敗します。
+1. GitHubの`Settings > Developer settings > Personal access tokens > Fine-grained tokens`で
+   private更新専用のPATを作成します。Resource ownerはrepository所有者、Repository accessは
+   `Only select repositories`でこのprivate repositoryだけを選択し、Repository permissionsの
+   `Contents: Read and write`と`Pull requests: Read and write`を付け、有効期限を設定します。
+2. repositoryの`Settings > Secrets and variables > Actions > New repository secret`で
+   名前を`AUTOMATION_PAT`、値を発行したPATとして登録します。public用とは別のPATを使い、
+   このprivate用PATをpublic repositoryには登録しません。PATはGit、チャット、ログへ保存しません。
+   未設定なら検証開始前にSecret名を表示して失敗します。
 3. repositoryのauto-mergeを有効にし、mainの必須`format` checkを維持します。
-   Appには必須checkをbypassする権限を与えません。
+   必須checkをbypassする設定は追加しません。
 
-checkoutと検証はread-onlyの`GITHUB_TOKEN`、PR作成とauto-merge設定はGitHub Appの
-短命なinstallation tokenを使用します。発行tokenの対象はこのrepositoryだけ、
-権限はContents/Pull requestsだけです。public workflowのtokenからprivateにはアクセスしません。
+checkoutと検証はread-onlyの`GITHUB_TOKEN`、PR作成とauto-merge設定は専用PATを使用します。
+自動PRが変更するのはsubmodule pointerだけなので、PATにWorkflowsの書込権限は不要です。
+期限前にPATを再発行し、同じSecretの値を更新します。失効や権限不足でPR作成が失敗した場合も、
+Secret更新後に同じworkflowを再実行できます。
+詳細は[PATの作成手順](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)と
+[create-pull-requestの必要権限](https://github.com/peter-evans/create-pull-request#token)を参照します。
 
-GitHub Appで作ったpointer PRの通常の`pull_request`イベントから`format-check`を起動し、
+専用PATで作ったpointer PRの通常の`pull_request`イベントから`format-check`を起動し、
 必須`format`成功後にauto-mergeします。PR branchの別途dispatchは行いません。
 標準`GITHUB_TOKEN`で作ったPRはチェック実行に承認を要求されるため、代替に使用しません。
 根拠は[GitHub公式のworkflow連鎖の仕様](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)です。
