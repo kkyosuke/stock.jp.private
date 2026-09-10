@@ -34,7 +34,14 @@ if [ "$public_sha" != "$remote_main" ]; then
 fi
 
 "$python_executable" "$public_root/scripts/operation_state.py" validate
-"$python_executable" "$public_root/scripts/operation_bootstrap.py" check >"$bootstrap_output"
+if "$python_executable" "$public_root/scripts/operation_bootstrap.py" check >"$bootstrap_output"; then
+  :
+else
+  bootstrap_status=$?
+  cat "$bootstrap_output"
+  echo "public submodule readiness check failed (exit $bootstrap_status)" >&2
+  exit "$bootstrap_status"
+fi
 cat "$bootstrap_output"
 "$python_executable" - "$bootstrap_output" <<'PY'
 import json

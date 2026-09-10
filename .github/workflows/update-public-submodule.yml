@@ -11,15 +11,22 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  actions: write
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Check automation PAT configuration
+        env:
+          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+        run: |
+          if [ -z "$AUTOMATION_PAT" ]; then
+            echo '::error::Configure the AUTOMATION_PAT repository secret; see docs/operations/automatic-submodule-update.md'
+            exit 1
+          fi
+
       - name: Check out private repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -42,7 +49,7 @@ jobs:
         id: pointer-pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          token: ${{ github.token }}
+          token: ${{ secrets.AUTOMATION_PAT }}
           base: main
           branch: automation/update-public-submodule
           delete-branch: true
@@ -58,20 +65,10 @@ jobs:
           add-paths: |
             stock.jp
 
-      - name: Dispatch required format check
-        if: steps.pointer-pr.outputs.pull-request-number != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_BRANCH: automation/update-public-submodule
-        run: |
-          gh workflow run format-check.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref "$PR_BRANCH"
-
       - name: Enable auto-merge after successful validation
         if: steps.pointer-pr.outputs.pull-request-number != ''
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
           PR_NUMBER: ${{ steps.pointer-pr.outputs.pull-request-number }}
         run: |
           gh pr merge "$PR_NUMBER" \
