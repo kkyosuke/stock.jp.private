@@ -1,0 +1,13 @@
+{
+  "name": "stock-jp-operations-scheduler",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test worker.test.mjs",
+    "build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.131.0"
+  }
+}

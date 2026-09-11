@@ -3,15 +3,16 @@
 ## 結論
 
 public `stock.jp` の日次データPRが検証後にauto-mergeされた翌朝、private repositoryは
-マージ済みpublic `main`へsubmodule pointerを自動更新します。人が毎朝pointer PRを作成・
+マージ済みpublic `main`へsubmodule pointerを自動更新します。夜間にも定期確認します。人がpointer PRを作成・
 mergeする必要はありません。自動採用する差分は`data/daily-prices/`のCSVと`latest.json`
 だけです。code、rule、workflow等の変更は停止して手動reviewへ戻します。
 
 ## schedule
 
-`.github/workflows/update-public-submodule.yml`を毎日7:00（Asia/Tokyo）に実行します。
-publicの平日18:30データ収集から十分に間隔を空けます。土日等でpublic commitに変更が
-なければPRを作成しません。
+`.github/workflows/update-public-submodule.yml`を毎日7:00と平日19:47〜23:47の毎時
+（Asia/Tokyo）に実行します。土日等でpublic commitに変更がなければPRを作成しません。
+[Cloudflare scheduler](cloudflare-scheduler.md)を初回設定すると、20分ごとの更新検知と
+同期起動も有効になります。どちらもマージ済みpublic mainだけを採用します。
 
 ## merge条件
 
@@ -39,6 +40,8 @@ LIVE昇格、証券会社への送信を実行しません。
    private更新専用のPATを作成します。Resource ownerはrepository所有者、Repository accessは
    `Only select repositories`でこのprivate repositoryだけを選択し、Repository permissionsの
    `Contents: Read and write`と`Pull requests: Read and write`を付け、有効期限を設定します。
+   [Cloudflare scheduler](cloudflare-scheduler.md)でも共用する場合は対象にpublic repositoryも
+   追加し、`Actions: Read and write`を付与します。
 2. repositoryの`Settings > Secrets and variables > Actions > New repository secret`で
    名前を`AUTOMATION_PAT`、値を発行したPATとして登録します。public用とは別のPATを使い、
    このprivate用PATをpublic repositoryには登録しません。PATはGit、チャット、ログへ保存しません。

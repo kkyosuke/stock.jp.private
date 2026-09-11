@@ -1,0 +1,66 @@
+name: operation-health
+
+on:
+  schedule:
+    - cron: "17 1,7,13,19 * * *"
+      timezone: "Asia/Tokyo"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - stock.jp
+      - operations/private/**
+      - scripts/operation_health.py
+      - .github/workflows/operation-health.yml
+  workflow_run:
+    workflows: [update-public-submodule]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: operation-health
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out canonical main
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          submodules: recursive
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Install validation dependencies
+        run: python -m pip install "xlrd==2.0.2" "certifi==2026.7.22" PyYAML
+      - name: Prepare workspace
+        run: ./scripts/setup-workspace.sh
+      - name: Check executions, pending PRs and nightly readiness
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+        run: python scripts/operation_health.py --output .usagi/operation-health.json
+      - name: Verify health checks did not change operation data
+        if: always()
+        run: |
+          git diff --exit-code -- operations/private
+          test -z "$(git ls-files --others --exclude-standard -- operations/private)"
+      - name: Save health report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: operation-health-${{ github.run_id }}
+          path: .usagi/operation-health.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: warn

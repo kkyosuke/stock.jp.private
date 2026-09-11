@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0 7 * * *"
       timezone: "Asia/Tokyo"
+    - cron: "47 19-23 * * 1-5"
+      timezone: "Asia/Tokyo"
   workflow_dispatch:
 
 concurrency:

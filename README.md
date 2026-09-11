@@ -7,7 +7,8 @@
 ~~~text
 stock.jp.private/
 ├── docs/                         # private固有の設計、GO/NO-GO、レビュー
-├── .github/workflows/             # 毎朝のpublic submodule自動更新
+├── .github/workflows/             # public同期・運用監視・Cloudflareデプロイ
+├── cloudflare/                    # 定期起動・未実行回復用Worker
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
 ├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
 ├── scripts/setup-workspace.sh     # submoduleとsymlinkの安全な初期化
@@ -16,9 +17,13 @@ stock.jp.private/
 
 public/private の境界は[全体構成](docs/repository-layout.md)、実行順は[private 運用手順](docs/operations/private-operation-runbook.md)、LIVE 条件は[GO/NO-GO 基準](docs/live-readiness.md)を参照してください。
 
-平日18:30のpublic日次データPRは検証成功時だけauto-mergeし、privateは毎朝7:00にpublic
+平日18:30のpublic日次データPRは検証成功時だけauto-mergeし、privateは毎朝7:00と平日夜にpublic
 `main`の日次株価差分だけをsubmodule pointer PRで検証してauto-mergeします。codeやruleの
 変更と検証失敗時はmainを変更せず、手動reviewへ戻します。
+
+[Cloudflareでの定期起動・監視](docs/operations/cloudflare-scheduler.md)を設定すると、20分ごとの
+更新検知、未実行回復、回数制限付き再試行も自動化できます。`operation-health`は夜間run漏れ、
+PR停滞、readiness異常を定期検知します。AIの夜間調査は別途実行環境が必要です。
 
 ## 初回セットアップ
 
@@ -55,7 +60,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 flowchart TD
     A["自動｜平日18:30<br/>public株価を更新・検証・merge"] --> B{"更新成功?"}
     B -->|"いいえ"| STOP["👤 夜<br/>失敗を確認し、その日はWAIT"]
-    B -->|"はい"| C["👤 夜<br/>最新dataを同期して<br/>『今日の夜間運用を実行して』と依頼"]
+    B -->|"はい"| C["👤 夜<br/>privateの自動同期完了後に<br/>『今日の夜間運用を実行して』と依頼"]
     C --> D["運用処理<br/>運用前check・公式情報確認・判定<br/>reportと注文候補を作成"]
     D --> E{"問題なし?"}
     E -->|"いいえ"| WAIT["👤 reportと失敗記録を確認<br/>解消するまで注文しない"]
@@ -84,7 +89,7 @@ flowchart TD
 
 | トリガー | 人がすること | しないこと |
 | --- | --- | --- |
-| 平日18:30のpublic data PRがmergeされた | 同日株価を使う場合はprivateの更新workflowを起動し、merge後に「今日の夜間運用を実行して」と依頼する | 未mergeのdataで運用しない |
+| public data PRとprivate同期PRがmergeされた | 運用checkoutを同期し、「今日の夜間運用を実行して」と依頼する | 未mergeのdataで運用しない |
 | workflow、data、readinessのどれかが失敗した | エラーまたはreportを確認し、原因を解消するまで`WAIT`にする | 推測で続行したり注文したりしない |
 | 夜間runが完了した | report、翌営業日のaction、privateへのpush完了を確認する | PAPERの注文候補を証券会社へ入力しない |
 | `assessment-status.json`が`INCOMPLETE`または`STALE` | 表示された不足項目だけを一次資料から会社別入力へ補い、再実行する | 数値を推測で埋めない |
