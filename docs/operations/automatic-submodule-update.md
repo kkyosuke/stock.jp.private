@@ -40,6 +40,8 @@ LIVE昇格、証券会社への送信を実行しません。
    private更新専用のPATを作成します。Resource ownerはrepository所有者、Repository accessは
    `Only select repositories`でこのprivate repositoryだけを選択し、Repository permissionsの
    `Contents: Read and write`と`Pull requests: Read and write`を付け、有効期限を設定します。
+   [Cloudflare scheduler](cloudflare-scheduler.md)でも共用する場合は対象にpublic repositoryも
+   追加し、`Actions: Read and write`を付与します。
 2. repositoryの`Settings > Secrets and variables > Actions > New repository secret`で
    名前を`AUTOMATION_PAT`、値を発行したPATとして登録します。public用とは別のPATを使い、
    このprivate用PATをpublic repositoryには登録しません。PATはGit、チャット、ログへ保存しません。

@@ -31,11 +31,12 @@ public mainへマージ済みの変更だけを同期します。data以外のco
 | 名前 | 内容 |
 | --- | --- |
 | `CLOUDFLARE_API_TOKEN` | 対象Cloudflareアカウントだけに限定したWorkers Scriptsの編集用API token |
-| `SCHEDULER_GITHUB_TOKEN` | public/privateの2 repositoryだけを選んだfine-grained PAT。`Actions: Read and write`、`Contents: Read`、`Pull requests: Read`。有効期限を設定する |
+| `AUTOMATION_PAT` | public/privateの2 repositoryだけを選んだfine-grained PAT。既存の`Contents: Read and write`、`Pull requests: Read and write`を維持し、`Actions: Read and write`を追加する。有効期限を設定する |
 
-Actions Variablesへ`CLOUDFLARE_ACCOUNT_ID`を登録します。既存の両repoの`AUTOMATION_PAT`は
-PR作成用として使い続けます。scheduler用PATはprivateとCloudflareだけに置き、public側へ
-登録しません。scheduler用PATはコードやPRを書き換えず、mainの既存workflowを起動します。
+Actions Variablesへ`CLOUDFLARE_ACCOUNT_ID`を登録します。private側の既存`AUTOMATION_PAT`を
+PR作成とCloudflareからの起動に共用します。対象repositoryにpublic/privateの両方を含めます。
+public側の`AUTOMATION_PAT`はpublic専用のまま使い、privateへアクセスできるPATは登録しません。
+Cloudflareの処理はこのPATでmainの既存workflowを起動します。
 
 1. この変更をprivate mainへマージする
 2. 上のSecretsとVariableを登録する
@@ -45,7 +46,7 @@ PR作成用として使い続けます。scheduler用PATはprivateとCloudflare�
 6. Variablesに`CLOUDFLARE_SCHEDULER_ENABLED=true`を登録する。以後schedulerコードのmain更新時に自動デプロイする
 
 デプロイworkflowはロック済みWranglerでテスト後にコードとruntime Secretを一緒に
-デプロイします。Cloudflareへ置くSecretは`SCHEDULER_GITHUB_TOKEN`だけです。
+デプロイします。Cloudflareへ置くSecretは`AUTOMATION_PAT`だけです。
 Secrets未設定の間はpushによるデプロイをスキップし、既存のデータ更新を継続します。
 
 根拠は[Cloudflare Cron](https://developers.cloudflare.com/workers/configuration/cron-triggers/)、
@@ -72,8 +73,8 @@ privateのPR用PATは監視jobで疎通と残り14日以内の期限を検知し
 Cloudflareログへ記録します。publicのPR用PATの期限はGitHub側の通知・設定で確認します。
 期限の検知には[GitHubの有効期限ヘッダー](https://github.blog/news-insights/product-news/whats-new-from-github-changelog-july-2021-recap/)を使います。
 
-PATの期限前再発行は本人が行います。PR用は各repoの`AUTOMATION_PAT`、起動用はprivateの
-`SCHEDULER_GITHUB_TOKEN`を更新し、後者はdeploy workflowを再実行してCloudflareへ反映します。
+PATの期限前再発行は本人が行います。各repoの`AUTOMATION_PAT`を更新し、private側を更新したら
+deploy workflowを再実行してCloudflareにも反映します。
 
 ## 夜間のAI調査
 

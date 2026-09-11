@@ -13,7 +13,7 @@ export function priceCycle(now) {
 
 export class GitHub {
   constructor(token, fetcher = fetch) {
-    if (!token) throw new Error("Configure SCHEDULER_GITHUB_TOKEN");
+    if (!token) throw new Error("Configure AUTOMATION_PAT");
     this.token = token;
     this.fetcher = fetcher;
   }
@@ -62,7 +62,7 @@ async function enabled(api, repo, workflow) {
   if (state.state !== "active") throw new Error(`${repo}/${workflow} is ${state.state}; manual re-enable required`);
 }
 
-export async function tick(env, now = new Date(), api = new GitHub(env.SCHEDULER_GITHUB_TOKEN)) {
+export async function tick(env, now = new Date(), api = new GitHub(env.AUTOMATION_PAT)) {
   const publicRepo = env.PUBLIC_REPOSITORY;
   const privateRepo = env.PRIVATE_REPOSITORY;
   for (const repo of [publicRepo, privateRepo]) {

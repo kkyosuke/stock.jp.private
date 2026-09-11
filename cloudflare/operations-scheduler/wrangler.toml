@@ -15,4 +15,4 @@ PUBLIC_REPOSITORY = "kkyosuke/stock.jp"
 PRIVATE_REPOSITORY = "kkyosuke/stock.jp.private"
 
 [secrets]
-required = ["SCHEDULER_GITHUB_TOKEN"]
+required = ["AUTOMATION_PAT"]
