@@ -2,6 +2,7 @@ from datetime import datetime
 import importlib.util
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("operation_health", ROOT / "scripts/operation_health.py")
@@ -10,6 +11,20 @@ spec.loader.exec_module(health)
 
 
 class OperationHealthTest(unittest.TestCase):
+    def test_only_generated_data_and_pointer_prs_are_monitored(self):
+        now = health.parse_time("2026-09-11T09:00:00+09:00")
+        run = {"head_branch": "main", "event": "schedule", "created_at": "2026-09-10T23:00:00Z", "status": "completed", "conclusion": "success"}
+        def api(path):
+            if "/pulls?" in path:
+                return [{"number": 25, "head": {"ref": "automation/operations-scheduling"}, "created_at": "2026-09-01T00:00:00Z"}]
+            if "/runs?" in path:
+                return {"workflow_runs": [run]}
+            if "/actions/workflows/" in path:
+                return {"state": "active"}
+            return {"sha": "same"}
+        with patch.object(health, "github", side_effect=api):
+            self.assertEqual(health.remote_alerts("owner/private", "owner/public", now), [])
+
     def test_pat_expiry_warning_and_unknown_expiry_are_visible(self):
         now = health.parse_time("2026-09-11T09:00:00+09:00")
         self.assertTrue(health.expiry_alerts("2026-09-20 00:00:00 UTC", now, "PAT"))

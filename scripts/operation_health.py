@@ -111,9 +111,9 @@ def private_pat_alerts(repo: str, now: datetime) -> list[str]:
 def remote_alerts(private_repo: str, public_repo: str, now: datetime) -> list[str]:
     alerts = []
     # Public has no weekend schedule; 84 hours covers Friday -> Monday plus delays.
-    for repo, workflow, hours in (
-        (public_repo, "daily-stock-prices.yml", 84),
-        (private_repo, "update-public-submodule.yml", 36),
+    for repo, workflow, hours, branch in (
+        (public_repo, "daily-stock-prices.yml", 84, "automation/daily-stock-prices"),
+        (private_repo, "update-public-submodule.yml", 36, "automation/update-public-submodule"),
     ):
         meta = github(f"{repo}/actions/workflows/{workflow}")
         if meta["state"] != "active":
@@ -126,9 +126,9 @@ def remote_alerts(private_repo: str, public_repo: str, now: datetime) -> list[st
             for r in runs["workflow_runs"]
         ):
             alerts.append("public prices: required weekday collection has not succeeded")
-        pulls = github(f"{repo}/pulls?state=open&base=main&per_page=100")
+        pulls = github(f"{repo}/pulls?state=open&base=main&head={repo.split('/')[0]}:{branch}&per_page=100")
         for pr in pulls:
-            if pr["head"]["ref"].startswith("automation/") and now - parse_time(pr["created_at"]) > timedelta(hours=3):
+            if pr["head"]["ref"] == branch and now - parse_time(pr["created_at"]) > timedelta(hours=3):
                 alerts.append(f"{repo}: automation PR #{pr['number']} pending more than 3 hours")
     tip = github(f"{public_repo}/commits/main")
     pointer = github(f"{private_repo}/contents/stock.jp?ref=main")
