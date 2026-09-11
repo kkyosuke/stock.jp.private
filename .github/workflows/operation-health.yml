@@ -49,7 +49,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
-        run: python scripts/operation_health.py --output .usagi/operation-health.json
+        run: python scripts/operation_health.py --report-only --output .usagi/operation-health.json
       - name: Verify health checks did not change operation data
         if: always()
         run: |

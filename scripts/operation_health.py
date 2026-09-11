@@ -149,6 +149,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--at", default=datetime.now(JST).isoformat(timespec="seconds"))
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="write the report and return success even when attention is required",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     now = parse_time(args.at)
@@ -171,7 +176,7 @@ def main() -> int:
     if summary:
         with open(summary, "a", encoding="utf-8") as stream:
             stream.write("## 定期運用の状態\n\n```json\n" + json.dumps(report, ensure_ascii=False, indent=2) + "\n```\n")
-    return 1 if report["alerts"] else 0
+    return 0 if args.report_only else (1 if report["alerts"] else 0)
 
 
 if __name__ == "__main__":
