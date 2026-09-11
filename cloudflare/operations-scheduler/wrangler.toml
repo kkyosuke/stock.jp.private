@@ -1,0 +1,18 @@
+name = "stock-jp-operations-scheduler"
+main = "worker.mjs"
+compatibility_date = "2026-09-11"
+workers_dev = false
+preview_urls = false
+
+[triggers]
+crons = ["7,27,47 * * * *"]
+
+[observability]
+enabled = true
+
+[vars]
+PUBLIC_REPOSITORY = "kkyosuke/stock.jp"
+PRIVATE_REPOSITORY = "kkyosuke/stock.jp.private"
+
+[secrets]
+required = ["SCHEDULER_GITHUB_TOKEN"]

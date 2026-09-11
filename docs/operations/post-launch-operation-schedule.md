@@ -2,6 +2,10 @@
 
 この文書は、[READMEの全体フロー](../../README.md#運用開始後の全体フロー)を実行時刻、停止条件、定期review、LIVE移行まで展開した別紙です。日々はREADMEだけを確認し、失敗時や期限到来時にこの文書と[private運用手順](private-operation-runbook.md)を参照します。フロー図のオレンジ色は利用者が担当する作業です。
 
+private同期は平日19:47〜23:47の毎時と毎朝7:00に自動実行します。
+[Cloudflare scheduler](cloudflare-scheduler.md)を設定した場合は20分ごとの更新検知も加わります。
+以下の手動起動は、自動同期を待たずに進めたい場合のfallbackです。
+
 ## 詳細フロー
 
 ~~~mermaid

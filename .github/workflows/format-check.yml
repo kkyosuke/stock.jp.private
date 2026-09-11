@@ -40,8 +40,11 @@ jobs:
       - name: Check shell syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -n1 sh -n
 
-      - name: Test submodule update failure handling
+      - name: Test operation automation
         run: python3 -m unittest discover -s tests -v
+
+      - name: Test Cloudflare scheduler
+        run: node --test cloudflare/operations-scheduler/worker.test.mjs
 
       - name: Check YAML syntax
         run: |

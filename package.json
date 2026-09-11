@@ -6,7 +6,7 @@
   },
   "scripts": {
     "hooks:install": "lefthook install",
-    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#stock.jp/**\" \"#node_modules/**\""
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#stock.jp/**\" \"#**/node_modules/**\" \"#.usagi/**\""
   },
   "devDependencies": {
     "lefthook": "2.1.12",

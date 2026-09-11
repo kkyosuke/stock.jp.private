@@ -3,15 +3,16 @@
 ## 結論
 
 public `stock.jp` の日次データPRが検証後にauto-mergeされた翌朝、private repositoryは
-マージ済みpublic `main`へsubmodule pointerを自動更新します。人が毎朝pointer PRを作成・
+マージ済みpublic `main`へsubmodule pointerを自動更新します。夜間にも定期確認します。人がpointer PRを作成・
 mergeする必要はありません。自動採用する差分は`data/daily-prices/`のCSVと`latest.json`
 だけです。code、rule、workflow等の変更は停止して手動reviewへ戻します。
 
 ## schedule
 
-`.github/workflows/update-public-submodule.yml`を毎日7:00（Asia/Tokyo）に実行します。
-publicの平日18:30データ収集から十分に間隔を空けます。土日等でpublic commitに変更が
-なければPRを作成しません。
+`.github/workflows/update-public-submodule.yml`を毎日7:00と平日19:47〜23:47の毎時
+（Asia/Tokyo）に実行します。土日等でpublic commitに変更がなければPRを作成しません。
+[Cloudflare scheduler](cloudflare-scheduler.md)を初回設定すると、20分ごとの更新検知と
+同期起動も有効になります。どちらもマージ済みpublic mainだけを採用します。
 
 ## merge条件
 

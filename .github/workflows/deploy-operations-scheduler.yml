@@ -1,0 +1,57 @@
+name: deploy-operations-scheduler
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - cloudflare/operations-scheduler/**
+      - .github/workflows/deploy-operations-scheduler.yml
+
+concurrency:
+  group: deploy-operations-scheduler
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || vars.CLOUDFLARE_SCHEDULER_ENABLED == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: cloudflare/operations-scheduler
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: cloudflare/operations-scheduler/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Test scheduler
+        run: npm test
+      - name: Deploy code and encrypted runtime secret
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          SCHEDULER_GITHUB_TOKEN: ${{ secrets.SCHEDULER_GITHUB_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          for (const key of ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'SCHEDULER_GITHUB_TOKEN']) {
+            if (!process.env[key]) throw new Error(`Configure ${key}`);
+          }
+          fs.writeFileSync('.dev.vars.deploy.json', JSON.stringify({
+            SCHEDULER_GITHUB_TOKEN: process.env.SCHEDULER_GITHUB_TOKEN,
+          }), {mode: 0o600});
+          JS
+          trap 'rm -f .dev.vars.deploy.json' EXIT HUP INT TERM
+          npx --no-install wrangler deploy --secrets-file .dev.vars.deploy.json
