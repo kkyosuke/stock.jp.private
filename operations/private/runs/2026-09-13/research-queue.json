@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-13",
+  "generated_at_jst": "2026-09-13T21:40:00+09:00",
+  "tasks": [
+    {
+      "task_id": "manual-company-ir-2026-09-13-4052",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "Check company IR through the cutoff and record query evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-jpx-notices-2026-09-13",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check JPX trading halts, supervision/delisting, and market notices",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-official_market_data-2026-09-13",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm target prices and corporate actions with JPX, company IR, or brokerage evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-tdnet-2026-09-13",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check TDnet disclosures through the cutoff and attach query evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-trading_calendar-2026-09-13",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm the next cash-equity trading date with JPX calendar evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    }
+  ]
+}
