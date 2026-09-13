@@ -1,0 +1,1 @@
+ticket_id,decision_id,prepared_at_jst,trade_date,operation_mode,rule_version,code,company,side,action,rule_ids,order_type,limit_price,quantity_private,position_pct,valid_until_jst,participation_cap_pct,status,pretrade_check,reviewed_by,submitted_at_jst,broker_order_id_private,filled_quantity_private,average_fill_price,fees,tax,notes
