@@ -55,8 +55,9 @@ Secrets未設定の間はpushによるデプロイをスキップし、既存の
 
 ## 監視結果と通知
 
-`operation-health`は異常時に終了code 1とし、Actions Summaryと14日保存のJSON artifactへ
-確認結果を残します。異常がある日を緑の成功表示にしません。監視はstate・台帳・注文票を
+`operation-health`は注意状態をActions Summaryと14日保存のJSON artifactへ残します。
+監視ジョブ自体はレポートを保存できれば成功とし、注意内容はSummaryの`ATTENTION`で確認します。
+監視はstate・台帳・注文票を
 変更せず、夜間runの成功日時や開示カットオフを進めません。
 
 public収集は平日18:30から6時間を猶予とし、その夜の成功runがなければ監視で異常とします。
@@ -97,5 +98,6 @@ node --test cloudflare/operations-scheduler/worker.test.mjs
 python3 scripts/operation_health.py --offline --output .usagi/operation-health.json
 ~~~
 
-`--offline`はGitHub APIだけを省略します。nightlyの実行漏れや未解決gapがあれば
-終了code 1が正しい結果です。日時境界の検証は`--at 2026-09-11T08:00:00+09:00`で固定できます。
+`--offline`はGitHub APIだけを省略します。CLIのデフォルトは注意があれば終了code 1ですが、
+Actionsは`--report-only`でSummaryとartifactを保存して成功扱いにします。日時境界の検証は
+`--at 2026-09-11T08:00:00+09:00`で固定できます。

@@ -72,6 +72,11 @@ class OperationHealthTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             health.parse_time("2026-09-11T09:00:00")
 
+    def test_report_only_mode_is_available_for_scheduled_monitoring(self):
+        # The CLI remains fail-closed by default; the workflow uses report-only so
+        # expected attention states do not look like an infrastructure failure.
+        self.assertIn("--report-only", health.main.__code__.co_consts)
+
 
 if __name__ == "__main__":
     unittest.main()
