@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "rule_version": "tenbagger-v0.2",
+  "code": "4052",
+  "company": "フィーチャ",
+  "as_of_jst": "2026-09-04T23:59:00+09:00",
+  "status": "INCOMPLETE",
+  "entry_ready": false,
+  "missing_fields": [
+    "capital.planned_base_new_shares",
+    "capital.planned_downside_new_shares",
+    "capital.potential_securities[0].exercise_cash",
+    "eligibility.liquidity_passed",
+    "eligibility.other_score",
+    "financials.assumed_normalized_net_margin_pct",
+    "kpi_path.drivers[1..3]",
+    "kpi_path.year3_net_margin_pct",
+    "kpi_path.year3_revenue",
+    "market.attainable_share_pct",
+    "market.capacity_revenue_limit",
+    "market.leader_share_pct",
+    "market.sam_3y",
+    "valuation.direct_competitors[3..5]",
+    "valuation.proposed_exit_pe"
+  ],
+  "partial_calculations": {
+    "dilution": {
+      "n0_fully_diluted_shares": 5870155.0,
+      "potential_shares_at_10x": 22620.0,
+      "exercise_cash_separate_from_shares": null
+    },
+    "current_fully_diluted_market_cap": 4343914700.0
+  }
+}

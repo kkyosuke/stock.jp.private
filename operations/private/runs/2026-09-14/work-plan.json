@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-14",
+  "generated_at_jst": "2026-09-14T06:20:00+09:00",
+  "next_trading_date": "2026-09-14",
+  "trading_calendar_confirmed": true,
+  "status": "COMPLETED",
+  "tasks": [
+    {
+      "task_id": "2026-09-14-carried-4052-fy2026-annual-review-2026-09-29",
+      "task_type": "carried_review",
+      "priority": "HIGH",
+      "reason": "前回からの未完了レビュー: 4052-fy2026-annual-review-2026-09-29",
+      "due_at_jst": "2026-09-14T23:59:59+09:00",
+      "status": "DEFERRED",
+      "evidence_source_ids": [
+        "tdnet-all-2026-09-07-14",
+        "company-4052-ir-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": "2026-09-29期限の本決算後レビュー。金融商品取引法監査済み有価証券報告書の公表待ちで、期限内に再確認するため引き継ぎへ維持する。"
+    },
+    {
+      "task_id": "2026-09-14-daily-event",
+      "task_type": "daily_event",
+      "priority": "HIGH",
+      "reason": "毎日の開示・即時撤退条件確認",
+      "due_at_jst": "2026-09-14T23:59:59+09:00",
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "tdnet-all-2026-09-07-14",
+        "company-4052-ir-2026-09-14",
+        "jpx-halts-2026-09-14",
+        "jpx-supervision-2026-09-14",
+        "jpx-listed-4052-2026-09-14",
+        "jpx-quote-4052-2026-09-14",
+        "jpx-calendar-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": "TDnet・EDINET・会社IR・JPXを前回カットオフ以降で確認。4052の新規開示なし、S-A該当なし、売買停止・監理整理なし。"
+    },
+    {
+      "task_id": "2026-09-14-global-risk",
+      "task_type": "global_risk",
+      "priority": "HIGH",
+      "reason": "為替・金利・資源・主要国政策・地政学を事実→KPI伝播→判断に分けて保存",
+      "due_at_jst": "2026-09-14T23:59:59+09:00",
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "boj-fx-2026-09-11",
+        "boj-policy-2026-07-31",
+        "cao-monthly-2026-08",
+        "meti-energy-2026-06"
+      ],
+      "decision_log_path": null,
+      "notes": "為替・金利・資源・政策・地政学をglobal-risk.mdへ保存。定性判定はCAUTION。"
+    },
+    {
+      "task_id": "2026-09-14-investment-case-4052",
+      "task_type": "investment_case",
+      "priority": "HIGH",
+      "reason": "4052の希薄化・SAM/SOM・10倍経路: capital.planned_base_new_shares; capital.planned_downside_new_shares; capital.potential_securities[0].exercise_cash; eligibility.liquidity_passed; eligibility.other_score; financials.assumed_normalized_net_margin_pct; kpi_path.drivers[1..3]; kpi_path.year3_net_margin_pct; kpi_path.year3_revenue; market.attainable_share_pct; market.capacity_revenue_limit; market.leader_share_pct; market.sam_3y; valuation.direct_competitors[3..5]; valuation.proposed_exit_pe",
+      "due_at_jst": "2026-09-14T23:59:59+09:00",
+      "status": "DEFERRED",
+      "evidence_source_ids": [
+        "company-4052-ir-2026-09-14",
+        "tdnet-all-2026-09-07-14"
+      ],
+      "decision_log_path": null,
+      "notes": "不足15項目を埋める新規一次資料が当該期間に公表されていない。推定で埋めずassessmentはINCOMPLETE、採点はNAのまま維持する。"
+    },
+    {
+      "task_id": "2026-09-14-market-regime",
+      "task_type": "market_regime_input",
+      "priority": "HIGH",
+      "reason": "正式MRSを確定できない: 必要系列を確認",
+      "due_at_jst": "2026-09-14T23:59:59+09:00",
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-monthly-2026-08-check-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": "JPX統計月報が2026年7月分までで8月分は未公開（01_sokatu2608.pdfは404）。正式MRSはUNAVAILABLEを確定し新規・追加倍率0とした。"
+    }
+  ]
+}

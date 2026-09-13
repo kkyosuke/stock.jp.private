@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-14",
+  "status": "COMPLETED",
+  "source_window": {
+    "from_exclusive_jst": "2026-09-04T23:59:00+09:00",
+    "through_inclusive_jst": "2026-09-14T06:20:00+09:00"
+  },
+  "universe": {
+    "holdings": {
+      "expected": [],
+      "checked": []
+    },
+    "pending_orders": {
+      "expected": [],
+      "checked": []
+    },
+    "watchlist": {
+      "expected": [
+        "4052"
+      ],
+      "checked": [
+        "4052"
+      ]
+    },
+    "due_reviews": {
+      "expected": [
+        "4052-fy2026-annual-review-2026-09-29"
+      ],
+      "checked": [
+        "4052-fy2026-annual-review-2026-09-29"
+      ]
+    }
+  },
+  "official_sources": {
+    "tdnet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "2026-09-07〜09-14の日付別一覧を全ページ確認。営業日5日分987件、休業日と9/14早朝は0件。4052の適時開示なし。"
+    },
+    "edinet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "APIキーでdocuments.jsonを11日分照会し1,583件を取得。4052の法定開示は0件で、脇一郎氏の追加変更報告書もなし。"
+    },
+    "company_ir": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "公式IR掲載200件を確認。最新は2026-09-04 15:31の定時株主総会関連で前回カットオフ以降の新規なし。"
+    },
+    "jpx": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": "4052の上場情報、売買停止、監理・整理指定、営業日、統計月報の公開状況を確認。次の現物取引日は2026-09-14。個別株価画面はメンテナンス応答。"
+    }
+  },
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-14-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面がメンテナンス応答で2026-09-11公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-14-tdnet",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "tdnet",
+      "impact": "material timely disclosures could be missing; trade decisions are blocked",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-14T06:20:00+09:00",
+      "resolution_evidence": "tdnet-all-2026-09-07-14"
+    },
+    {
+      "gap_id": "2026-09-14-trading_calendar",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "trading_calendar",
+      "impact": "the next trading date is unconfirmed; order tickets are blocked",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": "2026-09-14T06:20:00+09:00",
+      "resolution_evidence": "jpx-calendar-2026-09-14"
+    }
+  ],
+  "completed_at_jst": "2026-09-14T06:45:00+09:00"
+}
