@@ -15,11 +15,15 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+import ssl
 from datetime import date, datetime, timedelta, timezone
+
+import certifi
 
 JST = timezone(timedelta(hours=9))
 BASE_URL = "https://api.edinet-fsa.go.jp/api/v2/documents.json"
 TIMEOUT_SECONDS = 30
+TLS_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 
 def _parse_date(value: str) -> date:
@@ -27,16 +31,19 @@ def _parse_date(value: str) -> date:
 
 
 def _fetch(day: date, key: str) -> dict:
-    query = urllib.parse.urlencode({"date": day.isoformat(), "type": "2"})
+    # EDINET v2 only accepts the key as a query parameter; a Subscription-Key
+    # header is answered with status 401.
+    query = urllib.parse.urlencode(
+        {"date": day.isoformat(), "type": "2", "Subscription-Key": key}
+    )
     request = urllib.request.Request(
         f"{BASE_URL}?{query}",
         headers={
-            "Subscription-Key": key,
             "Accept": "application/json",
             "User-Agent": "stock-jp-private-edinet-source-check",
         },
     )
-    with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+    with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS, context=TLS_CONTEXT) as response:
         payload = json.loads(response.read().decode("utf-8"))
     status = payload.get("metadata", {}).get("status") or payload.get("StatusCode")
     if str(status) != "200":
