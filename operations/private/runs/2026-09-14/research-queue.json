@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-14",
+  "generated_at_jst": "2026-09-14T06:20:00+09:00",
+  "tasks": [
+    {
+      "task_id": "manual-company-ir-2026-09-14-4052",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "Check company IR through the cutoff and record query evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "company-4052-ir-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-jpx-notices-2026-09-14",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check JPX trading halts, supervision/delisting, and market notices",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-halts-2026-09-14",
+        "jpx-supervision-2026-09-14",
+        "jpx-listed-4052-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-official_market_data-2026-09-14",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm target prices and corporate actions with JPX, company IR, or brokerage evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-quote-4052-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": "JPX個別株価画面はメンテナンス応答。公式終値を取得できずNON_CRITICAL gapとして繰り越す。"
+    },
+    {
+      "task_id": "manual-tdnet-2026-09-14",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check TDnet disclosures through the cutoff and attach query evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "tdnet-all-2026-09-07-14"
+      ],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-trading_calendar-2026-09-14",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm the next cash-equity trading date with JPX calendar evidence",
+      "source_ids": [],
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "jpx-calendar-2026-09-14"
+      ],
+      "decision_log_path": null,
+      "notes": ""
+    }
+  ]
+}

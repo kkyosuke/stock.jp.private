@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-14",
+  "input_mode": "LIVE_NETWORK",
+  "status": "PARTIAL",
+  "started_at_jst": "2026-09-14T06:20:00+09:00",
+  "completed_at_jst": "2026-09-14T06:20:00+09:00",
+  "providers": {
+    "yahoo_tracked_archive": {
+      "status": "OK",
+      "request_count": 0,
+      "record_count": 3657,
+      "error": ""
+    },
+    "edinet": {
+      "status": "OK",
+      "request_count": 11,
+      "record_count": 1583,
+      "error": ""
+    },
+    "jpx_listed_master": {
+      "status": "OK",
+      "request_count": 1,
+      "record_count": 3707,
+      "error": ""
+    },
+    "jquants_security_master": {
+      "status": "DISABLED",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "provider disabled"
+    },
+    "jquants_market_data": {
+      "status": "DISABLED",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "provider disabled"
+    },
+    "jquants_financials": {
+      "status": "DISABLED",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "provider disabled"
+    },
+    "jquants_earnings_calendar": {
+      "status": "DISABLED",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "provider disabled"
+    },
+    "jquants_trading_calendar": {
+      "status": "DISABLED",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "provider disabled"
+    },
+    "first_party_public_checks": {
+      "status": "PENDING",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "research evidence is required before decisions can be completed"
+    }
+  },
+  "blocking_gaps": [
+    "2026-09-14-official_market_data",
+    "2026-09-14-tdnet",
+    "2026-09-14-trading_calendar"
+  ],
+  "notes": []
+}

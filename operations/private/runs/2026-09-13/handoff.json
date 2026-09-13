@@ -1,0 +1,83 @@
+{
+  "schema_version": "2.0",
+  "run_id": "2026-09-13",
+  "status": "failed",
+  "started_at_jst": "2026-09-13T21:40:00+09:00",
+  "completed_at_jst": "2026-09-13T22:05:00+09:00",
+  "previous_run_id": "2026-09-04",
+  "previous_disclosure_cutoff_jst": "2026-09-04T23:59:00+09:00",
+  "operation_mode": "PAPER",
+  "active_rule_version": "v0.4",
+  "source_cutoff_jst": null,
+  "price_date": null,
+  "pending_reviews": [
+    "4052-fy2026-annual-review-2026-09-29"
+  ],
+  "pending_orders": [],
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-03-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-03公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-07T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-04-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-04公式終値を確認できない。非公式archiveの740円は参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-07T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-13-edinet",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "edinet",
+      "impact": "statutory filings could be missing; all actions remain unverified",
+      "retry_after_jst": "2026-09-14T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-13-official_market_data",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "official_market_data",
+      "impact": "official price inputs are incomplete; new and additional buys are blocked",
+      "retry_after_jst": "2026-09-14T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-13-tdnet",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "tdnet",
+      "impact": "material timely disclosures could be missing; trade decisions are blocked",
+      "retry_after_jst": "2026-09-14T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-13-trading_calendar",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "trading_calendar",
+      "impact": "the next trading date is unconfirmed; order tickets are blocked",
+      "retry_after_jst": "2026-09-14T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    }
+  ],
+  "next_run_at_jst": "2026-09-07T18:30:00+09:00",
+  "summary": "EDINET一次情報を確認できずrun失敗; TDnet987件・会社IR・JPX停止/監理/営業日・日銀為替は確認済み; 4052の適時開示0件; 注文0件; カットオフ未更新",
+  "attempt": 1,
+  "attempt_started_at_jst": "2026-09-13T21:40:00+09:00"
+}

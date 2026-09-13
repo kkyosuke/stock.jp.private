@@ -1,0 +1,56 @@
+{
+  "schema_version": "2.0",
+  "run_id": "2026-09-14",
+  "status": "completed",
+  "started_at_jst": "2026-09-14T06:20:00+09:00",
+  "completed_at_jst": "2026-09-14T06:45:00+09:00",
+  "previous_run_id": "2026-09-04",
+  "previous_disclosure_cutoff_jst": "2026-09-04T23:59:00+09:00",
+  "operation_mode": "PAPER",
+  "active_rule_version": "v0.4",
+  "source_cutoff_jst": "2026-09-14T06:20:00+09:00",
+  "price_date": "2026-09-11",
+  "pending_reviews": [
+    "4052-fy2026-annual-review-2026-09-29",
+    "2026-09-14-carried-4052-fy2026-annual-review-2026-09-29",
+    "2026-09-14-investment-case-4052"
+  ],
+  "pending_orders": [],
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-03-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-03公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-04-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-04公式終値を確認できない。非公式archiveの740円は参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-14-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面がメンテナンス応答で2026-09-11公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    }
+  ],
+  "next_run_at_jst": "2026-09-15T18:30:00+09:00",
+  "summary": "4052 WAIT; EDINET自動取得を開始し9/5以降の法定開示0件を確認; 正式MRS・SAM/SOM等は未確定; 注文0件",
+  "attempt": 1,
+  "attempt_started_at_jst": "2026-09-14T06:20:00+09:00",
+  "alert_count": 0
+}
