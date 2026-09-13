@@ -1,16 +1,16 @@
 {
   "schema_version": "1.1",
-  "drill_id": "pre-live-e7915d8-20260905",
-  "operator": "Codex-assisted verification for kkyosuke",
+  "drill_id": "pre-live-bb327d1-20260913",
+  "operator": "Claude-assisted verification for kkyosuke",
   "repository_visibility": "PRIVATE",
   "reason": "PRE_LIVE",
-  "repository_layout_revision": 1,
-  "started_at_jst": "2026-09-05T20:06:43+09:00",
-  "completed_at_jst": "2026-09-05T20:06:54+09:00",
-  "source_private_commit": "e7915d81e4774da160a2319c5543c6c433f9a119",
-  "recovered_private_commit": "e7915d81e4774da160a2319c5543c6c433f9a119",
-  "source_public_submodule_commit": "e6e4a94226b07c92124e2293a0ec6db94c84a418",
-  "recovered_public_submodule_commit": "e6e4a94226b07c92124e2293a0ec6db94c84a418",
+  "repository_layout_revision": 3,
+  "started_at_jst": "2026-09-13T21:27:30+09:00",
+  "completed_at_jst": "2026-09-13T21:29:10+09:00",
+  "source_private_commit": "bb327d1b4fc59a14719749a7b426b2426006c0c6",
+  "recovered_private_commit": "bb327d1b4fc59a14719749a7b426b2426006c0c6",
+  "source_public_submodule_commit": "70bd64bb3036633f22a838280121db657a0a6e78",
+  "recovered_public_submodule_commit": "70bd64bb3036633f22a838280121db657a0a6e78",
   "checks": {
     "clean_clone_with_submodules": true,
     "workspace_setup": true,
@@ -21,5 +21,5 @@
     "all_ledgers": true,
     "unreconciled_orders": true
   },
-  "result_notes": "通常のprivate remoteからsubmodule込みでclean cloneし、独立したPython環境を再構築した。state/ledger validateとPAPER bootstrapが成功し、最新run、handoff、全台帳、未照合注文、private/public commitの一致を確認した。"
+  "result_notes": "layout revision 3の現行mainをprivate remoteからsubmodule込みでclean cloneし、独立したPython環境を再構築した。setup-workspace.shのsymlink、state validate(valid)、PAPER bootstrap(paper_go: true, 価格日2026-09-11, coverage 98.65%, 対象4052 coverage 1.0)が成功し、最新成功run 2026-09-04、handoff、15台帳、未照合注文0件、private/public commitの一致を確認した。監視が検知している夜間run遅延とdata gap 2件は復旧性とは独立の運用状態で、この確認では変更していない。"
 }
