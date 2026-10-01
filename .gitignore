@@ -13,3 +13,6 @@ __pycache__/
 *.p12
 *.pfx
 operations/private/historical-replay/**/raw/
+# Uncompressed work area stays local; reviewed compressed generations use stock.jp/data/jquants-archive/.
+operations/private/market-data/
+operations/private/market-data-staging/
