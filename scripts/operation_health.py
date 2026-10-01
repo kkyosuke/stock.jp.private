@@ -122,10 +122,10 @@ def command_json(script: str, at: str, action: str = "check", *, include_market_
         scratch = Path(directory)
         public = scratch / "stock.jp"
         shutil.copytree(ROOT / "stock.jp", public,
-                        ignore=shutil.ignore_patterns(".git", ".venv", "node_modules", "private", "__pycache__", "daily-prices", "raw"))
+                        ignore=shutil.ignore_patterns(".git", ".venv", "node_modules", "private", "__pycache__", "daily-prices", "jquants-archive", "raw"))
         private = scratch / "operations/private"
         shutil.copytree(source_private, private,
-                        ignore=shutil.ignore_patterns("market-data", "raw"))
+                        ignore=shutil.ignore_patterns("market-data", "market-data-staging", "raw"))
         if archive is not None:
             copy_archive(archive, private / relative_archive)
         (public / "operations").mkdir(exist_ok=True)

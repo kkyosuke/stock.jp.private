@@ -44,7 +44,7 @@
       "archive_root": "operations/private/market-data/jquants",
       "overlap_days": 30,
       "reconcile_every_days": 30,
-      "max_requests_per_run": null,
+      "max_requests_per_run": 12,
       "download_hosts": []
     }
   },
@@ -68,5 +68,17 @@
     "jpx_notices": true,
     "official_prices_and_corporate_actions": true,
     "trading_calendar": true
+  },
+  "market_data_git": {
+    "repository": "kkyosuke/stock.jp",
+    "storage": "private_git_compressed",
+    "staging_root": "operations/private/market-data",
+    "store_root": "data/jquants-archive",
+    "chunk_bytes": 1048576,
+    "max_shard_bytes": 26214400,
+    "max_store_bytes": 786432000,
+    "owner_only_access_confirmed": true,
+    "access_confirmation_basis": "owner statement in conversation 2026-10-02 JST; collaborator ACL not independently enumerated",
+    "automatic_upload": false
   }
 }

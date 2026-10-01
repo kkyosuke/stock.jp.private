@@ -45,11 +45,11 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## 運用原則
 
-- public は汎用コード、ルール、研究、合成fixture、CIを持つ。公開閲覧可能という理由だけで収集データを再配布しない
+- stock.jp は非公開の共通コード・市場データ・汎用研究ツールを持つ。「共有」は本人のプロジェクト間での再利用で、第三者への配信許可ではない
 - private は実保有、資金、注文、判断、状態、GO/NO-GO 証跡を持つ
 - private の状態・台帳・判断は暗号化 archive にせず、private Git の通常ファイルとして追跡する
-- raw市場データとmanifestは削除可能な`operations/private/market-data/`へ保存し、private Gitも含め追跡しない
-- storage設定だけでは取得を許可しない。確認済みJ-Quants Lightを設定し、全契約対象データの取得実装を用意する。実取得には安全なruntime資格情報登録と永続保存先が必要。Yahoo bulk取得は停止する
+- raw市場データはGit除外の作業領域で取得・検証し、圧縮世代をstock.jpの`data/jquants-archive/`へ保存する。個人の分析結果・選定・判断・台帳はstock.jp.privateに置く
+- storage設定だけでは取得を許可しない。確認済みJ-Quants Lightを設定し、全契約対象データの取得実装を用意する。実取得には安全なruntime資格情報登録と明示したprivate Git保存先が必要。Yahoo bulk取得は停止する
 - 会社別の希薄化・SAM/SOM・競合・KPI入力は`operations/private/research-inputs/investment-cases/`に置き、publicには値を出さない
 - API key、password、token、cookie、MFA 回復コードは private Git にも保存しない
 - GitHub Actions の public job へ private データを入力・出力しない
@@ -60,7 +60,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 1. アシスタントがprivate main、採用済みpublic commit、前回runと未push結果を確認する
 2. アシスタントが取得元の利用条件で許可された市場データを非公開領域で収集・検証し、一次資料を調査する
-3. raw市場データはGit外のprivate local、保有・監視対象・判断・台帳・runはprivate Gitへ分離する
+3. 市場データはstock.jp/data/、個人分析・保有・監視対象・判断・台帳・runはstock.jp.privateへ分離する
 4. 検証・review済みpublic mainだけを採用し、PAPER readinessと全対象の調査を確認する
 5. 同一run tokenでPAPER処理を完了し、状態・台帳・証跡・public pointerをprivateへ保存する
 6. remoteへの保存を確認して、結果と不足・次回actionをこの会話で報告する
@@ -93,7 +93,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - [市場データの非公開保存・移行手順](docs/operations/private-market-data-storage.md)
 - [private ドキュメント索引](docs/README.md)
 - [現在の readiness review](docs/reviews/operation-readiness-review-2026-09-01.md)
-- [public の汎用ドキュメント](stock.jp/docs/README.md)
+- [stock.jp の共通ドキュメント](stock.jp/docs/README.md)
 - [MRS・希薄化・SAM/SOM・10倍経路の計算](stock.jp/docs/operations/decision-assessment-automation-v0.1.md)
 
 Markdown は `npm run lint:markdown` で検査します。

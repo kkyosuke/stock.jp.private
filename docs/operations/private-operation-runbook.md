@@ -1,5 +1,8 @@
 # private 運用手順
 
+現在、両repoは非公開・本人限定です。publicという旧称は共通コード・データrepoのstock.jpを指します。
+[現行の境界](../repository-layout.md)を優先します。
+
 ## 1. setup
 
 private repository の root で実行します。
@@ -23,11 +26,33 @@ Yahoo bulk取得を停止します。credentialはチャットやGitへ保存せ
 秘密情報管理経路で設定します。
 
 raw市場データとmanifestは`operations/private/market-data/daily-prices/`へ保存し、
-Git追跡対象から除外します。公開archiveへのfallbackはありません。
+作業領域としてGit除外します。圧縮正本は非公開stock.jpの`data/jquants-archive/`へ保存します。
+個人分析・選定・状態・台帳はstock.jp.privateへ置きます。旧archiveへのfallbackはありません。
 [非公開保存・移行手順](private-market-data-storage.md)の取得条件と環境確認が未完了なら
 全市場価格の処理はWAIT / NO-ACTIONとします。会社IR・TDnet・JPX等の一次資料調査は
 独立して続けられますが、価格欠損を推測で埋めず、nightly完了やLIVE合格を宣言しません。
 既存archiveの移動・削除、Git履歴の扱いは利用条件を確認したうえで別途決定します。
+
+### 非公開submoduleを読むCI認証
+
+親repoの標準 `GITHUB_TOKEN` は別のprivate repoであるstock.jpをcloneできません。
+required checkを省略せず、親checkoutとstock.jp checkoutを分けます。
+stock.jpのrefは親commitのgitlinkから解決し、mainや未reviewのbranchへ追従しません。
+
+本人の明示承認により、既存のActions secret `AUTOMATION_PAT` をstock.jpのcheckoutに使用します。
+このPAT自体のscopeは確認していないため「読み取り専用token」とは断言しません。
+workflow内での利用を固定stock.jp commitの読み取りに限定し、書き込み処理には渡しません。
+値の取得・表示、権限変更、新しいcredentialの作成・登録は行いません。
+親checkoutは標準tokenを使い、両checkoutとも `persist-credentials: false` とします。
+
+secretが未登録なら明示エラーで停止し、repoへの読取権限が足りなければcheckoutが失敗します。
+別credentialへのfallbackやrequired checkのスキップは行いません。失敗時はsanitized errorを
+確認し、本人が[Actions secrets設定](https://github.com/kkyosuke/stock.jp.private/settings/secrets/actions)
+で既存設定を確認します。値をチャット、Git、コマンド引数、logへ貼り付けません。
+
+将来、本人が最小権限へ切り替える場合はstock.jpだけ・Contents: read-onlyのfine-grained tokenを
+別途設定できますが、今回の前提や実施内容ではありません。データ圧縮世代はsparse checkoutで
+作業ツリーから除外し、合成テストと既存required checkを維持します。
 
 ## 2. public update の採用
 
