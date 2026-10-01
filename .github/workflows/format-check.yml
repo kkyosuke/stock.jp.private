@@ -33,15 +33,15 @@ jobs:
           [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
-      # Configure only after owner approval: selected stock.jp repository,
-      # Contents: read, no write/admin scope. Never reuse an API-provider key.
-      - name: Require read-only stock.jp checkout credential
+      # Owner approved the existing PAT for this checkout only. Its grants
+      # are not inspected or changed; no write operation uses this credential.
+      - name: Require approved stock.jp checkout credential
         shell: bash
         env:
-          STOCK_JP_READ_TOKEN: ${{ secrets.STOCK_JP_READ_TOKEN }}
+          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
         run: |
-          if [[ -z "$STOCK_JP_READ_TOKEN" ]]; then
-            echo '::error::STOCK_JP_READ_TOKEN is not configured. Add a stock.jp-only Contents:read credential in repository Actions secrets.'
+          if [[ -z "$AUTOMATION_PAT" ]]; then
+            echo '::error::AUTOMATION_PAT is not configured. Configure the approved existing secret in repository Actions settings.'
             exit 1
           fi
 
@@ -51,7 +51,7 @@ jobs:
           repository: kkyosuke/stock.jp
           ref: ${{ steps.stock-jp-pin.outputs.sha }}
           path: stock.jp
-          token: ${{ secrets.STOCK_JP_READ_TOKEN }}
+          token: ${{ secrets.AUTOMATION_PAT }}
           persist-credentials: false
           sparse-checkout-cone-mode: false
           sparse-checkout: |

@@ -33,27 +33,26 @@ raw市場データとmanifestは`operations/private/market-data/daily-prices/`�
 独立して続けられますが、価格欠損を推測で埋めず、nightly完了やLIVE合格を宣言しません。
 既存archiveの移動・削除、Git履歴の扱いは利用条件を確認したうえで別途決定します。
 
-### 非公開submoduleを読むCI認証（設定は本人承認後）
+### 非公開submoduleを読むCI認証
 
 親repoの標準 `GITHUB_TOKEN` は別のprivate repoであるstock.jpをcloneできません。
 required checkを省略せず、親checkoutとstock.jp checkoutを分けます。
 stock.jpのrefは親commitのgitlinkから解決し、mainや未reviewのbranchへ追従しません。
 
-workflowが参照する `STOCK_JP_READ_TOKEN` は、本人承認後に安全なGitHub設定画面等で
-登録する読み取り専用credentialです。
-[fine-grained token設定](https://github.com/settings/personal-access-tokens/new)で所有者をkkyosuke、
-対象repoをstock.jpだけ、
-Repository permissionsをContents: read-onlyだけに限定します。Metadata: readはGitHubの
-付随権限です。有効期限を設定し、生成した値は
-[stock.jp.privateのActions secrets](https://github.com/kkyosuke/stock.jp.private/settings/secrets/actions)の
-New repository secretへ名前 `STOCK_JP_READ_TOKEN` で本人が直接登録します。登録後にPRの
-failed jobsを再実行します。広いclassic PAT、write/admin権限、J-Quants API keyを使用しません。
-値をチャット、Git、コマンド引数、logへ貼り付けません。この文書変更はtoken作成やsecret登録を
-実施したことを意味しません。承認・設定待ちの間、CIは未復旧として扱います。
+本人の明示承認により、既存のActions secret `AUTOMATION_PAT` をstock.jpのcheckoutに使用します。
+このPAT自体のscopeは確認していないため「読み取り専用token」とは断言しません。
+workflow内での利用を固定stock.jp commitの読み取りに限定し、書き込み処理には渡しません。
+値の取得・表示、権限変更、新しいcredentialの作成・登録は行いません。
+親checkoutは標準tokenを使い、両checkoutとも `persist-credentials: false` とします。
 
-両checkoutとも `persist-credentials: false` とし、専用tokenはstock.jpのcheckoutにのみ渡します。
-データ圧縮世代はsparse checkoutで作業ツリーから除外し、合成テストと既存required checkを維持します。
-認証の期限切れ・取り消し時はCIを失敗させ、公開化や検査スキップで迂回しません。
+secretが未登録なら明示エラーで停止し、repoへの読取権限が足りなければcheckoutが失敗します。
+別credentialへのfallbackやrequired checkのスキップは行いません。失敗時はsanitized errorを
+確認し、本人が[Actions secrets設定](https://github.com/kkyosuke/stock.jp.private/settings/secrets/actions)
+で既存設定を確認します。値をチャット、Git、コマンド引数、logへ貼り付けません。
+
+将来、本人が最小権限へ切り替える場合はstock.jpだけ・Contents: read-onlyのfine-grained tokenを
+別途設定できますが、今回の前提や実施内容ではありません。データ圧縮世代はsparse checkoutで
+作業ツリーから除外し、合成テストと既存required checkを維持します。
 
 ## 2. public update の採用
 
