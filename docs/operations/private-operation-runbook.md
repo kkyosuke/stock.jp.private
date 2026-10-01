@@ -15,22 +15,24 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 
 credential は shell history に値を残す引数で渡しません。必要な場合だけ実行環境の変数へ設定します。
 
-### J-Quantsを使用しない方針
+### providerと非公開保存
 
-このprivate運用ではJ-Quantsを使用しません。有料契約を前提にせず、取得データの再利用条件とも
-整合しないため、`operations/private/source-config.json`の`jquants.enabled`と全dataset flagを
-`false`に固定し、`JQUANTS_API_KEY`を設定しません。価格、取引日、corporate action、財務、
-決算予定は、再利用可能な公式公開データまたは会社IR・TDnet・JPX等の一次資料で確認します。
+J-Quantsの契約範囲・安全な資格情報登録を確認後、別途provider実装と取得を有効化します。
+このstorage変更では`source-config.json`のproviderとenabled flagを変更しません。
+Yahoo bulk取得を停止します。credentialはチャットやGitへ保存せず、認可された実行時の
+秘密情報管理経路で設定します。
 
-必要な公式履歴をこの経路で再現できない場合は、推測やJ-Quants由来データで補わず、該当する
-point-in-time／履歴再生gateを未達のままにして`WAIT` / `NO-ACTION`とします。既存の
-J-Quants由来archiveは、新しい取得やLIVE証跡への採用を行いません。Git履歴を含む既存archiveの
-扱いは、利用条件を確認したうえで別途決定します。
+raw市場データとmanifestは`operations/private/market-data/daily-prices/`へ保存し、
+Git追跡対象から除外します。公開archiveへのfallbackはありません。
+[非公開保存・移行手順](private-market-data-storage.md)の取得条件と環境確認が未完了なら
+全市場価格の処理はWAIT / NO-ACTIONとします。会社IR・TDnet・JPX等の一次資料調査は
+独立して続けられますが、価格欠損を推測で埋めず、nightly完了やLIVE合格を宣言しません。
+既存archiveの移動・削除、Git履歴の扱いは利用条件を確認したうえで別途決定します。
 
 ## 2. public update の採用
 
-アシスタントが収集・検証した公開可能な全市場dataをpublic側の通常reviewで確定し、
-merge済みpublic `main`のcommitだけを採用します。Actionsによる収集、同期PR、auto-mergeはありません。
+汎用コード・ルール・合成fixtureをpublic側の通常reviewで確定し、
+merge済みpublic `main`のcommitだけを採用します。raw市場データはpublicへ公開しません。Actionsによる収集、同期PR、auto-mergeはありません。
 [日次実行契約](assistant-daily-operation.md)と[submodule採用手順](automatic-submodule-update.md)を参照します。
 
 code・rule・workflow変更は日次data差分と分けてreviewします。既存のdata-only validatorを
@@ -51,7 +53,7 @@ git diff --submodule=log -- stock.jp
 2. `git pull --ff-only` と `git submodule update --init` を実行する
 3. `./scripts/setup-workspace.sh` を実行する
 4. state/ledger validate を実行する
-5. public data manifest の日付、coverage、checksum を確認する
+5. 設定済みprivate archiveのmanifest、日付、coverage、checksumを確認する
 6. `operation_bootstrap.py check` の `paper_go` または `live_go` を確認する
 
 ~~~bash
@@ -155,8 +157,8 @@ LIVE昇格前に一度、稼働中とは別の空ディレクトリで実施し�
 
 1. 通常のprivate repositoryをcloneする
 2. submodule と symlink を setup する
-3. Python environment を再構築する
-4. state/ledger validate と readiness check を実行する
+3. Python environment を再構築し、利用条件と承認済み手順に従ってprivate local archiveを別途準備する
+4. state/ledger validate と readiness check を実行する。Git cloneだけではraw archiveは復元されない
 5. 最新成功 run、handoff、未照合ticket、全ledgerを稼働中と照合する
 6. layout revision、private/public commit、実施日時、結果、差異をevidenceに残す
 

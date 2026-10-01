@@ -12,12 +12,12 @@ stock.jp.private/
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
 ├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
 ├── scripts/setup-workspace.sh     # submoduleとsymlinkの安全な初期化
-└── stock.jp/                      # publicコード・公開データのsubmodule
+└── stock.jp/                      # 汎用コード・ルール・合成fixtureのsubmodule
 ~~~
 
 public/private の境界は[全体構成](docs/repository-layout.md)、実行順は[private 運用手順](docs/operations/private-operation-runbook.md)、LIVE 条件は[GO/NO-GO 基準](docs/live-readiness.md)を参照してください。
 
-日次処理の主体は、この会話のアシスタントです。株価収集、一次資料調査、public入力の検証・採用、
+日次処理の主体は、この会話のアシスタントです。許可された株価収集、一次資料調査、入力の検証・採用、
 PAPER判定、private結果保存を一つのrunとして担当します。GitHub ActionsはPR検証と
 read-only監視だけを担当し、収集、更新PR作成、auto-merge、夜間run開始を行いません。
 
@@ -45,9 +45,11 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## 運用原則
 
-- public は汎用コード、公開データ、ルール、研究、CIを持つ
+- public は汎用コード、ルール、研究、合成fixture、CIを持つ。公開閲覧可能という理由だけで収集データを再配布しない
 - private は実保有、資金、注文、判断、状態、GO/NO-GO 証跡を持つ
-- private データは暗号化 archive にせず、private Git の通常ファイルとして追跡する
+- private の状態・台帳・判断は暗号化 archive にせず、private Git の通常ファイルとして追跡する
+- raw市場データとmanifestは削除可能な`operations/private/market-data/`へ保存し、private Gitも含め追跡しない
+- storage設定だけでは取得を許可しない。確認済みJ-Quants Lightを設定し、全契約対象データの取得実装を用意する。実取得には安全なruntime資格情報登録と永続保存先が必要。Yahoo bulk取得は停止する
 - 会社別の希薄化・SAM/SOM・競合・KPI入力は`operations/private/research-inputs/investment-cases/`に置き、publicには値を出さない
 - API key、password、token、cookie、MFA 回復コードは private Git にも保存しない
 - GitHub Actions の public job へ private データを入力・出力しない
@@ -57,8 +59,8 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 ## 運用開始後の全体フロー
 
 1. アシスタントがprivate main、採用済みpublic commit、前回runと未push結果を確認する
-2. アシスタントが公開市場データを収集・検証し、一次資料を調査する
-3. 全市場の公開可能データはpublic、保有・監視対象・判断・台帳・runはprivateへ分離する
+2. アシスタントが取得元の利用条件で許可された市場データを非公開領域で収集・検証し、一次資料を調査する
+3. raw市場データはGit外のprivate local、保有・監視対象・判断・台帳・runはprivate Gitへ分離する
 4. 検証・review済みpublic mainだけを採用し、PAPER readinessと全対象の調査を確認する
 5. 同一run tokenでPAPER処理を完了し、状態・台帳・証跡・public pointerをprivateへ保存する
 6. remoteへの保存を確認して、結果と不足・次回actionをこの会話で報告する
@@ -88,6 +90,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## ドキュメント
 
+- [市場データの非公開保存・移行手順](docs/operations/private-market-data-storage.md)
 - [private ドキュメント索引](docs/README.md)
 - [現在の readiness review](docs/reviews/operation-readiness-review-2026-09-01.md)
 - [public の汎用ドキュメント](stock.jp/docs/README.md)

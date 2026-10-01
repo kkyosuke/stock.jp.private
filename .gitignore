@@ -13,3 +13,5 @@ __pycache__/
 *.p12
 *.pfx
 operations/private/historical-replay/**/raw/
+# Deletable, provider-restricted local archives must never enter Git history.
+operations/private/market-data/
