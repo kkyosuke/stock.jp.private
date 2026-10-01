@@ -103,7 +103,9 @@ readiness、risk、source gateを日次完遂の都合で緩和しません。�
 成功・失敗のstate、ledger、run成果物、採用public SHAを一つのprivate commitに揃えます。
 diffを読みcredential、raw市場データ・manifest、一時download、巨大cache、不要な個人情報がないことを確認します。
 private Gitの承認済み保存経路で保存し、remoteの実際のSHAを確認するまで「保存完了」と言いません。
-保護branchへは通常reviewを用い、mainへのforce pushや競合の片側採用をしません。
+日次データ・完了検証済みPAPER結果はnon-draft PRを作成し、exact-head CIと意味検証後にnative auto-mergeを有効化します。
+[日次PR手順](daily-pr-publication.md)に従い、required reviewを維持します。コード・設定・ruleは通常reviewです。
+mainへの直接push、force push、admin bypass、競合の片側採用はしません。
 結果がPRで保留なら「保存済み・未採用」と明示し、canonical mainへの反映前に次のrunを重ねません。
 
 ## 6. 報告とガードレール
