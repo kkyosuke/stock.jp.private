@@ -23,7 +23,40 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          submodules: recursive
+          persist-credentials: false
+
+      - name: Resolve committed stock.jp gitlink
+        id: stock-jp-pin
+        shell: bash
+        run: |
+          sha=$(git rev-parse HEAD:stock.jp)
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # Owner approved the existing PAT for this checkout only. Its grants
+      # are not inspected or changed; no write operation uses this credential.
+      - name: Require approved stock.jp checkout credential
+        shell: bash
+        env:
+          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+        run: |
+          if [[ -z "$AUTOMATION_PAT" ]]; then
+            echo '::error::AUTOMATION_PAT is not configured. Configure the approved existing secret in repository Actions settings.'
+            exit 1
+          fi
+
+      - name: Check out pinned private stock.jp
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: kkyosuke/stock.jp
+          ref: ${{ steps.stock-jp-pin.outputs.sha }}
+          path: stock.jp
+          token: ${{ secrets.AUTOMATION_PAT }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/jquants-archive/
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -40,7 +73,7 @@ jobs:
       - name: Check shell syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -n1 sh -n
 
-      - name: Test operation automation
+      - name: Test operation guardrails
         run: python3 -m unittest discover -s tests -v
 
       - name: Test Cloudflare scheduler
@@ -68,23 +101,11 @@ jobs:
           python -m pip install "xlrd==2.0.2" "openpyxl==3.1.5"
           "pypdf==6.16.1" "certifi==2026.7.22" PyYAML
 
-      - name: Validate private operation state and PAPER readiness
+      - name: Validate checkout state and PAPER policy (no runtime data)
         run: |
-          bootstrap_output=$(mktemp)
-          trap 'rm -f "$bootstrap_output"' EXIT HUP INT TERM
-          ./scripts/setup-workspace.sh
-          python stock.jp/scripts/operation_state.py validate
-          python stock.jp/scripts/operation_bootstrap.py check >"$bootstrap_output"
-          cat "$bootstrap_output"
-          python - "$bootstrap_output" <<'PY'
-          import json
-          from pathlib import Path
-          import sys
-
-          result = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-          if result.get("paper_go") is not True:
-              raise SystemExit("PAPER readiness check failed")
-          if result.get("broker_submission") != "HUMAN_ONLY":
-              raise SystemExit("broker submission boundary changed from HUMAN_ONLY")
-          PY
+          python scripts/validate_checkout.py
           git diff --exit-code -- operations/private
+          test -z "$(git ls-files --others --exclude-standard -- operations/private)"
+
+      - name: Test synthetic runtime integration (not real-data readiness)
+        run: python stock.jp/scripts/operation_smoke.py --days 20 --start-date 2026-09-01

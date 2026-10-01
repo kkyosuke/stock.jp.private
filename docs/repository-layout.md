@@ -1,77 +1,58 @@
-# リポジトリ全体構成
+# コード・共有データと個人分析の境界
 
-## 責務
+両リポジトリとも非公開・本人のみ閲覧です。「共有」は本人のプロジェクト間で再利用する意味で、
+公開・第三者配信・閲覧権限追加の許可ではありません。過去の文書やscript名のpublicは
+stock.jpの旧称です。現在の公開範囲を示しません。
 
-| repository | 正本 | 自動化 |
-| --- | --- | --- |
-| public `stock.jp` | 汎用コード、公開データ、ルール、研究、空template | 公開情報の収集、品質検査、backtest、CI、更新PR |
-| private `stock.jp.private` | 実保有、資金、注文・約定、判断、run状態、個人の承認 | 毎朝のsubmodule更新、private checkout上の日次処理、状態検証、現行構成のclean-clone確認 |
-| Git外の認証情報管理 | API key、password、token、cookie、MFA回復コード | 実行時だけ環境変数等で注入 |
-
-public Actions は公開情報だけで完結する重い計算へ利用します。private の保有銘柄だけを抽出した結果、資金量を反映した注文数量、private state は public job の input、log、cache、artifact にしません。
-
-## directory tree
+| 保存先 | 内容 |
+| --- | --- |
+| `stock.jp` | 汎用コード、ルール、研究ツール、合成fixture、共通ドキュメント |
+| `stock.jp/data/jquants-archive/` | 契約市場データ、共通の正規化データ、取得由来・checksum・再開checkpointの圧縮世代 |
+| `stock.jp.private` | 個人の分析結果、選定・監視リスト、保有・資金、判断、run報告、状態・台帳、個人別設定 |
+| Git外のruntime | API key等の認証情報。どちらのリポジトリにも保存しない |
 
 ~~~text
-stock.jp.private/
-├── .github/workflows/             # 毎朝のpublic pointer更新
-├── .gitmodules
-├── README.md
-├── docs/
-│   ├── README.md
-│   ├── live-readiness.md
-│   ├── repository-layout.md
-│   ├── operations/
-│   └── reviews/
+stock.jp.private/                     # 個人運用の正本
 ├── operations/private/
-│   ├── operation-policy.json
-│   ├── state.json
-│   ├── *.csv
-│   ├── decisions/
-│   ├── migrations/
-│   └── runs/
-├── scripts/setup-workspace.sh
-└── stock.jp/
-    ├── .agents/
-    ├── .github/workflows/
-    ├── data/
-    ├── docs/{architecture,operations,research,rules}/
-    ├── operations/templates/
-    ├── scripts/
-    └── tests/
+│   ├── source-config.json            # 個人別provider・保存設定
+│   ├── state.json, *.csv, runs/       # 状態・台帳・個人判断
+│   ├── market-data/                  # Git除外の取得・復元作業領域
+│   └── market-data-staging/           # Git除外の圧縮・復元検証領域
+└── stock.jp/                          # 非公開コード・共有データの固定submodule
+    ├── data/jquants-archive/          # 圧縮世代とatomic indexの保存先
+    ├── scripts/, tests/, docs/        # 汎用処理・合成テスト・共通手順
+    └── operations/private -> ../../operations/private
 ~~~
 
-`stock.jp` は submodule です。private の1 commit が、実運用状態とそれを解釈した public code commit を同時に固定します。public code をコピーして private 側で派生させません。
+symlinkはstock.jpでGit除外します。市場データを利用する処理は既存resolverを通じて
+`operations/private/market-data/`の検証済み復元データを読みます。保存元は明示された
+`stock.jp/data/jquants-archive/`で、旧`data/daily-prices/`へのfallbackはありません。
+新しいsharedデータへ個人の銘柄選定、保有数量、口座情報、判断、注文を混ぜません。
+個人別に絞った出力はstock.jp.privateへ置き、汎用集計と区別します。
 
-## data path
+## 取得と分析の順序
 
-public script は自身の repository root にある `operations/private/` を参照します。setup 後は次の symlink で private 正本へ接続します。
+1. 両repositoryの採用済みSHAと未保存変更を確認し、一つのwriterだけで開始する
+2. 安全なruntime認証で契約範囲のデータを有限バッチ取得し、checkpointを保存する
+3. 圧縮・checksum・restoreを検証し、private可視性と本人限定アクセスを確認する
+4. 市場データをstock.jpの専用branch/draft PRへ保存し、remote SHAを照合する
+5. 通常review後に採用したstock.jp SHAを個人側のpointer更新PRで固定する
+6. 個人の分析・PAPER判定は復元済み入力のcoverage・鮮度・readiness確認後に実施する
+7. 分析結果、判断、run/state/ledgerはstock.jp.privateへ保存する
 
-~~~text
-stock.jp/operations/private -> ../../operations/private
-~~~
+データ取得成功だけでnightly完了や投資可能とは扱いません。PAPER/HUMAN_ONLY、risk、
+coverage・validity gateは変更しません。main merge、LIVE昇格、broker操作は自動化しません。
+Actionsは合成fixture/保存済み状態の検証だけとし、licensed rawを復元・出力しません。
 
-symlink は public `.gitignore` の対象なので public commit には入りません。実体は親 private repository が追跡します。
+## 復旧と削除
 
-## 配置判定
+clone・submodule初期化だけでは作業領域は復元されません。圧縮世代を新しい空の領域へ
+checksum検証付きで復元し、状態・台帳検証と市場データreadinessを別々に実行します。
+GitHubへpushしてremote SHAを確認する前の一時環境は永続保存と呼びません。
 
-次のいずれかを含むものは private に置きます。
+解約・ダウングレード時の削除条件はGit履歴、branch/tag/PR参照、fork、clone、backupにも
+及びます。通常の削除commitだけでは履歴のデータは消えません。対象を確認し、破壊的な履歴整理は
+別途明示承認を得て実施します。今回、既存データ、個人監査記録や公開済み履歴は改変・削除しません。
+秘密情報のGit保存は禁止です。privateであっても例外はありません。
 
-- 個人または口座を特定できる値
-- 実保有、実資金、実注文・約定、税
-- 現在の監視対象や個別の売買意思
-- 個人の損失許容、注文可能時間、GO/NO-GO 承認
-- private data source の利用記録や障害証跡
-
-公開情報だけから同じ commit と入力で再生成でき、出力が世界中に公開されても問題ないものは public に置きます。迷う場合は private で扱い、一般化したコードと合成 test だけを public へ戻します。
-
-## 保存禁止
-
-private repository でも次は保存しません。
-
-- credential、secret、秘密鍵、session cookie
-- MFA recovery code、one-time password
-- 不要な本人確認書類
-- 再生成可能な巨大cache、public dataの重複copy
-
-secret を commit した場合は削除 commit だけでは不十分です。直ちに失効・再発行し、履歴からの除去と access log の確認を行います。
+[保存の実行手順](operations/private-market-data-storage.md)を参照してください。
