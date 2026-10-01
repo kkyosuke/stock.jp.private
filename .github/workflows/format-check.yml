@@ -23,13 +23,40 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          submodules: recursive
           persist-credentials: false
 
-      - name: Exclude licensed submodule data from the working tree
+      - name: Resolve committed stock.jp gitlink
+        id: stock-jp-pin
+        shell: bash
         run: |
-          git -C stock.jp sparse-checkout init --no-cone
-          git -C stock.jp sparse-checkout set --no-cone '/*' '!/data/jquants-archive/'
+          sha=$(git rev-parse HEAD:stock.jp)
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # Configure only after owner approval: selected stock.jp repository,
+      # Contents: read, no write/admin scope. Never reuse an API-provider key.
+      - name: Require read-only stock.jp checkout credential
+        shell: bash
+        env:
+          STOCK_JP_READ_TOKEN: ${{ secrets.STOCK_JP_READ_TOKEN }}
+        run: |
+          if [[ -z "$STOCK_JP_READ_TOKEN" ]]; then
+            echo '::error::STOCK_JP_READ_TOKEN is not configured. Add a stock.jp-only Contents:read credential in repository Actions secrets.'
+            exit 1
+          fi
+
+      - name: Check out pinned private stock.jp
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: kkyosuke/stock.jp
+          ref: ${{ steps.stock-jp-pin.outputs.sha }}
+          path: stock.jp
+          token: ${{ secrets.STOCK_JP_READ_TOKEN }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/jquants-archive/
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
