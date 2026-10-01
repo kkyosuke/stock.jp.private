@@ -1,12 +1,14 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.5",
   "request_timeout_seconds": 30,
   "initial_lookback_days": 7,
   "paper_manual_primary_source_fallback": true,
   "price_source": {
     "enabled": true,
-    "provider": "yahoo_finance_unofficial_tracked_archive",
-    "manifest_path": "data/daily-prices/latest.json",
+    "provider": "jquants_v2_private_archive",
+    "storage": "private_local",
+    "archive_root": "operations/private/market-data/daily-prices",
+    "manifest_path": "latest.json",
     "minimum_daily_archive_coverage": 0.98,
     "minimum_active_target_coverage": 1.0,
     "maximum_latest_price_age_days": 7
@@ -22,18 +24,29 @@
     "minimum_issue_count": 3000
   },
   "jquants": {
-    "enabled": false,
+    "enabled": true,
     "base_url": "https://api.jquants.com/v2",
     "api_key_env": "JQUANTS_API_KEY",
-    "listed_master_enabled": false,
-    "daily_bars_enabled": false,
-    "financial_summary_enabled": false,
-    "earnings_calendar_enabled": false,
-    "trading_calendar_enabled": false,
+    "listed_master_enabled": true,
+    "daily_bars_enabled": true,
+    "financial_summary_enabled": true,
+    "earnings_calendar_enabled": true,
+    "trading_calendar_enabled": true,
     "liquidity_lookback_calendar_days": 45,
     "minimum_liquidity_sessions": 20,
     "maximum_official_price_age_days": 7,
-    "calendar_forward_days": 21
+    "calendar_forward_days": 21,
+    "plan": "light",
+    "addons": [],
+    "ingestion": {
+      "enabled": true,
+      "datasets": "all",
+      "archive_root": "operations/private/market-data/jquants",
+      "overlap_days": 30,
+      "reconcile_every_days": 30,
+      "max_requests_per_run": null,
+      "download_hosts": []
+    }
   },
   "market_regime": {
     "enabled": true,

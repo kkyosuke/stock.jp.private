@@ -5,7 +5,7 @@ PR作成、auto-mergeはありません。古い外部dispatchを受けてもデ
 
 ## アシスタントの責務
 
-- 公開可能な全市場dataとprivate固有のresearchを分離する
+- raw市場データはGit外のprivate localに置き、publicの汎用コード・合成fixtureと分離する
 - publicで検証・reviewされ、mainへmerge済みのcommitだけを候補にする
 - `scripts/validate-public-auto-update.sh`のdata-only境界を維持する
 - code、rule、workflow、schema変更は通常のreviewへ戻す。日次data更新として扱わない
