@@ -29,23 +29,21 @@ J-Quants由来archiveは、新しい取得やLIVE証跡への採用を行いま�
 
 ## 2. public update の採用
 
-publicの日次data PRはpublic workflow自身が検証してauto-mergeします。privateは毎朝7:00 JSTの
-`update-public-submodule` workflowで、merge済みpublic `main`の日次株価差分だけを検証し、
-pointer PRをauto-mergeします。code、rule、workflow変更は自動採用しません。詳細は
-[public submodule自動更新](automatic-submodule-update.md)を参照します。
+アシスタントが収集・検証した公開可能な全市場dataをpublic側の通常reviewで確定し、
+merge済みpublic `main`のcommitだけを採用します。Actionsによる収集、同期PR、auto-mergeはありません。
+[日次実行契約](assistant-daily-operation.md)と[submodule採用手順](automatic-submodule-update.md)を参照します。
 
-自動化が失敗した場合だけ、次を手動実行します。
+code・rule・workflow変更は日次data差分と分けてreviewします。既存のdata-only validatorを
+迂回しません。この構成変更のpublic commitも通常review/merge後、明示的なpointer PRで採用します。
 
 ~~~bash
 git -C stock.jp fetch origin main
 git -C stock.jp switch --detach origin/main
-git add stock.jp
-git diff --cached --submodule=log -- stock.jp
+git diff --submodule=log -- stock.jp
 ~~~
 
-手動時はsubmodule更新と、それに伴うschema migration・運用状態の変更を同じprivate PRで
-reviewします。自動・手動のどちらも、検証前のpublic branch tipや未merge commitへ直接追従
-させません。
+この例はcheckoutの準備です。検証、private整合性確認、reviewを省略する承認ではありません。
+未mergeのpublic branch tip、未pushのprivate run、未解消競合では新しいrunを開始しません。
 
 ## 3. 夜間 run 前
 
@@ -86,6 +84,9 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 新規購入を作らず、必要な縮小・売却を優先します。
 
 ## 4. run と commit
+
+日次の全実行責務と失敗時の扱いは[アシスタント日次実行契約](assistant-daily-operation.md)に従います。
+start/finalizeだけを連続実行せず、一次資料調査と全対象の成果物を完了してからfinalizeします。
 
 `$japan-stock-operator` の汎用手順に従い、1つの run token を完了または失敗まで使います。注文候補は PAPER では `PAPER_PROPOSED`、LIVE でも `PROPOSED` に留め、broker へ自動送信しません。
 

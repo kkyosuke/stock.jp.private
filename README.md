@@ -7,8 +7,8 @@
 ~~~text
 stock.jp.private/
 ├── docs/                         # private固有の設計、GO/NO-GO、レビュー
-├── .github/workflows/             # public同期・運用監視・Cloudflareデプロイ
-├── cloudflare/                    # 定期起動・未実行回復用Worker
+├── .github/workflows/             # PR検証・read-only運用監視
+├── cloudflare/                    # 旧schedulerの停止用互換Worker
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
 ├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
 ├── scripts/setup-workspace.sh     # submoduleとsymlinkの安全な初期化
@@ -17,13 +17,15 @@ stock.jp.private/
 
 public/private の境界は[全体構成](docs/repository-layout.md)、実行順は[private 運用手順](docs/operations/private-operation-runbook.md)、LIVE 条件は[GO/NO-GO 基準](docs/live-readiness.md)を参照してください。
 
-平日18:30のpublic日次データPRは検証成功時だけauto-mergeし、privateは毎朝7:00と平日夜にpublic
-`main`の日次株価差分だけをsubmodule pointer PRで検証してauto-mergeします。codeやruleの
-変更と検証失敗時はmainを変更せず、手動reviewへ戻します。
+日次処理の主体は、この会話のアシスタントです。株価収集、一次資料調査、public入力の検証・採用、
+PAPER判定、private結果保存を一つのrunとして担当します。GitHub ActionsはPR検証と
+read-only監視だけを担当し、収集、更新PR作成、auto-merge、夜間run開始を行いません。
 
-[Cloudflareでの定期起動・監視](docs/operations/cloudflare-scheduler.md)を設定すると、20分ごとの
-更新検知、未実行回復、回数制限付き再試行も自動化できます。`operation-health`は夜間run漏れ、
-PR停滞、readiness異常を定期検知します。AIの夜間調査は別途実行環境が必要です。
+目標時刻は毎晩21:00（Asia/Tokyo）です。**この変更だけでは定期実行は設定されません。**
+実行環境・権限・永続保存・スケジュールの確認後に有効化します。
+[アシスタント日次実行契約](docs/operations/assistant-daily-operation.md)を正本とします。
+既存Cloudflareの停止は[移行手順](docs/operations/cloudflare-scheduler.md)に従い、
+稼働中環境を確認して別途実施します。
 
 ## 初回セットアップ
 
@@ -54,48 +56,17 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## 運用開始後の全体フロー
 
-オレンジ色の`👤`が利用者の作業です。詳しい自動更新条件、失敗時の扱い、定期review、LIVE移行手順は[運用開始後の詳細スケジュール](docs/operations/post-launch-operation-schedule.md)を参照してください。
+1. アシスタントがprivate main、採用済みpublic commit、前回runと未push結果を確認する
+2. アシスタントが公開市場データを収集・検証し、一次資料を調査する
+3. 全市場の公開可能データはpublic、保有・監視対象・判断・台帳・runはprivateへ分離する
+4. 検証・review済みpublic mainだけを採用し、PAPER readinessと全対象の調査を確認する
+5. 同一run tokenでPAPER処理を完了し、状態・台帳・証跡・public pointerをprivateへ保存する
+6. remoteへの保存を確認して、結果と不足・次回actionをこの会話で報告する
 
-~~~mermaid
-flowchart TD
-    A["自動｜平日18:30<br/>public株価を更新・検証・merge"] --> B{"更新成功?"}
-    B -->|"いいえ"| STOP["👤 夜<br/>失敗を確認し、その日はWAIT"]
-    B -->|"はい"| C["👤 夜<br/>privateの自動同期完了後に<br/>『今日の夜間運用を実行して』と依頼"]
-    C --> D["運用処理<br/>運用前check・公式情報確認・判定<br/>reportと注文候補を作成"]
-    D --> E{"問題なし?"}
-    E -->|"いいえ"| WAIT["👤 reportと失敗記録を確認<br/>解消するまで注文しない"]
-    E -->|"はい"| F["👤 夜<br/>reportとprivate push完了を確認"]
-    F --> G{"運用modeと注文候補"}
-    G -->|"PAPER"| P["証券会社へ入力しない<br/>仮想注文だけ"]
-    G -->|"LIMITED_LIVE/LIVE・候補なし"| Q["NO-ACTION"]
-    G -->|"LIMITED_LIVE/LIVE・候補あり"| H["👤 翌営業日8:45〜8:55<br/>pre-trade check"]
-    H --> I{"本人の判断"}
-    I -->|"SUBMIT"| J["👤 証券会社へ手入力"]
-    I -->|"CANCEL / WAIT"| Q
-    J --> K["👤 判断・約定結果を<br/>運用記録へ反映"]
-    P --> L["次の営業日まで待機"]
-    Q --> L
-    K --> L
-    STOP --> L
-    WAIT --> L
-    L --> A
-    L -.-> M["👤 定期作業<br/>週末・月末・決算時のreview<br/>LIVE移行前の確認と承認"]
-
-    classDef human fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#431407
-    class STOP,C,WAIT,F,H,I,J,K,M human
-~~~
-
-### 人の作業一覧
-
-| トリガー | 人がすること | しないこと |
-| --- | --- | --- |
-| public data PRとprivate同期PRがmergeされた | 運用checkoutを同期し、「今日の夜間運用を実行して」と依頼する | 未mergeのdataで運用しない |
-| workflow、data、readinessのどれかが失敗した | エラーまたはreportを確認し、原因を解消するまで`WAIT`にする | 推測で続行したり注文したりしない |
-| 夜間runが完了した | report、翌営業日のaction、privateへのpush完了を確認する | PAPERの注文候補を証券会社へ入力しない |
-| `assessment-status.json`が`INCOMPLETE`または`STALE` | 表示された不足項目だけを一次資料から会社別入力へ補い、再実行する | 数値を推測で埋めない |
-| LIMITED_LIVE/LIVEで注文候補が作成された | 翌営業日8:45〜8:55にpre-trade checkを行い、`SUBMIT / CANCEL / WAIT`を判断する | 確認できない日は注文しない |
-| `SUBMIT`と判断した | 証券会社へ注文を手入力し、判断・約定結果を運用記録へ反映する | 自動送信、未承認注文、裁量での成行化をしない |
-| 週末・月末・決算・LIVE移行前の期限が来た | 表示されたreview項目を確認し、LIVE移行時は全証跡を見て最後に明示承認する | 日次の都合だけでruleやgateを変更しない |
+資料欠損、競合、認証・実行環境の不足、readiness未達では`WAIT` / `NO-ACTION`とします。
+成功した開始処理だけを「調査完了」と扱いません。PAPER注文を証券会社へ入力しません。
+本人の承認、実資金・損失許容の設定、LIVE移行と証券会社での操作は日次委任に含みません。
+定期reviewと将来のLIVE手順は[詳細スケジュール](docs/operations/post-launch-operation-schedule.md)を参照してください。
 
 ## 日次の最小確認
 

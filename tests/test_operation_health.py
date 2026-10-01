@@ -1,6 +1,6 @@
-from datetime import datetime
 import importlib.util
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -11,30 +11,23 @@ spec.loader.exec_module(health)
 
 
 class OperationHealthTest(unittest.TestCase):
-    def test_only_generated_data_and_pointer_prs_are_monitored(self):
-        now = health.parse_time("2026-09-11T09:00:00+09:00")
-        run = {"head_branch": "main", "event": "schedule", "created_at": "2026-09-10T23:00:00Z", "status": "completed", "conclusion": "success"}
+    def test_retired_workflow_history_is_not_required(self):
         def api(path):
-            if "/pulls?" in path:
-                return [{"number": 25, "head": {"ref": "automation/operations-scheduling"}, "created_at": "2026-09-01T00:00:00Z"}]
-            if "/runs?" in path:
-                return {"workflow_runs": [run]}
-            if "/actions/workflows/" in path:
-                return {"state": "active"}
+            self.assertNotIn("actions/workflows", path)
             return {"sha": "same"}
         with patch.object(health, "github", side_effect=api):
-            self.assertEqual(health.remote_alerts("owner/private", "owner/public", now), [])
+            self.assertEqual(health.remote_alerts("owner/private", "owner/public", health.parse_time("2026-09-11T21:00:00+09:00")), [])
 
-    def test_pat_expiry_warning_and_unknown_expiry_are_visible(self):
-        now = health.parse_time("2026-09-11T09:00:00+09:00")
-        self.assertTrue(health.expiry_alerts("2026-09-20 00:00:00 UTC", now, "PAT"))
-        self.assertTrue(health.expiry_alerts(None, now, "PAT"))
-        self.assertEqual(health.expiry_alerts("2026-10-20 00:00:00 UTC", now, "PAT"), [])
+    def test_pointer_drift_requires_review(self):
+        def api(path):
+            return {"sha": "public", "commit": {"committer": {"date": "2026-09-01T00:00:00Z"}}} if "commits/main" in path else {"sha": "private"}
+        with patch.object(health, "github", side_effect=api):
+            self.assertTrue(health.remote_alerts("owner/private", "owner/public", health.parse_time("2026-09-11T21:00:00+09:00")))
 
-    def test_successful_price_sync_does_not_hide_missed_nightly_or_source_gaps(self):
+    def test_successful_data_sync_does_not_hide_missed_research(self):
         report = health.local_report(
-            {"last_run_id": "2026-09-04", "data_gaps": [{"status": "OPEN"}]},
-            {"status": "MISSED", "alerts": ["nightly run overdue", "1 data gap(s)"]},
+            {"last_run_id": "old", "data_gaps": [{"status": "OPEN"}]},
+            {"status": "MISSED", "alerts": ["nightly run overdue"]},
             {"paper_go": True, "broker_submission": "HUMAN_ONLY", "status": "READY_WITH_WARNINGS"},
         )
         self.assertIn("nightly: MISSED", report["alerts"])
@@ -45,36 +38,39 @@ class OperationHealthTest(unittest.TestCase):
         self.assertIn("stale prices", report["alerts"])
         self.assertIn("broker submission boundary must be HUMAN_ONLY", report["alerts"])
 
-    def test_weekend_and_midnight_collection_deadlines(self):
-        for at, expected in (
-            ("2026-09-11T23:59:00+09:00", "2026-09-10"),
-            ("2026-09-12T00:31:00+09:00", "2026-09-11"),
-            ("2026-09-14T09:00:00+09:00", "2026-09-11"),
-            ("2026-09-15T00:31:00+09:00", "2026-09-14"),
-        ):
-            with self.subTest(at=at):
-                self.assertEqual(health.required_price_cycle(health.parse_time(at)).date().isoformat(), expected)
+    def test_validation_isolated_and_migrations_rejected(self):
+        for script in ("operation_bootstrap.py", "operation_watchdog.py", "operation_state.py"):
+            with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "stock.jp/scripts").mkdir(parents=True)
+                private = root / "operations/private"
+                private.mkdir(parents=True)
+                (private / "state.json").write_text('{"original":true}')
+                (root / "stock.jp/operations").mkdir()
+                (root / "stock.jp/operations/private").symlink_to(private)
+                (root / "stock.jp/scripts" / script).write_text(
+                    'from pathlib import Path\n'
+                    'p=Path(__file__).resolve().parents[1]/"operations/private/state.json"\n'
+                    'p.write_text("{}")\nprint("{}")\n'
+                )
+                with patch.object(health, "ROOT", root), self.assertRaisesRegex(RuntimeError, "requires migration"):
+                    health.command_json(script, "2026-09-11T21:00:00+09:00", "validate" if script == "operation_state.py" else "check")
+                self.assertEqual((private / "state.json").read_text(), '{"original":true}')
 
-    def test_branch_run_cannot_hide_missing_main_run(self):
-        self.assertTrue(health.workflow_alerts("sync", [{"head_branch": "feature", "event": "workflow_dispatch"}], health.parse_time("2026-09-11T09:00:00+09:00"), 36))
+    def test_readonly_validator_can_return_readiness(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "stock.jp/scripts").mkdir(parents=True)
+            (root / "operations/private").mkdir(parents=True)
+            (root / "stock.jp/scripts/check.py").write_text('print(\'{"paper_go":true}\')')
+            with patch.object(health, "ROOT", root):
+                self.assertEqual(health.command_json("check.py", "2026-09-11T21:00:00+09:00"), {"paper_go": True})
 
-    def test_failed_stale_and_stuck_runs_require_attention(self):
-        now = health.parse_time("2026-09-11T09:00:00+09:00")
-        base = {"head_branch": "main", "event": "schedule", "created_at": "2026-09-08T22:00:00Z", "status": "completed", "conclusion": "failure"}
-        alerts = health.workflow_alerts("sync", [base], now, 36)
-        self.assertEqual(len(alerts), 2)
-        self.assertTrue(any("3 hours" in a for a in health.workflow_alerts("sync", [{**base, "status": "queued"}], now, 36)))
-
-    def test_healthy_run_is_accepted_and_naive_time_rejected(self):
-        now = health.parse_time("2026-09-11T09:00:00+09:00")
-        run = {"head_branch": "main", "event": "schedule", "created_at": "2026-09-10T23:00:00Z", "status": "completed", "conclusion": "success"}
-        self.assertEqual(health.workflow_alerts("sync", [run], now, 36), [])
+    def test_naive_time_is_rejected(self):
         with self.assertRaises(ValueError):
-            health.parse_time("2026-09-11T09:00:00")
+            health.parse_time("2026-09-11T21:00:00")
 
-    def test_report_only_mode_is_available_for_scheduled_monitoring(self):
-        # The CLI remains fail-closed by default; the workflow uses report-only so
-        # expected attention states do not look like an infrastructure failure.
+    def test_health_report_only_does_not_change_nightly_readiness(self):
         self.assertIn("--report-only", health.main.__code__.co_consts)
 
 

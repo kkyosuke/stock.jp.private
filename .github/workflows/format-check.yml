@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -40,7 +41,7 @@ jobs:
       - name: Check shell syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -n1 sh -n
 
-      - name: Test operation automation
+      - name: Test operation guardrails
         run: python3 -m unittest discover -s tests -v
 
       - name: Test Cloudflare scheduler
@@ -73,8 +74,16 @@ jobs:
           bootstrap_output=$(mktemp)
           trap 'rm -f "$bootstrap_output"' EXIT HUP INT TERM
           ./scripts/setup-workspace.sh
-          python stock.jp/scripts/operation_state.py validate
-          python stock.jp/scripts/operation_bootstrap.py check >"$bootstrap_output"
+          python - >"$bootstrap_output" <<'PYTHON'
+          from datetime import datetime
+          import json
+          from scripts.operation_health import command_json, JST
+          at = datetime.now(JST).isoformat()
+          state = command_json("operation_state.py", at, "validate")
+          if state.get("valid") is not True:
+              raise SystemExit("Private state validation failed")
+          print(json.dumps(command_json("operation_bootstrap.py", at)))
+          PYTHON
           cat "$bootstrap_output"
           python - "$bootstrap_output" <<'PY'
           import json
@@ -88,3 +97,4 @@ jobs:
               raise SystemExit("broker submission boundary changed from HUMAN_ONLY")
           PY
           git diff --exit-code -- operations/private
+

@@ -4,17 +4,17 @@
 
 | repository | 正本 | 自動化 |
 | --- | --- | --- |
-| public `stock.jp` | 汎用コード、公開データ、ルール、研究、空template | 公開情報の収集、品質検査、backtest、CI、更新PR |
-| private `stock.jp.private` | 実保有、資金、注文・約定、判断、run状態、個人の承認 | 毎朝のsubmodule更新、private checkout上の日次処理、状態検証、現行構成のclean-clone確認 |
+| public `stock.jp` | 汎用コード、公開データ、ルール、研究、空template | アシスタントが公開情報を収集・検証。ActionsはPR品質検査のみ |
+| private `stock.jp.private` | 実保有、資金、注文・約定、判断、run状態、個人の承認 | アシスタントがsubmodule採用・日次処理。Actionsは状態検証とread-only監視 |
 | Git外の認証情報管理 | API key、password、token、cookie、MFA回復コード | 実行時だけ環境変数等で注入 |
 
-public Actions は公開情報だけで完結する重い計算へ利用します。private の保有銘柄だけを抽出した結果、資金量を反映した注文数量、private state は public job の input、log、cache、artifact にしません。
+public Actions は既存の公開入力・合成fixtureによる検証へ利用し、外部情報収集・更新PR・auto-mergeは行いません。private の保有銘柄だけを抽出した結果、資金量を反映した注文数量、private state は public job の input、log、cache、artifact にしません。
 
 ## directory tree
 
 ~~~text
 stock.jp.private/
-├── .github/workflows/             # 毎朝のpublic pointer更新
+├── .github/workflows/             # PR検証・read-only状態監視
 ├── .gitmodules
 ├── README.md
 ├── docs/

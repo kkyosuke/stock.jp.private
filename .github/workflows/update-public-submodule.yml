@@ -1,80 +1,21 @@
 name: update-public-submodule
 
+# Compatibility endpoint: old external dispatches must never mutate repositories.
 on:
-  schedule:
-    - cron: "0 7 * * *"
-      timezone: "Asia/Tokyo"
-    - cron: "47 19-23 * * 1-5"
-      timezone: "Asia/Tokyo"
   workflow_dispatch:
-
-concurrency:
-  group: update-public-submodule
-  cancel-in-progress: false
+  pull_request:
+    paths:
+      - stock.jp
+      - .github/workflows/update-public-submodule.yml
 
 permissions:
   contents: read
 
 jobs:
-  update:
+  ownership-guardrail:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
-      - name: Check automation PAT configuration
-        env:
-          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+      - name: Explain assistant-owned synchronization
         run: |
-          if [ -z "$AUTOMATION_PAT" ]; then
-            echo '::error::Configure the AUTOMATION_PAT repository secret; see docs/operations/automatic-submodule-update.md'
-            exit 1
-          fi
-
-      - name: Check out private repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.13"
-
-      - name: Install validation dependencies
-        run: python -m pip install "xlrd==2.0.2" "certifi==2026.7.22" PyYAML
-
-      - name: Update and validate public submodule
-        id: public
-        run: ./scripts/update-public-submodule.sh
-
-      - name: Create or update pointer pull request
-        id: pointer-pr
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
-        with:
-          token: ${{ secrets.AUTOMATION_PAT }}
-          base: main
-          branch: automation/update-public-submodule
-          delete-branch: true
-          commit-message: "chore: update public stock.jp submodule"
-          title: "chore: public stock.jp submoduleを更新"
-          body: |
-            public `stock.jp` のマージ済み `main` へsubmodule pointerを更新します。
-
-            - public commit: `${{ steps.public.outputs.public_sha }}`
-            - private state validation: passed
-            - PAPER readiness: passed
-            - broker submission: `HUMAN_ONLY`
-          add-paths: |
-            stock.jp
-
-      - name: Enable auto-merge after successful validation
-        if: steps.pointer-pr.outputs.pull-request-number != ''
-        env:
-          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
-          PR_NUMBER: ${{ steps.pointer-pr.outputs.pull-request-number }}
-        run: |
-          gh pr merge "$PR_NUMBER" \
-            --repo "$GITHUB_REPOSITORY" \
-            --auto \
-            --squash \
-            --delete-branch
+          echo 'Public synchronization is assistant-owned; this workflow does not fetch data, change pointers, create PRs or merge.'
+          echo 'Review docs/operations/assistant-daily-operation.md and run the normal PR validation.'
