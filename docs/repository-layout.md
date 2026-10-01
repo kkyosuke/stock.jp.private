@@ -35,13 +35,13 @@ symlinkはstock.jpでGit除外します。市場データを利用する処理�
 1. 両repositoryの採用済みSHAと未保存変更を確認し、一つのwriterだけで開始する
 2. 安全なruntime認証で契約範囲のデータを有限バッチ取得し、checkpointを保存する
 3. 圧縮・checksum・restoreを検証し、private可視性と本人限定アクセスを確認する
-4. 市場データをstock.jpの専用branch/draft PRへ保存し、remote SHAを照合する
+4. 市場データをstock.jpの専用branch/non-draft日次PRへ保存し、検証後native auto-mergeを有効化する
 5. 通常review後に採用したstock.jp SHAを個人側のpointer更新PRで固定する
 6. 個人の分析・PAPER判定は復元済み入力のcoverage・鮮度・readiness確認後に実施する
 7. 分析結果、判断、run/state/ledgerはstock.jp.privateへ保存する
 
 データ取得成功だけでnightly完了や投資可能とは扱いません。PAPER/HUMAN_ONLY、risk、
-coverage・validity gateは変更しません。main merge、LIVE昇格、broker操作は自動化しません。
+coverage・validity gateは変更しません。検証済み日次PRだけnative auto-mergeを使います。LIVE昇格、broker操作は自動化しません。
 Actionsは合成fixture/保存済み状態の検証だけとし、licensed rawを復元・出力しません。
 
 ## 復旧と削除

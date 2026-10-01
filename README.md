@@ -97,3 +97,10 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - [MRS・希薄化・SAM/SOM・10倍経路の計算](stock.jp/docs/operations/decision-assessment-automation-v0.1.md)
 
 Markdown は `npm run lint:markdown` で検査します。
+
+## 日次PRの保存
+
+日次市場データはstock.jp、完了検証済み個人PAPER結果はstock.jp.privateへnon-draft PRを作成し、
+[検証手順](docs/operations/daily-pr-publication.md)に従ってnative auto-mergeを有効化します。
+コード・依存・設定・risk・policy変更は通常reviewです。mainへ直接pushせず、required checksと
+reviewを維持します。この方針だけでは日次スケジュールは作成されません。

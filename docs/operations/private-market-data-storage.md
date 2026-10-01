@@ -35,8 +35,9 @@ python -B stock.jp/scripts/jquants_ingest.py --root "$PWD"
 圧縮・復元を検証後、stock.jpのstage手順を実施します。private可視性・push権限は直前の
 GitHub読取metadataで検証し、本人限定ACLはユーザー確認として記録します。
 本人確認と独立したcollaborator列挙を混同しません。rawをPR本文・ログ・artifactへ出しません。
-専用branch/draft PRに保存し、remote SHA確認後に「保存済み・未採用」と報告します。
-main採用は通常reviewが必要です。stock.jp.privateのpointerもreview前に勝手に更新しません。
+専用branch/non-draft日次PRに保存し、[日次PR手順](daily-pr-publication.md)の意味検証と
+exact-head CI成功後にnative auto-mergeを有効化します。remote SHA確認後、未mergeなら「保存済み・未採用」と報告します。
+native側のrequired reviewを維持します。stock.jp.privateのコードpointer変更は通常reviewで扱います。
 
 ## 復元・保持・運用
 
