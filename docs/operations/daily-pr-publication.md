@@ -10,11 +10,14 @@
 | --- | --- | --- | --- |
 | 市場データの圧縮世代 | stock.jp/data/jquants-archive | test、guardrail | codec復元・hash・容量・provider/status・全CI成功 |
 | 当日completed PAPER分析/run結果 | stock.jp.private/operations/private | format | 個人path allowlist・state/history整合・run-integrity・全CI成功 |
-| コード、依存、設定、risk、policy、security、金融台帳、submodule pin | 通常の適切なrepo | 既存checks | 対象外、通常review |
+| コード、依存、設定、risk設定、policy、security、金融台帳、submodule pin | 通常の適切なrepo | 既存checks | 対象外、通常review |
 
 branchは`daily/market/YYYY-MM-DD`または`daily/personal/YYYY-MM-DD`で一つだけです。
 `trade-event-ledger.csv`は当日ticketと一致するPAPER_PROPOSEDの追記だけ例外として許可し、
 約定・broker提出・手数料・資金移動・既存行の書換えは拒否します。
+生成済みMRSの新規入力証拠とlog追記は、既存履歴保持・設定一致・隔離再計算に合格した一組だけ
+許可します。risk設定や過去risk記録の変更を許可するものではありません。
+stateはcompleted handoffから既存transitionを隔離再実行し、全fieldの一致を検証します。
 
 対象外fileが混じったら同じPRを自動mergeせず、日次結果と通常reviewへ分離します。
 完了していないrunの監査保存PRは作成可能ですが、自動mergeの対象にはしません。
@@ -30,6 +33,8 @@ repo設定・branch protection・ruleset・required reviewを変更せず、admi
 必須checkがserver側で強制されていると確認できなくても、assistant側で全CIのterminal successを
 待ってからenableします。最新head/base、全remote path、GitHub Actions由来のcheck、追加status、
 全workflowを直前に再確認し、変化があれば再検証します。即時merge endpointへfallbackしません。
+`enable_auto_merge`にexpected head/base SHA引数はありません。直前再読取とsingle writerは
+best-effortであり、readとenableの間をatomicに保証しません。保護設定は維持します。
 required reviewが残る場合、native auto-mergeは待機のままにして正直に報告します。
 
 ## 現在の状態
