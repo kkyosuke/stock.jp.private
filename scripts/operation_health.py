@@ -8,6 +8,8 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import shutil
+import tempfile
 import sys
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
@@ -25,32 +27,6 @@ def parse_time(value: str) -> datetime:
 
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def workflow_alerts(name: str, runs: list, now: datetime, max_age_hours: int) -> list[str]:
-    eligible = [r for r in runs if r["head_branch"] == "main" and r["event"] in {"schedule", "workflow_dispatch"}]
-    if not eligible:
-        return [f"{name}: no main workflow runs"]
-    latest = max(eligible, key=lambda r: r["created_at"])
-    alerts = []
-    if now - parse_time(latest["created_at"]) > timedelta(hours=max_age_hours):
-        alerts.append(f"{name}: no execution within {max_age_hours} hours")
-    if latest["status"] == "completed" and latest["conclusion"] != "success":
-        alerts.append(f"{name}: latest run is {latest['conclusion']}")
-    if latest["status"] != "completed" and now - parse_time(latest["created_at"]) > timedelta(hours=3):
-        alerts.append(f"{name}: run queued or active for more than 3 hours")
-    return alerts
-
-
-def required_price_cycle(now: datetime) -> datetime:
-    # Six hours for collection, GitHub scheduling delays, checks and merge.
-    cutoff = now.astimezone(JST) - timedelta(hours=6)
-    cycle = cutoff.replace(hour=18, minute=30, second=0, microsecond=0)
-    if cycle > cutoff:
-        cycle -= timedelta(days=1)
-    while cycle.weekday() >= 5:
-        cycle -= timedelta(days=1)
-    return cycle
 
 
 def local_report(state: dict, watchdog: dict, readiness: dict) -> dict:
@@ -86,63 +62,39 @@ def github(path: str):
         return json.load(response)
 
 
-def expiry_alerts(value: str | None, now: datetime, label: str) -> list[str]:
-    if not value:
-        return [f"{label}: expiration not reported; check token settings"]
-    expiration = parse_time(value.replace(" UTC", "+00:00"))
-    if expiration - now <= timedelta(days=14):
-        return [f"{label}: expires within 14 days ({expiration.date().isoformat()})"]
-    return []
-
-
-def private_pat_alerts(repo: str, now: datetime) -> list[str]:
-    token = os.environ.get("AUTOMATION_PAT")
-    if not token:
-        return ["AUTOMATION_PAT is missing"]
-    request = Request(f"https://api.github.com/repos/{repo}", headers={
-        "Authorization": f"Bearer {token}",
-        "User-Agent": "stock-jp-operation-health",
-        "Accept": "application/vnd.github+json",
-    })
-    with urlopen(request, timeout=30) as response:
-        return expiry_alerts(response.headers.get("GitHub-Authentication-Token-Expiration"), now, "private AUTOMATION_PAT")
-
-
 def remote_alerts(private_repo: str, public_repo: str, now: datetime) -> list[str]:
-    alerts = []
-    # Public has no weekend schedule; 84 hours covers Friday -> Monday plus delays.
-    for repo, workflow, hours, branch in (
-        (public_repo, "daily-stock-prices.yml", 84, "automation/daily-stock-prices"),
-        (private_repo, "update-public-submodule.yml", 36, "automation/update-public-submodule"),
-    ):
-        meta = github(f"{repo}/actions/workflows/{workflow}")
-        if meta["state"] != "active":
-            alerts.append(f"{repo}/{workflow}: disabled")
-        runs = github(f"{repo}/actions/workflows/{workflow}/runs?branch=main&per_page=100")
-        alerts.extend(workflow_alerts(f"{repo}/{workflow}", runs["workflow_runs"], now, hours))
-        if repo == public_repo and not any(
-            r["head_branch"] == "main" and r["event"] in {"schedule", "workflow_dispatch"}
-            and r["conclusion"] == "success" and parse_time(r["created_at"]) >= required_price_cycle(now)
-            for r in runs["workflow_runs"]
-        ):
-            alerts.append("public prices: required weekday collection has not succeeded")
-        pulls = github(f"{repo}/pulls?state=open&base=main&head={repo.split('/')[0]}:{branch}&per_page=100")
-        for pr in pulls:
-            if pr["head"]["ref"] == branch and now - parse_time(pr["created_at"]) > timedelta(hours=3):
-                alerts.append(f"{repo}: automation PR #{pr['number']} pending more than 3 hours")
+    # Observe persisted inputs, not retired collection/auto-merge workflow runs.
     tip = github(f"{public_repo}/commits/main")
     pointer = github(f"{private_repo}/contents/stock.jp?ref=main")
     if tip["sha"] != pointer["sha"] and now - parse_time(tip["commit"]["committer"]["date"]) > timedelta(hours=3):
-        alerts.append("private public pointer is behind public main for more than 3 hours")
-    return alerts
+        return ["public main differs from the reviewed private pointer; assistant review required"]
+    return []
 
 
-def command_json(script: str, at: str) -> dict:
-    command = [sys.executable, str(ROOT / "stock.jp/scripts" / script), "check", "--at", at]
-    result = subprocess.run(command, text=True, capture_output=True, timeout=180)
-    if result.returncode not in {0, 1}:
-        raise RuntimeError(f"{script} failed (exit {result.returncode})")
-    return json.loads(result.stdout)
+def command_json(script: str, at: str, action: str = "check") -> dict:
+    # bootstrap.check may migrate state. Validate a disposable copy, never the
+    # canonical checkout, and reject any implicit migration instead of adopting it.
+    with tempfile.TemporaryDirectory(prefix="stock-health-") as directory:
+        scratch = Path(directory)
+        public = scratch / "stock.jp"
+        shutil.copytree(ROOT / "stock.jp", public,
+                        ignore=shutil.ignore_patterns(".git", ".venv", "node_modules", "private", "__pycache__"))
+        private = scratch / "operations/private"
+        shutil.copytree(ROOT / "operations/private", private)
+        (public / "operations").mkdir(exist_ok=True)
+        (public / "operations/private").symlink_to(private, target_is_directory=True)
+        def snapshot():
+            return {str(p.relative_to(private)): p.read_bytes() for p in private.rglob("*") if p.is_file()}
+        before = snapshot()
+        command = [sys.executable, str(public / "scripts" / script), action]
+        if action == "check":
+            command.extend(["--at", at])
+        result = subprocess.run(command, text=True, capture_output=True, timeout=180, cwd=public)
+        if snapshot() != before:
+            raise RuntimeError(f"{script} requires migration; assistant review required")
+        if result.returncode not in {0, 1}:
+            raise RuntimeError(f"{script} failed (exit {result.returncode})")
+        return json.loads(result.stdout)
 
 
 def main() -> int:
@@ -165,7 +117,6 @@ def main() -> int:
         report["price_date"] = manifest["latest_trading_date"]
         if not args.offline:
             report["alerts"].extend(remote_alerts(os.environ["GITHUB_REPOSITORY"], "kkyosuke/stock.jp", now))
-            report["alerts"].extend(private_pat_alerts(os.environ["GITHUB_REPOSITORY"], now))
     except Exception as error:
         report["alerts"].append(f"health collection failed: {type(error).__name__}: {error}")
     report["status"] = "ATTENTION" if report["alerts"] else "OK"
@@ -181,3 +132,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -2,10 +2,11 @@
 
 ## 正本
 
+- [アシスタント日次実行契約](operations/assistant-daily-operation.md): 収集・調査・PAPER実行・private保存・停止条件
 - [リポジトリ全体構成](repository-layout.md): public/private の境界と配置
 - [private 運用手順](operations/private-operation-runbook.md): setup、日次、競合、復旧
 - [運用開始後の詳細スケジュール](operations/post-launch-operation-schedule.md): 日次フロー、人の作業、定期review、LIVE移行
-- [public submodule自動更新](operations/automatic-submodule-update.md): 毎朝のpointer PRとauto-merge
+- [public submoduleの採用](operations/automatic-submodule-update.md): アシスタントによるreview済みpointer採用
 - [LIVE GO/NO-GO 基準](live-readiness.md): gate、evidence、停止条件
 - [2026-09-01 readiness review](reviews/operation-readiness-review-2026-09-01.md): 現在地と次の作業
 
