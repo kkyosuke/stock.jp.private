@@ -1,5 +1,8 @@
 # private 運用手順
 
+現在、両repoは非公開・本人限定です。publicという旧称は共通コード・データrepoのstock.jpを指します。
+[現行の境界](../repository-layout.md)を優先します。
+
 ## 1. setup
 
 private repository の root で実行します。
@@ -23,7 +26,8 @@ Yahoo bulk取得を停止します。credentialはチャットやGitへ保存せ
 秘密情報管理経路で設定します。
 
 raw市場データとmanifestは`operations/private/market-data/daily-prices/`へ保存し、
-Git追跡対象から除外します。公開archiveへのfallbackはありません。
+作業領域としてGit除外します。圧縮正本は非公開stock.jpの`data/jquants-archive/`へ保存します。
+個人分析・選定・状態・台帳はstock.jp.privateへ置きます。旧archiveへのfallbackはありません。
 [非公開保存・移行手順](private-market-data-storage.md)の取得条件と環境確認が未完了なら
 全市場価格の処理はWAIT / NO-ACTIONとします。会社IR・TDnet・JPX等の一次資料調査は
 独立して続けられますが、価格欠損を推測で埋めず、nightly完了やLIVE合格を宣言しません。

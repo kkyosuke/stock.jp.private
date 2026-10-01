@@ -103,6 +103,8 @@ class OperationHealthTest(unittest.TestCase):
             (archive / "synthetic.csv").write_text("code,close\nSYNTHETIC,100\n")
             (private / "market-data/unrelated").mkdir()
             (private / "market-data/unrelated/sentinel").write_text("do not copy")
+            (private / "market-data-staging").mkdir()
+            (private / "market-data-staging/sentinel").write_text("do not copy")
             (private / "historical-replay/raw").mkdir(parents=True)
             (private / "historical-replay/raw/sentinel").write_text("do not copy")
             (root / "stock.jp/data/daily-prices").mkdir(parents=True)
@@ -114,6 +116,7 @@ class OperationHealthTest(unittest.TestCase):
                 'assert (archive/"synthetic.csv").is_file()\n'
                 'assert not archive.is_symlink()\n'
                 'assert not (root/"operations/private/market-data/unrelated").exists()\n'
+                'assert not (root/"operations/private/market-data-staging").exists()\n'
                 'assert not (root/"operations/private/historical-replay/raw").exists()\n'
                 'assert not (root/"data/daily-prices").exists()\n'
                 'print(\'{"paper_go":true}\')\n'
