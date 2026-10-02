@@ -183,6 +183,32 @@ class NightlyOperationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "latest completed run"):
             prepare_run(at="2026-09-02T21:00:00+09:00", resume_run_id="2026-08-31", root=self.root)
 
+    def test_completed_finalize_retries_preserve_saved_schedule_and_all_private_bytes(self) -> None:
+        from scripts.daily_operation import prepare_run
+        from tests.test_daily_operation import complete_artifacts
+        prepared = prepare_run(at="2026-08-31T23:00:00+09:00", root=self.root)
+        cutoff = "2026-08-31T21:00:00+09:00"
+        complete_artifacts(self.root, prepared, completed_at="2026-09-01T01:00:00+09:00",
+                           source_cutoff=cutoff)
+        private = self.root / "operations/private"
+        run_dir = private / "runs/2026-08-31"
+        (run_dir / "source-scan-cutoff.json").write_text(json.dumps({"cutoff_at_jst": cutoff}))
+        args = dict(run_id="2026-08-31", run_token=str(prepared["run_token"]),
+                    source_cutoff=cutoff, price_date="2026-08-31", summary="synthetic completion", root=self.root)
+        first = finalize_nightly_run(**args, completed_at="2026-09-01T01:00:00+09:00")
+        self.assertFalse(first["already_closed"])
+        self.assertEqual(first["next_run_at_jst"], "2026-09-01T21:00:00+09:00")
+        before = {p.relative_to(private): p.read_bytes() for p in private.rglob("*") if p.is_file()}
+        for retried_at in ("2026-09-01T01:01:00+09:00", "2026-09-01T20:59:59+09:00",
+                           "2026-09-01T21:00:00+09:00", "2026-09-01T22:00:00+09:00",
+                           "2026-09-02T01:00:00+09:00", "2026-09-05T22:00:00+09:00"):
+            with self.subTest(retried_at=retried_at):
+                retry = finalize_nightly_run(**args, completed_at=retried_at)
+                self.assertTrue(retry["already_closed"])
+                self.assertEqual(retry["next_run_at_jst"], first["next_run_at_jst"])
+                self.assertEqual({p.relative_to(private): p.read_bytes() for p in private.rglob("*")
+                                  if p.is_file()}, before)
+
     def _complete_primary_checks(self, run_dir: Path) -> None:
         with (run_dir / "sources.csv").open(
             "a", encoding="utf-8", newline=""

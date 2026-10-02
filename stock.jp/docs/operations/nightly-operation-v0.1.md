@@ -149,6 +149,8 @@ python scripts/nightly_operation.py start \
 この例の日時は実行時刻へ置き換える。期限内leaseは同じtokenを必要とし、期限切れは
 新しいtokenを返す。以後は返されたtokenを使う。存在しないrunの過去日作成や、後続runが
 正常完了した後の巻き戻しは拒否する。元runのcutoff変更も拒否する。
+完了済みrunへのfinalize再試行は、再試行時刻で次回予定を計算し直さない。保存済みの
+次回予定を返し、handoff・state・履歴を保持する。予定時刻を過ぎた再試行も同様である。
 次の新規runは新しいcutoffで評価し、前cutoffのcacheを新しい確認結果として流用しない。
 
 21:00 Asia/Tokyoが現行の意図であり、新規stateテンプレートも平日21:00である。

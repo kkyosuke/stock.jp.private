@@ -155,9 +155,12 @@ def finalize_nightly_run(
     handoff_path = run_dir / "handoff.json"
     handoff = _read_json(handoff_path)
     previous_next_run = handoff.get("next_run_at_jst")
-    next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
-    handoff["next_run_at_jst"] = next_run_at
-    _atomic_json(handoff_path, handoff)
+    already_completed = handoff.get("status") == "completed"
+    next_run_at = previous_next_run
+    if not already_completed:
+        next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
+        handoff["next_run_at_jst"] = next_run_at
+        _atomic_json(handoff_path, handoff)
     try:
         result = complete_run(
             run_id=run_id,
@@ -170,8 +173,9 @@ def finalize_nightly_run(
             root=root,
         )
     except Exception:
-        handoff["next_run_at_jst"] = previous_next_run
-        _atomic_json(handoff_path, handoff)
+        if not already_completed:
+            handoff["next_run_at_jst"] = previous_next_run
+            _atomic_json(handoff_path, handoff)
         raise
     return {
         **result,
