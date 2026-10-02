@@ -24,6 +24,11 @@ CLIのpack/restore例のdata/はstock.jp/基準、stageの--rootはrepo rootで�
 - 個人の分析、選定リスト、保有、判断、run、台帳: stock.jp.privateだけで追跡
 - 認証情報: runtimeだけ。設定やarchiveに値を書かない
 
+## 日次の限定取得
+
+定期実行は[日次Light runner](bounded-daily-acquisition.md)を使用します。
+下記の全履歴CLIを日次1回分の代わりに呼び出しません。
+
 ## 初回と再開
 
 採用済みprivate commitとsource-configを確認し、既存writerがいない状態で実行します。

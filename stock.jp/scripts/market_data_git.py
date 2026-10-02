@@ -24,8 +24,10 @@ DESTINATION = 'kkyosuke/stock.jp.private'
 
 try:
     from scripts import nightly_cache_archive as nightly_cache
+    from scripts.jquants_archive_validation import validate_archive
 except ModuleNotFoundError:
     import nightly_cache_archive as nightly_cache
+    from jquants_archive_validation import validate_archive
 
 
 class ArchiveError(ValueError):
@@ -217,6 +219,13 @@ def verify(store, pointer=None, destination=None):
         nightly_cache.validate(cache_members)
     except (ValueError, TypeError, KeyError, OverflowError):
         raise ArchiveError('invalid nightly cache archive') from None
+    def read_member(name):
+        entry = manifest['files'][name]
+        return b''.join(unpack(store, chunk, CHUNK) for chunk in entry['chunks'])
+    try:
+        validate_archive(manifest['files'], read_member)
+    except (ValueError, TypeError, KeyError, OSError):
+        raise ArchiveError('invalid retained J-Quants revision or page') from None
     if len(manifest['files']) != pointer['file_count'] or total != pointer['raw_bytes']:
         raise ArchiveError('generation totals mismatch')
     return {'verified': True, 'generation': pointer['generation'], 'file_count': len(manifest['files']), 'raw_bytes': total}
