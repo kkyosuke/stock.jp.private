@@ -98,17 +98,26 @@ def initialize_workspace(root: Path = PROJECT_ROOT) -> dict[str, Any]:
 
 
 def prepare_run(
-    *, at: str, run_token: str | None = None, root: Path = PROJECT_ROOT
+    *, at: str, run_token: str | None = None, root: Path = PROJECT_ROOT,
+    resume_run_id: str | None = None,
 ) -> dict[str, Any]:
     initialize_workspace(root)
     started = _parse_jst(at)
     started_iso = started.isoformat(timespec="seconds")
-    run_id = started.date().isoformat()
+    run_id = _validate_run_id(resume_run_id) if resume_run_id else started.date().isoformat()
     private = _private_root(root)
     state = _read_json(private / "state.json")
     policy = _read_json(private / "operation-policy.json")
     run_dir = private / "runs" / run_id
     handoff_path = run_dir / "handoff.json"
+
+    if resume_run_id:
+        if run_id > started.date().isoformat():
+            raise ValueError("cannot resume a future run")
+        if not handoff_path.is_file():
+            raise FileNotFoundError("resume requires an existing run")
+        if state.get("last_run_id") and state["last_run_id"] > run_id:
+            raise ValueError("cannot resume a run older than the latest completed run")
 
     if run_dir.exists():
         if not handoff_path.is_file():

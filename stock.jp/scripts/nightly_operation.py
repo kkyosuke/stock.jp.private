@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import tempfile
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -57,11 +57,16 @@ def _atomic_json(path: Path, value: dict[str, Any]) -> None:
     temporary_path.replace(path)
 
 
-def _next_weeknight(value: datetime) -> str:
-    candidate = (value + timedelta(days=1)).replace(
-        hour=21, minute=0, second=0, microsecond=0
-    )
-    while candidate.weekday() >= 5:
+def _next_weeknight(value: datetime, *, completed_run_id: str | None = None) -> str:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError("datetime must include a UTC offset")
+    now = value.astimezone(JST)
+    completed_day = date.fromisoformat(completed_run_id) if completed_run_id else None
+    candidate = now.replace(hour=21, minute=0, second=0, microsecond=0)
+    # An older run completed after midnight must not consume today's slot.
+    # Conversely, a run already completed for today must not be scheduled twice.
+    while (candidate <= now or candidate.weekday() >= 5
+           or (completed_day is not None and candidate.date() <= completed_day)):
         candidate += timedelta(days=1)
     return candidate.isoformat(timespec="seconds")
 
@@ -71,6 +76,7 @@ def start_nightly_run(
     at: str,
     cutoff: str,
     run_token: str | None = None,
+    resume_run_id: str | None = None,
     fixture_dir: Path | None = None,
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
@@ -84,7 +90,7 @@ def start_nightly_run(
     errors = validate_workspace(root)
     if errors:
         raise ValueError("workspace validation failed: " + "; ".join(errors))
-    prepared = prepare_run(at=at, run_token=run_token, root=root)
+    prepared = prepare_run(at=at, run_token=run_token, root=root, resume_run_id=resume_run_id)
     if prepared["status"] in {"completed", "locked"}:
         return prepared
     token = str(prepared["run_token"])
@@ -141,12 +147,20 @@ def finalize_nightly_run(
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
     run_dir = root / "operations/private/runs" / run_id
+    frozen_path = run_dir / "source-scan-cutoff.json"
+    if frozen_path.exists() and _read_json(frozen_path) != {
+        "cutoff_at_jst": _parse_jst(source_cutoff).isoformat(timespec="seconds")
+    }:
+        raise ValueError("finalize must preserve the original source-scan cutoff")
     handoff_path = run_dir / "handoff.json"
     handoff = _read_json(handoff_path)
     previous_next_run = handoff.get("next_run_at_jst")
-    next_run_at = _next_weeknight(_parse_jst(completed_at))
-    handoff["next_run_at_jst"] = next_run_at
-    _atomic_json(handoff_path, handoff)
+    already_completed = handoff.get("status") == "completed"
+    next_run_at = previous_next_run
+    if not already_completed:
+        next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
+        handoff["next_run_at_jst"] = next_run_at
+        _atomic_json(handoff_path, handoff)
     try:
         result = complete_run(
             run_id=run_id,
@@ -159,8 +173,9 @@ def finalize_nightly_run(
             root=root,
         )
     except Exception:
-        handoff["next_run_at_jst"] = previous_next_run
-        _atomic_json(handoff_path, handoff)
+        if not already_completed:
+            handoff["next_run_at_jst"] = previous_next_run
+            _atomic_json(handoff_path, handoff)
         raise
     return {
         **result,
@@ -194,6 +209,7 @@ def parse_args() -> argparse.Namespace:
     start.add_argument("--at", required=True)
     start.add_argument("--cutoff", required=True)
     start.add_argument("--run-token")
+    start.add_argument("--resume-run-id", help="resume an existing run, including after JST midnight")
     start.add_argument("--fixture-dir", type=Path)
     finalize = commands.add_parser("finalize")
     finalize.add_argument("--run-id", required=True)
@@ -219,6 +235,7 @@ def main() -> None:
             at=args.at,
             cutoff=args.cutoff,
             run_token=args.run_token,
+            resume_run_id=args.resume_run_id,
             fixture_dir=args.fixture_dir,
         )
     elif args.command == "finalize":

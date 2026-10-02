@@ -1,10 +1,11 @@
 import csv
-from datetime import date
+from datetime import date, datetime
 import json
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from scripts.nightly_artifacts import (
     create_nightly_artifacts,
@@ -21,6 +22,49 @@ FIXTURES = PROJECT_ROOT / "tests/fixtures/official-source-scan"
 
 
 class NightlyScheduleTest(unittest.TestCase):
+    def test_finalize_uses_original_run_day_without_changing_cutoff(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / "operations/private/runs/2026-08-31"
+            run.mkdir(parents=True)
+            original = {"next_run_at_jst": None}
+            (run / "handoff.json").write_text(json.dumps(original))
+            cutoff = "2026-08-31T21:00:00+09:00"
+            (run / "source-scan-cutoff.json").write_text(json.dumps({"cutoff_at_jst": cutoff}))
+            def inspect_completion(**kwargs):
+                self.assertEqual(kwargs["run_id"], "2026-08-31")
+                self.assertEqual(kwargs["source_cutoff"], cutoff)
+                self.assertEqual(json.loads((run / "handoff.json").read_text())["next_run_at_jst"],
+                                 "2026-09-01T21:00:00+09:00")
+                raise RuntimeError("isolated completion gate")
+            with patch("scripts.nightly_operation.complete_run", side_effect=inspect_completion):
+                with self.assertRaisesRegex(RuntimeError, "isolated completion gate"):
+                    finalize_nightly_run(run_id="2026-08-31", run_token="synthetic",
+                                         completed_at="2026-09-01T01:00:00+09:00",
+                                         source_cutoff=cutoff, price_date="2026-08-31",
+                                         summary="isolated scheduling test", root=root)
+            self.assertEqual(json.loads((run / "handoff.json").read_text()), original)
+
+    def test_next_eligible_slot_uses_jst_clock_and_completed_run_day(self) -> None:
+        from scripts.nightly_operation import _next_weeknight
+        for now, run_id, expected in (
+            ("2026-09-01T01:00:00+09:00", "2026-08-31", "2026-09-01T21:00:00+09:00"),
+            ("2026-09-01T20:59:59+09:00", "2026-08-31", "2026-09-01T21:00:00+09:00"),
+            ("2026-09-01T21:00:00+09:00", "2026-08-31", "2026-09-02T21:00:00+09:00"),
+            ("2026-09-01T21:00:01+09:00", "2026-08-31", "2026-09-02T21:00:00+09:00"),
+            ("2026-09-01T18:00:00+09:00", "2026-09-01", "2026-09-02T21:00:00+09:00"),
+            ("2026-09-04T01:00:00+09:00", "2026-09-03", "2026-09-04T21:00:00+09:00"),
+            ("2026-09-04T21:00:00+09:00", "2026-09-03", "2026-09-07T21:00:00+09:00"),
+            ("2026-09-05T01:00:00+09:00", "2026-08-31", "2026-09-07T21:00:00+09:00"),
+            ("2026-09-06T23:00:00+09:00", "2026-08-31", "2026-09-07T21:00:00+09:00"),
+            ("2026-09-07T01:00:00+09:00", "2026-08-31", "2026-09-07T21:00:00+09:00"),
+            ("2026-08-31T16:00:00+00:00", "2026-08-31", "2026-09-01T21:00:00+09:00"),
+        ):
+            with self.subTest(now=now, run_id=run_id):
+                self.assertEqual(_next_weeknight(datetime.fromisoformat(now), completed_run_id=run_id), expected)
+        with self.assertRaises(ValueError):
+            _next_weeknight(datetime(2026, 9, 1, 1))
+
     def test_next_weeknight_uses_2100_jst_and_skips_weekends(self) -> None:
         from scripts.nightly_operation import _next_weeknight, _parse_jst
         for now, expected in (
@@ -100,6 +144,70 @@ class NightlyOperationTest(unittest.TestCase):
         path.write_text(
             json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
+
+    def test_explicit_resume_after_midnight_preserves_run_and_success_state(self) -> None:
+        first = self._start()
+        state = self.root / "operations/private/state.json"
+        before = state.read_bytes()
+        resumed = start_nightly_run(
+            at="2026-09-01T01:00:00+09:00", cutoff="2026-08-31T18:30:00+09:00",
+            resume_run_id="2026-08-31", run_token=str(first["run_token"]),
+            fixture_dir=FIXTURES, root=self.root,
+        )
+        self.assertEqual(resumed["run_id"], "2026-08-31")
+        self.assertNotEqual(resumed["run_token"], first["run_token"])  # expired lease
+        self.assertFalse((self.root / "operations/private/runs/2026-09-01").exists())
+        self.assertEqual(state.read_bytes(), before)
+        with self.assertRaisesRegex(ValueError, "original source-scan cutoff"):
+            finalize_nightly_run(
+                run_id="2026-08-31", run_token=str(resumed["run_token"]),
+                completed_at="2026-09-01T01:01:00+09:00", source_cutoff="2026-08-31T19:00:00+09:00",
+                price_date="2026-08-31", summary="must not complete", root=self.root,
+            )
+        with self.assertRaisesRegex(ValueError, "original source-scan cutoff"):
+            start_nightly_run(
+                at="2026-09-01T01:01:00+09:00", cutoff="2026-08-31T19:00:00+09:00",
+                resume_run_id="2026-08-31", run_token=str(resumed["run_token"]),
+                fixture_dir=FIXTURES, root=self.root,
+            )
+
+    def test_resume_cannot_create_or_go_back_before_completed_run(self) -> None:
+        from scripts.daily_operation import prepare_run
+        with self.assertRaises(FileNotFoundError):
+            prepare_run(at="2026-09-01T21:00:00+09:00", resume_run_id="2026-08-31", root=self.root)
+        self._start()
+        path = self.root / "operations/private/state.json"
+        state = json.loads(path.read_text())
+        state["last_run_id"] = "2026-09-01"  # isolated fixture only
+        path.write_text(json.dumps(state))
+        with self.assertRaisesRegex(ValueError, "latest completed run"):
+            prepare_run(at="2026-09-02T21:00:00+09:00", resume_run_id="2026-08-31", root=self.root)
+
+    def test_completed_finalize_retries_preserve_saved_schedule_and_all_private_bytes(self) -> None:
+        from scripts.daily_operation import prepare_run
+        from tests.test_daily_operation import complete_artifacts
+        prepared = prepare_run(at="2026-08-31T23:00:00+09:00", root=self.root)
+        cutoff = "2026-08-31T21:00:00+09:00"
+        complete_artifacts(self.root, prepared, completed_at="2026-09-01T01:00:00+09:00",
+                           source_cutoff=cutoff)
+        private = self.root / "operations/private"
+        run_dir = private / "runs/2026-08-31"
+        (run_dir / "source-scan-cutoff.json").write_text(json.dumps({"cutoff_at_jst": cutoff}))
+        args = dict(run_id="2026-08-31", run_token=str(prepared["run_token"]),
+                    source_cutoff=cutoff, price_date="2026-08-31", summary="synthetic completion", root=self.root)
+        first = finalize_nightly_run(**args, completed_at="2026-09-01T01:00:00+09:00")
+        self.assertFalse(first["already_closed"])
+        self.assertEqual(first["next_run_at_jst"], "2026-09-01T21:00:00+09:00")
+        before = {p.relative_to(private): p.read_bytes() for p in private.rglob("*") if p.is_file()}
+        for retried_at in ("2026-09-01T01:01:00+09:00", "2026-09-01T20:59:59+09:00",
+                           "2026-09-01T21:00:00+09:00", "2026-09-01T22:00:00+09:00",
+                           "2026-09-02T01:00:00+09:00", "2026-09-05T22:00:00+09:00"):
+            with self.subTest(retried_at=retried_at):
+                retry = finalize_nightly_run(**args, completed_at=retried_at)
+                self.assertTrue(retry["already_closed"])
+                self.assertEqual(retry["next_run_at_jst"], first["next_run_at_jst"])
+                self.assertEqual({p.relative_to(private): p.read_bytes() for p in private.rglob("*")
+                                  if p.is_file()}, before)
 
     def _complete_primary_checks(self, run_dir: Path) -> None:
         with (run_dir / "sources.csv").open(
