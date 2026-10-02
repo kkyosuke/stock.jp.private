@@ -328,7 +328,8 @@ def _gap(
     }
 
 
-def _merge_gaps(container: dict[str, Any], gaps: list[dict[str, Any]]) -> None:
+def _merge_gaps(container: dict[str, Any], gaps: list[dict[str, Any]],
+                *, failed_sources: set[str] | None = None) -> None:
     existing = {
         str(gap.get("gap_id")): gap
         for gap in container.get("data_gaps", [])
@@ -336,9 +337,15 @@ def _merge_gaps(container: dict[str, Any], gaps: list[dict[str, Any]]) -> None:
     }
     for gap in gaps:
         prior = existing.get(gap["gap_id"])
+        history = list(prior.get("resolution_history", [])) if prior else []
         if prior and str(prior.get("status", "")).upper() == "RESOLVED":
-            continue
-        existing[gap["gap_id"]] = gap
+            if gap.get("source") not in (failed_sources or set()):
+                continue  # A recurring manual reminder does not invalidate its evidence.
+            history.append({key: value for key, value in prior.items() if key != "resolution_history"})
+        merged = dict(gap)
+        if history:
+            merged["resolution_history"] = history
+        existing[gap["gap_id"]] = merged
     container["data_gaps"] = [existing[key] for key in sorted(existing)]
 
 
@@ -716,8 +723,11 @@ def scan_sources(
         coverage, sources=successful_gap_sources, resolved_at=retrieved
     )
     _resolve_gaps(handoff, sources=successful_gap_sources, resolved_at=retrieved)
-    _merge_gaps(coverage, gaps)
-    _merge_gaps(handoff, gaps)
+    failed_sources = {str(failure["source"]) for failure in non_edinet["blocking_failures"]}
+    if price_failures:
+        failed_sources.add("tracked_market_data")
+    _merge_gaps(coverage, gaps, failed_sources=failed_sources)
+    _merge_gaps(handoff, gaps, failed_sources=failed_sources)
     open_blocking_gaps = sorted(
         {
             str(gap.get("gap_id"))

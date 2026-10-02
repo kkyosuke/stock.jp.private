@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 import json
+import copy
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
@@ -10,6 +11,8 @@ from scripts.jquants_ingest import ApiError, IngestionError, RequestBudgetExhaus
 from scripts.nightly_jquants_cache import NightlyClient
 from scripts.non_edinet_sources import NonEdinetSourceError, _jquants_pages, collect_non_edinet_sources
 from scripts.operation_state import PROJECT_ROOT, initialize_or_migrate_workspace
+from scripts.official_source_scan import _gap, _merge_gaps, _resolve_gaps
+from scripts.run_integrity import _validate_research_artifacts
 
 
 class NightlyCacheTest(unittest.TestCase):
@@ -81,6 +84,65 @@ class NightlyCacheTest(unittest.TestCase):
             client.get('/fins/summary', {})
         self.assertEqual(client.requests, 1)
 
+    def test_null_receipt_and_invalid_retrieval_times_never_refetch(self):
+        client = self.client(lambda *_: {'data': []})
+        client.get('/fins/summary', {})
+        checkpoint = next(client.root.glob('pages/*.json'))
+        receipt = json.loads(checkpoint.read_text())
+        for bad in (None, {**receipt, 'retrieved_at_jst': 'not-a-date'},
+                    {**receipt, 'retrieved_at_jst': '2026-10-02T21:00:00'}):
+            with self.subTest(receipt=bad):
+                checkpoint.write_text(json.dumps(bad))
+                before = checkpoint.read_bytes()
+                with self.assertRaises(IngestionError):
+                    client.get('/fins/summary', {})
+                self.assertEqual(client.requests, 1)
+                self.assertEqual(checkpoint.read_bytes(), before)
+
+    def test_provider_error_blocks_completion_even_without_open_gaps(self):
+        for status in ('ERROR', 'INCOMPLETE', 'MISSING_CREDENTIAL', 'UNKNOWN'):
+            errors = _validate_research_artifacts(
+                health={'run_id': '2026-10-02', 'status': 'COMPLETED',
+                        'started_at_jst': self.cutoff, 'completed_at_jst': self.cutoff,
+                        'providers': {'jquants_financials': {'status': status}}},
+                queue={'run_id': '2026-10-02', 'generated_at_jst': self.cutoff, 'tasks': []},
+                run_id='2026-10-02', handoff={'pending_reviews': []}, valid_source_ids=set())
+            self.assertTrue(any('incomplete query coverage' in error for error in errors))
+
+    def test_manual_reminder_does_not_erase_prior_verified_resolution(self):
+        gap = _gap(gap_id='manual-ir', source='company_ir', impact='check IR', retry_after=self.cutoff)
+        container = {'data_gaps': [copy.deepcopy(gap)]}
+        _resolve_gaps(container, sources={'company_ir'}, resolved_at=self.cutoff)
+        before = copy.deepcopy(container)
+        _merge_gaps(container, [gap], failed_sources={'nightly_jquants_scan'})
+        self.assertEqual(container, before)
+
+    def test_missing_credentials_block_enabled_but_not_disabled_datasets(self):
+        private = self.root / 'private'
+        config = {'jpx_listed_master': {'enabled': False}, 'jquants': {
+            'enabled': True, 'api_key_env': 'JQUANTS_API_KEY', 'plan': 'light',
+            'listed_master_enabled': False, 'daily_bars_enabled': False,
+            'financial_summary_enabled': True, 'earnings_calendar_enabled': True,
+            'trading_calendar_enabled': False}}
+        args = dict(run_id='2026-10-02', scan_dates=[date(2026, 10, 2)], targets=set(),
+                    cutoff_at=datetime.fromisoformat(self.cutoff), started=datetime.fromisoformat(self.cutoff),
+                    config=config, run_dir=private / 'runs/2026-10-02', private=private, environ={})
+        result = collect_non_edinet_sources(**args)
+        self.assertEqual(result['providers']['jquants_security_master']['status'], 'DISABLED')
+        self.assertEqual(result['providers']['jquants_financials']['status'], 'MISSING_CREDENTIAL')
+        self.assertEqual(result['providers']['jquants_earnings_calendar']['status'], 'MISSING_CREDENTIAL')
+        self.assertIn('nightly_jquants_scan', [g['source'] for g in result['blocking_failures']])
+        # Enable only an empty master query; optional disabled datasets must not
+        # prevent successful enabled-query aggregation or cause any API calls.
+        config['jquants'].update(listed_master_enabled=True, financial_summary_enabled=False,
+                                  earnings_calendar_enabled=False)
+        fixture = self.root / 'fixtures'
+        fixture.mkdir()
+        (fixture / 'jquants-master-2026-10-02.json').write_text('{"data":[]}')
+        result = collect_non_edinet_sources(**args, fixture_dir=fixture)
+        self.assertIn('nightly_jquants_scan', result['successful_gap_sources'])
+        self.assertEqual(result['blocking_failures'], [])
+
     def test_invalid_response_and_pagination_cycle_never_complete(self):
         bad = self.client(lambda *_: {'data': 'invalid'})
         with self.assertRaises(IngestionError):
@@ -129,9 +191,18 @@ class NightlyCacheTest(unittest.TestCase):
                     targets={'1234'}, cutoff_at=cutoff, started=cutoff, config=config,
                     run_dir=run_dir, private=private, environ={'JQUANTS_API_KEY': 'synthetic-test'})
         before = (private / 'state.json').read_bytes()
+        containers = [{'data_gaps': []}, {'data_gaps': []}]
+        def merge_result(result):
+            failed = {failure['source'] for failure in result['blocking_failures']}
+            gaps = [_gap(gap_id='2026-10-02-' + source, source=source,
+                         impact='synthetic failure', retry_after=self.cutoff) for source in failed]
+            for container in containers:
+                _resolve_gaps(container, sources=result['successful_gap_sources'], resolved_at=self.cutoff)
+                _merge_gaps(container, gaps, failed_sources=failed)
         with patch('scripts.nightly_jquants_cache.NightlyClient', side_effect=factory):
             for index in range(4):
                 result = collect_non_edinet_sources(**args)
+                merge_result(result)
                 self.assertLessEqual(clients[-1].requests, 12)
                 self.assertEqual(sum(p['request_count'] for p in result['providers'].values()), clients[-1].requests)
                 if index < 3:
@@ -147,6 +218,19 @@ class NightlyCacheTest(unittest.TestCase):
             self.assertEqual(result['source_rows'], replay['source_rows'])
             for path, content in files.items():
                 self.assertEqual(path.read_bytes(), content)
+            resolved = copy.deepcopy(containers[0]['data_gaps'][0])
+            self.assertEqual(resolved['status'], 'RESOLVED')
+            obj = next(clients[-1].root.glob('objects/*/*.json'))
+            obj.write_text('{"data":[{"corrupted":true}]}')
+            broken = collect_non_edinet_sources(**args)
+            self.assertEqual(clients[-1].requests, 0)
+            merge_result(broken)
+            merge_result(broken)  # repeated failure must not erase/duplicate history
+            for container in containers:
+                reopened = container['data_gaps'][0]
+                self.assertEqual(reopened['status'], 'OPEN')
+                self.assertIsNone(reopened['resolved_at_jst'])
+                self.assertEqual(reopened['resolution_history'], [resolved])
         self.assertEqual((private / 'state.json').read_bytes(), before)
 
 

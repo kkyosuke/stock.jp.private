@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from datetime import datetime
 
 try:
     from scripts.jquants_ingest import (
@@ -46,19 +47,25 @@ class NightlyClient:
         key = digest(encoded(identity))
         with archive_lock(self.root):
             path = confined(self.root, "pages", key + ".json")
+            existed = path.exists()
             receipt = read_json(path)
-            if receipt is not None:
+            if existed:
                 if not isinstance(receipt, dict) or receipt.get("identity") != identity:
                     raise IngestionError("nightly page checkpoint identity mismatch")
                 try:
                     payload = checked_payload(self.root, receipt["object"])
                     if not isinstance(receipt["retrieved_at_jst"], str):
                         raise ValueError()
+                    observed = datetime.fromisoformat(receipt["retrieved_at_jst"])
+                    if observed.tzinfo is None or observed.utcoffset() is None:
+                        raise ValueError()
                 except (KeyError, TypeError, ValueError):
                     raise IngestionError("invalid nightly page checkpoint") from None
                 self.cache_hits += 1
             else:
                 payload = self.client.get(endpoint, params)
+            if not isinstance(payload, dict):
+                raise IngestionError("J-Quants returned an invalid data schema")
             data = payload.get("data")
             cursor = payload.get("pagination_key")
             if (not isinstance(data, list) or any(not isinstance(row, dict) for row in data)

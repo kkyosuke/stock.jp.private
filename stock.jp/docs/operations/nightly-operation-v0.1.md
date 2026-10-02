@@ -125,12 +125,15 @@ private repository の同期と復旧、実行漏れ検知、初回診断、20�
 これは1回の起動の上限であり、連続自動ループで上限を実質解除しない。
 上限到達時は`nightly_jquants_scan`のblocking gapを残し、成功cutoffを進めない。
 全有効datasetが完了するまで部分ページを完全な確認根拠にしない。
+有効datasetの認証不足もblockingとし、任意の無効datasetは成功判定から除外する。
+解決後の再失敗は前回の解決内容を`resolution_history`に保存してgapを再開する。
+J-Quantsの個別providerが失敗中なら、gapだけを解決済みにしてもfinalizeできない。
 
 checkpointは`operations/private/market-data/nightly-source-cache/`にローカル保存する。
 固定origin・plan・cutoff・endpoint・全query（ページキーを含む）が一致したページだけを
 checksum検証後に再利用する。各ページの実取得日時はmanifestのreceiptへ残す。
 dataset側の日時は再構成日時であり、再取得の証拠にはしない。
-破損したcheckpointは自動削除・再取得せず停止する。保存直前の中断では、その1ページの
+破損したcheckpoint（JSON null、不正・timezoneなしの取得日時を含む）は自動削除・再取得せず停止する。保存直前の中断では、その1ページの
 readだけが再実行され得る。成功済みページを削除しない。
 
 同日も日付をまたいだ場合も、元runのcutoffを維持し、現在時刻と元run IDで再開する:

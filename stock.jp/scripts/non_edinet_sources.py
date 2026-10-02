@@ -561,6 +561,13 @@ def collect_non_edinet_sources(
     jq_client = None
     jq_unavailable_status = "MISSING_CREDENTIAL"
     jq_unavailable_reason = "JQUANTS_API_KEY is not set"
+    jq_dataset_flags = {
+        "jquants_security_master": "listed_master_enabled",
+        "jquants_market_data": "daily_bars_enabled",
+        "jquants_financials": "financial_summary_enabled",
+        "jquants_earnings_calendar": "earnings_calendar_enabled",
+        "jquants_trading_calendar": "trading_calendar_enabled",
+    }
     if jq_available and not fixture_dir:
         try:
             try:
@@ -587,11 +594,13 @@ def collect_non_edinet_sources(
         ):
             provider(name, "DISABLED", 0, 0, "provider disabled")
     elif not jq_available:
-        for name in (
-            "jquants_security_master", "jquants_market_data",
-            "jquants_financials", "jquants_earnings_calendar", "jquants_trading_calendar",
-        ):
-            provider(name, jq_unavailable_status, 0, 0, jq_unavailable_reason)
+        for name, flag in jq_dataset_flags.items():
+            if not jq_config.get(flag, True):
+                provider(name, "DISABLED", 0, 0, "dataset disabled")
+            elif name == "jquants_market_data" and not targets:
+                provider(name, "NOT_APPLICABLE", 0, 0)
+            else:
+                provider(name, jq_unavailable_status, 0, 0, jq_unavailable_reason)
     else:
         # Daily point-in-time master, including industry and market classifications.
         if jq_config.get("listed_master_enabled", True):
@@ -994,8 +1003,9 @@ def collect_non_edinet_sources(
         else:
             provider("jquants_trading_calendar", "DISABLED", 0, 0, "dataset disabled")
 
-    jq_providers = [value for name, value in providers.items() if name.startswith("jquants_")]
-    if any(value["status"] in {"ERROR", "INCOMPLETE"} for value in jq_providers):
+    jq_providers = [providers[name] for name, flag in jq_dataset_flags.items()
+                    if jq_enabled and jq_config.get(flag, True)]
+    if any(value["status"] not in {"OK", "NOT_APPLICABLE"} for value in jq_providers):
         blocking_failures.append({
             "source": "nightly_jquants_scan",
             "impact": "J-Quants query coverage is incomplete; partial pages are not completed evidence",

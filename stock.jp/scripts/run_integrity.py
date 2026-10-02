@@ -445,6 +445,12 @@ def _validate_research_artifacts(
         errors.append("provider-health run_id mismatch")
     if health.get("status") not in {"COMPLETED", "PARTIAL"}:
         errors.append("official source scan has not run")
+    for name, provider in health.get("providers", {}).items():
+        if name.startswith("jquants_") and (
+            not isinstance(provider, dict)
+            or provider.get("status") not in {"OK", "NOT_APPLICABLE", "DISABLED"}
+        ):
+            errors.append(f"J-Quants provider has incomplete query coverage: {name}")
     if not health.get("started_at_jst") or not health.get("completed_at_jst"):
         errors.append("provider-health requires start and completion timestamps")
     if queue.get("run_id") != run_id:
