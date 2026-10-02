@@ -4,15 +4,17 @@
 CLIのpack/restore例のdata/はstock.jp/基準、stageの--rootはrepo rootです。
 新規licensed uploadの既存拒否はこの構成変更で解除されず、再試行・迂回しません。
 
-The owner selected `kkyosuke/stock.jp/data/` after confirming that stock.jp is
-private. This supersedes the earlier local-only/raw-Git exclusion design for this
-specific destination. Account state, orders, ledger and credentials remain outside
-this repository. Existing historical datasets/history are not moved or deleted.
+The owner consolidated common code and existing committed data into the private
+`kkyosuke/stock.jp.private` repository. Market data lives under `stock.jp/data/`;
+account state, orders and ledgers live under `operations/private/`. Credentials
+remain outside Git. The original repository and its history are preserved.
+Newly acquired samples are excluded from the migration; the outstanding upload
+rejection remains in force.
 
 ## Destination and access
 
-The exact licensed archive destination is `data/jquants-archive/` in
-`kkyosuke/stock.jp.private`, not stock.jp.private. GitHub metadata must show private
+The exact archive destination is `stock.jp/data/jquants-archive/` relative to
+the root of `kkyosuke/stock.jp.private`. GitHub metadata must show private
 visibility and push access immediately before each data push. The owner must
 confirm that only they can view this repository; private visibility alone does
 not enumerate collaborators, apps, forks or backups. A confirmation is owner

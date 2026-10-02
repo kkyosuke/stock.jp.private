@@ -91,7 +91,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/live_gate_evidence.py \
   --write-evidence stock.jp/operations/private/evidence/repository-recovery.json
 ~~~
 
-clean clone、submodule、workspace setup、state と bootstrap、最新成功 run と handoff、全台帳、未照合注文を照合する。復元した private commit と public submodule commit は元の40桁SHAと一致しなければならない。別媒体の mirror は要求しない。
+単一repoのclean clone、workspace setup、state と bootstrap、最新成功 run と handoff、全台帳、未照合注文を照合する。復元した private commit と stock.jp/ のcode tree SHA は元の40桁SHAと一致しなければならない。別媒体の mirror は要求しない。
 
 証跡は日数では失効しない。setup、コード配置、状態 schema、台帳構成に影響する変更では、公開validatorの `REPOSITORY_LAYOUT_REVISION` を上げる。既存証跡はrevision不一致で失効するため、変更後にclean cloneを再確認する。稼働中checkoutを確認先にせず、一時ディレクトリを使う。repository URL、credential、口座情報は証跡へ記載しない。
 

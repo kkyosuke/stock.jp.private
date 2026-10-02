@@ -83,7 +83,7 @@
 
 ## 4. 株価の定時収集とAIの一回指示
 
-アシスタントは[非公開入力手順](daily-stock-price-actions-v0.1.md)に従い、最新価格coverage 98%以上、archive、全回帰test、compile、20日smokeを確認する。失敗時は公開・採用やPAPER開始へ進まず、取得エラー、母集団件数、checksum、過去日変更を調査する。コードの公開とprivate submodule採用は別の明示的な操作として権限範囲を確認し、Actionsへ委任しない。未反映、active対象欠損、古いcheckoutはreadinessで停止する。
+アシスタントは[非公開入力手順](daily-stock-price-actions-v0.1.md)に従い、最新価格coverage 98%以上、archive、全回帰test、compile、20日smokeを確認する。失敗時は公開・採用やPAPER開始へ進まず、取得エラー、母集団件数、checksum、過去日変更を調査する。コード変更と日次データ/result変更は同じprivate repoの別PRとしてreviewし、Actionsへ委任しない。未反映、active対象欠損、古いcheckoutはreadinessで停止する。
 
 Yahoo一括取得は停止中。採用するJ-Quants入力もprovider・プラン範囲・鮮度を検証し、売買判断を確定する前に会社IR、TDnet、JPXの公式価格・コーポレートアクション、現物株カレンダー、EDINETを一次資料で確認する。確認不能な日は`WAIT`または`fail`とする。
 
