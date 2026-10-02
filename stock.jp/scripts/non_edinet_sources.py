@@ -160,7 +160,7 @@ def _atomic_csv_gzip(
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile("wb", dir=path.parent, delete=False) as temporary:
-        with gzip.GzipFile(fileobj=temporary, mode="wb", mtime=0) as compressed:
+        with gzip.GzipFile(filename="", fileobj=temporary, mode="wb", mtime=0) as compressed:
             with io.TextIOWrapper(compressed, encoding="utf-8", newline="") as text:
                 writer = csv.DictWriter(text, fieldnames=fields, lineterminator="\n")
                 writer.writeheader()
@@ -467,6 +467,8 @@ def collect_non_edinet_sources(
     raw_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     normalized_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     providers: dict[str, dict[str, Any]] = {}
+    jq_client = None
+    jq_previous_requests = 0
     sources: list[dict[str, str]] = []
     tasks: list[dict[str, Any]] = []
     blocking_failures: list[dict[str, str]] = []
@@ -484,9 +486,15 @@ def collect_non_edinet_sources(
     }
 
     def provider(name: str, status: str, requests: int, records: int, error: str = "") -> None:
+        nonlocal jq_previous_requests
+        pages = requests
+        if name.startswith("jquants_") and jq_client is not None:
+            requests = jq_client.requests - jq_previous_requests
+            jq_previous_requests = jq_client.requests
         providers[name] = {
             "status": status,
             "request_count": requests,
+            "page_count": pages,
             "record_count": records,
             "error": error,
         }
@@ -556,12 +564,16 @@ def collect_non_edinet_sources(
     if jq_available and not fixture_dir:
         try:
             try:
-                from scripts.jquants_ingest import Client
+                from scripts.nightly_jquants_cache import NightlyClient
             except ModuleNotFoundError:
-                from jquants_ingest import Client
+                from nightly_jquants_cache import NightlyClient
             if base_url != "https://api.jquants.com/v2" or jq_config.get("api_key_env") != "JQUANTS_API_KEY":
                 raise NonEdinetSourceError("J-Quants origin or credential environment is invalid")
-            jq_client = Client(plan=jq_config.get("plan"), timeout=timeout)
+            jq_client = NightlyClient(
+                private=private, cutoff=cutoff_at.isoformat(timespec="seconds"),
+                retrieved=retrieved, plan=jq_config.get("plan"), timeout=timeout,
+                budget=jq_config.get("ingestion", {}).get("max_requests_per_run", 12),
+            )
         except RuntimeError as error:
             jq_available = False
             jq_unavailable_status = "ERROR"
@@ -607,7 +619,7 @@ def collect_non_edinet_sources(
                 provider("jquants_security_master", "OK", len(pages), len(rows))
                 sources.append(
                     _source_row(
-                        source_id=f"jquants-master-{run_id}-{_sha256(path)[:12]}",
+                        source_id=f"jquants-master-{run_id}-{_stable_id(json.dumps(rows, sort_keys=True))}",
                         category="jpx_reference_data", code="",
                         title=f"J-Quants point-in-time listed master ({len(normalized)} issues)",
                         published_at=_query_published(cutoff_at.date(), cutoff_at),
@@ -982,6 +994,26 @@ def collect_non_edinet_sources(
         else:
             provider("jquants_trading_calendar", "DISABLED", 0, 0, "dataset disabled")
 
+    jq_providers = [value for name, value in providers.items() if name.startswith("jquants_")]
+    if any(value["status"] in {"ERROR", "INCOMPLETE"} for value in jq_providers):
+        blocking_failures.append({
+            "source": "nightly_jquants_scan",
+            "impact": "J-Quants query coverage is incomplete; partial pages are not completed evidence",
+            "reason": "Resume the same frozen cutoff using the private page checkpoints; verify every enabled dataset before completion",
+        })
+    elif jq_providers and all(value["status"] in {"OK", "NOT_APPLICABLE"} for value in jq_providers):
+        successful_gap_sources.add("nightly_jquants_scan")
+    if jq_client is not None:
+        manifest["jquants_checkpoint"] = {
+            "request_count": jq_client.requests,
+            "cache_hits": jq_client.cache_hits,
+            "pages": [
+                {"query_id": key, "retrieved_at_jst": receipt["retrieved_at_jst"],
+                 "sha256": receipt["object"]["sha256"]}
+                for key, receipt in jq_client.receipts.items()
+            ],
+            "notes": "Dataset retrieval timestamps describe materialization; page receipts preserve actual origin retrieval times. Reuse requires the exact cutoff and query.",
+        }
     _atomic_json(normalized_dir / "manifest.json", manifest)
     return {
         "providers": providers,

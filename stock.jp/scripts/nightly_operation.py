@@ -71,6 +71,7 @@ def start_nightly_run(
     at: str,
     cutoff: str,
     run_token: str | None = None,
+    resume_run_id: str | None = None,
     fixture_dir: Path | None = None,
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
@@ -84,7 +85,7 @@ def start_nightly_run(
     errors = validate_workspace(root)
     if errors:
         raise ValueError("workspace validation failed: " + "; ".join(errors))
-    prepared = prepare_run(at=at, run_token=run_token, root=root)
+    prepared = prepare_run(at=at, run_token=run_token, root=root, resume_run_id=resume_run_id)
     if prepared["status"] in {"completed", "locked"}:
         return prepared
     token = str(prepared["run_token"])
@@ -141,6 +142,11 @@ def finalize_nightly_run(
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
     run_dir = root / "operations/private/runs" / run_id
+    frozen_path = run_dir / "source-scan-cutoff.json"
+    if frozen_path.exists() and _read_json(frozen_path) != {
+        "cutoff_at_jst": _parse_jst(source_cutoff).isoformat(timespec="seconds")
+    }:
+        raise ValueError("finalize must preserve the original source-scan cutoff")
     handoff_path = run_dir / "handoff.json"
     handoff = _read_json(handoff_path)
     previous_next_run = handoff.get("next_run_at_jst")
@@ -194,6 +200,7 @@ def parse_args() -> argparse.Namespace:
     start.add_argument("--at", required=True)
     start.add_argument("--cutoff", required=True)
     start.add_argument("--run-token")
+    start.add_argument("--resume-run-id", help="resume an existing run, including after JST midnight")
     start.add_argument("--fixture-dir", type=Path)
     finalize = commands.add_parser("finalize")
     finalize.add_argument("--run-id", required=True)
@@ -219,6 +226,7 @@ def main() -> None:
             at=args.at,
             cutoff=args.cutoff,
             run_token=args.run_token,
+            resume_run_id=args.resume_run_id,
             fixture_dir=args.fixture_dir,
         )
     elif args.command == "finalize":

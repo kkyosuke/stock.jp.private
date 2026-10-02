@@ -101,6 +101,44 @@ class NightlyOperationTest(unittest.TestCase):
             json.dumps(queue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
 
+    def test_explicit_resume_after_midnight_preserves_run_and_success_state(self) -> None:
+        first = self._start()
+        state = self.root / "operations/private/state.json"
+        before = state.read_bytes()
+        resumed = start_nightly_run(
+            at="2026-09-01T01:00:00+09:00", cutoff="2026-08-31T18:30:00+09:00",
+            resume_run_id="2026-08-31", run_token=str(first["run_token"]),
+            fixture_dir=FIXTURES, root=self.root,
+        )
+        self.assertEqual(resumed["run_id"], "2026-08-31")
+        self.assertNotEqual(resumed["run_token"], first["run_token"])  # expired lease
+        self.assertFalse((self.root / "operations/private/runs/2026-09-01").exists())
+        self.assertEqual(state.read_bytes(), before)
+        with self.assertRaisesRegex(ValueError, "original source-scan cutoff"):
+            finalize_nightly_run(
+                run_id="2026-08-31", run_token=str(resumed["run_token"]),
+                completed_at="2026-09-01T01:01:00+09:00", source_cutoff="2026-08-31T19:00:00+09:00",
+                price_date="2026-08-31", summary="must not complete", root=self.root,
+            )
+        with self.assertRaisesRegex(ValueError, "original source-scan cutoff"):
+            start_nightly_run(
+                at="2026-09-01T01:01:00+09:00", cutoff="2026-08-31T19:00:00+09:00",
+                resume_run_id="2026-08-31", run_token=str(resumed["run_token"]),
+                fixture_dir=FIXTURES, root=self.root,
+            )
+
+    def test_resume_cannot_create_or_go_back_before_completed_run(self) -> None:
+        from scripts.daily_operation import prepare_run
+        with self.assertRaises(FileNotFoundError):
+            prepare_run(at="2026-09-01T21:00:00+09:00", resume_run_id="2026-08-31", root=self.root)
+        self._start()
+        path = self.root / "operations/private/state.json"
+        state = json.loads(path.read_text())
+        state["last_run_id"] = "2026-09-01"  # isolated fixture only
+        path.write_text(json.dumps(state))
+        with self.assertRaisesRegex(ValueError, "latest completed run"):
+            prepare_run(at="2026-09-02T21:00:00+09:00", resume_run_id="2026-08-31", root=self.root)
+
     def _complete_primary_checks(self, run_dir: Path) -> None:
         with (run_dir / "sources.csv").open(
             "a", encoding="utf-8", newline=""

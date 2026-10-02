@@ -383,6 +383,13 @@ def scan_sources(
         run_token=run_token,
         at=started.isoformat(timespec="seconds"),
     )
+    frozen_path = run_dir / "source-scan-cutoff.json"
+    frozen = {"cutoff_at_jst": cutoff_at.isoformat(timespec="seconds")}
+    if frozen_path.exists():
+        if _read_json(frozen_path) != frozen:
+            raise ValueError("resume must preserve the original source-scan cutoff")
+    else:
+        _atomic_json(frozen_path, frozen)
     config = _source_config(root, private)
     coverage_path = run_dir / "coverage.json"
     coverage = _read_json(coverage_path)
