@@ -1,10 +1,11 @@
 import csv
-from datetime import date
+from datetime import date, datetime
 import json
 from pathlib import Path
 import shutil
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from scripts.nightly_artifacts import (
     create_nightly_artifacts,
@@ -21,6 +22,49 @@ FIXTURES = PROJECT_ROOT / "tests/fixtures/official-source-scan"
 
 
 class NightlyScheduleTest(unittest.TestCase):
+    def test_finalize_uses_original_run_day_without_changing_cutoff(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / "operations/private/runs/2026-08-31"
+            run.mkdir(parents=True)
+            original = {"next_run_at_jst": None}
+            (run / "handoff.json").write_text(json.dumps(original))
+            cutoff = "2026-08-31T21:00:00+09:00"
+            (run / "source-scan-cutoff.json").write_text(json.dumps({"cutoff_at_jst": cutoff}))
+            def inspect_completion(**kwargs):
+                self.assertEqual(kwargs["run_id"], "2026-08-31")
+                self.assertEqual(kwargs["source_cutoff"], cutoff)
+                self.assertEqual(json.loads((run / "handoff.json").read_text())["next_run_at_jst"],
+                                 "2026-09-01T21:00:00+09:00")
+                raise RuntimeError("isolated completion gate")
+            with patch("scripts.nightly_operation.complete_run", side_effect=inspect_completion):
+                with self.assertRaisesRegex(RuntimeError, "isolated completion gate"):
+                    finalize_nightly_run(run_id="2026-08-31", run_token="synthetic",
+                                         completed_at="2026-09-01T01:00:00+09:00",
+                                         source_cutoff=cutoff, price_date="2026-08-31",
+                                         summary="isolated scheduling test", root=root)
+            self.assertEqual(json.loads((run / "handoff.json").read_text()), original)
+
+    def test_next_eligible_slot_uses_jst_clock_and_completed_run_day(self) -> None:
+        from scripts.nightly_operation import _next_weeknight
+        for now, run_id, expected in (
+            ("2026-09-01T01:00:00+09:00", "2026-08-31", "2026-09-01T21:00:00+09:00"),
+            ("2026-09-01T20:59:59+09:00", "2026-08-31", "2026-09-01T21:00:00+09:00"),
+            ("2026-09-01T21:00:00+09:00", "2026-08-31", "2026-09-02T21:00:00+09:00"),
+            ("2026-09-01T21:00:01+09:00", "2026-08-31", "2026-09-02T21:00:00+09:00"),
+            ("2026-09-01T18:00:00+09:00", "2026-09-01", "2026-09-02T21:00:00+09:00"),
+            ("2026-09-04T01:00:00+09:00", "2026-09-03", "2026-09-04T21:00:00+09:00"),
+            ("2026-09-04T21:00:00+09:00", "2026-09-03", "2026-09-07T21:00:00+09:00"),
+            ("2026-09-05T01:00:00+09:00", "2026-08-31", "2026-09-07T21:00:00+09:00"),
+            ("2026-09-06T23:00:00+09:00", "2026-08-31", "2026-09-07T21:00:00+09:00"),
+            ("2026-09-07T01:00:00+09:00", "2026-08-31", "2026-09-07T21:00:00+09:00"),
+            ("2026-08-31T16:00:00+00:00", "2026-08-31", "2026-09-01T21:00:00+09:00"),
+        ):
+            with self.subTest(now=now, run_id=run_id):
+                self.assertEqual(_next_weeknight(datetime.fromisoformat(now), completed_run_id=run_id), expected)
+        with self.assertRaises(ValueError):
+            _next_weeknight(datetime(2026, 9, 1, 1))
+
     def test_next_weeknight_uses_2100_jst_and_skips_weekends(self) -> None:
         from scripts.nightly_operation import _next_weeknight, _parse_jst
         for now, expected in (

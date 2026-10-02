@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import tempfile
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -57,11 +57,16 @@ def _atomic_json(path: Path, value: dict[str, Any]) -> None:
     temporary_path.replace(path)
 
 
-def _next_weeknight(value: datetime) -> str:
-    candidate = (value + timedelta(days=1)).replace(
-        hour=21, minute=0, second=0, microsecond=0
-    )
-    while candidate.weekday() >= 5:
+def _next_weeknight(value: datetime, *, completed_run_id: str | None = None) -> str:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError("datetime must include a UTC offset")
+    now = value.astimezone(JST)
+    completed_day = date.fromisoformat(completed_run_id) if completed_run_id else None
+    candidate = now.replace(hour=21, minute=0, second=0, microsecond=0)
+    # An older run completed after midnight must not consume today's slot.
+    # Conversely, a run already completed for today must not be scheduled twice.
+    while (candidate <= now or candidate.weekday() >= 5
+           or (completed_day is not None and candidate.date() <= completed_day)):
         candidate += timedelta(days=1)
     return candidate.isoformat(timespec="seconds")
 
@@ -150,7 +155,7 @@ def finalize_nightly_run(
     handoff_path = run_dir / "handoff.json"
     handoff = _read_json(handoff_path)
     previous_next_run = handoff.get("next_run_at_jst")
-    next_run_at = _next_weeknight(_parse_jst(completed_at))
+    next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
     handoff["next_run_at_jst"] = next_run_at
     _atomic_json(handoff_path, handoff)
     try:
