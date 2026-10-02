@@ -169,6 +169,15 @@ def market_semantics(root, head, scratch, entries):
                 elif isinstance(value, list):
                     for child in value: reject_personal(child)
             reject_personal(json.loads(path.read_text()))
+            value = json.loads(path.read_text())
+            if re.fullmatch(r'jquants/runs/[0-9]{8}T120000Z\.json', name):
+                try:
+                    from scripts.jquants_daily import validate_state
+                except ModuleNotFoundError:
+                    from jquants_daily import validate_state
+                validate_state(value)
+                require(Path(name).name == value['run_date'].replace('-', '') + 'T120000Z.json',
+                        'daily journal filename does not match run date')
     report = json.loads((scratch / 'restored/jquants/latest.json').read_text())
     require(report.get('provider') == 'J-Quants API V2' and report.get('declared_plan') == 'light'
             and report.get('declared_addons') == [], 'unexpected subscription/provider')
