@@ -61,7 +61,9 @@ manifestの実際の取得時刻とqueryを正本とします。投資部門別�
 プロセス再起動や復元でもjournalの使用数を引き継ぎます。失われた未保存journalを旧mainから
 復元して再取得すると予算を保証できないため、環境喪失時は不明なrunを再実行せず報告します。
 
-取得済みpartitionと全page hashを検証し再利用します。部分取得は既存checkpointから再開し、
+最新partitionに加え、保持する全revisionと全参照pageの存在・安全なpath・hashを
+通信前およびcodecのpack/verify/restore時に検証します。過去revisionだけが参照する
+pageも対象です。取得済みpartitionを検証後に再利用します。部分取得は既存checkpointから再開し、
 破損、設定変更、lock競合、未完了の前日runがあれば新しいrunを開始しません。
 上限到達は同runで解除せず、別run IDを作って上限を回避しません。
 
@@ -90,3 +92,15 @@ rawが存在しない新環境ではmainの `stock.jp/data/jquants-archive/` を
 既存の[日次PR手順](daily-pr-publication.md)に従い、native auto-mergeがCLEANで拒否されたら
 直接mergeへ切り替えず「保存済み・未採用」と報告します。この制約の変更は別途検討中です。
 merge後はremote mainから独立復元して全checksumを照合してから保存完了とします。
+
+## クラッシュ回復と回帰検証
+
+partition公開後、checkpoint削除前のクラッシュでは、完了checkpointを公開済みmanifest、
+不変revision、全pageと照合します。endpoint/query/開始時刻/page一覧が一致した場合だけ、
+排他lock内でcheckpointを除去してdirectoryをfsyncします。元pageとrevisionは保持します。
+不一致を「古いcheckpoint」と推測して消さず、通常の再開・調査へ戻します。
+
+合成テストはこの境界から同日再開・翌日財務補完までを確認します。旧pageの破損・欠落は
+通信前と圧縮検証で拒否し、既存current pointerを維持します。日次runner自身の20暦日統合試験は
+休日、財務revision更新、通信中断・再開、同日重複、5日ごとのpack/restoreを含みます。
+`operation_smoke.py --days 20` は別のPAPER状態遷移試験で、日次取得runnerの試験ではありません。

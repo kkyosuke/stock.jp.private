@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from datetime import date, datetime, time, timedelta
 import fcntl
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -15,10 +16,12 @@ try:
     from scripts import jquants_ingest as ingest
     from scripts.jquants_catalog import BASE_URL, BY_NAME, query_for
     from scripts import market_data_git as codec
+    from scripts.jquants_archive_validation import validate_archive
 except ModuleNotFoundError:
     import jquants_ingest as ingest
     from jquants_catalog import BASE_URL, BY_NAME, query_for
     import market_data_git as codec
+    from jquants_archive_validation import validate_archive
 
 JST = ZoneInfo('Asia/Tokyo')
 NAMES = ('trading_calendar', 'equities_master', 'equities_daily', 'equities_valuation',
@@ -157,6 +160,34 @@ def validate_checkpoint(archive, name, day):
     last = (ingest.checked_payload(archive, c['pages'][-1]).get('pagination_key') or None) if c['pages'] else None
     require(c['seen_keys'] == keys and c['next_key'] == last
             and c['complete'] == (bool(c['pages']) and last is None), 'inconsistent checkpoint')
+    return c
+
+
+def recover_published_checkpoint(archive, name, day):
+    """Remove only a fully verified checkpoint already durably published.
+
+    The immutable revision and every page remain untouched. A mismatch is not
+    evidence that a checkpoint is obsolete; leave it for normal resume/review.
+    Caller holds the ingestion lock.
+    """
+    checkpoint = validate_checkpoint(archive, name, day)
+    if not checkpoint or not checkpoint['complete']:
+        return False
+    existing = partition(archive, name, day)
+    if existing is None:
+        return False
+    manifest = existing[0]
+    if not (manifest['endpoint'] == BASE_URL + checkpoint['endpoint']
+            and all(manifest[key] == checkpoint[key] for key in ('query', 'started_at', 'pages'))):
+        return False
+    path = archive / 'datasets' / name / day.isoformat() / 'checkpoint.json'
+    path.unlink()
+    descriptor = os.open(path.parent, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    return True
 
 
 class DurableClient(ingest.Client):
@@ -200,15 +231,28 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None):
         codec.safe_tree(source)
         archive = ingest.private_root(root, settings['archive_root'])
         with ingest.archive_lock(archive):
+            # Include historical revisions whose pages are no longer in latest.json.
+            members = {p.relative_to(source).as_posix() for p in source.rglob('*') if p.is_file()}
+            try:
+                validate_archive(members, lambda name: (source / name).read_bytes())
+            except (ValueError, KeyError, TypeError, OSError):
+                raise ingest.IngestionError('retained revision or page validation failed') from None
             # Validate every local partition/checkpoint before any network operation.
             for p in (archive / 'datasets').glob('*/*/latest.json'):
                 partition(archive, p.parent.parent.name, date.fromisoformat(p.parent.name))
             for p in (archive / 'datasets').glob('*/*/checkpoint.json'):
                 validate_checkpoint(archive, p.parent.parent.name, date.fromisoformat(p.parent.name))
+            for p in (archive / 'datasets').glob('*/*/checkpoint.json'):
+                recover_published_checkpoint(archive, p.parent.parent.name, date.fromisoformat(p.parent.name))
             path = run_path(archive, day)
             require(run_date is None or path.is_file(), 'explicit run date must resume an existing journal')
             for p in (archive / 'runs').glob('*T120000Z.json'):
                 old = read_state(p)
+                for key, receipt in old['tasks'].items():
+                    name, value = key.split(':')
+                    revision = archive / 'datasets' / name / value / 'revisions' / (receipt['manifest_sha256'] + '.json')
+                    require(revision.is_file() and ingest.digest(revision.read_bytes()) == receipt['manifest_sha256'],
+                            'historical run receipt is missing or corrupt')
                 require(p == run_path(archive, date.fromisoformat(old['run_date'])), 'run filename mismatch')
                 require(p == path or old['status'] in {'COLLECTED', 'HOLIDAY'},
                         'resume prior unfinished run first; blocked or exhausted runs need operator review')
@@ -258,6 +302,8 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None):
                 existing = partition(archive, name, task_day)
                 final_after = datetime.combine(task_day + timedelta(days=1), time(0, 30), JST)
                 reusable = existing and (not final or aware(existing[0]['started_at']) >= final_after)
+                if (archive / 'datasets' / name / task_day.isoformat() / 'checkpoint.json').exists():
+                    reusable = False
                 if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily') and existing and not existing[1]:
                     reusable = False
                 if not reusable:

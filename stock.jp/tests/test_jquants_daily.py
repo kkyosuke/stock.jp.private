@@ -217,3 +217,133 @@ class DailyTests(unittest.TestCase):
         self.at=datetime.fromisoformat('2026-10-03T21:00:00+09:00')
         self.assertEqual(self.run_daily()['status'],'HOLIDAY')
         self.assertEqual(self.calls[0][0],'/fins/summary')
+
+    def test_crash_after_financial_publish_before_checkpoint_unlink(self):
+        original_unlink = Path.unlink
+        checkpoint = self.archive/'datasets/financial_summary/2026-10-02/checkpoint.json'
+        def crash(path, *args, **kwargs):
+            if path == checkpoint:
+                raise KeyboardInterrupt()
+            return original_unlink(path, *args, **kwargs)
+        with patch.object(Path, 'unlink', crash):
+            with self.assertRaises(KeyboardInterrupt):
+                self.run_daily()
+        self.assertTrue(checkpoint.exists())
+        self.assertTrue(json.loads(checkpoint.read_text())['complete'])
+        manifest = checkpoint.parent/'latest.json'
+        published = manifest.read_bytes()
+        revision = checkpoint.parent/'revisions'/ (i.digest(published)+'.json')
+        self.assertEqual(revision.read_bytes(), published)
+        self.calls.clear()
+        resumed = self.run_daily()
+        self.assertEqual(resumed['status'], 'COLLECTED')
+        self.assertEqual(resumed['requests_used'], 9)
+        self.assertFalse(checkpoint.exists())
+        self.assertEqual(manifest.read_bytes(), published)
+        self.assertNotIn('/fins/summary', [e for e, _ in self.calls])
+        self.at = datetime.fromisoformat('2026-10-03T21:00:00+09:00')
+        self.calls.clear()
+        following = self.run_daily()
+        self.assertEqual(following['status'], 'HOLIDAY')
+        self.assertEqual(following['requests_used'], 2)
+        self.assertEqual(self.calls[0], ('/fins/summary', {'date':'2026-10-02'}))
+        self.assertEqual(revision.read_bytes(), published)
+
+    def test_completed_checkpoint_recovery_preserves_mismatch(self):
+        self.run_daily()
+        folder=self.archive/'datasets/financial_summary/2026-10-02'
+        manifest=json.loads((folder/'latest.json').read_text())
+        checkpoint={'endpoint':'/fins/summary','query':manifest['query'],
+                    'started_at':'2026-10-02T22:00:00+09:00','pages':manifest['pages'],
+                    'next_key':None,'seen_keys':[],'complete':True}
+        path=folder/'checkpoint.json';path.write_text(json.dumps(checkpoint))
+        before=path.read_bytes()
+        self.assertFalse(d.recover_published_checkpoint(self.archive,'financial_summary',date(2026,10,2)))
+        self.assertEqual(path.read_bytes(),before)
+
+    def test_completed_checkpoint_recovery_refuses_corrupt_published_revision(self):
+        self.run_daily()
+        folder=self.archive/'datasets/financial_summary/2026-10-02'
+        raw=(folder/'latest.json').read_bytes();manifest=json.loads(raw)
+        checkpoint={'endpoint':'/fins/summary','query':manifest['query'],'started_at':manifest['started_at'],
+                    'pages':manifest['pages'],'next_key':None,'seen_keys':[],'complete':True}
+        path=folder/'checkpoint.json';path.write_text(json.dumps(checkpoint))
+        (folder/'revisions'/(i.digest(raw)+'.json')).write_text('{}')
+        with self.assertRaises(i.IngestionError):
+            d.recover_published_checkpoint(self.archive,'financial_summary',date(2026,10,2))
+        self.assertTrue(path.exists())
+
+    def changed_financial_revision(self):
+        self.run_daily()
+        old=json.loads((self.archive/'datasets/financial_summary/2026-10-02/latest.json').read_text())
+        old_page=self.archive/old['pages'][0]['path']
+        self.at=datetime.fromisoformat('2026-10-03T21:00:00+09:00')
+        def revised(endpoint,params):
+            payload=self.transport(endpoint,params)
+            if endpoint=='/fins/summary':payload['data'][0]['FixtureRevision']=2
+            return payload
+        self.assertEqual(self.run_daily(transport=revised)['status'],'HOLIDAY')
+        new=json.loads((self.archive/'datasets/financial_summary/2026-10-02/latest.json').read_text())
+        self.assertNotEqual(new['pages'][0]['path'],old['pages'][0]['path'])
+        self.at=datetime.fromisoformat('2026-10-04T21:00:00+09:00')
+        return old_page
+
+    def test_corrupt_historical_page_stops_before_network_and_pack(self):
+        old_page=self.changed_financial_revision();store=self.root/'codec'
+        codec.pack(self.private/'market-data',store);pointer=(store/'current.json').read_bytes()
+        old_page.write_text('{}');count=len(self.calls)
+        with self.assertRaisesRegex(i.IngestionError,'retained revision'):self.run_daily()
+        self.assertEqual(len(self.calls),count)
+        with self.assertRaisesRegex(codec.ArchiveError,'retained J-Quants'):codec.pack(self.private/'market-data',store)
+        self.assertEqual((store/'current.json').read_bytes(),pointer);self.assertTrue(old_page.exists())
+
+    def test_missing_historical_page_stops_before_network_and_pack(self):
+        self.changed_financial_revision().unlink();count=len(self.calls)
+        with self.assertRaisesRegex(i.IngestionError,'retained revision'):self.run_daily()
+        self.assertEqual(len(self.calls),count)
+        with self.assertRaises(codec.ArchiveError):codec.pack(self.private/'market-data',self.root/'codec')
+
+    def test_codec_rejects_semantic_corruption_with_valid_compressed_hashes(self):
+        self.changed_financial_revision().write_text('{}');store=self.root/'tampered-store'
+        # Build a checksummed adversarial fixture, then invoke real verification.
+        with patch.object(codec,'validate_archive',return_value=True):codec.pack(self.private/'market-data',store)
+        with self.assertRaisesRegex(codec.ArchiveError,'retained J-Quants'):codec.verify(store)
+        target=self.root/'rejected-restore'
+        with self.assertRaises(codec.ArchiveError):codec.restore(store,target)
+        self.assertFalse(target.exists())
+
+    def test_twenty_runner_days_with_correction_resume_restore(self):
+        from datetime import timedelta
+        import shutil
+        start=self.at;interrupted=False
+        for offset in range(20):
+            self.at=start+timedelta(days=offset)
+            def transport(endpoint,params):
+                nonlocal interrupted
+                if offset==4 and endpoint=='/fins/summary' and not interrupted:
+                    interrupted=True;raise i.ApiError(0)
+                payload=self.transport(endpoint,params)
+                if endpoint=='/fins/summary':
+                    for row in payload['data']:row['FixtureRevision']=offset
+                return payload
+            result=self.run_daily(transport=transport)
+            if result['status']=='PAUSED':result=self.run_daily(transport=transport)
+            expected='HOLIDAY' if self.at.weekday()>=5 else 'COLLECTED'
+            self.assertEqual(result['status'],expected);self.assertLessEqual(result['requests_used'],12)
+            self.assertEqual(result['data_date'],None if expected=='HOLIDAY' else self.at.date().isoformat())
+            count=len(self.calls);self.assertEqual(result,self.run_daily());self.assertEqual(count,len(self.calls))
+            if offset%5==4:
+                source=self.private/'market-data';store=self.root/f'codec-{offset}'
+                codec.pack(source,store)
+                original={str(p.relative_to(source)):p.read_bytes() for p in source.rglob('*') if p.is_file() and p.name!='.ingestion.lock'}
+                shutil.move(source,self.root/f'original-{offset}');codec.restore(store,source)
+                self.assertTrue(all((source/p).read_bytes()==b for p,b in original.items()))
+                self.assertEqual(result,self.run_daily());self.assertEqual(count,len(self.calls))
+        self.assertTrue(interrupted)
+
+    def test_missing_historical_receipt_revision_rejected_by_codec(self):
+        self.changed_financial_revision()
+        state=d.read_state(d.run_path(self.archive,date(2026,10,2)))
+        digest=state['tasks']['financial_summary:2026-10-02']['manifest_sha256']
+        (self.archive/'datasets/financial_summary/2026-10-02/revisions'/(digest+'.json')).unlink()
+        with self.assertRaises(codec.ArchiveError):codec.pack(self.private/'market-data',self.root/'codec')
