@@ -18,6 +18,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import certifi
+import pdfplumber
 from pypdf import PdfReader
 
 
@@ -81,7 +82,7 @@ _JPX_2026 = _JPX_BASE + ("JPX Start-Up Acceleration 100 Index", "Growth250",
 JPX_EXTRACTION_VERSION = "jpx-table-3-1-named-layout-v2"
 
 
-def _jpx_layout(text: str, period: date) -> tuple[str, ...]:
+def _jpx_layout(text: str, period: date, headers: tuple[str, ...] = ()) -> tuple[str, ...]:
     compact = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
     required = ("TOPIX", "JPXPrime150Index", "TokyoStockExchangeGrowthMarket250Index",
                 "REITIndex", "InfrastructureFundsIndex", "StandardMarket", "GrowthMarket")
@@ -91,10 +92,93 @@ def _jpx_layout(text: str, period: date) -> tuple[str, ...]:
     new = "StockPriceIndex(EndofYear/Month/Daily)" in compact
     startup = "JPXStart-UpAcceleration100Index" in compact
     if old and not new and not startup and date(2025, 1, 1) <= period < date(2026, 3, 1):
-        return _JPX_2025
-    if new and not old and startup and period >= date(2026, 3, 1):
-        return _JPX_2026
-    raise MarketRegimeSourceError("unknown or ambiguous JPX table 3-1 layout")
+        columns = _JPX_2025
+    elif new and not old and startup and period >= date(2026, 3, 1):
+        columns = _JPX_2026
+    else:
+        raise MarketRegimeSourceError("unknown or ambiguous JPX table 3-1 layout")
+    if headers != columns:
+        raise MarketRegimeSourceError("missing, extra, reordered or unknown JPX physical column headers")
+    return columns
+
+
+
+def _english_header(text: str) -> str:
+    # Japanese and English are separate lines in the reviewed bilingual cells.
+    # Keep all English fragments; unknown English labels must not be discarded.
+    lines = [line for line in unicodedata.normalize("NFKC", text).splitlines()
+             if not re.search(r"[\u3040-\u30ff\u3400-\u9fff]", line)]
+    return re.sub(r"[^A-Za-z0-9]", "", "".join(lines))
+
+
+_JPX_HEADER_NAMES = {
+    "TOPIX": "TOPIX", "TOPIXTOPIX": "TOPIX",
+    "DividendincludedTOPIX": "Dividend-included TOPIX",
+    "TOPIXDividendincludedTOPIX": "Dividend-included TOPIX",
+    "ExTOPIX": "Ex-TOPIX", "TOPIXExTOPIX": "Ex-TOPIX",
+    "PrimeMarket": "Prime Market", "StandardMarket": "Standard Market",
+    "GrowthMarket": "Growth Market", "JPXPrime150Index": "JPX Prime 150 Index",
+    "JPXStartUpAcceleration100Index": "JPX Start-Up Acceleration 100 Index",
+    "TokyoStockExchangeGrowthMarket250Index": "Growth250",
+    "REITIndex": "REIT Index", "InfrastructureFundsIndex": "Infrastructure Funds Index",
+    "PrimeMarketWeightedStockPriceAverage": "Prime weighted average",
+    "PrimeMarketArithmeticStockPriceAverage": "Prime arithmetic average",
+    "StandardMarketWeightedStockPriceAverage": "Standard weighted average",
+    "StandardMarketArithmeticStockPriceAverage": "Standard arithmetic average",
+}
+
+
+def _jpx_physical_headers(payload: bytes) -> tuple[str, ...]:
+    """Read headers in physical left-to-right cells, including merged parents.
+
+    No plain-text-order fallback: without a complete ruled table the format is
+    unknown. All header cells and numeric columns must be accounted for.
+    """
+    recognized = []
+    with pdfplumber.open(BytesIO(payload)) as document:
+        page = document.pages[0]
+        for table in page.find_tables():
+            matrix = table.extract()
+            body = None
+            header_end = None
+            indices = []
+            for row_index, row in enumerate(matrix):
+                numeric = [i for i, cell in enumerate(row) if cell and re.fullmatch(
+                    r"[◎●r\s]*\d[\d,]*\.\d+[◎●r\s]*", cell)]
+                if header_end is None and len(numeric) >= 2:
+                    header_end = row_index
+                if len(numeric) in {11, 14}:
+                    body, indices = row_index, numeric
+                    break
+            if body is None or not header_end:
+                continue
+            if indices != list(range(indices[0], indices[0] + len(indices))):
+                raise MarketRegimeSourceError("non-contiguous JPX numeric columns")
+            cells = [table.rows[body].cells[i] for i in indices]
+            if any(cell is None for cell in cells):
+                raise MarketRegimeSourceError("missing JPX body cell geometry")
+            centers = [(cell[0] + cell[2]) / 2 for cell in cells]
+            fragments = [[] for _ in cells]
+            seen = set()
+            for row in table.rows[:header_end]:
+                for box in row.cells:
+                    if box is None or box in seen:
+                        continue
+                    seen.add(box)
+                    label = _english_header(page.crop(box).extract_text() or "")
+                    if not label or label in {"StockPriceIndex", "StockPriceAverage", "YearMonthorDay"}:
+                        continue
+                    covered = [i for i, center in enumerate(centers) if box[0] < center < box[2]]
+                    if not covered:
+                        raise MarketRegimeSourceError("extra JPX header without a numeric column")
+                    for i in covered:
+                        fragments[i].append(label)
+            labels = tuple(_JPX_HEADER_NAMES.get("".join(parts), "UNKNOWN:" + "".join(parts))
+                           for parts in fragments)
+            recognized.append(labels)
+    if len(recognized) != 1:
+        raise MarketRegimeSourceError("JPX physical header table is absent or ambiguous")
+    return recognized[0]
 
 
 def _jpx_month_points(
@@ -110,7 +194,13 @@ def _jpx_month_points(
         raise MarketRegimeSourceError(
             f"cannot parse JPX monthly index PDF {url}"
         ) from error
-    columns = _jpx_layout(text, date(year, month, 1))
+    try:
+        headers = _jpx_physical_headers(payload)
+    except MarketRegimeSourceError:
+        raise
+    except Exception as error:
+        raise MarketRegimeSourceError("cannot verify JPX physical column layout") from error
+    columns = _jpx_layout(text, date(year, month, 1), headers)
     lines = text.splitlines()
     start = next(
         (

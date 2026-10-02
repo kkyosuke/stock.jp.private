@@ -3,12 +3,16 @@ from datetime import date, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
+from io import BytesIO
 import csv
 import unittest
 from unittest.mock import patch
+from pypdf import PdfWriter
+from pypdf.generic import DictionaryObject, NameObject, DecodedStreamObject
 
 from scripts.market_regime_sources import (
     MarketRegimeSourceError, _jpx_month_points, _jpx_index_points, _ci_vintage, _leading_ci,
+    _jpx_physical_headers, _JPX_2025, _JPX_2026,
 )
 from scripts.market_regime import derive_market_regime
 from scripts.assessment_pipeline import _existing_mrs
@@ -24,10 +28,76 @@ def pdf(*pages):
     return SimpleNamespace(pages=[SimpleNamespace(extract_text=lambda text=t: text) for t in pages])
 
 
+def ruled_pdf(headers, *, merged_averages=False):
+    """Small real PDF with synthetic, physically positioned header/data cells."""
+    writer = PdfWriter()
+    page = writer.add_blank_page(width=20 + 90 * (len(headers) + 1), height=300)
+    font = DictionaryObject({NameObject('/Type'): NameObject('/Font'),
+                             NameObject('/Subtype'): NameObject('/Type1'),
+                             NameObject('/BaseFont'): NameObject('/Helvetica')})
+    page[NameObject('/Resources')] = DictionaryObject({NameObject('/Font'): DictionaryObject({
+        NameObject('/F1'): writer._add_object(font)})})
+    commands = ['0.5 w']
+    edges = [10 + 90 * i for i in range(len(headers) + 2)]
+    for i, x in enumerate(edges):
+        top = 225 if merged_averages and i in {12, 14} else 260
+        commands.append(f'{x} 130 m {x} {top} l S')
+    for y in (130, 150, 260):
+        commands.append(f'10 {y} m {edges[-1]} {y} l S')
+    if merged_averages:
+        commands.append(f'{edges[11]} 225 m {edges[-1]} 225 l S')
+        for i, name in ((11, 'Prime Market'), (13, 'Standard Market')):
+            commands.append(f'BT /F1 8 Tf 1 0 0 1 {edges[i]+4} 245 Tm ({name}) Tj ET')
+    for i, label in enumerate(['Year, Month or Day', *headers]):
+        top = 248
+        if merged_averages and i >= 11:
+            label = label.split(' Market ', 1)[1]
+            top = 214
+        for j, word in enumerate(label.split()):
+            commands.append(f'BT /F1 8 Tf 1 0 0 1 {edges[i]+4} {top-j*11} Tm ({word}) Tj ET')
+        value = '2025' if i == 0 else f'{100+i}.00'
+        commands.append(f'BT /F1 8 Tf 1 0 0 1 {edges[i]+4} 137 Tm ({value}) Tj ET')
+    stream = DecodedStreamObject()
+    stream.set_data('\n'.join(commands).encode('ascii'))
+    page[NameObject('/Contents')] = writer._add_object(stream)
+    out = BytesIO()
+    writer.write(out)
+    return out.getvalue()
+
+
+def english_labels(columns):
+    labels = []
+    for name in columns:
+        if name == 'Growth250':
+            name = 'Tokyo Stock Exchange Growth Market 250 Index'
+        elif ' average' in name:
+            name = name.replace(' weighted average', ' Market Weighted Stock Price Average').replace(
+                ' arithmetic average', ' Market Arithmetic Stock Price Average')
+        labels.append(name)
+    return labels
+
+
 class IndexLayoutTest(unittest.TestCase):
-    def parse(self, text, url):
+    def parse(self, text, url, headers=None):
+        labels = english_labels(_JPX_2025 if url == OLD_URL else _JPX_2026) if headers is None else headers
         with patch('scripts.market_regime_sources.PdfReader', return_value=pdf(text)):
-            return _jpx_month_points(b'synthetic', url)
+            return _jpx_month_points(ruled_pdf(labels), url)
+
+    def test_complete_physical_header_order_rejects_reordered_missing_extra(self):
+        labels = english_labels(_JPX_2026)
+        text = NEW + '\n7.1 ' + ' '.join(f'{100+i}.00' for i in range(11)) + '\n平均'
+        swapped = labels.copy()
+        swapped[7], swapped[8] = swapped[8], swapped[7]
+        missing = labels.copy()
+        missing[2] = ''
+        unknown = labels.copy()
+        unknown[2] += ' Unknown Extra Index'
+        for bad in (swapped, missing, unknown, [*labels, 'Unknown Extra Index']):
+            with self.subTest(headers=bad), self.assertRaises(MarketRegimeSourceError):
+                self.parse(text, NEW_URL, bad)
+        for columns in (_JPX_2025, _JPX_2026):
+            self.assertEqual(_jpx_physical_headers(ruled_pdf(english_labels(columns))), columns)
+        self.assertEqual(_jpx_physical_headers(ruled_pdf(english_labels(_JPX_2025), merged_averages=True)), _JPX_2025)
 
     def test_verified_old_growth_column_is_not_arithmetic_average(self):
         # June 2, 2025: only the target and misleading last cell are official;
