@@ -154,7 +154,8 @@ def market_semantics(root, head, scratch, entries):
         if not path.is_file():
             continue
         name = path.relative_to(scratch / 'restored').as_posix()
-        allowed = (re.fullmatch(r'jquants/(latest|size-sample)\.json', name)
+        allowed = (codec.nightly_cache.valid_name(name)
+                   or re.fullmatch(r'jquants/(latest|size-sample)\.json', name)
                    or re.fullmatch(r'jquants/objects/[0-9a-f]{2}/[0-9a-f]{64}\.json', name)
                    or re.fullmatch(r'jquants/runs/[0-9TZ]+\.json', name)
                    or re.fullmatch(r'jquants/datasets/[a-z_]+/(state\.json|[0-9-]{10}/(latest\.json|checkpoint\.json|revisions/[0-9a-f]{64}\.json))', name)

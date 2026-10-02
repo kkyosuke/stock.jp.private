@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 from datetime import datetime, timezone
 import fcntl
 import gzip
@@ -21,6 +21,11 @@ MAX_STORE = 750 * 1024 * 1024
 MAX_INDEX = 64 * 1024 * 1024
 MAX_RESTORE = 8 * 1024 * 1024 * 1024
 DESTINATION = 'kkyosuke/stock.jp.private'
+
+try:
+    from scripts import nightly_cache_archive as nightly_cache
+except ModuleNotFoundError:
+    import nightly_cache_archive as nightly_cache
 
 
 class ArchiveError(ValueError):
@@ -59,7 +64,8 @@ def safe_tree(root):
 def safe_name(name):
     p = PurePosixPath(name)
     if (p.is_absolute() or '..' in p.parts or '\\' in name or p.as_posix() != name
-            or not p.parts or p.parts[0] not in {'jquants', 'daily-prices'}
+            or not p.parts or (p.parts[0] not in {'jquants', 'daily-prices'}
+                              and not nightly_cache.valid_name(name))
             or any(part.startswith('.') for part in p.parts)):
         raise ArchiveError('unsafe archive member')
     return p
@@ -139,12 +145,27 @@ def pack(source, store):
         raise ArchiveError('source and store must be separate directories')
     safe_tree(source)
     safe_tree(store)
-    with writer_lock(source):
+    with ExitStack() as locks:
+        locks.enter_context(writer_lock(source))
+        cache_root = source / 'nightly-source-cache'
+        if cache_root.exists():
+            for scope in sorted(cache_root.iterdir()):
+                if not scope.is_dir() or not re.fullmatch('[0-9a-f]{64}', scope.name):
+                    raise ArchiveError('invalid nightly cache scope')
+                stream = locks.enter_context((scope / '.ingestion.lock').open('a+b'))
+                os.chmod(stream.name, 0o600)
+                try:
+                    fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except BlockingIOError:
+                    raise ArchiveError('another nightly cache writer holds the lock') from None
+        safe_tree(source)
         entries = {}
         for path in sorted(source.rglob('*')):
-            if path.is_dir() or path.name == '.ingestion.lock':
+            if path.is_dir():
                 continue
             name = path.relative_to(source).as_posix()
+            if name == 'jquants/.ingestion.lock' or re.fullmatch(r'nightly-source-cache/[0-9a-f]{64}/\.ingestion.lock', name):
+                continue
             safe_name(name)
             if path.name.startswith('.pending-'):
                 raise ArchiveError('unfinished atomic write')
@@ -174,6 +195,7 @@ def verify(store, pointer=None, destination=None):
     if manifest.get('version') != 1 or not isinstance(manifest.get('files'), dict):
         raise ArchiveError('invalid generation index')
     total = 0
+    cache_members = {}
     for name, entry in manifest['files'].items():
         relative = safe_name(name)
         if type(entry.get('bytes')) is not int or not 0 <= entry['bytes'] <= MAX_RESTORE:
@@ -187,8 +209,14 @@ def verify(store, pointer=None, destination=None):
         if len(data) != entry['bytes'] or digest(data) != entry['sha256']:
             raise ArchiveError('file checksum mismatch')
         scan(data)
+        if name.startswith(nightly_cache.PREFIX):
+            cache_members[name] = data
         if destination is not None:
             atomic(Path(destination) / relative, data)
+    try:
+        nightly_cache.validate(cache_members)
+    except (ValueError, TypeError, KeyError, OverflowError):
+        raise ArchiveError('invalid nightly cache archive') from None
     if len(manifest['files']) != pointer['file_count'] or total != pointer['raw_bytes']:
         raise ArchiveError('generation totals mismatch')
     return {'verified': True, 'generation': pointer['generation'], 'file_count': len(manifest['files']), 'raw_bytes': total}
