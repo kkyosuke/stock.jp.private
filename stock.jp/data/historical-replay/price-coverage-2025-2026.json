@@ -1,0 +1,4467 @@
+{
+  "schema_version": 1,
+  "as_of_date": "2026-08-31",
+  "status": "PRICE_DATA_IMPORTED_REPLAY_BLOCKED",
+  "archive_schema": "daily-prices-pr14-v1",
+  "source": {
+    "provider": "J-Quants API v2",
+    "official": true,
+    "row_data_committed": true,
+    "tracked_archive": "data/daily-prices/",
+    "raw_source_committed": false,
+    "raw_source_policy": "credentials and provider responses remain under operations/private/"
+  },
+  "requested_replay_period": {
+    "from": "2025-01-01",
+    "through": "2026-08-31"
+  },
+  "acquired_official_price_period": {
+    "from": "2024-06-10",
+    "through": "2026-06-08",
+    "session_count": 486,
+    "row_count": 1918292,
+    "quote_count": 1836445,
+    "no_quote_count": 81847,
+    "fetch_error_count": 0
+  },
+  "sessions_scope": "sessions contains every tracked official historical file, including the 2024 lead-in",
+  "replay_years": {
+    "2025": {
+      "first_trading_date": "2025-01-06",
+      "latest_trading_date": "2025-12-30",
+      "session_count": 243,
+      "row_count": 960298,
+      "quote_count": 919310,
+      "no_quote_count": 40988,
+      "fetch_error_count": 0,
+      "complete_for_requested_period": true
+    },
+    "2026": {
+      "first_trading_date": "2026-01-05",
+      "latest_trading_date": "2026-06-08",
+      "session_count": 103,
+      "row_count": 404782,
+      "quote_count": 385296,
+      "no_quote_count": 19486,
+      "fetch_error_count": 0,
+      "complete_for_requested_period": false
+    }
+  },
+  "known_gaps": [
+    {
+      "from": "2026-06-09",
+      "through": "2026-08-31",
+      "impact": "official point-in-time prices are outside the available subscription period"
+    },
+    {
+      "data": "financial detail, diluted shares, historical disclosure timing, SAM/SOM and competitor evidence",
+      "impact": "entry hard gates and the 100-point score cannot yet be replayed"
+    },
+    {
+      "data": "TOPIX history",
+      "impact": "benchmark comparison is unavailable from the acquired subscription"
+    }
+  ],
+  "point_in_time_notes": {
+    "daily_universe": "codes present in each official daily-bars response, filtered to product category 011",
+    "security_attributes": "25 month-end/period-end master snapshots; nearest snapshot is used for name, market and sector",
+    "metadata_fallback_row_count": 1516,
+    "metadata_missing_row_count": 0,
+    "excluded_non_domestic_or_unknown_row_count": 226186
+  },
+  "supplemental_private_files": {
+    "adjusted_daily_prices": {
+      "path": "supplemental/adjusted-daily-prices.csv.gz",
+      "sha256": "f15f753b1988c920d13dd102c590a227edf84851a4a9beedcb6fb65ad818e3a8",
+      "row_count": 1836445
+    },
+    "market_cap_daily": {
+      "path": "supplemental/market-cap-daily.csv.gz",
+      "sha256": "fa51ec2dcbf813f4360f7d15414946a5ba37ae9e755a1a4bae5f695928a94cfc",
+      "row_count": 1834451,
+      "unit": "JPY million"
+    },
+    "corporate_actions": {
+      "path": "supplemental/corporate-actions.csv.gz",
+      "sha256": "f2ae08297bb3ff741727173b91bb3094f2b0a13375ddd9ce224eb506f15a1101",
+      "row_count": 486
+    }
+  },
+  "raw_source_manifest_sha256": "4bd274ff0a8b4e3ed6a5e49271d26c65072738131a97b002af864f7149a41fb4",
+  "sessions": [
+    {
+      "date": "2024-06-10",
+      "file": "2024/2024-06-10.csv",
+      "sha256": "b9b7779b70cfc94400cebd03437dba22e75b18106f8d53caa54ae4d3f592d93f",
+      "row_count": 3927,
+      "quote_count": 3790,
+      "no_quote_count": 137,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-11",
+      "file": "2024/2024-06-11.csv",
+      "sha256": "83d4876a61fa97d161d957e71f77abf694d19c6f5c1134c108382b8159aacbfb",
+      "row_count": 3928,
+      "quote_count": 3784,
+      "no_quote_count": 144,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-12",
+      "file": "2024/2024-06-12.csv",
+      "sha256": "b9cbde498e5cd52bfb301cf9665eb84bbbdbc1d8bff4a6b7ae5eaade1271f7c3",
+      "row_count": 3928,
+      "quote_count": 3780,
+      "no_quote_count": 148,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-13",
+      "file": "2024/2024-06-13.csv",
+      "sha256": "689e89ffe4cbf61862b083e33eca2e08a0f3fa9a5845aae88a3efcfcb856190b",
+      "row_count": 3928,
+      "quote_count": 3772,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-14",
+      "file": "2024/2024-06-14.csv",
+      "sha256": "30f0e4078258d15b19e08d558e16b898c8eb677de16d921d29f0b90075dc95d9",
+      "row_count": 3929,
+      "quote_count": 3789,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-17",
+      "file": "2024/2024-06-17.csv",
+      "sha256": "0676ff54c4297a1b9aa0d7cd11d0878eabf80739d2291775eb399a20cba9b94f",
+      "row_count": 3929,
+      "quote_count": 3800,
+      "no_quote_count": 129,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-18",
+      "file": "2024/2024-06-18.csv",
+      "sha256": "6a2ccc8a2a7d203ffba783769c3dc092202e5d1edabd716a0b461ecda21cd60f",
+      "row_count": 3931,
+      "quote_count": 3777,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-19",
+      "file": "2024/2024-06-19.csv",
+      "sha256": "8fe87ed9e053c5e83fa90d8d4014501741a94663fc39c4f1dc76f7da9dcc64f6",
+      "row_count": 3932,
+      "quote_count": 3794,
+      "no_quote_count": 138,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-20",
+      "file": "2024/2024-06-20.csv",
+      "sha256": "3fd50e949f55589ec897ebeee7631d514888fb387cff9c38b8fb3c74e38f478e",
+      "row_count": 3936,
+      "quote_count": 3791,
+      "no_quote_count": 145,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-21",
+      "file": "2024/2024-06-21.csv",
+      "sha256": "7e7b65631f0b4151fc2d3eca88dfe171159222e3cebdfe2fb2705b4548a62e3c",
+      "row_count": 3937,
+      "quote_count": 3789,
+      "no_quote_count": 148,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-24",
+      "file": "2024/2024-06-24.csv",
+      "sha256": "aee54448a193def2eac68bb8de2b2981de99bf3f04b6d9399ee08b50c2a123a5",
+      "row_count": 3938,
+      "quote_count": 3805,
+      "no_quote_count": 133,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-25",
+      "file": "2024/2024-06-25.csv",
+      "sha256": "9d2dedb0ddf9858b5a3ab95c187d71882a84bb66ef5a3a8bf1ceb9a8b87cba7f",
+      "row_count": 3938,
+      "quote_count": 3814,
+      "no_quote_count": 124,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-26",
+      "file": "2024/2024-06-26.csv",
+      "sha256": "de4150e580af276dd1287679469a09f788a2a4ebba748084205a0119fb18a9e6",
+      "row_count": 3938,
+      "quote_count": 3804,
+      "no_quote_count": 134,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-27",
+      "file": "2024/2024-06-27.csv",
+      "sha256": "cf5ce04680f573e94c002384482eae05a474de96b0dd78cd1b699dbf9c281e2c",
+      "row_count": 3941,
+      "quote_count": 3806,
+      "no_quote_count": 135,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-06-28",
+      "file": "2024/2024-06-28.csv",
+      "sha256": "86b47752ab7400d241dd315a9a62ed437fff8b19f0cf06c40fd2aac7ab7d209e",
+      "row_count": 3942,
+      "quote_count": 3813,
+      "no_quote_count": 129,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-01",
+      "file": "2024/2024-07-01.csv",
+      "sha256": "2577b478a2feffc895906222cdcc6e0517d5fa1c14d66608b3aec11845425083",
+      "row_count": 3943,
+      "quote_count": 3812,
+      "no_quote_count": 131,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-02",
+      "file": "2024/2024-07-02.csv",
+      "sha256": "7827e72d853ef39b99c969a12f7cb87b84f2666bab056e794d081afdfd4a92c3",
+      "row_count": 3944,
+      "quote_count": 3810,
+      "no_quote_count": 134,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-03",
+      "file": "2024/2024-07-03.csv",
+      "sha256": "544dd61e01a6fa581592f78a0763208f489367dbde7ab76db9ae1c8caded7436",
+      "row_count": 3944,
+      "quote_count": 3806,
+      "no_quote_count": 138,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-04",
+      "file": "2024/2024-07-04.csv",
+      "sha256": "cdee34e73b5e71f6fcfcd626316567ce9ce09ff7fba07a28b1b7279dad80f0ee",
+      "row_count": 3944,
+      "quote_count": 3808,
+      "no_quote_count": 136,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-05",
+      "file": "2024/2024-07-05.csv",
+      "sha256": "b87d765a3ca564a1966628f62df6254c0a214ff5f992ab11c657c355cba74a31",
+      "row_count": 3944,
+      "quote_count": 3815,
+      "no_quote_count": 129,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-08",
+      "file": "2024/2024-07-08.csv",
+      "sha256": "6805cfc01e06257b9ad02d89f11b327b1a39171b4d623596e3164528ae9e3e25",
+      "row_count": 3944,
+      "quote_count": 3816,
+      "no_quote_count": 128,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-09",
+      "file": "2024/2024-07-09.csv",
+      "sha256": "f3d5a9a725ed0781f5b7a1266eb12868546c1758126c16b4b8829f8c61c0772b",
+      "row_count": 3943,
+      "quote_count": 3806,
+      "no_quote_count": 137,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-10",
+      "file": "2024/2024-07-10.csv",
+      "sha256": "baee888ea24304e6579f67508aa836bdaea91b32b8b8fe63d5fa2bc78add3eea",
+      "row_count": 3943,
+      "quote_count": 3800,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-11",
+      "file": "2024/2024-07-11.csv",
+      "sha256": "c80bc39181cad4c379062719b8a64f35b50e60dd5d2c69da507ba1bd945d8a08",
+      "row_count": 3944,
+      "quote_count": 3808,
+      "no_quote_count": 136,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-12",
+      "file": "2024/2024-07-12.csv",
+      "sha256": "61c6291c60b8d6cde0736e2b46751e6e888978865241f86094305dec95f52383",
+      "row_count": 3945,
+      "quote_count": 3809,
+      "no_quote_count": 136,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-16",
+      "file": "2024/2024-07-16.csv",
+      "sha256": "6b07d72ba3b278dcb91caa7284134a6a9dccda12d79a072756d779887e96ced3",
+      "row_count": 3944,
+      "quote_count": 3818,
+      "no_quote_count": 126,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-17",
+      "file": "2024/2024-07-17.csv",
+      "sha256": "7fe0f1b92128b30d7ee76ab85cd55b63515f2427ac0fb391aad192044a8346ca",
+      "row_count": 3944,
+      "quote_count": 3801,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-18",
+      "file": "2024/2024-07-18.csv",
+      "sha256": "2728bd852f4b1fe457388c15afdf9501fe3bc0d67ddedcf64d7d3e230c7bc50e",
+      "row_count": 3945,
+      "quote_count": 3803,
+      "no_quote_count": 142,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-19",
+      "file": "2024/2024-07-19.csv",
+      "sha256": "dd8b811e1f65a0e3fba7f98259ecd38fb8f7cfdeb4e99a97ae099d1a0498e0ff",
+      "row_count": 3945,
+      "quote_count": 3799,
+      "no_quote_count": 146,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-22",
+      "file": "2024/2024-07-22.csv",
+      "sha256": "95f2fffc4de82f60bebce07c58a1b3904ba434e050d7f6ae7bbf2612319c9449",
+      "row_count": 3945,
+      "quote_count": 3806,
+      "no_quote_count": 139,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-23",
+      "file": "2024/2024-07-23.csv",
+      "sha256": "81754801b6a15c7269c777cb243f95aa10578070580065af0d974689c1b6f89f",
+      "row_count": 3946,
+      "quote_count": 3799,
+      "no_quote_count": 147,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-24",
+      "file": "2024/2024-07-24.csv",
+      "sha256": "3a195f9edf0b2a91bd3b1d5bf063e74a95e5fcbdadbca095e4000f0c8c139bad",
+      "row_count": 3945,
+      "quote_count": 3809,
+      "no_quote_count": 136,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-25",
+      "file": "2024/2024-07-25.csv",
+      "sha256": "98586dc947227e69dc089671bacab8dabdd953b698930e76b9dd6c691d374b5a",
+      "row_count": 3945,
+      "quote_count": 3816,
+      "no_quote_count": 129,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-26",
+      "file": "2024/2024-07-26.csv",
+      "sha256": "05dcc8d2b8a147aacaf23346cd427b64ce6ea99e4a885b1104f6bc5c3dae7181",
+      "row_count": 3947,
+      "quote_count": 3807,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-29",
+      "file": "2024/2024-07-29.csv",
+      "sha256": "a63d6b144df412cb03b01dd2a65b13b7d8bdea7ccc9ee1ca9e7de523ee7f10f2",
+      "row_count": 3947,
+      "quote_count": 3804,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-30",
+      "file": "2024/2024-07-30.csv",
+      "sha256": "90eb9efce126195887dcc873f310c2d5829a450f1daa1b357c3613286a0826a8",
+      "row_count": 3949,
+      "quote_count": 3779,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-07-31",
+      "file": "2024/2024-07-31.csv",
+      "sha256": "9b995f1f07fb5e6e2bff536ceb89d4a41e2f560edc6a24c2f8718138ee772575",
+      "row_count": 3950,
+      "quote_count": 3780,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-01",
+      "file": "2024/2024-08-01.csv",
+      "sha256": "b5c75b4d47e842ba152a69da209c163fd6cb39551979fe1c45c5386aaf8cd3b6",
+      "row_count": 3950,
+      "quote_count": 3811,
+      "no_quote_count": 139,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-02",
+      "file": "2024/2024-08-02.csv",
+      "sha256": "f92e5d48d6eec7bf8e0586ba80cf515abe8359993b7e12055eaacef9566ab297",
+      "row_count": 3951,
+      "quote_count": 3827,
+      "no_quote_count": 124,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-05",
+      "file": "2024/2024-08-05.csv",
+      "sha256": "f9df78fb51ef4c9ab3d288bbf2d0c03f953f575bee2d540e2fb9d6dd70727b74",
+      "row_count": 3952,
+      "quote_count": 3836,
+      "no_quote_count": 116,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-06",
+      "file": "2024/2024-08-06.csv",
+      "sha256": "d09142e9f80d3b807f61d63cc0afc4d6f5afe17a43bbee49cbd90125355f4ca6",
+      "row_count": 3952,
+      "quote_count": 3831,
+      "no_quote_count": 121,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-07",
+      "file": "2024/2024-08-07.csv",
+      "sha256": "e3d0314abf8ca752f36bd8fbd624f2b36249af91c8974639ff4d4e4ce332a014",
+      "row_count": 3952,
+      "quote_count": 3822,
+      "no_quote_count": 130,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-08",
+      "file": "2024/2024-08-08.csv",
+      "sha256": "6b741152d7b2efd133188adc21e24fd6f387395b058cd75fcdac03973ddd830e",
+      "row_count": 3953,
+      "quote_count": 3810,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-09",
+      "file": "2024/2024-08-09.csv",
+      "sha256": "06e67fdf95782f03a37e0d3df376f783d5fa6554fa263fc6ef0b765b79cdab56",
+      "row_count": 3953,
+      "quote_count": 3816,
+      "no_quote_count": 137,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-13",
+      "file": "2024/2024-08-13.csv",
+      "sha256": "66d76949df72d117f78a64ead0f74138e473be561f8545a94e58254fb7d3ad99",
+      "row_count": 3954,
+      "quote_count": 3829,
+      "no_quote_count": 125,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-14",
+      "file": "2024/2024-08-14.csv",
+      "sha256": "f001eb8a818211e3c3da8de5d78266a4049acd731d8a56ed12d8501ba92f5491",
+      "row_count": 3954,
+      "quote_count": 3812,
+      "no_quote_count": 142,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-15",
+      "file": "2024/2024-08-15.csv",
+      "sha256": "d88613a8ca17409f7bc808e7ca2d51784ca31b5879fc8b0965c87d51457b3125",
+      "row_count": 3954,
+      "quote_count": 3813,
+      "no_quote_count": 141,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-16",
+      "file": "2024/2024-08-16.csv",
+      "sha256": "8fb31cf02518a8dffcec9a6b006ae7b003e4e02aea6cda59bbde7cc08d9b9df5",
+      "row_count": 3954,
+      "quote_count": 3814,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-19",
+      "file": "2024/2024-08-19.csv",
+      "sha256": "c862cdb777b18a4d3968cb568930eaa361069e019bf4eb99cb6deb6af5a9e69e",
+      "row_count": 3954,
+      "quote_count": 3814,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-20",
+      "file": "2024/2024-08-20.csv",
+      "sha256": "d803ef8f3fb343cc67fd7474b845cb1e55f9b75493bb4bb4055e563b065a0db5",
+      "row_count": 3954,
+      "quote_count": 3810,
+      "no_quote_count": 144,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-21",
+      "file": "2024/2024-08-21.csv",
+      "sha256": "2e2b2989e632b7443ee3fdd0a8e012466ac1dae1d506e2fa1825d0f2dffb3a58",
+      "row_count": 3955,
+      "quote_count": 3803,
+      "no_quote_count": 152,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-22",
+      "file": "2024/2024-08-22.csv",
+      "sha256": "fd79876fc107b69186f701125a9de71aedd7afc212d98a10baf5e8644ac71f0d",
+      "row_count": 3955,
+      "quote_count": 3803,
+      "no_quote_count": 152,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-23",
+      "file": "2024/2024-08-23.csv",
+      "sha256": "f2db6ec5b1cb84564d982305158ec52d39dcaf4e0585204256316b9c645756be",
+      "row_count": 3954,
+      "quote_count": 3808,
+      "no_quote_count": 146,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-26",
+      "file": "2024/2024-08-26.csv",
+      "sha256": "27b85933fd83885f081cfd25fd18c438324fa45259046bdd3e01f3ff712da0f9",
+      "row_count": 3954,
+      "quote_count": 3817,
+      "no_quote_count": 137,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-27",
+      "file": "2024/2024-08-27.csv",
+      "sha256": "8e5334ebfb9e8a93347d5b21baa91d9cf166126d75dcc39c904f085b2d889425",
+      "row_count": 3954,
+      "quote_count": 3804,
+      "no_quote_count": 150,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-28",
+      "file": "2024/2024-08-28.csv",
+      "sha256": "753708f6f47ccc10bb4a942f3937d577c009ef808d1fb951d996bbbae6962380",
+      "row_count": 3954,
+      "quote_count": 3797,
+      "no_quote_count": 157,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-29",
+      "file": "2024/2024-08-29.csv",
+      "sha256": "a2761d719a3b7b6c12c52ceb4c143cfbff47389bceac1246172abe269fc54465",
+      "row_count": 3954,
+      "quote_count": 3791,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-08-30",
+      "file": "2024/2024-08-30.csv",
+      "sha256": "26cfc3270b58928bb8cc0fd299541ce38f724a797731a00a84f09ec5b87f9a80",
+      "row_count": 3954,
+      "quote_count": 3795,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-02",
+      "file": "2024/2024-09-02.csv",
+      "sha256": "077cd4681a08e33ae689846c6e78154ba6d8582102c54718a5dd1aac5a9b2910",
+      "row_count": 3953,
+      "quote_count": 3813,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-03",
+      "file": "2024/2024-09-03.csv",
+      "sha256": "9aeb32b2b35572c3fd6cb42cf9de1c940d1a612a522438bdcefee0ce8e61c1b2",
+      "row_count": 3952,
+      "quote_count": 3806,
+      "no_quote_count": 146,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-04",
+      "file": "2024/2024-09-04.csv",
+      "sha256": "c16502af186f984d4125de6038558970f31ba5a1b2ee12dbabc690465b4a9938",
+      "row_count": 3952,
+      "quote_count": 3803,
+      "no_quote_count": 149,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-05",
+      "file": "2024/2024-09-05.csv",
+      "sha256": "5b0d1bc9f7cbe039b7b9ecb2768fd145bbadb5f241f8e59e8ed2f57c66bc0b41",
+      "row_count": 3952,
+      "quote_count": 3784,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-06",
+      "file": "2024/2024-09-06.csv",
+      "sha256": "9d0802c034bfe3a7b0046d58381f3027f68168e0addd72620cace6c05f3f3866",
+      "row_count": 3951,
+      "quote_count": 3785,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-09",
+      "file": "2024/2024-09-09.csv",
+      "sha256": "05cf36634177d6d928cf2eb7f59bd941c4690866c3eb050ec34fc4b8f4a3c06e",
+      "row_count": 3951,
+      "quote_count": 3806,
+      "no_quote_count": 145,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-10",
+      "file": "2024/2024-09-10.csv",
+      "sha256": "0550ba432ae50b7c6ddd8341909b1100bbc33d3d69a3e4c3d5cd91e1a295d49b",
+      "row_count": 3951,
+      "quote_count": 3775,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-11",
+      "file": "2024/2024-09-11.csv",
+      "sha256": "e57188eeee2ba8e726c3651a9c9a6b710b76a1fcfaf9d2477bc58286da0399c1",
+      "row_count": 3950,
+      "quote_count": 3784,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-12",
+      "file": "2024/2024-09-12.csv",
+      "sha256": "8bff4f0fae464497a59f7cd5c164c1b8abda910218f7bc10aac39f71127ba8e8",
+      "row_count": 3950,
+      "quote_count": 3771,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-13",
+      "file": "2024/2024-09-13.csv",
+      "sha256": "f2d739f8ff89b54f6f2c9dfa0022f8886131fb01915eca808097540621ea2f01",
+      "row_count": 3950,
+      "quote_count": 3773,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-17",
+      "file": "2024/2024-09-17.csv",
+      "sha256": "38196f140fa324d6d57c0f88ed334ce0c5203d6ae3ee382386453ed90906e32f",
+      "row_count": 3949,
+      "quote_count": 3797,
+      "no_quote_count": 152,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-18",
+      "file": "2024/2024-09-18.csv",
+      "sha256": "864b302888fe1e6e15842330e4354cc48487eae5927aa1fc701c5b71bee50828",
+      "row_count": 3948,
+      "quote_count": 3770,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-19",
+      "file": "2024/2024-09-19.csv",
+      "sha256": "0cf849cb6d540421ebac81880dd2de25ca40337377da40f8e1b4fddff706b79f",
+      "row_count": 3948,
+      "quote_count": 3790,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-20",
+      "file": "2024/2024-09-20.csv",
+      "sha256": "e83fef5b045f3856fbf0ca27de903801ebee8c25354207e8f6f235bb12415fe1",
+      "row_count": 3948,
+      "quote_count": 3798,
+      "no_quote_count": 150,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-24",
+      "file": "2024/2024-09-24.csv",
+      "sha256": "176cf8fc055d6128e48816d1955094ada40c81adea324b440909d5074bb727a9",
+      "row_count": 3949,
+      "quote_count": 3810,
+      "no_quote_count": 139,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-25",
+      "file": "2024/2024-09-25.csv",
+      "sha256": "70c9d99f8d29e2e547b79c4b2f95b0d2b452303b3a1dfce267926a7968ba71e0",
+      "row_count": 3950,
+      "quote_count": 3804,
+      "no_quote_count": 146,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-26",
+      "file": "2024/2024-09-26.csv",
+      "sha256": "af3ab57d9943e7889e51172f64c137ae880704945f41b9d109c7fa3f3b008101",
+      "row_count": 3955,
+      "quote_count": 3823,
+      "no_quote_count": 132,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-27",
+      "file": "2024/2024-09-27.csv",
+      "sha256": "9c7929ecaf3680f4e3088a3a20c02377dd7ef2b882838a735c6e021b1a620c9a",
+      "row_count": 3948,
+      "quote_count": 3787,
+      "no_quote_count": 161,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-09-30",
+      "file": "2024/2024-09-30.csv",
+      "sha256": "9529509886f43bfe8b5c2daf3aac8116cdcaa8442e91dd4b0ca2ffac8cb40bab",
+      "row_count": 3948,
+      "quote_count": 3805,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-01",
+      "file": "2024/2024-10-01.csv",
+      "sha256": "31ce73acc293a834751f975bef146aabf0f54a287f923716118e0b6ecbbac3cd",
+      "row_count": 3953,
+      "quote_count": 3794,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-02",
+      "file": "2024/2024-10-02.csv",
+      "sha256": "9e567e88dd3e55a5bd26134b97fe5b2d265c5f1822f5e54058889b01c835372d",
+      "row_count": 3953,
+      "quote_count": 3789,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-03",
+      "file": "2024/2024-10-03.csv",
+      "sha256": "6e4b3c733f9128b0886bd0fea76a48ad2884be783df0fe3c216dd2908c5ad5c0",
+      "row_count": 3953,
+      "quote_count": 3783,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-04",
+      "file": "2024/2024-10-04.csv",
+      "sha256": "f0262844a46d47e53bb7f800b691c771fe918a51eff98308f8877d618b0d20aa",
+      "row_count": 3954,
+      "quote_count": 3783,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-07",
+      "file": "2024/2024-10-07.csv",
+      "sha256": "40353475e2bdf3c8f1664840f0adb5ce33137d259644b16a63824bffc446b633",
+      "row_count": 3954,
+      "quote_count": 3792,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-08",
+      "file": "2024/2024-10-08.csv",
+      "sha256": "dcb5cf034926fbfa59eee84185b986db68c0d5ff4f2750f4cb8a004cbc2319ca",
+      "row_count": 3954,
+      "quote_count": 3784,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-09",
+      "file": "2024/2024-10-09.csv",
+      "sha256": "3759108890640be2752c797b17655d797446cd72b40eee4293c954375403a249",
+      "row_count": 3953,
+      "quote_count": 3773,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-10",
+      "file": "2024/2024-10-10.csv",
+      "sha256": "912a7011550e02b1d1a16cc5fcf6b593c5d6e47e9a3a23a32090280e2cc1a4cc",
+      "row_count": 3953,
+      "quote_count": 3776,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-11",
+      "file": "2024/2024-10-11.csv",
+      "sha256": "9de55f428f873ec0f99be04e7119f959cd2fe4a857b2edf9e419a208d36ea122",
+      "row_count": 3954,
+      "quote_count": 3782,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-15",
+      "file": "2024/2024-10-15.csv",
+      "sha256": "5d15fed5e83f66e78fe2837eb344a6383a31d53d1c75f6aaf5204235a1e0f56a",
+      "row_count": 3953,
+      "quote_count": 3801,
+      "no_quote_count": 152,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-16",
+      "file": "2024/2024-10-16.csv",
+      "sha256": "27445831160b3d42d804559e464fd0a56d931404fe25a47556fe03b9c41ccb43",
+      "row_count": 3952,
+      "quote_count": 3774,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-17",
+      "file": "2024/2024-10-17.csv",
+      "sha256": "80c8e7a4ffa21ad10e18b1fd37ea3590c3b2acb6d19ccd1db079da71b426a9bb",
+      "row_count": 3952,
+      "quote_count": 3769,
+      "no_quote_count": 183,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-18",
+      "file": "2024/2024-10-18.csv",
+      "sha256": "a61c2145ea5447ab1337f9d857baee0a1ce0975d9204110dc4e8bec0d44116b7",
+      "row_count": 3953,
+      "quote_count": 3773,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-21",
+      "file": "2024/2024-10-21.csv",
+      "sha256": "f543ee741bdd44717a4e660fb564bde641a84ed57118f315dc713315cc4fe5bd",
+      "row_count": 3952,
+      "quote_count": 3796,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-22",
+      "file": "2024/2024-10-22.csv",
+      "sha256": "f5d829f89020b998c0bdaabb887360f1c4c774ec5a8cefb0c454344c687f28bd",
+      "row_count": 3953,
+      "quote_count": 3781,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-23",
+      "file": "2024/2024-10-23.csv",
+      "sha256": "7dc5b66e0b800279ecd4a3e98a869b2a76968ccf6ee595753df9e8fce5f5329c",
+      "row_count": 3955,
+      "quote_count": 3791,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-24",
+      "file": "2024/2024-10-24.csv",
+      "sha256": "e1c9ea86d87bf2aefab82cc6ebea59283fb07750585daaaa7f84242d0bbfb8da",
+      "row_count": 3955,
+      "quote_count": 3782,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-25",
+      "file": "2024/2024-10-25.csv",
+      "sha256": "dd26999163cafab761c522c6b3f234e8259596e1d33b6c8b66b8e12f8d9fcf57",
+      "row_count": 3957,
+      "quote_count": 3806,
+      "no_quote_count": 151,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-28",
+      "file": "2024/2024-10-28.csv",
+      "sha256": "9a4eefb8de4a739b650fb3035544a669b67cd299b8d85309144fe2dfe28e3e74",
+      "row_count": 3958,
+      "quote_count": 3798,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-29",
+      "file": "2024/2024-10-29.csv",
+      "sha256": "5ddaaad0a7d8503090d815acddc09df568959c37c93e59d992c38f71ee2e2b24",
+      "row_count": 3958,
+      "quote_count": 3779,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-30",
+      "file": "2024/2024-10-30.csv",
+      "sha256": "b746aa851f39c111325e4dcd53e554ca61363185f6d207a55a5a11f94b2f0755",
+      "row_count": 3956,
+      "quote_count": 3786,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-10-31",
+      "file": "2024/2024-10-31.csv",
+      "sha256": "219b6d07713c91acf888c9bdb186add649fbad154b926e9e782479473bee72b7",
+      "row_count": 3957,
+      "quote_count": 3772,
+      "no_quote_count": 185,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-01",
+      "file": "2024/2024-11-01.csv",
+      "sha256": "f984652a1507e912db985f2f218cc8d030b18d17155e52c30ea9464c0527e92c",
+      "row_count": 3957,
+      "quote_count": 3775,
+      "no_quote_count": 182,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-05",
+      "file": "2024/2024-11-05.csv",
+      "sha256": "f23aea3b31b9aacf6f5168c4b8d14b0a4bd5323c2f667912274d36fcbfd50acc",
+      "row_count": 3956,
+      "quote_count": 3791,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-06",
+      "file": "2024/2024-11-06.csv",
+      "sha256": "07853f3488cc93b35b08a4a5515cf1846842a30fee1bc9b569296bef46af8def",
+      "row_count": 3956,
+      "quote_count": 3791,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-07",
+      "file": "2024/2024-11-07.csv",
+      "sha256": "ea64da1ee40af7fd0d739e4486fb14694df865730da93bc763aa7b8f91dd9ff7",
+      "row_count": 3955,
+      "quote_count": 3789,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-08",
+      "file": "2024/2024-11-08.csv",
+      "sha256": "74ff76b0bb1afb4cd9d645b61d76e2e7030c1dddd8964bae4a8a30f29ca9f89f",
+      "row_count": 3955,
+      "quote_count": 3795,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-11",
+      "file": "2024/2024-11-11.csv",
+      "sha256": "29e752e8fb519b1edf6a176b1cf166a7e969e7418abc4f78ebe524dc95f019f9",
+      "row_count": 3955,
+      "quote_count": 3796,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-12",
+      "file": "2024/2024-11-12.csv",
+      "sha256": "fd85a663ecd3a88f55b7a3e7f7bae290ff1dfa6d5c06a8502454bd362e26fcf2",
+      "row_count": 3954,
+      "quote_count": 3794,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-13",
+      "file": "2024/2024-11-13.csv",
+      "sha256": "6ce40677f33af9a277ff6bff7e91fd2d078de7015a49a510b58ff9453548bc34",
+      "row_count": 3954,
+      "quote_count": 3790,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-14",
+      "file": "2024/2024-11-14.csv",
+      "sha256": "c704340a803f29da06d994ea1e0bd86c0c35877b6933488b1a657e8c2504b940",
+      "row_count": 3955,
+      "quote_count": 3788,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-15",
+      "file": "2024/2024-11-15.csv",
+      "sha256": "52a1641d061ea6490737b850d26bca4330a3f5431acc4b0593808710dfdefa49",
+      "row_count": 3955,
+      "quote_count": 3794,
+      "no_quote_count": 161,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-18",
+      "file": "2024/2024-11-18.csv",
+      "sha256": "3c4660b7ff835d4bc0894f63b4302360cd47bc8b3b699122a26fa7d1efe7d067",
+      "row_count": 3955,
+      "quote_count": 3797,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-19",
+      "file": "2024/2024-11-19.csv",
+      "sha256": "fa23615bde1109f8f2ee8c9480a3403266b54b7898de2553ada3725b8b0c644c",
+      "row_count": 3953,
+      "quote_count": 3788,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-20",
+      "file": "2024/2024-11-20.csv",
+      "sha256": "6f6715e103d89ba66013d1890297092a8ba6820f71a8f8dcaa38aaf7d9274fca",
+      "row_count": 3954,
+      "quote_count": 3769,
+      "no_quote_count": 185,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-21",
+      "file": "2024/2024-11-21.csv",
+      "sha256": "b31f450b46b98088dfbca51a80a0da882f931b5a64ba061f00fa6a423171a937",
+      "row_count": 3954,
+      "quote_count": 3797,
+      "no_quote_count": 157,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-22",
+      "file": "2024/2024-11-22.csv",
+      "sha256": "af7cfe5540242cc0867f528623f78eac8a517cf6851236510041c4759409bfc8",
+      "row_count": 3955,
+      "quote_count": 3791,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-25",
+      "file": "2024/2024-11-25.csv",
+      "sha256": "5aad494747a50b9e4a6f6d0a89953e5637dbcca999ed29a6c6bc0948846df551",
+      "row_count": 3955,
+      "quote_count": 3815,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-26",
+      "file": "2024/2024-11-26.csv",
+      "sha256": "ae488e420e2c208fc9ffc0959a8246904e351c0b7fb288c6e6c7f9e8fc7d4028",
+      "row_count": 3956,
+      "quote_count": 3790,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-27",
+      "file": "2024/2024-11-27.csv",
+      "sha256": "ce2fce9873e6edaf60e6698e43888fded4af233672c6a1262c11e40152b99600",
+      "row_count": 3956,
+      "quote_count": 3787,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-28",
+      "file": "2024/2024-11-28.csv",
+      "sha256": "15feb76f064894033a3d65116727194f269ff7c04b0c9a51d34333ddec6da301",
+      "row_count": 3956,
+      "quote_count": 3772,
+      "no_quote_count": 184,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-11-29",
+      "file": "2024/2024-11-29.csv",
+      "sha256": "01d1c7d4911eeda961a17f28bc24331d96734063f85ad88419b69469ab03b5f7",
+      "row_count": 3958,
+      "quote_count": 3788,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-02",
+      "file": "2024/2024-12-02.csv",
+      "sha256": "67b6a6afb265ce6e3045083534e53be6c4d1dfee3b5f12c7de6ee3dd8d291712",
+      "row_count": 3958,
+      "quote_count": 3809,
+      "no_quote_count": 149,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-03",
+      "file": "2024/2024-12-03.csv",
+      "sha256": "49153d9b53ffbc239ca75f7a785e86885b6090b7db95957e2a4ca70ea7e52bb7",
+      "row_count": 3958,
+      "quote_count": 3804,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-04",
+      "file": "2024/2024-12-04.csv",
+      "sha256": "5973502d0529e1d485aaf4cbeafb41d198adf081a1ceb5758b8b244c672fd1c0",
+      "row_count": 3959,
+      "quote_count": 3801,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-05",
+      "file": "2024/2024-12-05.csv",
+      "sha256": "ccbb2b4edee0cd52daa555d8060ffea486c7d5a3da49affd66d1731941d18bf1",
+      "row_count": 3959,
+      "quote_count": 3804,
+      "no_quote_count": 155,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-06",
+      "file": "2024/2024-12-06.csv",
+      "sha256": "25507b60c0346e1daaee26b0fd43e3fd8620f6e01bc5a6fddf0d95ba50dec59d",
+      "row_count": 3958,
+      "quote_count": 3796,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-09",
+      "file": "2024/2024-12-09.csv",
+      "sha256": "38e6c82e1440b988bbfbef329438794b8d700d2b9097d533ce63d865c55a1eff",
+      "row_count": 3959,
+      "quote_count": 3805,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-10",
+      "file": "2024/2024-12-10.csv",
+      "sha256": "306ae1e937cb4054e7c06dbf457f97c7b315e1dab8138da961dec64bc09a79af",
+      "row_count": 3959,
+      "quote_count": 3791,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-11",
+      "file": "2024/2024-12-11.csv",
+      "sha256": "ab7aad6d8db97ad5ff7632fb232e2cc96b608795d8975c42b709a966a2e576f5",
+      "row_count": 3960,
+      "quote_count": 3794,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-12",
+      "file": "2024/2024-12-12.csv",
+      "sha256": "48b39c0f62f637ddc2ed603a4b8e26feec05349ba7dfe9a1a708b65a31ff6ce2",
+      "row_count": 3960,
+      "quote_count": 3809,
+      "no_quote_count": 151,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-13",
+      "file": "2024/2024-12-13.csv",
+      "sha256": "0fcae2762fad4f3cfc5c2452393056ddc143e478476ecc7e14713425d8eeb649",
+      "row_count": 3961,
+      "quote_count": 3799,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-16",
+      "file": "2024/2024-12-16.csv",
+      "sha256": "c272a095ec4a56407015490c27bfb4644859f5ec5ada6990df25a2bbe54f97a9",
+      "row_count": 3963,
+      "quote_count": 3809,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-17",
+      "file": "2024/2024-12-17.csv",
+      "sha256": "5c6511bc9ba1aeb815af7dc934f140afa06d76ce42c1ee9dcd4859229c7a4528",
+      "row_count": 3964,
+      "quote_count": 3800,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-18",
+      "file": "2024/2024-12-18.csv",
+      "sha256": "6bef87643b4017a4553450c3920f903aa11a10e80eda88fc0a1d4553ea034a56",
+      "row_count": 3964,
+      "quote_count": 3808,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-19",
+      "file": "2024/2024-12-19.csv",
+      "sha256": "4714818809cd31cfb849bc04b5e3287f0528b6be010e4057a7fe446db74a6114",
+      "row_count": 3969,
+      "quote_count": 3811,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-20",
+      "file": "2024/2024-12-20.csv",
+      "sha256": "c10a43702204932b9b57080c1839f44e780dceb3e67c8426fbe2984fcfbfe3e8",
+      "row_count": 3969,
+      "quote_count": 3817,
+      "no_quote_count": 152,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-23",
+      "file": "2024/2024-12-23.csv",
+      "sha256": "e1f8f26c0f3419dd67045f87fd5b352c6bb43e4026b736005db34038a165d9c1",
+      "row_count": 3969,
+      "quote_count": 3826,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-24",
+      "file": "2024/2024-12-24.csv",
+      "sha256": "2aed53b6919ca7d48bb964220c49f210b81a2db45e15026cea5dfcff4892ad91",
+      "row_count": 3968,
+      "quote_count": 3820,
+      "no_quote_count": 148,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-25",
+      "file": "2024/2024-12-25.csv",
+      "sha256": "a59477f2c93f4f03527d4f697b71659edd9908499d23835bfb9702cd2ac3c39f",
+      "row_count": 3971,
+      "quote_count": 3828,
+      "no_quote_count": 143,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-26",
+      "file": "2024/2024-12-26.csv",
+      "sha256": "c021deb84b7ecf09956cb75563aee4555ab9f196325357e78c7997b51ed948e8",
+      "row_count": 3973,
+      "quote_count": 3831,
+      "no_quote_count": 142,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-27",
+      "file": "2024/2024-12-27.csv",
+      "sha256": "997eecb8ff5226b8069e9b544aa4d718099a8f9c3797e058dc3410ab81d3a11f",
+      "row_count": 3974,
+      "quote_count": 3823,
+      "no_quote_count": 151,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2024-12-30",
+      "file": "2024/2024-12-30.csv",
+      "sha256": "00b1cc06aa806ebac3fac46062c88003d2b29d831accd980c698c77c9a7f38a9",
+      "row_count": 3973,
+      "quote_count": 3827,
+      "no_quote_count": 146,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-06",
+      "file": "2025/2025-01-06.csv",
+      "sha256": "78115dafd9f0a656e45665b57bd6860b66f2b8943fd51635e4625eb6436ef8d2",
+      "row_count": 3973,
+      "quote_count": 3831,
+      "no_quote_count": 142,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-07",
+      "file": "2025/2025-01-07.csv",
+      "sha256": "0654bcf7b84b56303a5ff4f1fa5521d87aa3e35664757d68ddfe901450183238",
+      "row_count": 3970,
+      "quote_count": 3816,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-08",
+      "file": "2025/2025-01-08.csv",
+      "sha256": "2d0cf807fa7cd6dd07c42f4abc96df8ae012906630ee499357fb51cae7cb531d",
+      "row_count": 3971,
+      "quote_count": 3807,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-09",
+      "file": "2025/2025-01-09.csv",
+      "sha256": "39307dfd59dfcd8dcf0a7869a8be40aa41eada9818c220a85159439efca378b2",
+      "row_count": 3971,
+      "quote_count": 3807,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-10",
+      "file": "2025/2025-01-10.csv",
+      "sha256": "e96afafe5b06ff97510389936a3ac3c39c35128a397c534b07e65d969cbc1975",
+      "row_count": 3971,
+      "quote_count": 3800,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-14",
+      "file": "2025/2025-01-14.csv",
+      "sha256": "e574528adb71270bf1f9f1b8ec2e007d97a72ad164a2d5745a2d1bb17918f45c",
+      "row_count": 3971,
+      "quote_count": 3814,
+      "no_quote_count": 157,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-15",
+      "file": "2025/2025-01-15.csv",
+      "sha256": "9ca5cd3254a6396eae341a0c0ed13b15a201e2bb1209666a8b5822feee879e5a",
+      "row_count": 3970,
+      "quote_count": 3804,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-16",
+      "file": "2025/2025-01-16.csv",
+      "sha256": "69e97a98867de78f9db70d60b0d5b97eab0324ac1d366a17fe7be13cd4b4fe55",
+      "row_count": 3970,
+      "quote_count": 3791,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-17",
+      "file": "2025/2025-01-17.csv",
+      "sha256": "b68a9aeec29565fb175be1796239fb35bd339cd9ed033d793c57eb89d86c57b8",
+      "row_count": 3971,
+      "quote_count": 3795,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-20",
+      "file": "2025/2025-01-20.csv",
+      "sha256": "878709db389fb9c1bc8d3ab35d26994b9a07768a76a3201c5540b960e8008281",
+      "row_count": 3971,
+      "quote_count": 3810,
+      "no_quote_count": 161,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-21",
+      "file": "2025/2025-01-21.csv",
+      "sha256": "e595ffe89bc42b8cb4f748f60d0e687e31fb40c3cf495aee078ce878b9985833",
+      "row_count": 3971,
+      "quote_count": 3781,
+      "no_quote_count": 190,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-22",
+      "file": "2025/2025-01-22.csv",
+      "sha256": "d6c359aeed2af61779f9393bd19d55d26876c5bd01b426028bff9f66c413a0ab",
+      "row_count": 3971,
+      "quote_count": 3800,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-23",
+      "file": "2025/2025-01-23.csv",
+      "sha256": "5322f9eed73a40556bf5988527ef57bc268abac7136fcbd255bf2a640402156e",
+      "row_count": 3971,
+      "quote_count": 3797,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-24",
+      "file": "2025/2025-01-24.csv",
+      "sha256": "e05af89a12b2d2afdc895bd33e1ee5f638bd5f32bba90ed4dd5290d181583533",
+      "row_count": 3968,
+      "quote_count": 3803,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-27",
+      "file": "2025/2025-01-27.csv",
+      "sha256": "a2d8f76d818290f090b4816900870b91448735be48569f8a717912be0737a067",
+      "row_count": 3968,
+      "quote_count": 3814,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-28",
+      "file": "2025/2025-01-28.csv",
+      "sha256": "94a52f75673d753c017727a48f07d54fd2517f3f6ebde4bc3a7de24c18e750e8",
+      "row_count": 3968,
+      "quote_count": 3806,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-29",
+      "file": "2025/2025-01-29.csv",
+      "sha256": "f35b206f31f49f6648de0de8466052348389eec479610911c88439a8244ecf12",
+      "row_count": 3967,
+      "quote_count": 3795,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-30",
+      "file": "2025/2025-01-30.csv",
+      "sha256": "34ed92616fd9b3f11a3625b9f144c6d45e23f8e9ff22d71fe60d6a7eccb02d9e",
+      "row_count": 3964,
+      "quote_count": 3790,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-01-31",
+      "file": "2025/2025-01-31.csv",
+      "sha256": "ef971b8547f7f420cab6893492c2646e510009da209ae060d555f62e102efedc",
+      "row_count": 3964,
+      "quote_count": 3802,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-03",
+      "file": "2025/2025-02-03.csv",
+      "sha256": "4400e24ad904b973b0e3258d8033309bbb49e36025777c05f7fa4a98ed6dbfab",
+      "row_count": 3963,
+      "quote_count": 3801,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-04",
+      "file": "2025/2025-02-04.csv",
+      "sha256": "aa92c7b28a48684987590c186516a21edac96095bfc27ca985273bcff04693a0",
+      "row_count": 3963,
+      "quote_count": 3797,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-05",
+      "file": "2025/2025-02-05.csv",
+      "sha256": "280967a9c16d2705ac76a1996d3325ca86b4fe257e800876dc639525b4649023",
+      "row_count": 3965,
+      "quote_count": 3803,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-06",
+      "file": "2025/2025-02-06.csv",
+      "sha256": "83352555d77d1382db445742b57ab10b5ebc345a9652abc3ef647c59b3ad313c",
+      "row_count": 3964,
+      "quote_count": 3787,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-07",
+      "file": "2025/2025-02-07.csv",
+      "sha256": "a1c6a51063a6ecbfdc26251e8a243fea49814c24166ee2b3e8a1844e27d2ffaa",
+      "row_count": 3964,
+      "quote_count": 3801,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-10",
+      "file": "2025/2025-02-10.csv",
+      "sha256": "4c0802cbe60a82c642fadea526b9d9d193a1c7db1dc8f2a63374ada6c1f774ad",
+      "row_count": 3962,
+      "quote_count": 3812,
+      "no_quote_count": 150,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-12",
+      "file": "2025/2025-02-12.csv",
+      "sha256": "60404be63bce50467a1490d02da6584c7f3830f49ea05362df967fb887fdc1f9",
+      "row_count": 3961,
+      "quote_count": 3805,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-13",
+      "file": "2025/2025-02-13.csv",
+      "sha256": "cafc6c504ebf8920f6eef9e3baf050db7f6aac8c7809b1f5a4b6a31ef82ac123",
+      "row_count": 3962,
+      "quote_count": 3804,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-14",
+      "file": "2025/2025-02-14.csv",
+      "sha256": "f628a9576319a3088c14b24051a8b88158efb6bf1b390eb25e274679e5a2aed7",
+      "row_count": 3962,
+      "quote_count": 3804,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-17",
+      "file": "2025/2025-02-17.csv",
+      "sha256": "029871d7d8a7dbebb5780e4ce4c084af1fe73236cdc1bad73dc725d192fdcadb",
+      "row_count": 3961,
+      "quote_count": 3812,
+      "no_quote_count": 149,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-18",
+      "file": "2025/2025-02-18.csv",
+      "sha256": "0d5ddbc0395d82616cc37666eab345a160c57d6c097ee0710f7b624e27e3531d",
+      "row_count": 3961,
+      "quote_count": 3802,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-19",
+      "file": "2025/2025-02-19.csv",
+      "sha256": "44b0c27cca211f0e96ea462f5fd572538036bf29341f8bafe9bc8e4e80422c4f",
+      "row_count": 3960,
+      "quote_count": 3796,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-20",
+      "file": "2025/2025-02-20.csv",
+      "sha256": "705b20d6c18f874f4818b180baef57defbb5c65b10052fe7ab80f1f7537c5aae",
+      "row_count": 3961,
+      "quote_count": 3798,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-21",
+      "file": "2025/2025-02-21.csv",
+      "sha256": "a6e713396cfa6e1fce29dac62b6279a863203241e934a6d3b6b0577d007251d2",
+      "row_count": 3962,
+      "quote_count": 3803,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-25",
+      "file": "2025/2025-02-25.csv",
+      "sha256": "c5f893d371ee6ea82086d2d2475c6c4c7e0fb8204544372e6a61a84d899629a6",
+      "row_count": 3961,
+      "quote_count": 3817,
+      "no_quote_count": 144,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-26",
+      "file": "2025/2025-02-26.csv",
+      "sha256": "6529469bf7c52b4c6978ba92f2da78fe65654fc71fdf2f76e3a619ab731905f3",
+      "row_count": 3959,
+      "quote_count": 3803,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-27",
+      "file": "2025/2025-02-27.csv",
+      "sha256": "0f522de11b1eb37f30bcbc1522e7e96f769b448189ff2ea5ed0abaa624ecebbd",
+      "row_count": 3959,
+      "quote_count": 3787,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-02-28",
+      "file": "2025/2025-02-28.csv",
+      "sha256": "39a7f32acfd9699d0a84821a3adaff3c9ea550b3fe423cd4d71e4d3163f1857f",
+      "row_count": 3960,
+      "quote_count": 3809,
+      "no_quote_count": 151,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-03",
+      "file": "2025/2025-03-03.csv",
+      "sha256": "36c10e7b42d6c9f581c0cda06ac1075bc943543d8682c0abcf9878b381e73d1c",
+      "row_count": 3960,
+      "quote_count": 3802,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-04",
+      "file": "2025/2025-03-04.csv",
+      "sha256": "e6ff4fc1a311dfe2013732c96ebbe00fdb9c53408a546399be9af43d03a88e4f",
+      "row_count": 3958,
+      "quote_count": 3793,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-05",
+      "file": "2025/2025-03-05.csv",
+      "sha256": "f511124f4df3cf6f950616eecef0cb7479a787fe7f45caa5c442e4b24ee01668",
+      "row_count": 3958,
+      "quote_count": 3786,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-06",
+      "file": "2025/2025-03-06.csv",
+      "sha256": "67297e5e8571815e666635c47b226b45d2b567b5f079ed6c2c9e10fdb17f24f1",
+      "row_count": 3958,
+      "quote_count": 3793,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-07",
+      "file": "2025/2025-03-07.csv",
+      "sha256": "43c68b42bdde234facac0f2b70bff8824dee4e8204eef1d841181108dc9a5e98",
+      "row_count": 3958,
+      "quote_count": 3794,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-10",
+      "file": "2025/2025-03-10.csv",
+      "sha256": "91e84fcfefc99cbdebde683bf4727bcccb0bc112ef5c7e556d84f3686f574775",
+      "row_count": 3957,
+      "quote_count": 3802,
+      "no_quote_count": 155,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-11",
+      "file": "2025/2025-03-11.csv",
+      "sha256": "5512e5a6d73e46e66a37c3b38fbf0164075147db0354c9602bb31374868925af",
+      "row_count": 3957,
+      "quote_count": 3790,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-12",
+      "file": "2025/2025-03-12.csv",
+      "sha256": "c2c8419f284b0c54609ba296b888c6c20f2ca50ead700600f6ccb2b3968592e0",
+      "row_count": 3957,
+      "quote_count": 3772,
+      "no_quote_count": 185,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-13",
+      "file": "2025/2025-03-13.csv",
+      "sha256": "83716c76fac7e9da3173d4f7e4a4fa76b92022d5779bf67c066062147f3af992",
+      "row_count": 3956,
+      "quote_count": 3783,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-14",
+      "file": "2025/2025-03-14.csv",
+      "sha256": "d40d58efa34a5fcbc6d95b4c29729b4473496dc01954e719b74edff7d8f51805",
+      "row_count": 3956,
+      "quote_count": 3783,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-17",
+      "file": "2025/2025-03-17.csv",
+      "sha256": "d7f1b5a5b20f36061b847f58021cbd1ee3bb576d35e2f29c90b3c4f90082c812",
+      "row_count": 3956,
+      "quote_count": 3797,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-18",
+      "file": "2025/2025-03-18.csv",
+      "sha256": "685a46e13a928d15db534b8ad31f9214b725f438641e7fd1d58fe2ea723fbd70",
+      "row_count": 3956,
+      "quote_count": 3800,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-19",
+      "file": "2025/2025-03-19.csv",
+      "sha256": "145e8e29dfb57d7842056f1d726a6ade7b35d83a03e5a19a5bce6405ca29aa6d",
+      "row_count": 3957,
+      "quote_count": 3797,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-21",
+      "file": "2025/2025-03-21.csv",
+      "sha256": "b11ad6ec411c065feed76ace2fad0324570b797893e09007f893019d3920919c",
+      "row_count": 3955,
+      "quote_count": 3807,
+      "no_quote_count": 148,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-24",
+      "file": "2025/2025-03-24.csv",
+      "sha256": "d8d0eccfb7a1cb064c3422f69b00501d832634bf7ac175243a56099c26119a5f",
+      "row_count": 3956,
+      "quote_count": 3814,
+      "no_quote_count": 142,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-25",
+      "file": "2025/2025-03-25.csv",
+      "sha256": "bf96e7b2274e11178e156226b83c3e090be469c681283cb5549b0e4d0d2b1700",
+      "row_count": 3957,
+      "quote_count": 3818,
+      "no_quote_count": 139,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-26",
+      "file": "2025/2025-03-26.csv",
+      "sha256": "c16db293a9eeee7edd2459f4f0543181ed6caffa77fed430d5392f05e7273250",
+      "row_count": 3957,
+      "quote_count": 3806,
+      "no_quote_count": 151,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-27",
+      "file": "2025/2025-03-27.csv",
+      "sha256": "ba5376f76615a239831cd7181456ec880ab683d6d8bc6644001ae4f4c04f7a89",
+      "row_count": 3959,
+      "quote_count": 3799,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-28",
+      "file": "2025/2025-03-28.csv",
+      "sha256": "851c5cf75821b991ead6715c84c8f112b502c45364fb171b983b46c9846b3299",
+      "row_count": 3959,
+      "quote_count": 3799,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-03-31",
+      "file": "2025/2025-03-31.csv",
+      "sha256": "b11c66f0a33a594dfcdfe771000e6b5b65bec856ed4e21c52c4a0394fb5713ad",
+      "row_count": 3960,
+      "quote_count": 3804,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-01",
+      "file": "2025/2025-04-01.csv",
+      "sha256": "3ae2a47b5a66261adcf5e5df60e4ddcc867f2388be0c457337cf5bf87d546e45",
+      "row_count": 3960,
+      "quote_count": 3790,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-02",
+      "file": "2025/2025-04-02.csv",
+      "sha256": "8fb06c75e39582c1615c22b5732ce5ba2b358fd7e9e195426a1d8a98ffde409e",
+      "row_count": 3960,
+      "quote_count": 3792,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-03",
+      "file": "2025/2025-04-03.csv",
+      "sha256": "26702146e40882df1a1150f42e3d1a0e61ebb54950bba8ec7bdc96bf45e8cadc",
+      "row_count": 3960,
+      "quote_count": 3806,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-04",
+      "file": "2025/2025-04-04.csv",
+      "sha256": "4023fbc08e289dacfea58b5c956ef0715a6c6c4f6676c65af5f557bb85df6463",
+      "row_count": 3961,
+      "quote_count": 3814,
+      "no_quote_count": 147,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-07",
+      "file": "2025/2025-04-07.csv",
+      "sha256": "40437513740f8abfdbdb70a524897a1cf8d192e097367acc7c59c1bbf9fe7e09",
+      "row_count": 3962,
+      "quote_count": 3822,
+      "no_quote_count": 140,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-08",
+      "file": "2025/2025-04-08.csv",
+      "sha256": "fd6bfee49fce2e82379f270b0a11caad56b0ed173dfd4b3a9a6a9e28ce4ca03b",
+      "row_count": 3962,
+      "quote_count": 3812,
+      "no_quote_count": 150,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-09",
+      "file": "2025/2025-04-09.csv",
+      "sha256": "543ef52c321d74d6c2676ad2875f98f0d24c16ea4cd83c661bc387aedd5bd9d5",
+      "row_count": 3962,
+      "quote_count": 3799,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-10",
+      "file": "2025/2025-04-10.csv",
+      "sha256": "4dae6014ba91433330dd42759238f997b3002c49da95a73f4f400a64b2415792",
+      "row_count": 3962,
+      "quote_count": 3804,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-11",
+      "file": "2025/2025-04-11.csv",
+      "sha256": "77f0b42e86f7ff30511b7bdd85dcbdefc0ab0b318ef6d0ff2a051abe40f67d04",
+      "row_count": 3962,
+      "quote_count": 3790,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-14",
+      "file": "2025/2025-04-14.csv",
+      "sha256": "431c0c8ce3c53369eef6ad6bb14a7173c7fa1b67fb81af049df3d774ad14138e",
+      "row_count": 3962,
+      "quote_count": 3798,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-15",
+      "file": "2025/2025-04-15.csv",
+      "sha256": "510bff4397912c7b100632a42a2c0d55618d7fbf59711db707fc32cefe7f2fb5",
+      "row_count": 3962,
+      "quote_count": 3782,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-16",
+      "file": "2025/2025-04-16.csv",
+      "sha256": "8a201d5f560b7b335c90ec6cc7fd05e14cdfac77116a086035dc06f3867df727",
+      "row_count": 3962,
+      "quote_count": 3788,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-17",
+      "file": "2025/2025-04-17.csv",
+      "sha256": "2abf93683bc60811ce39bf4592c501779445be479163c26e8bed62ca27147e3a",
+      "row_count": 3962,
+      "quote_count": 3761,
+      "no_quote_count": 201,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-18",
+      "file": "2025/2025-04-18.csv",
+      "sha256": "79f95c9b8b817975d75cdbd97115600e5889a52f3cbb5f25b61788a1c3db23a5",
+      "row_count": 3964,
+      "quote_count": 3791,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-21",
+      "file": "2025/2025-04-21.csv",
+      "sha256": "053623bce0cd65aa75ded521a645ece7399df224a39e831ebabc72e22f0d95c6",
+      "row_count": 3964,
+      "quote_count": 3801,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-22",
+      "file": "2025/2025-04-22.csv",
+      "sha256": "cfe6499dfe42150ec97bf069398d42dbcf139ccf698339feec66c63bec795dfe",
+      "row_count": 3965,
+      "quote_count": 3783,
+      "no_quote_count": 182,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-23",
+      "file": "2025/2025-04-23.csv",
+      "sha256": "108ca8549cbee55e296c52b9e7e7fd76a1e12c2b2182a3f5160dacd318795ec9",
+      "row_count": 3963,
+      "quote_count": 3785,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-24",
+      "file": "2025/2025-04-24.csv",
+      "sha256": "741fb21df3d60c9131df8c1cda033b20e3c3ea6d9f80c7f563f4c1819a4ecdbc",
+      "row_count": 3964,
+      "quote_count": 3785,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-25",
+      "file": "2025/2025-04-25.csv",
+      "sha256": "be355a6771179fbd9562ce467acf703889baaf029e6621ff92bc520a6be9f556",
+      "row_count": 3963,
+      "quote_count": 3806,
+      "no_quote_count": 157,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-28",
+      "file": "2025/2025-04-28.csv",
+      "sha256": "069e2ef83bd2433773e976007d3fc725abb191c4aa10d1054542ef51f194e0e9",
+      "row_count": 3963,
+      "quote_count": 3804,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-04-30",
+      "file": "2025/2025-04-30.csv",
+      "sha256": "9b2550d96141d4224e23513727df9f64e0ac50655e2359dba47d063ac8849090",
+      "row_count": 3962,
+      "quote_count": 3794,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-01",
+      "file": "2025/2025-05-01.csv",
+      "sha256": "10ad3003b07bc32f7631b5314f14af2caf8ed2bf111cb1b4ab22a2da9c1e597e",
+      "row_count": 3962,
+      "quote_count": 3787,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-02",
+      "file": "2025/2025-05-02.csv",
+      "sha256": "ff569a74302e61541e514583c27589d14852dff817ec98beacd8e2eb0d194cda",
+      "row_count": 3962,
+      "quote_count": 3793,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-07",
+      "file": "2025/2025-05-07.csv",
+      "sha256": "77120c5d77d324ead8a67ff8750adeb1918da7bd20a390925743b0863a960f05",
+      "row_count": 3962,
+      "quote_count": 3796,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-08",
+      "file": "2025/2025-05-08.csv",
+      "sha256": "443faa263dad4c75c57f8c3add4d435ad906934cd1f9826a4e5146fb06292f31",
+      "row_count": 3962,
+      "quote_count": 3776,
+      "no_quote_count": 186,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-09",
+      "file": "2025/2025-05-09.csv",
+      "sha256": "3ea3acb44ff42d8be735dd03a9fe96e84c3367c6cbea7afac9a63c276c7ac58c",
+      "row_count": 3961,
+      "quote_count": 3798,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-12",
+      "file": "2025/2025-05-12.csv",
+      "sha256": "5907df0f93261cb3c1e390dd12c742ce54c19df5fb2c4668a0783d884a775ced",
+      "row_count": 3960,
+      "quote_count": 3800,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-13",
+      "file": "2025/2025-05-13.csv",
+      "sha256": "6da4a184bab938f99857baee4293eac01b812d398e92841c532c6939597704b6",
+      "row_count": 3959,
+      "quote_count": 3796,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-14",
+      "file": "2025/2025-05-14.csv",
+      "sha256": "fa666e20028c59035e21087e1a4009e5970e764c0722f3625cd5cee46ec527af",
+      "row_count": 3957,
+      "quote_count": 3791,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-15",
+      "file": "2025/2025-05-15.csv",
+      "sha256": "cd987fa97d845521fa57be7125026677383d66b3c012e6810eefcc121a5b3f7a",
+      "row_count": 3957,
+      "quote_count": 3789,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-16",
+      "file": "2025/2025-05-16.csv",
+      "sha256": "f4eb1d46f73a20dde5ca93c8017d4ac880b62ce7e9dc9d159f76ac0073b76c69",
+      "row_count": 3956,
+      "quote_count": 3785,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-19",
+      "file": "2025/2025-05-19.csv",
+      "sha256": "336689f0923f880eb3331febeb49b5cc815389137645b6fc611510a4cb477438",
+      "row_count": 3956,
+      "quote_count": 3785,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-20",
+      "file": "2025/2025-05-20.csv",
+      "sha256": "42828277e71905c1d262c8786582d1d79050601641aa9cff5be5c326c127a476",
+      "row_count": 3956,
+      "quote_count": 3797,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-21",
+      "file": "2025/2025-05-21.csv",
+      "sha256": "6e44d38cc5c43b7aec30d5a54320e3662e824e34c4ff42588e1e5749d566f32c",
+      "row_count": 3956,
+      "quote_count": 3780,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-22",
+      "file": "2025/2025-05-22.csv",
+      "sha256": "2350051c43e5635a8db98589ca93f20765f752b59ecea043d823c2ed04ff0410",
+      "row_count": 3956,
+      "quote_count": 3793,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-23",
+      "file": "2025/2025-05-23.csv",
+      "sha256": "670543fce6e664c49b521df995ea58d29a043a97a575fa888e089a6c5aa510f6",
+      "row_count": 3959,
+      "quote_count": 3795,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-26",
+      "file": "2025/2025-05-26.csv",
+      "sha256": "81af847db53cf4401ca4f88bfe0014a4c01ddfbdda9dfc6390202350a061fbca",
+      "row_count": 3958,
+      "quote_count": 3793,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-27",
+      "file": "2025/2025-05-27.csv",
+      "sha256": "80868baab10ffe81dedb16fe069c21b70696f083ed5924b6660fa3c759d0e642",
+      "row_count": 3958,
+      "quote_count": 3790,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-28",
+      "file": "2025/2025-05-28.csv",
+      "sha256": "81c447e3f0fa82c8efb5ebb05d7cd8f0377d49d8bec36e178e5a2c19c1676022",
+      "row_count": 3957,
+      "quote_count": 3786,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-29",
+      "file": "2025/2025-05-29.csv",
+      "sha256": "9a8f6b940d1b3c6acc3a69638ef9fe5f80f04fda81619df81ed74a1f322f90c8",
+      "row_count": 3955,
+      "quote_count": 3774,
+      "no_quote_count": 181,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-05-30",
+      "file": "2025/2025-05-30.csv",
+      "sha256": "953a212334bf6ec29e1c4913639eb3005c2cdf39c01b50ad4f95c2fa22c6215d",
+      "row_count": 3955,
+      "quote_count": 3795,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-02",
+      "file": "2025/2025-06-02.csv",
+      "sha256": "9029a8574f4a520289c6947524f14fd45caee17705258037218eb9b3d7a4c372",
+      "row_count": 3954,
+      "quote_count": 3788,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-03",
+      "file": "2025/2025-06-03.csv",
+      "sha256": "4ddec1c0d0e532ac9488ec9863c7abd53734b9aade3ea1c7711c4e5b0abbe0c8",
+      "row_count": 3954,
+      "quote_count": 3770,
+      "no_quote_count": 184,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-04",
+      "file": "2025/2025-06-04.csv",
+      "sha256": "ed47430f7b5e1b7dd3a22c78d39ff45c069e57357451d8f09b4296389a9c4ea8",
+      "row_count": 3954,
+      "quote_count": 3778,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-05",
+      "file": "2025/2025-06-05.csv",
+      "sha256": "e2e7477eb00a61d4625a3bb9e3be577b0069da491219b670894df39ebb00d238",
+      "row_count": 3954,
+      "quote_count": 3773,
+      "no_quote_count": 181,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-06",
+      "file": "2025/2025-06-06.csv",
+      "sha256": "62d29148f50c2c2a7fbf513cfa50b54d49ee0af70533586fd93dcccddf45caba",
+      "row_count": 3954,
+      "quote_count": 3760,
+      "no_quote_count": 194,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-09",
+      "file": "2025/2025-06-09.csv",
+      "sha256": "df9325e3bdd9691c006d569f7f6bfbd78f2cb3145ebb190d58dda5caae92ed68",
+      "row_count": 3953,
+      "quote_count": 3780,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-10",
+      "file": "2025/2025-06-10.csv",
+      "sha256": "60032b6c7c26cac32b67c03e57923aadc89b0ac73957495ad4ba5984e8419ef4",
+      "row_count": 3953,
+      "quote_count": 3768,
+      "no_quote_count": 185,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-11",
+      "file": "2025/2025-06-11.csv",
+      "sha256": "592a463b6f2ca48fb83269e12305a4351658fcd31da833169b95653f624c8cdb",
+      "row_count": 3952,
+      "quote_count": 3771,
+      "no_quote_count": 181,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-12",
+      "file": "2025/2025-06-12.csv",
+      "sha256": "8b09c0e50f7fb8da0e8d452bb827fb37c2019c9ec9e1560cecab8dd2913e3bea",
+      "row_count": 3952,
+      "quote_count": 3780,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-13",
+      "file": "2025/2025-06-13.csv",
+      "sha256": "a5c4bee004f44df2b56a073f2c65dfc29815aeef723aa60f9019b8034a3c5b31",
+      "row_count": 3951,
+      "quote_count": 3771,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-16",
+      "file": "2025/2025-06-16.csv",
+      "sha256": "cbbf90cacd1ddc6a3fb1844c37a017dc4de002c3fe69d54b3f2d35bf02d3bbea",
+      "row_count": 3949,
+      "quote_count": 3772,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-17",
+      "file": "2025/2025-06-17.csv",
+      "sha256": "eb1cdb56f13579a7d1373771ec40375b9288f73fc81a326d5a2d5e121e797b79",
+      "row_count": 3946,
+      "quote_count": 3768,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-18",
+      "file": "2025/2025-06-18.csv",
+      "sha256": "e45f95ff1411e180469f24cbf3895487f445bcb61cbe223e77130eff9b2996cc",
+      "row_count": 3946,
+      "quote_count": 3775,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-19",
+      "file": "2025/2025-06-19.csv",
+      "sha256": "2fefe7638937e90ec71235bf4791c6efaf97cbca6c8b54d904094b39c1d2f58a",
+      "row_count": 3944,
+      "quote_count": 3769,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-20",
+      "file": "2025/2025-06-20.csv",
+      "sha256": "5df691a0b4eb368f4700672c2c53d735e790152d817188cc2cbce0c5edde1b23",
+      "row_count": 3946,
+      "quote_count": 3768,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-23",
+      "file": "2025/2025-06-23.csv",
+      "sha256": "19bd84b3d8e7e60eddd6db687e217e93ca508960c24c05bc288a58b15180a7f1",
+      "row_count": 3947,
+      "quote_count": 3775,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-24",
+      "file": "2025/2025-06-24.csv",
+      "sha256": "70e60cd7772c40a432975cedf3dcca2eb03f8e95fee9dcfa3e1e0a3f3cf5c67c",
+      "row_count": 3948,
+      "quote_count": 3771,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-25",
+      "file": "2025/2025-06-25.csv",
+      "sha256": "f80761fa0d2fe54afdf18481a82da7bbe46f3f64e8077fc9647a2f3dd8b3df17",
+      "row_count": 3949,
+      "quote_count": 3778,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-26",
+      "file": "2025/2025-06-26.csv",
+      "sha256": "f5dbfa137a260343c7bac039ab551bd83d8252000814f3227c8054accb2b78ec",
+      "row_count": 3951,
+      "quote_count": 3788,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-27",
+      "file": "2025/2025-06-27.csv",
+      "sha256": "c76c4ea99d1c0a19a1a61c995ba936aecbb66b4d2071c52c8062aa829cb89444",
+      "row_count": 3950,
+      "quote_count": 3786,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-06-30",
+      "file": "2025/2025-06-30.csv",
+      "sha256": "6e42e535f9714c9e05a6a67aed5d576ee9c8c28292a434bb011983bb41b921d3",
+      "row_count": 3952,
+      "quote_count": 3794,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-01",
+      "file": "2025/2025-07-01.csv",
+      "sha256": "7dd4929d45edc458bbd0033bbb06e61f73b500385560fd5b87d7bada67bd7593",
+      "row_count": 3952,
+      "quote_count": 3777,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-02",
+      "file": "2025/2025-07-02.csv",
+      "sha256": "b5aae46309dcec2e32f9f28b2c13bfa24c112239f466385a1ac8b6c3ebf59804",
+      "row_count": 3951,
+      "quote_count": 3778,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-03",
+      "file": "2025/2025-07-03.csv",
+      "sha256": "fbda43274d10c2bac9e4a5a3e119e5000d4c99239b0269a01fba83fcf3ca0577",
+      "row_count": 3951,
+      "quote_count": 3778,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-04",
+      "file": "2025/2025-07-04.csv",
+      "sha256": "26b678abb7f3c5d47c0ac934886962f1978f8231b239d5c9ad93ab12453679bb",
+      "row_count": 3953,
+      "quote_count": 3767,
+      "no_quote_count": 186,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-07",
+      "file": "2025/2025-07-07.csv",
+      "sha256": "1d40fa255885f372608700d552742ebe14be926420e9b604c6f35de06449dab4",
+      "row_count": 3953,
+      "quote_count": 3778,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-08",
+      "file": "2025/2025-07-08.csv",
+      "sha256": "4bb9ec51065971a89063ecbb362a31b94c9bee69fbc3053a416750fa19479695",
+      "row_count": 3953,
+      "quote_count": 3773,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-09",
+      "file": "2025/2025-07-09.csv",
+      "sha256": "0dc66e16dae5501e0be2399439ab0d5c3443489fab934202f8b78e342b734c4f",
+      "row_count": 3952,
+      "quote_count": 3774,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-10",
+      "file": "2025/2025-07-10.csv",
+      "sha256": "5e38ea719b71aad96b5f168ac4e73c743f023591642bb229a91e8c9cd975a00f",
+      "row_count": 3952,
+      "quote_count": 3774,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-11",
+      "file": "2025/2025-07-11.csv",
+      "sha256": "cb63a8e46e35ab030a08d3cbbbd4a5be49fa9816316d20b02e62854cdcd8f04e",
+      "row_count": 3951,
+      "quote_count": 3775,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-14",
+      "file": "2025/2025-07-14.csv",
+      "sha256": "fb0e8c671929f321c296de80f2704e090588ea4c9616c4ade819a59b896ef5d0",
+      "row_count": 3951,
+      "quote_count": 3786,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-15",
+      "file": "2025/2025-07-15.csv",
+      "sha256": "da21440ac6ead4952da65168a53d787bb27130d15f4f31916db19374b0c5858c",
+      "row_count": 3951,
+      "quote_count": 3781,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-16",
+      "file": "2025/2025-07-16.csv",
+      "sha256": "782e3a650cc039eb78a065bdf3b45e5828b086eb94002c353d1778e40c404a5d",
+      "row_count": 3951,
+      "quote_count": 3772,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-17",
+      "file": "2025/2025-07-17.csv",
+      "sha256": "3dd3eaac5441eaf163e962b8a24e45a0fba036810a0ea9a6694ea356659af58d",
+      "row_count": 3949,
+      "quote_count": 3775,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-18",
+      "file": "2025/2025-07-18.csv",
+      "sha256": "e8ae1810cc3814fb77e69c3511389699bd3518cd9b95d35adcd4bce4f7db7f22",
+      "row_count": 3953,
+      "quote_count": 3787,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-22",
+      "file": "2025/2025-07-22.csv",
+      "sha256": "bcdcb28ca3004ff45b123cbc78c9c4838435d78cf8c6a5acb061b4252579e904",
+      "row_count": 3953,
+      "quote_count": 3788,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-23",
+      "file": "2025/2025-07-23.csv",
+      "sha256": "80d444e2f92fb66aa66c592df668034e0ae0c51f5380bcab53d825f67e62252c",
+      "row_count": 3953,
+      "quote_count": 3793,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-24",
+      "file": "2025/2025-07-24.csv",
+      "sha256": "62350a304218ffce66d189468fbb8c20ebbac798864a3c40cff86f9128bde8fe",
+      "row_count": 3954,
+      "quote_count": 3791,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-25",
+      "file": "2025/2025-07-25.csv",
+      "sha256": "de412fab8a63f517975e64fa31e4c56285daf2cd297f03126f25938b90f1bf14",
+      "row_count": 3953,
+      "quote_count": 3793,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-28",
+      "file": "2025/2025-07-28.csv",
+      "sha256": "bea4e4858e86379e1e2501486e560358c06188a86ad6d6764fcb06e49fa0aca1",
+      "row_count": 3951,
+      "quote_count": 3792,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-29",
+      "file": "2025/2025-07-29.csv",
+      "sha256": "8e3dc00fe0bd125435288c641987be151cbc1da5f4a18919e54d037d04605933",
+      "row_count": 3951,
+      "quote_count": 3778,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-30",
+      "file": "2025/2025-07-30.csv",
+      "sha256": "2c5e3a43bf8ddd306cfc989caa1b1cb799242973ca54c7e1e75154a2b5e2bf7c",
+      "row_count": 3950,
+      "quote_count": 3772,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-07-31",
+      "file": "2025/2025-07-31.csv",
+      "sha256": "4445347e12b8ee1bea112f29ddfb23bee734d6d2c678b0d8966b292e22b2d9da",
+      "row_count": 3949,
+      "quote_count": 3776,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-01",
+      "file": "2025/2025-08-01.csv",
+      "sha256": "ed80af3b9a6464e04271284ceebc12c3ae9b52aa7de3738d7dfec7c6a9b584c2",
+      "row_count": 3949,
+      "quote_count": 3777,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-04",
+      "file": "2025/2025-08-04.csv",
+      "sha256": "27e0705f90c23fed77e2eeab1d8fdb9303fd428e384bac2fb96fb48d7923cc7b",
+      "row_count": 3948,
+      "quote_count": 3784,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-05",
+      "file": "2025/2025-08-05.csv",
+      "sha256": "608958bc5c1267f70b21625025d6c9e1547f91d4e43a899881856b9924b54793",
+      "row_count": 3949,
+      "quote_count": 3786,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-06",
+      "file": "2025/2025-08-06.csv",
+      "sha256": "d6273cb345c058cc9eb703ef7878efeff60f13175025fdbd868228713736d196",
+      "row_count": 3950,
+      "quote_count": 3775,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-07",
+      "file": "2025/2025-08-07.csv",
+      "sha256": "e2311d21d141c4fd2197d943d86b25b3cdaa6a33d713ed35ca524bc2d2dbddab",
+      "row_count": 3950,
+      "quote_count": 3772,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-08",
+      "file": "2025/2025-08-08.csv",
+      "sha256": "8074b422efe1c2486f2466f6d06455a977a5e3c048f838e70210a5acdf8df12b",
+      "row_count": 3950,
+      "quote_count": 3791,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-12",
+      "file": "2025/2025-08-12.csv",
+      "sha256": "3ea9121ef392e2c8c2cf292d75d63fb1ca1e17ae50c69af354edc45e0780fcb5",
+      "row_count": 3950,
+      "quote_count": 3796,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-13",
+      "file": "2025/2025-08-13.csv",
+      "sha256": "84cec119fcae3513f63beda275ae82b886584855f67b0b45b7878c6d27173607",
+      "row_count": 3951,
+      "quote_count": 3787,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-14",
+      "file": "2025/2025-08-14.csv",
+      "sha256": "d067cc66abad32b2d392dd64f4e73bce906b8cbe9930630c8db87a894ef042ff",
+      "row_count": 3951,
+      "quote_count": 3784,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-15",
+      "file": "2025/2025-08-15.csv",
+      "sha256": "a828bb5587dadca50aef54907856b553dfc059b073c572e76b7b767ccf8af9ba",
+      "row_count": 3951,
+      "quote_count": 3783,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-18",
+      "file": "2025/2025-08-18.csv",
+      "sha256": "ac36eac7180f05b753b4d84f1e220e5b8867df2c6294e404aef198a49183742f",
+      "row_count": 3949,
+      "quote_count": 3788,
+      "no_quote_count": 161,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-19",
+      "file": "2025/2025-08-19.csv",
+      "sha256": "217513ce77cc75247e43db4cd6bbb8b639e5a23ff1d4c48bf4068a04bc35f100",
+      "row_count": 3948,
+      "quote_count": 3784,
+      "no_quote_count": 164,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-20",
+      "file": "2025/2025-08-20.csv",
+      "sha256": "ab3af5239c6aca10ab6f84f6be0c7374e72eaaae8af90f385d7ec64ec88a6149",
+      "row_count": 3947,
+      "quote_count": 3784,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-21",
+      "file": "2025/2025-08-21.csv",
+      "sha256": "c10c9ad06c93836fe9be985e0bae00a663b4f816358bf2b582c17e526b9b749c",
+      "row_count": 3947,
+      "quote_count": 3782,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-22",
+      "file": "2025/2025-08-22.csv",
+      "sha256": "176f6a39549a9097981c95f1ee9dd969640ec174854bfcc402f996620daae066",
+      "row_count": 3947,
+      "quote_count": 3780,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-25",
+      "file": "2025/2025-08-25.csv",
+      "sha256": "55bcd0c242a51fb78a457df10a4777d9d2c35550c53842f6a614edb6f987a6b0",
+      "row_count": 3947,
+      "quote_count": 3794,
+      "no_quote_count": 153,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-26",
+      "file": "2025/2025-08-26.csv",
+      "sha256": "a7b74a7f038df73a45eaf17abea8bffd890d7e9f3cee3fd608df432a2634f794",
+      "row_count": 3947,
+      "quote_count": 3791,
+      "no_quote_count": 156,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-27",
+      "file": "2025/2025-08-27.csv",
+      "sha256": "0e992baff931d421d16becf068e1555c37c2bad32232df98f368e6e3c1d90884",
+      "row_count": 3947,
+      "quote_count": 3777,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-28",
+      "file": "2025/2025-08-28.csv",
+      "sha256": "beb99df778951a84d07cd7c26677756226677fa49153fad04f17557d8293409d",
+      "row_count": 3944,
+      "quote_count": 3775,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-08-29",
+      "file": "2025/2025-08-29.csv",
+      "sha256": "cac368e713da50b420db80449a5e137c633823fe7b45825621f14c9a8fd3deb4",
+      "row_count": 3944,
+      "quote_count": 3773,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-01",
+      "file": "2025/2025-09-01.csv",
+      "sha256": "e5e60021fc53dd10dafba80b5abea58c3bfebcc4f7429d8e0bf27e3b1894398c",
+      "row_count": 3943,
+      "quote_count": 3778,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-02",
+      "file": "2025/2025-09-02.csv",
+      "sha256": "ee0184fba319e13ab331dc0e590cec3e19fa819cbb9bc856ec50b2539362f3e3",
+      "row_count": 3943,
+      "quote_count": 3771,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-03",
+      "file": "2025/2025-09-03.csv",
+      "sha256": "18bc5c31b6652e6e3204c7f7e540835b1742f3d621be67ea1e94d8d05c7f37a9",
+      "row_count": 3943,
+      "quote_count": 3775,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-04",
+      "file": "2025/2025-09-04.csv",
+      "sha256": "3433ec1f57a3a7a7972e3c1213b241810f6ae4b82f1a241f9eb4472827c52ced",
+      "row_count": 3942,
+      "quote_count": 3763,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-05",
+      "file": "2025/2025-09-05.csv",
+      "sha256": "6bd775a2cb5e1894c38458cd05cd8dbf38bea995642a2f863214d3b97e5e58d2",
+      "row_count": 3942,
+      "quote_count": 3770,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-08",
+      "file": "2025/2025-09-08.csv",
+      "sha256": "3cd71fb8c5345d5a2299cafeda0824d1957929300acebb76aede7f768cf410fe",
+      "row_count": 3941,
+      "quote_count": 3783,
+      "no_quote_count": 158,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-09",
+      "file": "2025/2025-09-09.csv",
+      "sha256": "5e28f998e53d133d24f2a3808b01a6d4230b457e99bd7e1cd98b2fb410b8fd1d",
+      "row_count": 3941,
+      "quote_count": 3782,
+      "no_quote_count": 159,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-10",
+      "file": "2025/2025-09-10.csv",
+      "sha256": "7f6d2ff2e6ce81869ae1ffd0f82810f3a086249450d0ae6bf3445a55fa185416",
+      "row_count": 3941,
+      "quote_count": 3776,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-11",
+      "file": "2025/2025-09-11.csv",
+      "sha256": "86db852a40529d86c940925e5d225167a6c5ef4d883b415ae7d21148647a9a3b",
+      "row_count": 3942,
+      "quote_count": 3774,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-12",
+      "file": "2025/2025-09-12.csv",
+      "sha256": "57f9e32c99feb9967de9439ab015deb7b2c935cb71eb1e462561bbbd49b64309",
+      "row_count": 3942,
+      "quote_count": 3765,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-16",
+      "file": "2025/2025-09-16.csv",
+      "sha256": "5d76d2f744aa18db59e9ec9227bde810eceb067e88e39073aac3bcdc264bf288",
+      "row_count": 3942,
+      "quote_count": 3780,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-17",
+      "file": "2025/2025-09-17.csv",
+      "sha256": "8415aba2bad50f15a6d0959d9c5faf73d30c293a5ddc83d4fdbd0609b8fa903c",
+      "row_count": 3942,
+      "quote_count": 3779,
+      "no_quote_count": 163,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-18",
+      "file": "2025/2025-09-18.csv",
+      "sha256": "8c29c8117d7f89218d269028521ad4cbd10308cac824ba774927b1f4bf539c7b",
+      "row_count": 3942,
+      "quote_count": 3775,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-19",
+      "file": "2025/2025-09-19.csv",
+      "sha256": "7e3096fde998ee96ecf9ba0034ce9d72cdae586b570cecc594668200db67e615",
+      "row_count": 3939,
+      "quote_count": 3782,
+      "no_quote_count": 157,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-22",
+      "file": "2025/2025-09-22.csv",
+      "sha256": "8a41fee23ae64f43ea4379cfde4058a6e6b185647741f589ca14b6d92c35e2f7",
+      "row_count": 3939,
+      "quote_count": 3779,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-24",
+      "file": "2025/2025-09-24.csv",
+      "sha256": "efd56d1366942ab7ad4b866ab114a173ddb3f6c3c9645d1279be1c05d7f7f909",
+      "row_count": 3938,
+      "quote_count": 3777,
+      "no_quote_count": 161,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-25",
+      "file": "2025/2025-09-25.csv",
+      "sha256": "d85d0a0244a817252f3c96e901d105d947416599cc5a3c527ef8443b380b1889",
+      "row_count": 3941,
+      "quote_count": 3788,
+      "no_quote_count": 153,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-26",
+      "file": "2025/2025-09-26.csv",
+      "sha256": "ec56e4718bebcce7003637238d75307991631bc228a144183634ed40284fe4da",
+      "row_count": 3940,
+      "quote_count": 3780,
+      "no_quote_count": 160,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-29",
+      "file": "2025/2025-09-29.csv",
+      "sha256": "9b4b8a43551758964395c5d8f67e208fee52cbfa4fa9d4bd1485dbbefdb5409c",
+      "row_count": 3932,
+      "quote_count": 3766,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-09-30",
+      "file": "2025/2025-09-30.csv",
+      "sha256": "481faa4b017ee87d33680286f7dcfc36392e0f4b06575088554c7ff879e1b3bf",
+      "row_count": 3931,
+      "quote_count": 3763,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-01",
+      "file": "2025/2025-10-01.csv",
+      "sha256": "366aa2f44a5d9729d549042aa2c493d9dca2280ebb036e39bef8df0628a741df",
+      "row_count": 3935,
+      "quote_count": 3773,
+      "no_quote_count": 162,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-02",
+      "file": "2025/2025-10-02.csv",
+      "sha256": "b0b72e2b5683a6940974430421d2d00bf13897ecf5b5b894af14c502739bff84",
+      "row_count": 3936,
+      "quote_count": 3764,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-03",
+      "file": "2025/2025-10-03.csv",
+      "sha256": "e1cd61503c940283ea476d6093eef7706c2bd05d389d69a8dcc844212a4e8bc3",
+      "row_count": 3937,
+      "quote_count": 3767,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-06",
+      "file": "2025/2025-10-06.csv",
+      "sha256": "695fea7c63e11c301eee81a7cd59dbeb138d5b5fd9eccb2c39d951cf4a04176c",
+      "row_count": 3938,
+      "quote_count": 3784,
+      "no_quote_count": 154,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-07",
+      "file": "2025/2025-10-07.csv",
+      "sha256": "f51e377c4768ff85c71b10ddb4055d916a5c391d89c82e2f6fc2ef9848630029",
+      "row_count": 3939,
+      "quote_count": 3772,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-08",
+      "file": "2025/2025-10-08.csv",
+      "sha256": "12649920f0d07341b03f865f2e4e3d9f6fc077b336cb6f06691f977eef1e0cd7",
+      "row_count": 3940,
+      "quote_count": 3767,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-09",
+      "file": "2025/2025-10-09.csv",
+      "sha256": "a2ac356651ce275cc65c2e082307750059eb8236903901fcde8bbc813ec97bd0",
+      "row_count": 3940,
+      "quote_count": 3765,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-10",
+      "file": "2025/2025-10-10.csv",
+      "sha256": "fbc73de19058e860e9fd12e33adb52c101793294698d9bee9ac0ba44fac1fb9b",
+      "row_count": 3940,
+      "quote_count": 3772,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-14",
+      "file": "2025/2025-10-14.csv",
+      "sha256": "4f79f00c659f974c792e9dfafabbb7562f6e4a89c92fc9d7205ebfb350a76517",
+      "row_count": 3938,
+      "quote_count": 3777,
+      "no_quote_count": 161,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-15",
+      "file": "2025/2025-10-15.csv",
+      "sha256": "b87beadbdd07849c8dad4ac68ad17a4caad3af731edd34150a41e972107aebc4",
+      "row_count": 3939,
+      "quote_count": 3768,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-16",
+      "file": "2025/2025-10-16.csv",
+      "sha256": "780cc5d72bf82b9a9e2a4a115729ded912360cf8d2f0ba49393a2f629ffc5047",
+      "row_count": 3939,
+      "quote_count": 3752,
+      "no_quote_count": 187,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-17",
+      "file": "2025/2025-10-17.csv",
+      "sha256": "0f4f94f37b41c6e5ae49536bbca134df9570a39b5ee37d1131485062f37282d5",
+      "row_count": 3940,
+      "quote_count": 3753,
+      "no_quote_count": 187,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-20",
+      "file": "2025/2025-10-20.csv",
+      "sha256": "279233fa44f68f972ee9d1ab987cb54982406f6b16622d58853f14efef1d4abb",
+      "row_count": 3940,
+      "quote_count": 3771,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-21",
+      "file": "2025/2025-10-21.csv",
+      "sha256": "5e105704968a21f732657e1d2317c25398a8490c08d01a0ec2332e7305710fdf",
+      "row_count": 3941,
+      "quote_count": 3762,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-22",
+      "file": "2025/2025-10-22.csv",
+      "sha256": "f7984ddf426f1bbeec4ac8f0e69d0596a7a05124a1fb0042523ac4eaea07c482",
+      "row_count": 3941,
+      "quote_count": 3758,
+      "no_quote_count": 183,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-23",
+      "file": "2025/2025-10-23.csv",
+      "sha256": "89f3e3c86142064b14981845ff292629d2754930e5bcb64d8de4d6624acc8490",
+      "row_count": 3944,
+      "quote_count": 3763,
+      "no_quote_count": 181,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-24",
+      "file": "2025/2025-10-24.csv",
+      "sha256": "9c56f3814450c9e2875fc64c4279d66968a166e8f4de301271fe8d38b6c3659d",
+      "row_count": 3945,
+      "quote_count": 3775,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-27",
+      "file": "2025/2025-10-27.csv",
+      "sha256": "b52b4d2e710b4666c839931a5f700a343c7840fb0d038f1a6638c7305c3c2188",
+      "row_count": 3945,
+      "quote_count": 3776,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-28",
+      "file": "2025/2025-10-28.csv",
+      "sha256": "9f57c9250b17aa93240ed9da7e5e81ceac74c17d37118f8acd8a0c1d033bcd39",
+      "row_count": 3945,
+      "quote_count": 3766,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-29",
+      "file": "2025/2025-10-29.csv",
+      "sha256": "501ee9cc21f6fd9841900bdf544c76e1ccb76a323c100901d6029e2d089841c8",
+      "row_count": 3945,
+      "quote_count": 3772,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-30",
+      "file": "2025/2025-10-30.csv",
+      "sha256": "c6fa2f97fa3f8e1c9f572d3ec8c34cfd371c1d5888f7a02aed182617d41cffd1",
+      "row_count": 3943,
+      "quote_count": 3758,
+      "no_quote_count": 185,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-10-31",
+      "file": "2025/2025-10-31.csv",
+      "sha256": "19e9fae7760b6bfbbb634f92c46f42acfe069403da1963e560f14fe4965dcd4d",
+      "row_count": 3943,
+      "quote_count": 3770,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-04",
+      "file": "2025/2025-11-04.csv",
+      "sha256": "57c597b561ef2f6eb5dd061618572b0e640f2d85938c52e455241c2551747748",
+      "row_count": 3943,
+      "quote_count": 3773,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-05",
+      "file": "2025/2025-11-05.csv",
+      "sha256": "fce00015e7157bf910565b273ae14d60265433fd2ab35e7bc4b5a158f05872b5",
+      "row_count": 3943,
+      "quote_count": 3775,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-06",
+      "file": "2025/2025-11-06.csv",
+      "sha256": "adea786fe9035c4b3fc1d3be71c91162029e00e6d29eb3c68609176a06505444",
+      "row_count": 3942,
+      "quote_count": 3753,
+      "no_quote_count": 189,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-07",
+      "file": "2025/2025-11-07.csv",
+      "sha256": "9afe2df7aa6512d3386b004baff5ae480426d8b387564d023c97394e1c0c193f",
+      "row_count": 3942,
+      "quote_count": 3751,
+      "no_quote_count": 191,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-10",
+      "file": "2025/2025-11-10.csv",
+      "sha256": "99e6754506cbd3158d75d788b6e5c28eabde7a28ef568e71f44a250ddb16df14",
+      "row_count": 3942,
+      "quote_count": 3767,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-11",
+      "file": "2025/2025-11-11.csv",
+      "sha256": "e979d3e98f74645935d9e65189de4d16010861a3b47dca1dc5172de8dfc6e76f",
+      "row_count": 3942,
+      "quote_count": 3764,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-12",
+      "file": "2025/2025-11-12.csv",
+      "sha256": "829916318e4bed33b86ee1c28bf456a60951e0efca94eb62bae1272867f3198d",
+      "row_count": 3942,
+      "quote_count": 3768,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-13",
+      "file": "2025/2025-11-13.csv",
+      "sha256": "766a8ff2aa06ea4ca1472f2b5b34dead3e60d5397edc29ffb00c34bcc04d076c",
+      "row_count": 3942,
+      "quote_count": 3770,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-14",
+      "file": "2025/2025-11-14.csv",
+      "sha256": "d662a09065972992832f918d7eec44c166c4839600f8bfb1422b4743e30f1169",
+      "row_count": 3943,
+      "quote_count": 3766,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-17",
+      "file": "2025/2025-11-17.csv",
+      "sha256": "4b337640ad39b8ffad6a9f62cc4796613c7ebba8fbe6c9e12c36a52074de3f00",
+      "row_count": 3941,
+      "quote_count": 3774,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-18",
+      "file": "2025/2025-11-18.csv",
+      "sha256": "a91999776ffd7b4c161c445546b235bad0cbfa37a23471f54266d6b4adc81b4e",
+      "row_count": 3942,
+      "quote_count": 3768,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-19",
+      "file": "2025/2025-11-19.csv",
+      "sha256": "b01b687f474fd4174ff6c3fe530c60c38e648a87858485d1ed4b94187b0d49d9",
+      "row_count": 3942,
+      "quote_count": 3768,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-20",
+      "file": "2025/2025-11-20.csv",
+      "sha256": "0fedf038c80cb8354e5a3d096ca42fed1705f34b13c1244b23b718396c4bbb58",
+      "row_count": 3941,
+      "quote_count": 3766,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-21",
+      "file": "2025/2025-11-21.csv",
+      "sha256": "5055a68258f0a032cbc4135729e5d9c2897c58c74ab26579bfcc1102f829ae72",
+      "row_count": 3943,
+      "quote_count": 3765,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-25",
+      "file": "2025/2025-11-25.csv",
+      "sha256": "afe982a603c03bdc2e8f29d38bae12e1e5b417607d5ca2342187aa3d2001201f",
+      "row_count": 3943,
+      "quote_count": 3777,
+      "no_quote_count": 166,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-26",
+      "file": "2025/2025-11-26.csv",
+      "sha256": "397736dd84852681f6f3281c000baff64d3182ea16ffbe305b4d30b9c454c625",
+      "row_count": 3942,
+      "quote_count": 3767,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-27",
+      "file": "2025/2025-11-27.csv",
+      "sha256": "9585fb2a24be4c9e1c6c33a1e64ae7a4fc2dbd89e709168e48d01ff228fef40c",
+      "row_count": 3940,
+      "quote_count": 3762,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-11-28",
+      "file": "2025/2025-11-28.csv",
+      "sha256": "87a6acdd20b912f26ffd8af27d6fcb37b771cb2a56f171fda6238a630866dd2a",
+      "row_count": 3939,
+      "quote_count": 3768,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-01",
+      "file": "2025/2025-12-01.csv",
+      "sha256": "3b1958d6c8bf10dd414954f999007a3f952143bd2f83df40795dac460c2170a1",
+      "row_count": 3942,
+      "quote_count": 3771,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-02",
+      "file": "2025/2025-12-02.csv",
+      "sha256": "e2f77d4c4af8497bb607cfe2b5bb7ae6323874e1cd3cd574a59f8bef0b12acbf",
+      "row_count": 3941,
+      "quote_count": 3760,
+      "no_quote_count": 181,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-03",
+      "file": "2025/2025-12-03.csv",
+      "sha256": "c458085dad63d4c13fc23ebc73fdd41235049af9bd23800bf9634b044476c8a2",
+      "row_count": 3941,
+      "quote_count": 3752,
+      "no_quote_count": 189,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-04",
+      "file": "2025/2025-12-04.csv",
+      "sha256": "734538e65fadf61bb963719cd201ee0847c4129511493d38d27f1cc0034a08de",
+      "row_count": 3941,
+      "quote_count": 3754,
+      "no_quote_count": 187,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-05",
+      "file": "2025/2025-12-05.csv",
+      "sha256": "a9330e3defb9d8b6335c2b3b9363cce01bd451aa8597ad6d4d33d4024d172318",
+      "row_count": 3942,
+      "quote_count": 3765,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-08",
+      "file": "2025/2025-12-08.csv",
+      "sha256": "f2e96a3ea3a7d1a95b7d2e1e34b1915dee7e37a06f913438819431164bedafd0",
+      "row_count": 3941,
+      "quote_count": 3762,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-09",
+      "file": "2025/2025-12-09.csv",
+      "sha256": "e5ee5770be50e597ed82a701341d017e281c11e171e05c88ba7419ac9af5bcf1",
+      "row_count": 3940,
+      "quote_count": 3763,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-10",
+      "file": "2025/2025-12-10.csv",
+      "sha256": "91cba6d8ff126947459f16a0e7c435e399971c37ba7eb43adc9b1d01693f9388",
+      "row_count": 3940,
+      "quote_count": 3751,
+      "no_quote_count": 189,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-11",
+      "file": "2025/2025-12-11.csv",
+      "sha256": "d0dbe24f72733b7a1da0e9b77006deb26975bde7d8e6702fa81ca2c268163bd3",
+      "row_count": 3940,
+      "quote_count": 3764,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-12",
+      "file": "2025/2025-12-12.csv",
+      "sha256": "ca4ca6fedaf282f75ca3355f7ee024cbfc93dc6692f5e19bbac1b2dd57dbe918",
+      "row_count": 3940,
+      "quote_count": 3762,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-15",
+      "file": "2025/2025-12-15.csv",
+      "sha256": "07ed07b969a5c85c36db9a60572171cc8138b889204ed368aea265e16c5cced0",
+      "row_count": 3941,
+      "quote_count": 3773,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-16",
+      "file": "2025/2025-12-16.csv",
+      "sha256": "82050bdf48cad21f2acd63266aa26e6c05cd935d921d077cc93e36a8497a38f1",
+      "row_count": 3941,
+      "quote_count": 3762,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-17",
+      "file": "2025/2025-12-17.csv",
+      "sha256": "f1b38785a514daf2dc29ba1fc19f7aa165a253a3468550c9bfd2ce13ca75aa39",
+      "row_count": 3942,
+      "quote_count": 3760,
+      "no_quote_count": 182,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-18",
+      "file": "2025/2025-12-18.csv",
+      "sha256": "ef1aca7bec6ffe144a2db59709600e99b7e2b4b20135c6eccca020802c571ae5",
+      "row_count": 3943,
+      "quote_count": 3760,
+      "no_quote_count": 183,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-19",
+      "file": "2025/2025-12-19.csv",
+      "sha256": "6c3575507b12c32f57276acf62169d2bf01f6b4590072378fc9766b31b185225",
+      "row_count": 3942,
+      "quote_count": 3770,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-22",
+      "file": "2025/2025-12-22.csv",
+      "sha256": "f5416397caa66b7df473895e6603af23433f312e0bbe58ffe71a872553a9a5a2",
+      "row_count": 3943,
+      "quote_count": 3774,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-23",
+      "file": "2025/2025-12-23.csv",
+      "sha256": "24ee3edeff33eb4657b7c7699f4556c8b3ef474c69a5a87fadbdb487d9f886f8",
+      "row_count": 3943,
+      "quote_count": 3770,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-24",
+      "file": "2025/2025-12-24.csv",
+      "sha256": "8c1ba5e884c92c95499d72bf68a0ad84d8e17c31c143a177dab42e73bb49b1af",
+      "row_count": 3946,
+      "quote_count": 3775,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-25",
+      "file": "2025/2025-12-25.csv",
+      "sha256": "129fb70a4c4d1733a963e8b2e37c5d82b9944bd3d1c8e17d4a579bd442edd770",
+      "row_count": 3946,
+      "quote_count": 3781,
+      "no_quote_count": 165,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-26",
+      "file": "2025/2025-12-26.csv",
+      "sha256": "8a8481230120788c024a8dfa0761237adcbc1577adaca2b3fdb299190860d57b",
+      "row_count": 3947,
+      "quote_count": 3780,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-29",
+      "file": "2025/2025-12-29.csv",
+      "sha256": "573d54cac439a5583c6b51361c748ac812b160b363f4687e0f48a4be6fa0a051",
+      "row_count": 3946,
+      "quote_count": 3779,
+      "no_quote_count": 167,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2025-12-30",
+      "file": "2025/2025-12-30.csv",
+      "sha256": "54c9ae2827a0d27b921f2c4c0cb52cc5830a8cb8a23b6387849871b7eb4d6868",
+      "row_count": 3946,
+      "quote_count": 3776,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-05",
+      "file": "2026/2026-01-05.csv",
+      "sha256": "b310f54c73de1cc47dff0cc6ce02e9e511441bcc65f4cf64ebaa005d5976c173",
+      "row_count": 3945,
+      "quote_count": 3776,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-06",
+      "file": "2026/2026-01-06.csv",
+      "sha256": "a3d8140f95b78583d82335135df1a9d0e104efe53b4a8938700c3f46762654ef",
+      "row_count": 3945,
+      "quote_count": 3775,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-07",
+      "file": "2026/2026-01-07.csv",
+      "sha256": "edc4ebbad510fc4c91f6bddab265921c325798b957fb6743ea53899282368996",
+      "row_count": 3945,
+      "quote_count": 3772,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-08",
+      "file": "2026/2026-01-08.csv",
+      "sha256": "2502d9ec89ea8f0e50ab36c123d74a39957da033ff6c774cb909aeb1dac44171",
+      "row_count": 3944,
+      "quote_count": 3769,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-09",
+      "file": "2026/2026-01-09.csv",
+      "sha256": "9ba444d59eaa0e8256ceadd0d37831b4fa53bb134a8017e4e35b355ac53305b1",
+      "row_count": 3944,
+      "quote_count": 3768,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-13",
+      "file": "2026/2026-01-13.csv",
+      "sha256": "de0d97716bbc2a857d5aae23a78c687a6bde1d6b3f01cc9fd48a760347c2b37d",
+      "row_count": 3943,
+      "quote_count": 3775,
+      "no_quote_count": 168,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-14",
+      "file": "2026/2026-01-14.csv",
+      "sha256": "c2dff1363ba316a6ac8d2ec2ac310e84026f7805da1e2f930a77c1e0c8892eb1",
+      "row_count": 3941,
+      "quote_count": 3765,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-15",
+      "file": "2026/2026-01-15.csv",
+      "sha256": "9625dbc2214c445e4a99cc8f8140688d5f7e052865e04025ede2f8ad18dfc289",
+      "row_count": 3941,
+      "quote_count": 3772,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-16",
+      "file": "2026/2026-01-16.csv",
+      "sha256": "4a71d6bf83cd68ec260450eff50095f70f658a11e3417c96896e9938dfcc9b6f",
+      "row_count": 3940,
+      "quote_count": 3761,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-19",
+      "file": "2026/2026-01-19.csv",
+      "sha256": "3ab9259b7a488bac3868cb7ebeca934825799b73883e040ba739fb54f55018d3",
+      "row_count": 3940,
+      "quote_count": 3770,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-20",
+      "file": "2026/2026-01-20.csv",
+      "sha256": "0a66aeedcf23514cfe017fcdca6547703d838b90f035c675865778b6d05f5d6d",
+      "row_count": 3939,
+      "quote_count": 3769,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-21",
+      "file": "2026/2026-01-21.csv",
+      "sha256": "c43ddd6c67c0bbaefbf183db3004b3951524ef28e3dbdce4b74c8aa6b9cca5b1",
+      "row_count": 3939,
+      "quote_count": 3766,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-22",
+      "file": "2026/2026-01-22.csv",
+      "sha256": "291994c4c5dd2b5ed9013dc7b2afe3708fa8d4bafed62c0f582ef75ecb4017b2",
+      "row_count": 3939,
+      "quote_count": 3759,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-23",
+      "file": "2026/2026-01-23.csv",
+      "sha256": "11cfd2d1d3ec6ead207da7ff53144d1e7e7d6755d36f4816ca3cb8f2ff92f946",
+      "row_count": 3939,
+      "quote_count": 3767,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-26",
+      "file": "2026/2026-01-26.csv",
+      "sha256": "b8f6e1f845a4d107800484bc195a34d8b074424d341920b3033b4ea939c32e6e",
+      "row_count": 3939,
+      "quote_count": 3770,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-27",
+      "file": "2026/2026-01-27.csv",
+      "sha256": "d83ac0c349f923a42db25a67296a35886e25aff91c75e7150c95668cf9eef480",
+      "row_count": 3938,
+      "quote_count": 3749,
+      "no_quote_count": 189,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-28",
+      "file": "2026/2026-01-28.csv",
+      "sha256": "5c3d28efabe5814e69ebd3b82b2b4fee170986f09d977d2a3936a239152ae47d",
+      "row_count": 3937,
+      "quote_count": 3759,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-29",
+      "file": "2026/2026-01-29.csv",
+      "sha256": "2c0e320530b8e7ae37ac0540f143a6e9492ee5a5e9fd5e2420b9bd273bdd5946",
+      "row_count": 3934,
+      "quote_count": 3746,
+      "no_quote_count": 188,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-01-30",
+      "file": "2026/2026-01-30.csv",
+      "sha256": "c2c2e2aec2307c32b50c05e623fd8a9c84c33c0c734d23a8c9adcb0c59b621ed",
+      "row_count": 3934,
+      "quote_count": 3758,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-02",
+      "file": "2026/2026-02-02.csv",
+      "sha256": "ef9c04532c2f60c48ee2241a1b06584083be84ccda9185638c52e4fa8275fc2f",
+      "row_count": 3934,
+      "quote_count": 3755,
+      "no_quote_count": 179,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-03",
+      "file": "2026/2026-02-03.csv",
+      "sha256": "9667c1303cdefb20a296e0a38335d5b36b73c9f012c593e9e7b1f058746dccab",
+      "row_count": 3934,
+      "quote_count": 3752,
+      "no_quote_count": 182,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-04",
+      "file": "2026/2026-02-04.csv",
+      "sha256": "b9a259253b1f0e9955adf8f2687a7dfdd6416a237fbd4478f877b93c3f99603e",
+      "row_count": 3934,
+      "quote_count": 3757,
+      "no_quote_count": 177,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-05",
+      "file": "2026/2026-02-05.csv",
+      "sha256": "0cca8f827a07ea18ac100f565bd12c8c505bf4351d6e2127bb755e0504051b50",
+      "row_count": 3935,
+      "quote_count": 3755,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-06",
+      "file": "2026/2026-02-06.csv",
+      "sha256": "80f550ae6fe2f22b88901c94f748bd0fab2945378024257b523c9b293e6019d5",
+      "row_count": 3935,
+      "quote_count": 3754,
+      "no_quote_count": 181,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-09",
+      "file": "2026/2026-02-09.csv",
+      "sha256": "8e55d050e533865fdf6332236f27e844c0bcefe58cc17cf6b01208e4a4c7d97f",
+      "row_count": 3935,
+      "quote_count": 3763,
+      "no_quote_count": 172,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-10",
+      "file": "2026/2026-02-10.csv",
+      "sha256": "a6f74742a1b6d0e95cb44d8d20df2cd0a06cd8c815698828ff3da92b453382ad",
+      "row_count": 3935,
+      "quote_count": 3759,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-12",
+      "file": "2026/2026-02-12.csv",
+      "sha256": "2698cdf9a3cd36f6ba02d5ab07d3f0531c4cd7a9ded7d856275acba1dab4dd8e",
+      "row_count": 3935,
+      "quote_count": 3765,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-13",
+      "file": "2026/2026-02-13.csv",
+      "sha256": "be373a0d7b88eac4b40bed47edb142d25ed29d12547ac5658ec9c7fe0e25f2de",
+      "row_count": 3936,
+      "quote_count": 3762,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-16",
+      "file": "2026/2026-02-16.csv",
+      "sha256": "4096adc8afcc45e222c612dc373daeef9c3d851e3192845ff0390f777803cddf",
+      "row_count": 3935,
+      "quote_count": 3762,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-17",
+      "file": "2026/2026-02-17.csv",
+      "sha256": "f47eaebeed9deaddcb22c036c3d4978ae80e546d36690b86ed91632501fa8ba2",
+      "row_count": 3935,
+      "quote_count": 3764,
+      "no_quote_count": 171,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-18",
+      "file": "2026/2026-02-18.csv",
+      "sha256": "dc6ee770e6f1e024b8d359f6488b261a25e5ef96cf97e0a49885641e9c25293d",
+      "row_count": 3935,
+      "quote_count": 3760,
+      "no_quote_count": 175,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-19",
+      "file": "2026/2026-02-19.csv",
+      "sha256": "57485def708a05f8dd1bd7090fc8ef0ef20d068ce9006f0aefb8c6682db772fe",
+      "row_count": 3935,
+      "quote_count": 3759,
+      "no_quote_count": 176,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-20",
+      "file": "2026/2026-02-20.csv",
+      "sha256": "93873511fdcf9cc99a6c8e75821bc09b76c56140667bba014dbbaabc0cf26155",
+      "row_count": 3937,
+      "quote_count": 3763,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-24",
+      "file": "2026/2026-02-24.csv",
+      "sha256": "495928d976f7004c3d1b6c10077c276ac3790532e5577568d691dd678bb942e3",
+      "row_count": 3938,
+      "quote_count": 3765,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-25",
+      "file": "2026/2026-02-25.csv",
+      "sha256": "467c884ba353ec63e896920ce4fc52ff1293fa7d0eb8def72824302597ea9759",
+      "row_count": 3937,
+      "quote_count": 3768,
+      "no_quote_count": 169,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-26",
+      "file": "2026/2026-02-26.csv",
+      "sha256": "cf3e2da5ebb00055af31f702085fb538a9a24f9f640805913e54cb4f12915643",
+      "row_count": 3934,
+      "quote_count": 3764,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-02-27",
+      "file": "2026/2026-02-27.csv",
+      "sha256": "9972291583be7e5cb300726bf28cc5cd2d4bf46ce30e9de8c72dd4824cb04bf7",
+      "row_count": 3936,
+      "quote_count": 3766,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-02",
+      "file": "2026/2026-03-02.csv",
+      "sha256": "f5b62080679bb441cb9d9329a58a35ea9bd01ec8add0224d182bd3c869b787e7",
+      "row_count": 3936,
+      "quote_count": 3766,
+      "no_quote_count": 170,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-03",
+      "file": "2026/2026-03-03.csv",
+      "sha256": "792064001d859942f063a85dbfdc9009f7221039036a4bafeb28049d2307c868",
+      "row_count": 3935,
+      "quote_count": 3762,
+      "no_quote_count": 173,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-04",
+      "file": "2026/2026-03-04.csv",
+      "sha256": "be7a3e3cd49a6dd0c015141247582b2733b41fad921089fb5ce5566fc1dd4886",
+      "row_count": 3935,
+      "quote_count": 3761,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-05",
+      "file": "2026/2026-03-05.csv",
+      "sha256": "c12cca8aaea8efa3f77b1819ecf76c6973efb2bfae25e9af4e87d5eb8e224f34",
+      "row_count": 3936,
+      "quote_count": 3758,
+      "no_quote_count": 178,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-06",
+      "file": "2026/2026-03-06.csv",
+      "sha256": "e8a26d0702a714584e083149ef8ef55592f43557a24a887afcb8c172e8112883",
+      "row_count": 3936,
+      "quote_count": 3749,
+      "no_quote_count": 187,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-09",
+      "file": "2026/2026-03-09.csv",
+      "sha256": "7075499a61e4513c099e6eb154a7c752544bd93ca2c13892fa6046816a0199f1",
+      "row_count": 3936,
+      "quote_count": 3762,
+      "no_quote_count": 174,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-10",
+      "file": "2026/2026-03-10.csv",
+      "sha256": "a3252ca93b2f5450340e82a782c3c518e3c0a6b34c7e1bb3a93923dc3ded36df",
+      "row_count": 3936,
+      "quote_count": 3750,
+      "no_quote_count": 186,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-11",
+      "file": "2026/2026-03-11.csv",
+      "sha256": "79ef9ee230cf8125fc395d6d902e052ce15049cdd06e2a04426d8c54a52d6256",
+      "row_count": 3936,
+      "quote_count": 3749,
+      "no_quote_count": 187,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-12",
+      "file": "2026/2026-03-12.csv",
+      "sha256": "17128d3a26d18d4ae5d924245df7352ab32572e78111533f4429176e97d1dd9b",
+      "row_count": 3935,
+      "quote_count": 3739,
+      "no_quote_count": 196,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-13",
+      "file": "2026/2026-03-13.csv",
+      "sha256": "2965266afce46b3d065f854b5535eb2b8fa5475a0ea4a0d97b213ab9446b33ef",
+      "row_count": 3933,
+      "quote_count": 3730,
+      "no_quote_count": 203,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-16",
+      "file": "2026/2026-03-16.csv",
+      "sha256": "53ef2c9e56afa10c6fd2241610ce363cce51f3c9f0db689bb2efc0515de1b16b",
+      "row_count": 3933,
+      "quote_count": 3743,
+      "no_quote_count": 190,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-17",
+      "file": "2026/2026-03-17.csv",
+      "sha256": "7ce858c868aab39cb35625f25bf6a7f77f7f1f7351129d02569bd6e9260bd02d",
+      "row_count": 3932,
+      "quote_count": 3734,
+      "no_quote_count": 198,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-18",
+      "file": "2026/2026-03-18.csv",
+      "sha256": "294ef81fca44c6d3f9f518e0a569f3dcfa68ea8dcce76e1f6612b9b7afd534e5",
+      "row_count": 3932,
+      "quote_count": 3743,
+      "no_quote_count": 189,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-19",
+      "file": "2026/2026-03-19.csv",
+      "sha256": "040466608f6bed016a1728055840c9f5e5f7ae9d8022b54e013f335f4e38ee67",
+      "row_count": 3931,
+      "quote_count": 3741,
+      "no_quote_count": 190,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-23",
+      "file": "2026/2026-03-23.csv",
+      "sha256": "00fe5403b44dc9767aa827cdd8b44b7c4d3554d4709dbcf47bad6a99ae9b8fa1",
+      "row_count": 3928,
+      "quote_count": 3748,
+      "no_quote_count": 180,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-24",
+      "file": "2026/2026-03-24.csv",
+      "sha256": "0b75ecc77182172e7f969cf1f5cfcd5a95329f5cc9915280aff701123d932e6a",
+      "row_count": 3928,
+      "quote_count": 3742,
+      "no_quote_count": 186,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-25",
+      "file": "2026/2026-03-25.csv",
+      "sha256": "e98ceb246918ec949c4cec81ac22b5e0233d7eacbf505b0199b5d6e90e7d95ff",
+      "row_count": 3930,
+      "quote_count": 3748,
+      "no_quote_count": 182,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-26",
+      "file": "2026/2026-03-26.csv",
+      "sha256": "c634b3f6104f8d8310acce844fbd6859f4b5f53a3485f25e3312300b801cc24b",
+      "row_count": 3931,
+      "quote_count": 3739,
+      "no_quote_count": 192,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-27",
+      "file": "2026/2026-03-27.csv",
+      "sha256": "e931eb51355599f173948f9fc79d2129c1d2b3000ba1424c02e352b33657e0f2",
+      "row_count": 3931,
+      "quote_count": 3738,
+      "no_quote_count": 193,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-30",
+      "file": "2026/2026-03-30.csv",
+      "sha256": "3c597b27898982912a19b3341ac7054eea0dab46f4e6bc802be051f40f950849",
+      "row_count": 3920,
+      "quote_count": 3733,
+      "no_quote_count": 187,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-03-31",
+      "file": "2026/2026-03-31.csv",
+      "sha256": "e7cace9a99aff262fafdb4060449afcf50cab2f0a0f3c618bd050b60211c387d",
+      "row_count": 3921,
+      "quote_count": 3716,
+      "no_quote_count": 205,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-01",
+      "file": "2026/2026-04-01.csv",
+      "sha256": "92c26fc05cabb911397d96ad7c6042fbd598b5c7dcdf5c495de3df901d9b01c9",
+      "row_count": 3925,
+      "quote_count": 3734,
+      "no_quote_count": 191,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-02",
+      "file": "2026/2026-04-02.csv",
+      "sha256": "2e8cf75cde9a57990400b62100f37ca4e98d1b75340536157a3b0cbc7152f00b",
+      "row_count": 3926,
+      "quote_count": 3723,
+      "no_quote_count": 203,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-03",
+      "file": "2026/2026-04-03.csv",
+      "sha256": "b947d388eaa4edfecf120e6a8470251632681d0536fb27315e4080890533282a",
+      "row_count": 3926,
+      "quote_count": 3722,
+      "no_quote_count": 204,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-06",
+      "file": "2026/2026-04-06.csv",
+      "sha256": "5ff079a298dac61b97a65626c9a2184bd39011b9ecf8080ecbee5bf5e2df37d0",
+      "row_count": 3927,
+      "quote_count": 3730,
+      "no_quote_count": 197,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-07",
+      "file": "2026/2026-04-07.csv",
+      "sha256": "f9e591e317a5206cbdf333f8c334b04cfa9b6b489ef6dcf6201a2dcca3d378ba",
+      "row_count": 3928,
+      "quote_count": 3724,
+      "no_quote_count": 204,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-08",
+      "file": "2026/2026-04-08.csv",
+      "sha256": "6b28efb43a3c0003a9beb9b7f9837df1d59dd45332d7f33d5f351a652a3230b8",
+      "row_count": 3928,
+      "quote_count": 3736,
+      "no_quote_count": 192,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-09",
+      "file": "2026/2026-04-09.csv",
+      "sha256": "b261bef9490cf9b8d021491d326f3afe95f2bd06e0626d266c661882f0d79455",
+      "row_count": 3929,
+      "quote_count": 3724,
+      "no_quote_count": 205,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-10",
+      "file": "2026/2026-04-10.csv",
+      "sha256": "91a1bec7d334e69b72f556eb2bd7a8d785a5681540884188113720b78ba45245",
+      "row_count": 3927,
+      "quote_count": 3721,
+      "no_quote_count": 206,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-13",
+      "file": "2026/2026-04-13.csv",
+      "sha256": "9389b3fa5315dd75a06d55bc1991aafc506d6cd6edf9895343e284fa08369ac6",
+      "row_count": 3926,
+      "quote_count": 3720,
+      "no_quote_count": 206,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-14",
+      "file": "2026/2026-04-14.csv",
+      "sha256": "73edd3dff34cc63cdebf3842297864a453afd6556bcd799b8271c56c72629d22",
+      "row_count": 3925,
+      "quote_count": 3721,
+      "no_quote_count": 204,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-15",
+      "file": "2026/2026-04-15.csv",
+      "sha256": "4f3aa5736d9bbbb66a92d78fe7f8155462bcde33d0d8aa37cb92025e95b844ac",
+      "row_count": 3925,
+      "quote_count": 3723,
+      "no_quote_count": 202,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-16",
+      "file": "2026/2026-04-16.csv",
+      "sha256": "f1871234e607f289f809cac47a370d82ba986b44e5869ed9f038e2fd6ddab307",
+      "row_count": 3925,
+      "quote_count": 3720,
+      "no_quote_count": 205,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-17",
+      "file": "2026/2026-04-17.csv",
+      "sha256": "d89ac61e630e393d97c996bd58a375a24975ae9b71424dd8416a3fe5294987cd",
+      "row_count": 3925,
+      "quote_count": 3726,
+      "no_quote_count": 199,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-20",
+      "file": "2026/2026-04-20.csv",
+      "sha256": "6df2ac8464eaad06e12de89106ebecf08e3b058363a328795abf87bf22186c0e",
+      "row_count": 3925,
+      "quote_count": 3732,
+      "no_quote_count": 193,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-21",
+      "file": "2026/2026-04-21.csv",
+      "sha256": "a30ca4ddea58b471e5bde855f79079ad05c850e8f54903330f18cc6c733a5b93",
+      "row_count": 3925,
+      "quote_count": 3717,
+      "no_quote_count": 208,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-22",
+      "file": "2026/2026-04-22.csv",
+      "sha256": "941e66a22ad0f926c438b891a8d7ebd0644f9c77dd3b5be1eb861b6e70fbe106",
+      "row_count": 3927,
+      "quote_count": 3719,
+      "no_quote_count": 208,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-23",
+      "file": "2026/2026-04-23.csv",
+      "sha256": "57b186b3c938de998515eb8bc6efd00f2369a2775bcbb1c262a74150c8ad2dca",
+      "row_count": 3928,
+      "quote_count": 3730,
+      "no_quote_count": 198,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-24",
+      "file": "2026/2026-04-24.csv",
+      "sha256": "161ddb21e48786e5e71d2d0bab2742723d2f43b727ddce083e36f12893893f62",
+      "row_count": 3929,
+      "quote_count": 3730,
+      "no_quote_count": 199,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-27",
+      "file": "2026/2026-04-27.csv",
+      "sha256": "67597e90db96bb89af1c447dee8a8edbc747663b4864534fc661c8f49bca31bb",
+      "row_count": 3926,
+      "quote_count": 3734,
+      "no_quote_count": 192,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-28",
+      "file": "2026/2026-04-28.csv",
+      "sha256": "3f19fa4dc36aad804fd9e69cf34137e2e818974b63616977c4ae0b0046c080fe",
+      "row_count": 3925,
+      "quote_count": 3717,
+      "no_quote_count": 208,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-04-30",
+      "file": "2026/2026-04-30.csv",
+      "sha256": "491d11ebd19d71cd0fba3efbbe27b0ca6deed58fc0ed2d40a217a86d9216387a",
+      "row_count": 3925,
+      "quote_count": 3726,
+      "no_quote_count": 199,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-01",
+      "file": "2026/2026-05-01.csv",
+      "sha256": "b6f0e7dbbb591b423679647183b8a280f29bc35d6655e92bdbe556da23a418b6",
+      "row_count": 3925,
+      "quote_count": 3712,
+      "no_quote_count": 213,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-07",
+      "file": "2026/2026-05-07.csv",
+      "sha256": "23c4e0064e6ecc78eaa0a41d54cf512f52ca2cc35fed00d0e3d39102e28f49cd",
+      "row_count": 3926,
+      "quote_count": 3743,
+      "no_quote_count": 183,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-08",
+      "file": "2026/2026-05-08.csv",
+      "sha256": "46e371d9ec7c0e14eb988d8b774e0293afab921749fdeefa5384f39083b93372",
+      "row_count": 3925,
+      "quote_count": 3724,
+      "no_quote_count": 201,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-11",
+      "file": "2026/2026-05-11.csv",
+      "sha256": "b0826903c45a73216f4305ed60e466aa5bdd3b2459e871b722a438f39db14901",
+      "row_count": 3924,
+      "quote_count": 3727,
+      "no_quote_count": 197,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-12",
+      "file": "2026/2026-05-12.csv",
+      "sha256": "c31d36c39ab6392eb865f9cd8054a32971c2bd45b830d6a6bf3371b998c8b0fb",
+      "row_count": 3924,
+      "quote_count": 3715,
+      "no_quote_count": 209,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-13",
+      "file": "2026/2026-05-13.csv",
+      "sha256": "ec1a5c7b98fff6a936be5e1c964c34c5cca930aa0d1d16fb6eaf21f1eee16732",
+      "row_count": 3924,
+      "quote_count": 3715,
+      "no_quote_count": 209,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-14",
+      "file": "2026/2026-05-14.csv",
+      "sha256": "59b5e00298b1ddecf9718b4731443c4eed2f7e65d8a9f09876b4549abea47323",
+      "row_count": 3924,
+      "quote_count": 3724,
+      "no_quote_count": 200,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-15",
+      "file": "2026/2026-05-15.csv",
+      "sha256": "d3f2644ee0dcceee2d5d283733639d494b527400f21d7a8723d1b5f3ca13c9a8",
+      "row_count": 3921,
+      "quote_count": 3723,
+      "no_quote_count": 198,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-18",
+      "file": "2026/2026-05-18.csv",
+      "sha256": "fdde7f701d5665a8029631d365818b0aa7412dd1e865b2ec5c72706021ee4142",
+      "row_count": 3921,
+      "quote_count": 3732,
+      "no_quote_count": 189,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-19",
+      "file": "2026/2026-05-19.csv",
+      "sha256": "d8f84a7e7ce990000cb84c29a68609d2b833bafb13027bf2842504570bbf7ff2",
+      "row_count": 3919,
+      "quote_count": 3706,
+      "no_quote_count": 213,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-20",
+      "file": "2026/2026-05-20.csv",
+      "sha256": "2945dce8bce569a5f988474fef94d99c414f4ef03e4d446ea671ddd7fa3b8302",
+      "row_count": 3919,
+      "quote_count": 3718,
+      "no_quote_count": 201,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-21",
+      "file": "2026/2026-05-21.csv",
+      "sha256": "7d8d7e05374bd57dd1a61cded8c6281f0360c9fea3ae97f1ee84aa973da38de4",
+      "row_count": 3919,
+      "quote_count": 3716,
+      "no_quote_count": 203,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-22",
+      "file": "2026/2026-05-22.csv",
+      "sha256": "fcc3cd558f6fef8d27c05753b335841ba0a816fbbb3f2ec034c44bc0e486f23a",
+      "row_count": 3919,
+      "quote_count": 3712,
+      "no_quote_count": 207,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-25",
+      "file": "2026/2026-05-25.csv",
+      "sha256": "b5f6a675f61ef3cd162922c260177ed387997870224c419f5d4b3103c2e5923b",
+      "row_count": 3919,
+      "quote_count": 3728,
+      "no_quote_count": 191,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-26",
+      "file": "2026/2026-05-26.csv",
+      "sha256": "98bc4e6b04357fe5b2d7f50661b2b04b80d3b8db24e42313b1886de148b01a1a",
+      "row_count": 3919,
+      "quote_count": 3720,
+      "no_quote_count": 199,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-27",
+      "file": "2026/2026-05-27.csv",
+      "sha256": "f75f9d9884ca67f5d6373903c528d1448df7fe1ae1db11c598fc9287b31fd1c2",
+      "row_count": 3920,
+      "quote_count": 3712,
+      "no_quote_count": 208,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-28",
+      "file": "2026/2026-05-28.csv",
+      "sha256": "a83d0da32ee379baa4f2e0d83b5dcb891d2f06575a02c2150d7117c3c8a2ca30",
+      "row_count": 3917,
+      "quote_count": 3704,
+      "no_quote_count": 213,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-05-29",
+      "file": "2026/2026-05-29.csv",
+      "sha256": "dcaad9bfe9fe3222c0abf93a5d7163f80494a6df856a84d609cf77eb53a98f7d",
+      "row_count": 3915,
+      "quote_count": 3707,
+      "no_quote_count": 208,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-06-01",
+      "file": "2026/2026-06-01.csv",
+      "sha256": "0ae5c306fac972bcfa54224b9d9f609f3b6637d7bff6721f7eafb17e0957e510",
+      "row_count": 3913,
+      "quote_count": 3716,
+      "no_quote_count": 197,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-06-02",
+      "file": "2026/2026-06-02.csv",
+      "sha256": "0558cab6b94b3307a2ebf756e306b6e8483e806f8d07cc34262214dde251983f",
+      "row_count": 3913,
+      "quote_count": 3708,
+      "no_quote_count": 205,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-06-03",
+      "file": "2026/2026-06-03.csv",
+      "sha256": "f105bfb8779a29098f5c4272c8a90ebc9d9279254beb4fb52547ebe3d7ca7908",
+      "row_count": 3913,
+      "quote_count": 3704,
+      "no_quote_count": 209,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-06-04",
+      "file": "2026/2026-06-04.csv",
+      "sha256": "bea0d54485aec2b83da8bf5df5b5a3ab034cf7aa227f43a9acae2926fc015c67",
+      "row_count": 3913,
+      "quote_count": 3696,
+      "no_quote_count": 217,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-06-05",
+      "file": "2026/2026-06-05.csv",
+      "sha256": "0902e041e6f878bd21ed2bfea9d6f2521dc88cb11e03f626bae43968fab70222",
+      "row_count": 3913,
+      "quote_count": 3702,
+      "no_quote_count": 211,
+      "fetch_error_count": 0
+    },
+    {
+      "date": "2026-06-08",
+      "file": "2026/2026-06-08.csv",
+      "sha256": "7cb2b52b9e4fdae6dd1db6ad0d9034806b5b6133f88892b8b0b9213542522029",
+      "row_count": 3913,
+      "quote_count": 3713,
+      "no_quote_count": 200,
+      "fetch_error_count": 0
+    }
+  ]
+}

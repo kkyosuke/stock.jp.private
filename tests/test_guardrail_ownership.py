@@ -18,13 +18,7 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 content = path.read_text()
                 for value in forbidden:
                     self.assertNotIn(value, content)
-                if "AUTOMATION_PAT" in content:
-                    self.assertIn(path.name, {"format-check.yml", "operation-health.yml"})
-                    self.assertEqual(content.count("secrets.AUTOMATION_PAT"), 2)
-                    self.assertIn("repository: kkyosuke/stock.jp", content)
-                    self.assertIn("ref: ${{ steps.stock-jp-pin.outputs.sha }}", content)
-                    self.assertNotIn("GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}", content)
-                    self.assertNotIn("persist-credentials: true", content)
+                self.assertNotIn("AUTOMATION_PAT", content)
                 if "actions/checkout@" in content:
                     self.assertIn("persist-credentials: false", content)
 

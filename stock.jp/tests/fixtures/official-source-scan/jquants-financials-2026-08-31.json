@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "DiscDate": "2026-08-31",
+      "DiscTime": "17:30",
+      "Code": "12340",
+      "DiscNo": "20260831000001",
+      "DocType": "FY",
+      "CurPerType": "FY",
+      "CurFYEn": "2026-06-30",
+      "FSales": 12500000000,
+      "FOP": 1500000000,
+      "FOdP": 1450000000,
+      "FNP": 1000000000,
+      "FEPS": 101.01,
+      "ShOutFY": 10000000,
+      "TrShFY": 100000,
+      "AvgSh": 9900000,
+      "MatChgSub": "false"
+    }
+  ]
+}

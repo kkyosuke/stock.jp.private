@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - stock.jp
+      - stock.jp/**
       - .github/workflows/update-public-submodule.yml
 
 permissions:
@@ -17,5 +17,5 @@ jobs:
     steps:
       - name: Explain assistant-owned synchronization
         run: |
-          echo 'Public synchronization is assistant-owned; this workflow does not fetch data, change pointers, create PRs or merge.'
+          echo 'Submodule synchronization is retired. All changes use reviewed stock.jp.private PRs.'
           echo 'Review docs/operations/assistant-daily-operation.md and run the normal PR validation.'

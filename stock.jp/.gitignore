@@ -1,0 +1,9 @@
+.cache/
+.venv/
+__pycache__/
+.usagi/
+operations/private/
+operations/private
+
+# Uncompressed work area stays local; approved compressed generations are under data/.
+operations/private/market-data/

@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "Date": "2026-08-31",
+      "Code": "12340",
+      "CoName": "Example Corp",
+      "CoNameEn": "Example Corp",
+      "S17": "10",
+      "S17Nm": "情報通信・サービスその他",
+      "S33": "5250",
+      "S33Nm": "情報・通信業",
+      "ScaleCat": "TOPIX Small 2",
+      "Mkt": "0112",
+      "MktNm": "スタンダード",
+      "Mrgn": "1",
+      "MrgnNm": "信用",
+      "ProdCat": "011"
+    }
+  ]
+}

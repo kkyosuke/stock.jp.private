@@ -9,12 +9,13 @@ private_data="$private_root/operations/private"
 public_link="$public_root/operations/private"
 expected_target='../../operations/private'
 
-if [ ! -e "$public_root/.git" ]; then
-  git -C "$private_root" submodule update --init --recursive -- stock.jp
+if [ -e "$public_root/.git" ] || [ -L "$public_root/.git" ]; then
+  echo "nested Git checkout is unsupported; use a fresh single-repository clone" >&2
+  exit 1
 fi
 
 if [ ! -d "$public_root/operations" ]; then
-  echo "public operations directory is missing: $public_root/operations" >&2
+  echo "vendored operations directory is missing: $public_root/operations" >&2
   exit 1
 fi
 

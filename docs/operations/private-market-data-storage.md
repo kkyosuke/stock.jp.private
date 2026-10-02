@@ -1,8 +1,12 @@
 # 市場データの取得・共有保存・個人利用
 
-現在の正本は非公開 `kkyosuke/stock.jp/data/jquants-archive/` です。stock.jp.privateは
+現行の正本は単一private repo stock.jp.privateです。stock.jp/は通常フォルダです。
+CLIのpack/restore例のdata/はstock.jp/基準、stageの--rootはrepo rootです。
+新規licensed uploadの既存拒否はこの構成変更で解除されず、再試行・迂回しません。
+
+現在の正本は非公開 `kkyosuke/stock.jp.private` 内の `stock.jp/data/jquants-archive/` です。stock.jp.privateは
 個人の分析・状態・台帳・設定の正本です。旧local-only設計は、この明示された市場データ保存先に
-限り置き換えます。両repositoryとも本人のみ閲覧で、第三者配信を許可する変更ではありません。
+限り置き換えます。repositoryは本人のみ閲覧で、第三者配信を許可する変更ではありません。
 
 [境界と全体構成](../repository-layout.md)および
 [codec・復元・公開前検査の手順](../../stock.jp/docs/private-git-market-data.md)を参照してください。
@@ -16,13 +20,13 @@
 
 - 取得・復元: `operations/private/market-data/{jquants,daily-prices}/`（Git除外）
 - 検証用: `operations/private/market-data-staging/`（Git除外）
-- 圧縮正本: `stock.jp/data/jquants-archive/`（stock.jpだけで追跡）
+- 圧縮正本: `stock.jp/data/jquants-archive/`（同じprivate repoで追跡）
 - 個人の分析、選定リスト、保有、判断、run、台帳: stock.jp.privateだけで追跡
 - 認証情報: runtimeだけ。設定やarchiveに値を書かない
 
 ## 初回と再開
 
-固定submoduleとsource-configを確認し、既存writerがいない状態で実行します。
+採用済みprivate commitとsource-configを確認し、既存writerがいない状態で実行します。
 
 ```sh
 python -B stock.jp/scripts/jquants_ingest.py --root "$PWD"
@@ -37,7 +41,7 @@ GitHub読取metadataで検証し、本人限定ACLはユーザー確認として
 本人確認と独立したcollaborator列挙を混同しません。rawをPR本文・ログ・artifactへ出しません。
 専用branch/non-draft日次PRに保存し、[日次PR手順](daily-pr-publication.md)の意味検証と
 exact-head CI成功後にnative auto-mergeを有効化します。remote SHA確認後、未mergeなら「保存済み・未採用」と報告します。
-native側のrequired reviewを維持します。stock.jp.privateのコードpointer変更は通常reviewで扱います。
+native側のrequired reviewを維持します。stock.jp/のコード変更は通常reviewで扱います。
 
 ## 復元・保持・運用
 

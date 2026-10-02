@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "run_id": "{{RUN_ID}}",
+  "status": "IN_PROGRESS",
+  "source_window": {
+    "from_exclusive_jst": null,
+    "through_inclusive_jst": null
+  },
+  "universe": {
+    "holdings": {"expected": [], "checked": []},
+    "pending_orders": {"expected": [], "checked": []},
+    "watchlist": {"expected": [], "checked": []},
+    "due_reviews": {"expected": [], "checked": []}
+  },
+  "official_sources": {
+    "tdnet": {"required": true, "status": "PENDING", "notes": ""},
+    "edinet": {"required": true, "status": "PENDING", "notes": ""},
+    "company_ir": {"required": false, "status": "PENDING", "notes": ""},
+    "jpx": {"required": true, "status": "PENDING", "notes": ""}
+  },
+  "data_gaps": [],
+  "completed_at_jst": null
+}

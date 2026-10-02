@@ -2,7 +2,7 @@
 
 ## 所有者と稼働状態
 
-両リポジトリは非公開・本人限定です。文書中のpublicはstock.jpの歴史的な呼称です。
+正本は非公開・本人限定のstock.jp.privateです。stock.jp/は共通コードの通常フォルダです。
 
 この会話のアシスタントが、毎晩21:00頃（Asia/Tokyo）の情報収集、調査、PAPER処理、
 結果保存と報告を担当します。GitHub Actionsは既存入力の検証とread-only監視だけです。
@@ -14,8 +14,8 @@ CloudflareやActionsへ夜間runを委譲しません。
 
 ## 実行に必要な能力
 
-- privateとpublic repositoryを読むこと、履歴・最新SHA・required checksを確認できること
-- checkout、submodule、Python依存、既存scripts/skillを使える実行環境
+- 単一private repositoryを読むこと、履歴・最新SHA・required checksを確認できること
+- checkout、共通コード、Python依存、既存scripts/skillを使える実行環境
 - 公式サイト・一次資料へ到達できるブラウザまたは認可済みconnector
 - 利用条件を確認した削除可能なprivate local市場データ領域とprivate Git結果保存経路
 - 永続run状態を毎回読み、失敗・中断後にも再開または停止を判断できること
@@ -33,7 +33,7 @@ credentialは認可済み保管場所から実行時だけ利用し、新規権�
 
 1. private main、前回run、handoff、未解消data gap、未push/未保存結果を読む
 2. 別端末・別runが稼働していないこと、worktreeに不明な変更がないことを確認する
-3. `git pull --ff-only`、固定public submoduleの初期化、setup、state/ledger検証を実施する
+3. `git pull --ff-only`、setup、state/ledger検証を実施する
 4. `nightly_operation.py status`と既存run token/lockを確認する
 5. 同じJST運用日とcutoffの完了済みrunなら二重startせず、保存済み結果を返す
 6. RUNNINGなら同じtokenでのみ再開し、lockを推測で削除・上書きしない
@@ -51,7 +51,7 @@ credentialは認可済み保管場所から実行時だけ利用し、新規権�
 - Yahoo bulk取得を停止し、許可されたprovider以外から全市場価格を自動取得しない
 - 取得元の自動取得・保存・分析・削除条件を確認してから、認可済みcollectorで取得・検証する
 - archiveは`operations/private/source-config.json`に明示したprivate local領域へ保存する
-- rawの作業領域はGit追跡外とし、圧縮世代を非公開stock.jpの`data/jquants-archive/`へ保存する。旧`data/daily-prices/`へfallbackしない
+- rawの作業領域はGit追跡外とし、圧縮世代を同じrepoの`stock.jp/data/jquants-archive/`へ保存する。旧`data/daily-prices/`へfallbackしない
 - Yahoo等の補助データを公式証跡と偽らない
 - JPXの取引日・銘柄master・価格、TDnet、EDINET、会社IR、必要な内閣府・日銀資料を調べる
 - 公表時刻、取得時刻、URL、対象期間、単位、cutoff、取得失敗とcoverageを証跡化する
@@ -63,7 +63,7 @@ credentialは認可済み保管場所から実行時だけ利用し、新規権�
 
 ## 3. 共通データ・個人分析の境界と採用
 
-市場データの圧縮正本は非公開stock.jpの`data/jquants-archive/`です。個人分析はstock.jp.privateへ分離します。
+市場データの圧縮正本は同じrepoの`stock.jp/data/jquants-archive/`です。個人分析はstock.jp.privateへ分離します。
 共有は本人のプロジェクト間利用であり、第三者配信や公開の許可ではありません。
 保有・監視リスト、資金、数量、個別判断、会社別research-inputs、私的source使用記録、
 run成果物はprivateに置きます。取得元の条件が派生物にも適用される場合はその条件を守ります。
@@ -72,7 +72,7 @@ private dataをpublic job、PR本文、log、cache、artifactへ渡しません�
 private archiveは既存coverage/checksum validatorで検証します。archiveが欠ける環境では
 WAIT / NO-ACTIONとし、古いpublic archiveでfinalizeしません。公式IR・開示資料の独立した調査は
 続けられますが、全市場価格の検証が未達のままnightly成功とは報告しません。
-運用に使うコードは検証・review済みpublic mainのcommitだけです。
+運用に使うコードは検証・review済みprivate mainのcommitだけです。
 code/rule/schema/workflow変更は通常reviewにし、data-only validatorを迂回しません。
 既存public archiveと履歴の処理は[非公開保存・移行手順](private-market-data-storage.md)に従い、
 この構成変更だけで移動・削除・履歴書換え・再公開しません。
@@ -100,7 +100,7 @@ readiness、risk、source gateを日次完遂の都合で緩和しません。�
 既存CLIのhelpで対応する失敗・再開操作を確認し、未知のflagやstateの手編集でlockを解放しません。
 検証エラーをreport-onlyにして夜間runを合格させません。
 
-成功・失敗のstate、ledger、run成果物、採用public SHAを一つのprivate commitに揃えます。
+成功・失敗のstate、ledger、run成果物、採用コードtree SHAを一つのprivate commitに揃えます。
 diffを読みcredential、raw市場データ・manifest、一時download、巨大cache、不要な個人情報がないことを確認します。
 private Gitの承認済み保存経路で保存し、remoteの実際のSHAを確認するまで「保存完了」と言いません。
 日次データ・完了検証済みPAPER結果はnon-draft PRを作成し、exact-head CIと意味検証後にnative auto-mergeを有効化します。
@@ -114,12 +114,12 @@ mainへの直接push、force push、admin bypass、競合の片側採用はし�
 次のreview/判断を短くまとめます。保有・金額・credentialを公開先へ出しません。
 
 GitHub Actionsは既存入力のPR検証とprivate healthのみを実施します。
-Actions healthは保存済みnightly state/履歴の鮮度、policy、HUMAN_ONLY、public pointer差分を監視し、
+Actions healthは保存済みnightly state/履歴の鮮度、policy、HUMAN_ONLY、private mainとの差分を監視し、
 旧収集・同期workflowのrun履歴を稼働条件にしません。検証中の暗黙migrationは隔離copyで検出し、正本へ採用しません。
 隔離copyは設定済みprivate archiveだけを一時利用し、public archiveや他のraw領域を複製しません。
 healthのActions jobは`--persisted-only`で記録のみを監視し、実データreadinessはNOT_EVALUATEDとします。
 required formatはstate/policyと合成smokeだけを検証します。実行環境の通常healthは引き続きprivate archive必須です。
 監視のOKは実際の情報収集・run・remote保存の代わりになりません。
 
-[Cloudflare退役](cloudflare-scheduler.md)と両repoのlegacy writer廃止、既存auto-merge待ち処理の確認、
+[Cloudflare退役](cloudflare-scheduler.md)とlegacy writer廃止、既存auto-merge待ち処理の確認、
 定期runnerの有効化・初回実行確認が揃って移行完了です。未設定・未確認の項目はそのままblockerとして示します。

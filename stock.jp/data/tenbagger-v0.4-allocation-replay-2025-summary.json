@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "ALLOCATION_DIAGNOSTIC_ONLY",
+  "selection_date": "2024-12-30",
+  "replay_period": {
+    "from": "2025-01-06",
+    "through": "2025-12-30"
+  },
+  "session_count": 243,
+  "initial_capital": 10000000,
+  "candidate_count": 12,
+  "eligible_proxy_count": 33,
+  "transaction_cost_rate": 0.0015,
+  "mrs_assumption": "NORMAL",
+  "add_assumption": "ALL_PROXY_CANDIDATES_PASS_UNOBSERVED_QUARTERLY_ADD_GATES",
+  "full_strategy_backtest": false,
+  "forward_paper_gate_satisfied": false,
+  "results": {
+    "v0.2": {
+      "rule_version": "v0.2",
+      "initial_capital": 10000000,
+      "final_nav": 10040243.38,
+      "return_pct": 0.402434,
+      "maximum_drawdown_pct": -4.028261,
+      "final_cash": 8666923.38,
+      "final_market_value": 1373320.0,
+      "final_strategy_waiting_cash_pct": 86.321846,
+      "acquisition_cost_pct": 13.3108,
+      "fees": 1996.62,
+      "fill_count": 21,
+      "skipped_order_count": 15
+    },
+    "v0.4": {
+      "rule_version": "v0.4",
+      "initial_capital": 10000000,
+      "final_nav": 10494996.7,
+      "return_pct": 4.949967,
+      "maximum_drawdown_pct": -27.38132,
+      "final_cash": 42886.7,
+      "final_market_value": 10452110.0,
+      "final_strategy_waiting_cash_pct": 0.408639,
+      "acquisition_cost_pct": 99.422,
+      "fees": 14913.3,
+      "fill_count": 31,
+      "skipped_order_count": 5
+    }
+  }
+}

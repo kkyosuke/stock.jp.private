@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "owner": "{{OWNER}}",
+  "reviewed_at_jst": "{{REVIEWED_AT_JST}}",
+  "broker_name": "{{BROKER_NAME}}",
+  "broker_rules_url": "https://{{BROKER_OFFICIAL_RULES_URL}}",
+  "broker_rules_checked_at_jst": "{{BROKER_RULES_CHECKED_AT_JST}}",
+  "confirmations": {
+    "loss_does_not_affect_living": false,
+    "living_tax_and_five_year_funds_excluded": false,
+    "borrowed_funds_excluded": false,
+    "emergency_fund_separate": false,
+    "total_loss_stop_documented": false,
+    "tax_residency_and_account_type_checked": false,
+    "fees_tax_and_filing_obligations_checked": false,
+    "cash_equity_and_trading_unit_checked": false,
+    "limit_order_tick_and_validity_checked": false,
+    "broker_rules_checked_from_official_source": false,
+    "available_for_0845_0855_manual_check": false,
+    "broker_submission_human_only": false,
+    "no_automatic_broker_api": false,
+    "correct_broker_url_bookmarked": false,
+    "mfa_or_passkey_enabled": false,
+    "login_and_trade_notifications_enabled": false,
+    "phishing_and_account_lockout_procedure_checked": false,
+    "emergency_cancel_and_pause_procedure_checked": false,
+    "investment_can_lose_all_allocated_capital": false,
+    "returns_are_not_guaranteed": false
+  },
+  "risk_limits_pct": {
+    "maximum_total_loss_stop": null,
+    "maximum_single_name": 10.0,
+    "maximum_industry": 20.0,
+    "maximum_initial_purchase": 5.0,
+    "maximum_additional_purchase": 2.5,
+    "maximum_daily_participation": 10.0
+  },
+  "emergency_contact_location": "{{LOCATION_WITHOUT_PHONE_NUMBER_OR_CREDENTIAL}}",
+  "review_notes": ""
+}

@@ -1,0 +1,4154 @@
+{
+  "source_repository": "kkyosuke/stock.jp",
+  "source_commit": "91682b33004c06cb9a3ab5c63c3da595503d0f90",
+  "source_tree": "ec675b927eb08692e79780723d776088c51300f4",
+  "private_base_commit": "e71f9ca86e00ecec1947dc11cda562f197f9751e",
+  "files": [
+    {
+      "path": ".agents/skills/japan-stock-operator/SKILL.md",
+      "mode": "100644",
+      "sha": "457b8b9bf88e3da6419c30badca58ad3ee9a88ef",
+      "size": 7565
+    },
+    {
+      "path": ".agents/skills/japan-stock-operator/agents/openai.yaml",
+      "mode": "100644",
+      "sha": "5b8ef3fee96b026bcf9e7373978d52360d25d0a8",
+      "size": 266
+    },
+    {
+      "path": ".agents/skills/japan-stock-operator/references/daily-run.md",
+      "mode": "100644",
+      "sha": "92f2b99d20bfc9f99df46d725d941b7b22541d06",
+      "size": 8160
+    },
+    {
+      "path": ".agents/skills/japan-stock-operator/references/review-checklists.md",
+      "mode": "100644",
+      "sha": "fbf4242d3852064e9519ef51f6b12347bec351b8",
+      "size": 3966
+    },
+    {
+      "path": ".github/workflows/daily-stock-prices.yml",
+      "mode": "100644",
+      "sha": "8b40c9981f80fc1fab694dd579135fc2677223b6",
+      "size": 1754
+    },
+    {
+      "path": ".github/workflows/operation-tests.yml",
+      "mode": "100644",
+      "sha": "df49081c350483e0b69580907d6eef384ae5bf7a",
+      "size": 1667
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "sha": "a9a4d92a866c21def257cd0194c36ac35c19f448",
+      "size": 195
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "sha": "e61ad04d07e0cae929baf23a74dce017ef387a65",
+      "size": 4253
+    },
+    {
+      "path": "data/README.md",
+      "mode": "100644",
+      "sha": "1e14ebe4074aa33cc8e7bae9a4723726381bbcb2",
+      "size": 4603
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-10.csv",
+      "mode": "100644",
+      "sha": "7cb6ffc6c1198a6581087a94438ee4b1fc9b9b1c",
+      "size": 450381
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-11.csv",
+      "mode": "100644",
+      "sha": "9ce139950bc93322a6262959ff05c4388ebb0bba",
+      "size": 487566
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-12.csv",
+      "mode": "100644",
+      "sha": "3b12dbac8f394738b3e24f908dff2fd136ef6ab2",
+      "size": 487451
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-13.csv",
+      "mode": "100644",
+      "sha": "9a7234612991e45e94d3d72fb303123477e408a1",
+      "size": 490330
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-14.csv",
+      "mode": "100644",
+      "sha": "2758ce3e37bb1603ebd5e25ae5ed3865c605e51b",
+      "size": 487520
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-17.csv",
+      "mode": "100644",
+      "sha": "e9975a2257cb82b4c566af0542c893bb05573c87",
+      "size": 490675
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-18.csv",
+      "mode": "100644",
+      "sha": "86fde27be2c0bff9477fcf6ffc12308cae4308be",
+      "size": 487246
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-19.csv",
+      "mode": "100644",
+      "sha": "b6794e50caa6db14380bbff09572382a885c6e4f",
+      "size": 488172
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-20.csv",
+      "mode": "100644",
+      "sha": "f6d22f8bd3cf9be2afc22fe8323b445dcf45acd3",
+      "size": 488836
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-21.csv",
+      "mode": "100644",
+      "sha": "2682a86e3a0a216c3cb5626fd9e21bb09c171433",
+      "size": 489305
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-24.csv",
+      "mode": "100644",
+      "sha": "ab7dc032aaa902f3843379aaa0eb5ba92f4394ca",
+      "size": 488678
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-25.csv",
+      "mode": "100644",
+      "sha": "7feb5c924f2f5f4c1a9d7e12de1cd4587223d47c",
+      "size": 488611
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-26.csv",
+      "mode": "100644",
+      "sha": "ac4d691a643f2e0f331130b59163d7f492908307",
+      "size": 488930
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-27.csv",
+      "mode": "100644",
+      "sha": "1332afd8cc5c548f512f62ff3fe44e6e65a28748",
+      "size": 489789
+    },
+    {
+      "path": "data/daily-prices/2024/2024-06-28.csv",
+      "mode": "100644",
+      "sha": "8bba98c78f4bde1b29ae7d1862bfd1c7c804a05d",
+      "size": 490634
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-01.csv",
+      "mode": "100644",
+      "sha": "387673331b0a2d8ac2220b4921a4b973969fde2e",
+      "size": 491035
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-02.csv",
+      "mode": "100644",
+      "sha": "533aa536243ab5a4eb88916eed29d6a66bda74e2",
+      "size": 490266
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-03.csv",
+      "mode": "100644",
+      "sha": "c5f64133b02559e780c41740d7d6523b8a161f49",
+      "size": 489724
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-04.csv",
+      "mode": "100644",
+      "sha": "82932ecebd9b22e7d0a4de5458a894779adb83dd",
+      "size": 489638
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-05.csv",
+      "mode": "100644",
+      "sha": "45e986f13de50e9c24c936a527aff91655c685f8",
+      "size": 492427
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-08.csv",
+      "mode": "100644",
+      "sha": "ed4f5dcf9001ac8cd9eacbe89420ca428bb8c21a",
+      "size": 491477
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-09.csv",
+      "mode": "100644",
+      "sha": "f923daaaf90ce610312cbf96b27994c184253100",
+      "size": 489998
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-10.csv",
+      "mode": "100644",
+      "sha": "8919c488d0a3b0874ce5d2ad7efe22e2623c0c7a",
+      "size": 491139
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-11.csv",
+      "mode": "100644",
+      "sha": "8947b7294bfa6a3eee629879694e38cda99f0411",
+      "size": 489467
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-12.csv",
+      "mode": "100644",
+      "sha": "3cf620ace860550061e250bb0c5312ba1e2e8d15",
+      "size": 490126
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-16.csv",
+      "mode": "100644",
+      "sha": "5610d2639ff15e32e61514f3a9ec80e2d68870f3",
+      "size": 490908
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-17.csv",
+      "mode": "100644",
+      "sha": "3f1feea4f8b8a6786695efd05e7563003d8b4960",
+      "size": 489287
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-18.csv",
+      "mode": "100644",
+      "sha": "868aab45fdb96caa3fadced3409a93ab51e378ba",
+      "size": 492092
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-19.csv",
+      "mode": "100644",
+      "sha": "3b7aee9f16207424fb612b9281dc7b3ea58d9cb7",
+      "size": 491632
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-22.csv",
+      "mode": "100644",
+      "sha": "b762a203191570bbcbcd66eb714a89198196b252",
+      "size": 493379
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-23.csv",
+      "mode": "100644",
+      "sha": "62f22ffce42699e7f06148516e4326c5500f1e87",
+      "size": 488556
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-24.csv",
+      "mode": "100644",
+      "sha": "e559857e27c83ff623afb8415f4bc9990c07af6d",
+      "size": 493864
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-25.csv",
+      "mode": "100644",
+      "sha": "48f0c0b8541722cba6cd46e3de554c6898898ec7",
+      "size": 494731
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-26.csv",
+      "mode": "100644",
+      "sha": "603996c59ce9afe80079f0843b4a78633496a869",
+      "size": 490179
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-29.csv",
+      "mode": "100644",
+      "sha": "6ad9d65d9a1fbedc3792d1bf8a7024f3b9bd652b",
+      "size": 489486
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-30.csv",
+      "mode": "100644",
+      "sha": "4ad3940f7c6e59fc3fc9573fe8a28021af076020",
+      "size": 492755
+    },
+    {
+      "path": "data/daily-prices/2024/2024-07-31.csv",
+      "mode": "100644",
+      "sha": "a48a6eaa12b654f29ef73297413ee4a67b125c6c",
+      "size": 489594
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-01.csv",
+      "mode": "100644",
+      "sha": "702418232a66baf1cec30f8ada476c5a174344a1",
+      "size": 497710
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-02.csv",
+      "mode": "100644",
+      "sha": "1998b574e7f9f106d841013e3a338da8615717d0",
+      "size": 501168
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-05.csv",
+      "mode": "100644",
+      "sha": "42f180487400fe50ac50d5b43cc9c2579dc380e1",
+      "size": 505473
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-06.csv",
+      "mode": "100644",
+      "sha": "672d24996f62d92ad57b9ec934fee113d9c72bd0",
+      "size": 494745
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-07.csv",
+      "mode": "100644",
+      "sha": "770fbbf86e27f5ce2708bf8c9593155dc8553d58",
+      "size": 492457
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-08.csv",
+      "mode": "100644",
+      "sha": "97e21df6e482fd5d66ba1e6230d26162fc81b825",
+      "size": 492517
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-09.csv",
+      "mode": "100644",
+      "sha": "4283b2416bff8276c83264e9d3d8aaa307f1270b",
+      "size": 491820
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-13.csv",
+      "mode": "100644",
+      "sha": "0650595d0a4cdd2b1bc084756bdf8c640227711b",
+      "size": 492133
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-14.csv",
+      "mode": "100644",
+      "sha": "2f395d36e2b931d46fbe7fda0142c2a4a8c8133e",
+      "size": 490984
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-15.csv",
+      "mode": "100644",
+      "sha": "7c7b4209ef700e1f32d9e3c276079397738654a6",
+      "size": 491480
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-16.csv",
+      "mode": "100644",
+      "sha": "be63ee0c6b644553b449f3679f2e8da094cb6a04",
+      "size": 490751
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-19.csv",
+      "mode": "100644",
+      "sha": "261b388c1806a6997a2492132120d52b773dc1ca",
+      "size": 494267
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-20.csv",
+      "mode": "100644",
+      "sha": "78516092397a5eb0283dca7025ed424fbe99c4bf",
+      "size": 489774
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-21.csv",
+      "mode": "100644",
+      "sha": "0dac4d1d109ea685cb4c206a6b5bdf6c8831aada",
+      "size": 491704
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-22.csv",
+      "mode": "100644",
+      "sha": "57dd5da21a982d649363a986138204824b4c5546",
+      "size": 489945
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-23.csv",
+      "mode": "100644",
+      "sha": "80d8c40ae880c75b38d1f89f3d289ec38cae894f",
+      "size": 490448
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-26.csv",
+      "mode": "100644",
+      "sha": "a9d817b63d6701ce51826feed8a28c209306a077",
+      "size": 491578
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-27.csv",
+      "mode": "100644",
+      "sha": "48c47949b52eadfa6e5104d89607a4c33d4c7909",
+      "size": 489628
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-28.csv",
+      "mode": "100644",
+      "sha": "8aabe87772cb6bf8851fa0ff061e89aa3e6a31de",
+      "size": 491521
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-29.csv",
+      "mode": "100644",
+      "sha": "bb091c736d63f489fba678cad358bfc5a477e7c6",
+      "size": 491154
+    },
+    {
+      "path": "data/daily-prices/2024/2024-08-30.csv",
+      "mode": "100644",
+      "sha": "f4fe04218600976d88f02427a1b25e64bd4a346f",
+      "size": 489702
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-02.csv",
+      "mode": "100644",
+      "sha": "847dcb3315c34c530f5db330446ce47227147aca",
+      "size": 491863
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-03.csv",
+      "mode": "100644",
+      "sha": "e2554521cf7ace95f6fc865c0a1ed2c1a6bdbaaa",
+      "size": 489447
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-04.csv",
+      "mode": "100644",
+      "sha": "b33169f5efea28f52c440f386e32b8f069589c9e",
+      "size": 497452
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-05.csv",
+      "mode": "100644",
+      "sha": "0b5cba767ae51b865bcb713be7f293437411703d",
+      "size": 490009
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-06.csv",
+      "mode": "100644",
+      "sha": "ba066fcecbdb7aa8dff5ce41547be28cfed83a9a",
+      "size": 492460
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-09.csv",
+      "mode": "100644",
+      "sha": "df5675fc9c211bc25c68ceeaa8d8f2973d76a2ca",
+      "size": 492629
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-10.csv",
+      "mode": "100644",
+      "sha": "4aa716e9cf7ee1e4fc6c2950f42138f570e88fc6",
+      "size": 489429
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-11.csv",
+      "mode": "100644",
+      "sha": "d810845e75d5cecc621574931fe300cdf69abf74",
+      "size": 495190
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-12.csv",
+      "mode": "100644",
+      "sha": "2e07210837d31e82015c9c8431666bfc74038daa",
+      "size": 488425
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-13.csv",
+      "mode": "100644",
+      "sha": "757bbf6389d9d833b76871cbb41903ff6fbccb5b",
+      "size": 490787
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-17.csv",
+      "mode": "100644",
+      "sha": "496f36549a2fee039c45839883f2a529c42652b6",
+      "size": 490899
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-18.csv",
+      "mode": "100644",
+      "sha": "51e30a5565095c9d3f3a9d4282ef171bdaf93782",
+      "size": 487955
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-19.csv",
+      "mode": "100644",
+      "sha": "7e5b710bbeb0b31e32d93e9eb996f4d44e15cfee",
+      "size": 488159
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-20.csv",
+      "mode": "100644",
+      "sha": "22283fc0a30ad0a9fdbf4085a4b50b91993b58a4",
+      "size": 489263
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-24.csv",
+      "mode": "100644",
+      "sha": "170b31b155d633d01492e216d5a51f6f5c9ed827",
+      "size": 490626
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-25.csv",
+      "mode": "100644",
+      "sha": "7eb2b7f9845b0b0d4638ace91afb2afa5b1853d4",
+      "size": 490103
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-26.csv",
+      "mode": "100644",
+      "sha": "35f498e341c0d3006823e4f4988e13ed9afd37d5",
+      "size": 490996
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-27.csv",
+      "mode": "100644",
+      "sha": "8abb6a9ff614aea715df95411ae98d2419292e01",
+      "size": 491653
+    },
+    {
+      "path": "data/daily-prices/2024/2024-09-30.csv",
+      "mode": "100644",
+      "sha": "9be291af999b531075a4c7d22dc0035031b504ae",
+      "size": 495317
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-01.csv",
+      "mode": "100644",
+      "sha": "d1c5c1df8d68ea7735adb73d1390f8c5ae05da7b",
+      "size": 488991
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-02.csv",
+      "mode": "100644",
+      "sha": "286b27e95d74cdc5b999a54eee85079a28c8f16c",
+      "size": 493468
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-03.csv",
+      "mode": "100644",
+      "sha": "5a269a67f7728448c58f69eaf52d1e3db86ba5a6",
+      "size": 488668
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-04.csv",
+      "mode": "100644",
+      "sha": "0b2af903fdd898add98a8de04ff5f710bc3568cb",
+      "size": 488917
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-07.csv",
+      "mode": "100644",
+      "sha": "2aa8d8c5c22ff589bcdd3125e0881095b74df00e",
+      "size": 489389
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-08.csv",
+      "mode": "100644",
+      "sha": "4ac8998191a4bf202e05728ff191bb7a61dd25f0",
+      "size": 493428
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-09.csv",
+      "mode": "100644",
+      "sha": "df9ae7f5fe3c0ecca5df838d36210ef59e1b180b",
+      "size": 489546
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-10.csv",
+      "mode": "100644",
+      "sha": "0ce26aa544effd7620d7ae31edcc595566c877c8",
+      "size": 490147
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-11.csv",
+      "mode": "100644",
+      "sha": "9ed9e9ae2c1de7f989fba597ddcd4805455ae385",
+      "size": 490261
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-15.csv",
+      "mode": "100644",
+      "sha": "534861c4dcfaff7dc9c535bf221a6e50c947f02b",
+      "size": 489668
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-16.csv",
+      "mode": "100644",
+      "sha": "84535cd3a4424286227a61c2a2be4adf312880ef",
+      "size": 490827
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-17.csv",
+      "mode": "100644",
+      "sha": "92381505997f7ce5ac1a747dc624fd42e292ddf7",
+      "size": 489663
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-18.csv",
+      "mode": "100644",
+      "sha": "d06c2b1093499ac81f46cb76836e9ed069860dc8",
+      "size": 488936
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-21.csv",
+      "mode": "100644",
+      "sha": "73368a66cfc69601bc241dfb9e0dd4937b94948c",
+      "size": 489589
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-22.csv",
+      "mode": "100644",
+      "sha": "d1b7234ffaaccd8281da5b59537041ba59f2fab9",
+      "size": 493551
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-23.csv",
+      "mode": "100644",
+      "sha": "f19a729321394e20072b930ff173cddeb3644bc2",
+      "size": 492491
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-24.csv",
+      "mode": "100644",
+      "sha": "d535caa6fb8d4d3ce401a2e7cf2c3e0ae27fd051",
+      "size": 490425
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-25.csv",
+      "mode": "100644",
+      "sha": "2420929a91ef62f4218e6e18d9e1f25416e9ce03",
+      "size": 494284
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-28.csv",
+      "mode": "100644",
+      "sha": "b159d766ce537694ca3afd6d4ecc383b48ebf8ea",
+      "size": 489278
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-29.csv",
+      "mode": "100644",
+      "sha": "8ac2b46013a0ef5918c33df80596e6dbce6ddf62",
+      "size": 488385
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-30.csv",
+      "mode": "100644",
+      "sha": "26e98e8dae8bbf276329adeec719450c1e846744",
+      "size": 491665
+    },
+    {
+      "path": "data/daily-prices/2024/2024-10-31.csv",
+      "mode": "100644",
+      "sha": "d1c19aae86698e066a6b6d22192095ce1a1dca64",
+      "size": 489331
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-01.csv",
+      "mode": "100644",
+      "sha": "be0af2b657eb46d013fcd03c567e2d14e95a24dd",
+      "size": 493308
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-05.csv",
+      "mode": "100644",
+      "sha": "9e446ce47e9d5ccdee12b08bebf38beb68bb693f",
+      "size": 489991
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-06.csv",
+      "mode": "100644",
+      "sha": "8eefd63def3305dc4cfbc5770a87aace21fb3811",
+      "size": 489562
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-07.csv",
+      "mode": "100644",
+      "sha": "a6417d5227f8d586a63ed513cadc31bdd38c1bb3",
+      "size": 489511
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-08.csv",
+      "mode": "100644",
+      "sha": "16c7eedc61b432aebc846e5192bab3c31c194667",
+      "size": 491299
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-11.csv",
+      "mode": "100644",
+      "sha": "bd2f002478bb5d35d4512b5574ecac746ca684ba",
+      "size": 491330
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-12.csv",
+      "mode": "100644",
+      "sha": "5cc6efe0a4fcc2232a1f89a9b0c1c4d9ead0240e",
+      "size": 490727
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-13.csv",
+      "mode": "100644",
+      "sha": "4d022bda5f9aec5370fd40d18ccdde4590617b6a",
+      "size": 491792
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-14.csv",
+      "mode": "100644",
+      "sha": "67c99664a3524c61aee5a9e732f70729198881c9",
+      "size": 492277
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-15.csv",
+      "mode": "100644",
+      "sha": "2b6d13063c72df8b4cc645c427b0e472396b2de2",
+      "size": 490964
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-18.csv",
+      "mode": "100644",
+      "sha": "f3e94abc6b5dd98012f5c0930f28fcf1506ef016",
+      "size": 490799
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-19.csv",
+      "mode": "100644",
+      "sha": "1ac39ba64b5b763ebef9f592a888c9245fa9cd40",
+      "size": 488669
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-20.csv",
+      "mode": "100644",
+      "sha": "72b7cbee317e28378aae124109d574e5086b8893",
+      "size": 490239
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-21.csv",
+      "mode": "100644",
+      "sha": "8737391dfafa17ce1929f4cff12ff34dc4ec367a",
+      "size": 489648
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-22.csv",
+      "mode": "100644",
+      "sha": "96fc0763eb1e383aca90a721f6b3a830cef1595f",
+      "size": 489149
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-25.csv",
+      "mode": "100644",
+      "sha": "b6c6f054161bfe44ea2cb68d3f059b5a9cd53e08",
+      "size": 490966
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-26.csv",
+      "mode": "100644",
+      "sha": "3861e187f5629b17f6c301e1f9065a5346425d05",
+      "size": 491450
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-27.csv",
+      "mode": "100644",
+      "sha": "660ed37a25cb7ed8c609bbd1d77b53d2bc9e2ebc",
+      "size": 493270
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-28.csv",
+      "mode": "100644",
+      "sha": "787af9db4574686436ed5edd2affd03396f3ea08",
+      "size": 488918
+    },
+    {
+      "path": "data/daily-prices/2024/2024-11-29.csv",
+      "mode": "100644",
+      "sha": "c1fb963556405f50397e0c0c3f931fe471be72b4",
+      "size": 490493
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-02.csv",
+      "mode": "100644",
+      "sha": "c5d7ed6bf880514e9cb96769e3ac56660d2208eb",
+      "size": 490729
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-03.csv",
+      "mode": "100644",
+      "sha": "4221ac24a1784bb57cf754200032af435377bdb4",
+      "size": 490122
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-04.csv",
+      "mode": "100644",
+      "sha": "e75956dc31d81719b5c228748b8cccb6c8736f6f",
+      "size": 493419
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-05.csv",
+      "mode": "100644",
+      "sha": "6d4ad5074f96661d39ac51d8c71bf35479f575de",
+      "size": 490565
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-06.csv",
+      "mode": "100644",
+      "sha": "a3d8ec10098666648de3ee513a92abdb96ea7ab8",
+      "size": 490851
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-09.csv",
+      "mode": "100644",
+      "sha": "2316b10d7f824bec5a84e5dd0b52a6f899c844ba",
+      "size": 490323
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-10.csv",
+      "mode": "100644",
+      "sha": "08a78727e2bab494c1e53d873a65c516740d6a94",
+      "size": 490429
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-11.csv",
+      "mode": "100644",
+      "sha": "c77ada693e018f56a195332a82daf2fc500bcf8d",
+      "size": 490565
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-12.csv",
+      "mode": "100644",
+      "sha": "1d7a748f88580b8df1042f039f9e7e9e74242cbb",
+      "size": 490607
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-13.csv",
+      "mode": "100644",
+      "sha": "4be98136014bfbe8e1899b5d9ee2010df3beed97",
+      "size": 491902
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-16.csv",
+      "mode": "100644",
+      "sha": "6be0ec4847219551890b455915bbfd8654dbe08e",
+      "size": 492835
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-17.csv",
+      "mode": "100644",
+      "sha": "6c1eadd0c04d3d4c2cd67d7126e1ae94139c1fc3",
+      "size": 492723
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-18.csv",
+      "mode": "100644",
+      "sha": "d34ae59b1806de9eea8095f073cbb44ffe9fa178",
+      "size": 492141
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-19.csv",
+      "mode": "100644",
+      "sha": "90bb63ade3c66c9532cbfca9048ebd1040eb8c9d",
+      "size": 492925
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-20.csv",
+      "mode": "100644",
+      "sha": "091283a22009f7e4561b9ff3a3ff9c2827afb2e5",
+      "size": 493951
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-23.csv",
+      "mode": "100644",
+      "sha": "32c6ea7a1104e9f4f29f28ab95cdec96d78400bc",
+      "size": 492739
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-24.csv",
+      "mode": "100644",
+      "sha": "6de39a8e47e8a0ea3cd2e02f3670f3bda9fee649",
+      "size": 493093
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-25.csv",
+      "mode": "100644",
+      "sha": "5a5e5818cdce8a0c9566df0e6b7719b60521e6f8",
+      "size": 493273
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-26.csv",
+      "mode": "100644",
+      "sha": "fedd7af1992c694745140cc710d7efaae99b107d",
+      "size": 493091
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-27.csv",
+      "mode": "100644",
+      "sha": "6309e0f40684a7dec6528d3d22f12d356e5aa966",
+      "size": 492845
+    },
+    {
+      "path": "data/daily-prices/2024/2024-12-30.csv",
+      "mode": "100644",
+      "sha": "f2fb44ec41b2dbc48d7d8ac7e704acac76d17540",
+      "size": 493676
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-06.csv",
+      "mode": "100644",
+      "sha": "8d5971b5b53979a191a489b840157d0e74a00bf7",
+      "size": 495699
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-07.csv",
+      "mode": "100644",
+      "sha": "6d0a65be64244a54942160182a5fd6c48dae5b72",
+      "size": 492820
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-08.csv",
+      "mode": "100644",
+      "sha": "8cc26919e78e38b56185b536a3da6888dc844f4d",
+      "size": 494269
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-09.csv",
+      "mode": "100644",
+      "sha": "5b08752abe6ab173fcdee7c7fad9b8c138c0e80f",
+      "size": 495001
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-10.csv",
+      "mode": "100644",
+      "sha": "5f42105b0613da1de3baa7d1d9e1b2469fe6cd98",
+      "size": 492901
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-14.csv",
+      "mode": "100644",
+      "sha": "45134061a3b4c945373931be884cd62d10459ed2",
+      "size": 496002
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-15.csv",
+      "mode": "100644",
+      "sha": "6385e22a8de06a215717e638aaafdfd61f10958b",
+      "size": 492656
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-16.csv",
+      "mode": "100644",
+      "sha": "8414b42d63dc29a79c4db38dc8f0b890e5e86284",
+      "size": 493220
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-17.csv",
+      "mode": "100644",
+      "sha": "df0acc513076297730ef682de72b026ecd87fb3c",
+      "size": 492698
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-20.csv",
+      "mode": "100644",
+      "sha": "d898bab86165b5e5dff9e98fd747d7dd58ff0eab",
+      "size": 491309
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-21.csv",
+      "mode": "100644",
+      "sha": "d5d49d020b8229a3d83ed88f4c4270c40c10ea5c",
+      "size": 490853
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-22.csv",
+      "mode": "100644",
+      "sha": "f3d286e05eec45f1d909f509e5a434583b2c1366",
+      "size": 490903
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-23.csv",
+      "mode": "100644",
+      "sha": "89b40a5ea8ef29c741d1407f9edb61e95103aba5",
+      "size": 492417
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-24.csv",
+      "mode": "100644",
+      "sha": "8cd5683d24b6786e046820b36db65ad74fe5f341",
+      "size": 490749
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-27.csv",
+      "mode": "100644",
+      "sha": "df902143a69e9f001cd54ac4b7ab19d5ab8f1c44",
+      "size": 491725
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-28.csv",
+      "mode": "100644",
+      "sha": "2326287627215dbce70002621896c97e3029107d",
+      "size": 491587
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-29.csv",
+      "mode": "100644",
+      "sha": "07744d2ec41cb2c6da8f31fde739ca01082a44fb",
+      "size": 491786
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-30.csv",
+      "mode": "100644",
+      "sha": "101483f24f6154aa9a773a40f334b2cd3a6a9202",
+      "size": 492571
+    },
+    {
+      "path": "data/daily-prices/2025/2025-01-31.csv",
+      "mode": "100644",
+      "sha": "2054af439cafc891fdf24fbe89bdb26dd6ec94f8",
+      "size": 492708
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-03.csv",
+      "mode": "100644",
+      "sha": "4638468e12638df534ea4df793edbb7cd5401638",
+      "size": 495779
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-04.csv",
+      "mode": "100644",
+      "sha": "aa7c9f1bc324d35a982b956e02eabe6f0f69e88c",
+      "size": 491534
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-05.csv",
+      "mode": "100644",
+      "sha": "a3157766ea7890acaf4f3981c0410d884f2128f4",
+      "size": 491536
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-06.csv",
+      "mode": "100644",
+      "sha": "9deeec8d548c9a2c91335eb87793a9edeef5e802",
+      "size": 490516
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-07.csv",
+      "mode": "100644",
+      "sha": "e76fcfa1a57c7d728d614b4ef03159c473bb0838",
+      "size": 492202
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-10.csv",
+      "mode": "100644",
+      "sha": "991c044456e4bccfa3fa83c63d3f8bd6e20928e2",
+      "size": 492384
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-12.csv",
+      "mode": "100644",
+      "sha": "00bb95cc2ee88a13b8552dd63e81f547921a17e9",
+      "size": 492368
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-13.csv",
+      "mode": "100644",
+      "sha": "e22bd1963e9f526a09f6f6c7538d280c70d0818f",
+      "size": 491644
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-14.csv",
+      "mode": "100644",
+      "sha": "e6d6a0db7fd34f2b235940976d97efb38c9edafa",
+      "size": 494421
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-17.csv",
+      "mode": "100644",
+      "sha": "48ca4c136fd1c4e88d835aa95bef29c47d01f081",
+      "size": 494003
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-18.csv",
+      "mode": "100644",
+      "sha": "14d8a4b1ffbeb2fb58083fdcba96c2678d207623",
+      "size": 491662
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-19.csv",
+      "mode": "100644",
+      "sha": "94722d541a48ecfb58dd291512ea6187f801532d",
+      "size": 492324
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-20.csv",
+      "mode": "100644",
+      "sha": "5125176abfca4753c94333331103e5d18ad7114b",
+      "size": 494368
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-21.csv",
+      "mode": "100644",
+      "sha": "7d626a457aa6ffc7d4d2535eabc97517eb5297ea",
+      "size": 492898
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-25.csv",
+      "mode": "100644",
+      "sha": "71f0009f6bf06233ee876bd1bd96148b8cd422d0",
+      "size": 492956
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-26.csv",
+      "mode": "100644",
+      "sha": "1317bce4916a68a9d9982a306586d8796b5aef52",
+      "size": 492776
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-27.csv",
+      "mode": "100644",
+      "sha": "40ea68b4254e031592e335f84ea44a8914feeebb",
+      "size": 490700
+    },
+    {
+      "path": "data/daily-prices/2025/2025-02-28.csv",
+      "mode": "100644",
+      "sha": "32e66fb6545a71ffe22f7391d1a41a798813f737",
+      "size": 495391
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-03.csv",
+      "mode": "100644",
+      "sha": "73e4ee64117ab0332ed18da8e192046dabf0fd77",
+      "size": 490816
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-04.csv",
+      "mode": "100644",
+      "sha": "e6f7007c47024d89dd94c23279eb1c1337e8f310",
+      "size": 493013
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-05.csv",
+      "mode": "100644",
+      "sha": "08cb321abea7807ee7f47f2e3892a0d192820986",
+      "size": 490346
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-06.csv",
+      "mode": "100644",
+      "sha": "3dd87f23098eaa664bf847fc0945fa176fba261d",
+      "size": 490059
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-07.csv",
+      "mode": "100644",
+      "sha": "c9c149383376354d2a33c2032a309ddba0dd135b",
+      "size": 492877
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-10.csv",
+      "mode": "100644",
+      "sha": "4b12b98301e4140d3c6d68ba3ce8de5e2b77ca6b",
+      "size": 491192
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-11.csv",
+      "mode": "100644",
+      "sha": "0de571d92b312c7ad3acc944bdc031e319e748bc",
+      "size": 493453
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-12.csv",
+      "mode": "100644",
+      "sha": "dcf11bf6b66bd2794665f30e2e45e28318d5c491",
+      "size": 489395
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-13.csv",
+      "mode": "100644",
+      "sha": "3b5aa922e815ff144e627c6fdf23cf59e2cc9988",
+      "size": 490181
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-14.csv",
+      "mode": "100644",
+      "sha": "7ae5c3daa45347b788fa149b9c5b775a445f29b6",
+      "size": 489572
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-17.csv",
+      "mode": "100644",
+      "sha": "41d8415f4d368cdc3bfcc9c2b1b1ddb790a42ac9",
+      "size": 490124
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-18.csv",
+      "mode": "100644",
+      "sha": "bfc9d9ba4770f0f8617aed82f8b3e5a50de48a81",
+      "size": 490098
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-19.csv",
+      "mode": "100644",
+      "sha": "6082f8212998825bd6b5d4e3e595652d7f4cee70",
+      "size": 490511
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-21.csv",
+      "mode": "100644",
+      "sha": "c9ec048b45a1e425e61b11fdf18d6d20bcb57881",
+      "size": 491796
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-24.csv",
+      "mode": "100644",
+      "sha": "ecde03ef671d084ca0fe85dcf0ad84ae7aa786fa",
+      "size": 492947
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-25.csv",
+      "mode": "100644",
+      "sha": "84f3a5ada32e97c0cca97fd95c9ca95aaa7bd793",
+      "size": 490990
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-26.csv",
+      "mode": "100644",
+      "sha": "927d94c5a0cd191ff25961d5a1d0129bbbcef6c5",
+      "size": 490686
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-27.csv",
+      "mode": "100644",
+      "sha": "211866ad6c926ab459addbdcb629f6c4d1cacd8f",
+      "size": 492322
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-28.csv",
+      "mode": "100644",
+      "sha": "4d5d56d88d9117a3b0db9ce2bba561e9db5020f6",
+      "size": 496232
+    },
+    {
+      "path": "data/daily-prices/2025/2025-03-31.csv",
+      "mode": "100644",
+      "sha": "6a8c7bc6e718fa9003db809078dab99553a6b3f3",
+      "size": 498229
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-01.csv",
+      "mode": "100644",
+      "sha": "37830c61fbc6aa6fa7966086c1a0d83034dc6fa6",
+      "size": 492533
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-02.csv",
+      "mode": "100644",
+      "sha": "4bfc63499fce8eab45dbcb697abf50cc77655469",
+      "size": 494005
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-03.csv",
+      "mode": "100644",
+      "sha": "2800090a842cde147b9559b88c80c4fa570b413e",
+      "size": 498297
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-04.csv",
+      "mode": "100644",
+      "sha": "64bb4e56515dd9f846f01f238dc8a905397fa56c",
+      "size": 500585
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-07.csv",
+      "mode": "100644",
+      "sha": "922fd578dabeb597387ce1abb348bc45b2f076fc",
+      "size": 503260
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-08.csv",
+      "mode": "100644",
+      "sha": "a03ff887b95c64d535d053a6eee747e0dcf9b3ca",
+      "size": 494352
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-09.csv",
+      "mode": "100644",
+      "sha": "9f24271cff5a7676fbca89fbf0c4411c90742d71",
+      "size": 497507
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-10.csv",
+      "mode": "100644",
+      "sha": "b46425246672308980b944f8513c33ac2bb3861b",
+      "size": 493379
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-11.csv",
+      "mode": "100644",
+      "sha": "705b71cfa59e4a8eee2c5a01b54d746e2c1ebbf3",
+      "size": 493105
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-14.csv",
+      "mode": "100644",
+      "sha": "6d8671d4981ee98d471569f3cc514fc2c3779512",
+      "size": 491310
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-15.csv",
+      "mode": "100644",
+      "sha": "c9573c454a1f7144645bf6da9ddbc499af4bd15e",
+      "size": 490926
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-16.csv",
+      "mode": "100644",
+      "sha": "90a1d69e82ff300a733eb23d0eef606d27856acd",
+      "size": 492930
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-17.csv",
+      "mode": "100644",
+      "sha": "26b5a03ce14dd141b7d9a58410e644476c373cee",
+      "size": 489598
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-18.csv",
+      "mode": "100644",
+      "sha": "c8036c3c86d40553fedbc257a1ab8ec27666943d",
+      "size": 490782
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-21.csv",
+      "mode": "100644",
+      "sha": "a94808ed8930f7519c619df1c222f65720c4a751",
+      "size": 493006
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-22.csv",
+      "mode": "100644",
+      "sha": "687eb4c255033445660520bcfa75a24e7544c223",
+      "size": 491561
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-23.csv",
+      "mode": "100644",
+      "sha": "9443f8a13a4e8fc63a0ffe37347e375b97614f37",
+      "size": 490777
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-24.csv",
+      "mode": "100644",
+      "sha": "a303dab9f00cccad34f4665bafc75b4aa40e5d1b",
+      "size": 492562
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-25.csv",
+      "mode": "100644",
+      "sha": "6f7de85eda1dc8a5d4c3025b2a0ba431fec29986",
+      "size": 491631
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-28.csv",
+      "mode": "100644",
+      "sha": "0301a8050c0826dccdbfa5495512d77e91ea2065",
+      "size": 492028
+    },
+    {
+      "path": "data/daily-prices/2025/2025-04-30.csv",
+      "mode": "100644",
+      "sha": "142c4a5af4ea1c47825ce6b3677479ee3a346b43",
+      "size": 491538
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-01.csv",
+      "mode": "100644",
+      "sha": "3753e7a0704bc9f13a5687ce48b9996ac06bba78",
+      "size": 492850
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-02.csv",
+      "mode": "100644",
+      "sha": "ae954ad34e8806e185f7c62f7fe8d3f1b9417487",
+      "size": 492272
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-07.csv",
+      "mode": "100644",
+      "sha": "f84ded2de4b38e1e90bef80ade036a69b8753540",
+      "size": 491570
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-08.csv",
+      "mode": "100644",
+      "sha": "36c54d502118923c8bf83e079e98b1e1d18359d9",
+      "size": 491082
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-09.csv",
+      "mode": "100644",
+      "sha": "24cff351f8fbd6e9dd35bd44cba465233c0e2ba5",
+      "size": 491301
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-12.csv",
+      "mode": "100644",
+      "sha": "f9240db24e4012fb706a70f35cee9ab46e705733",
+      "size": 491999
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-13.csv",
+      "mode": "100644",
+      "sha": "23af75073025e9d085fcda2e9b7def0f6f61109c",
+      "size": 492617
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-14.csv",
+      "mode": "100644",
+      "sha": "fb5746b3915e1ae40123d1ac78e19ec17911a371",
+      "size": 493375
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-15.csv",
+      "mode": "100644",
+      "sha": "8a8409d6b5da327aba9bef90621aac7918807f00",
+      "size": 493724
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-16.csv",
+      "mode": "100644",
+      "sha": "67c2516331ebd23a62ee03c50dcca93f036216c5",
+      "size": 492068
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-19.csv",
+      "mode": "100644",
+      "sha": "89d962f24bca92d2b907f276e33dfcdf16f35a41",
+      "size": 491952
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-20.csv",
+      "mode": "100644",
+      "sha": "a71c8c7c194046959215b78c99061f35e7aab647",
+      "size": 493409
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-21.csv",
+      "mode": "100644",
+      "sha": "3c84e82bdfb1c57b096f4fa7ab35ed0dccde21c2",
+      "size": 491402
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-22.csv",
+      "mode": "100644",
+      "sha": "757b17b5e5a2ed698d45c8146d28bb7e1dac66b5",
+      "size": 492299
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-23.csv",
+      "mode": "100644",
+      "sha": "21334249e1397f19894b89f39533bd0d215908f2",
+      "size": 490894
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-26.csv",
+      "mode": "100644",
+      "sha": "8e95c099ff78192787d2169a9b31ccbcec0ab899",
+      "size": 490274
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-27.csv",
+      "mode": "100644",
+      "sha": "80223623399e0d4f4933d1b893b606d17847fce2",
+      "size": 489683
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-28.csv",
+      "mode": "100644",
+      "sha": "0674b2449ecde718164a087ca4509b56bd5cb4d1",
+      "size": 491079
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-29.csv",
+      "mode": "100644",
+      "sha": "fe0e72376a27024d9ec1be0d9095b504d5fde34c",
+      "size": 489964
+    },
+    {
+      "path": "data/daily-prices/2025/2025-05-30.csv",
+      "mode": "100644",
+      "sha": "2ad75a5b5584ff23fe10d8240b111304b8b389da",
+      "size": 490789
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-02.csv",
+      "mode": "100644",
+      "sha": "e0a74bfea28b87baf72cf88390696ede02b056e5",
+      "size": 491873
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-03.csv",
+      "mode": "100644",
+      "sha": "e2aacdecd814455270c1ff472bca2fdd18d6c02c",
+      "size": 491162
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-04.csv",
+      "mode": "100644",
+      "sha": "2b21b44fb6d3f509999cb55c6cf4b29840aa340b",
+      "size": 489598
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-05.csv",
+      "mode": "100644",
+      "sha": "5452173f9b5fdbd03d6dac113a1106ca72799ac0",
+      "size": 491236
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-06.csv",
+      "mode": "100644",
+      "sha": "90cae20ac3210aaf9645003a886b3d03cbfcd421",
+      "size": 490331
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-09.csv",
+      "mode": "100644",
+      "sha": "de5bb62dd6ca114bb21521c0aa5dc64b68c10300",
+      "size": 489890
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-10.csv",
+      "mode": "100644",
+      "sha": "26fecadd307c98ab7075352cbb143e6a99bf4d30",
+      "size": 490206
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-11.csv",
+      "mode": "100644",
+      "sha": "144fbb6e23794b9dfb4fbbbbb79c9c48f28bca59",
+      "size": 489422
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-12.csv",
+      "mode": "100644",
+      "sha": "9be34473999f1370331e973fa6c2960e62cbef30",
+      "size": 490716
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-13.csv",
+      "mode": "100644",
+      "sha": "a94a06301c0748adfe9411fe19af2ea1443aab65",
+      "size": 493811
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-16.csv",
+      "mode": "100644",
+      "sha": "b74f9c9bcb8a8127bf16f6f0aa42d0cafa209848",
+      "size": 489480
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-17.csv",
+      "mode": "100644",
+      "sha": "48e65e352c4b93e5956fbc78f9fd0e9d5b836dd6",
+      "size": 488978
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-18.csv",
+      "mode": "100644",
+      "sha": "e1e8a72aaebcbb63c5e05d5c8909630e4d94a342",
+      "size": 489400
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-19.csv",
+      "mode": "100644",
+      "sha": "4e30a171bb95fd8b6f775063d63900aa6943d170",
+      "size": 489695
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-20.csv",
+      "mode": "100644",
+      "sha": "26a15b411e99facc9e785ee798afb91dfea0d323",
+      "size": 491764
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-23.csv",
+      "mode": "100644",
+      "sha": "014c0271b18d3f5d2cb1e4344d9ac165dc6be146",
+      "size": 491490
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-24.csv",
+      "mode": "100644",
+      "sha": "09e9de58380d57625976422b85cacdf3811b8bb4",
+      "size": 489162
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-25.csv",
+      "mode": "100644",
+      "sha": "be7823467c19e08e7d4ee5e27e4f25046e491c0c",
+      "size": 490929
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-26.csv",
+      "mode": "100644",
+      "sha": "575143534bcc5952f9eaaae58bd0911db2759796",
+      "size": 490338
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-27.csv",
+      "mode": "100644",
+      "sha": "fd04279b677e84d2cf97507744ed01863b2ea797",
+      "size": 490838
+    },
+    {
+      "path": "data/daily-prices/2025/2025-06-30.csv",
+      "mode": "100644",
+      "sha": "d4a9d87dbdb85620b684e2b47d19f8a9468146d7",
+      "size": 491088
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-01.csv",
+      "mode": "100644",
+      "sha": "e36d12646c0ad4ebdb777d87256e2de5cc2541e5",
+      "size": 492703
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-02.csv",
+      "mode": "100644",
+      "sha": "f6e12f26ac148d7f78008ab632371609127813c5",
+      "size": 491516
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-03.csv",
+      "mode": "100644",
+      "sha": "bd0debd1aa61a3a2dbff2047fef6796456ffecfd",
+      "size": 490707
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-04.csv",
+      "mode": "100644",
+      "sha": "a0eb080c2e1456e19c92e405e19115fd9967a8cf",
+      "size": 490053
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-07.csv",
+      "mode": "100644",
+      "sha": "66ef2ce91c04cc95e3c78f9ff26dea0dc0b0f336",
+      "size": 490878
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-08.csv",
+      "mode": "100644",
+      "sha": "b7517e438874bbaae66a9feba4c89702cfcae3cf",
+      "size": 489634
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-09.csv",
+      "mode": "100644",
+      "sha": "d62dd9f895b8c5e754b38f9f24644e86dd5b4433",
+      "size": 489444
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-10.csv",
+      "mode": "100644",
+      "sha": "778b83cd0836483561f45b141c07fcd76e06f020",
+      "size": 491314
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-11.csv",
+      "mode": "100644",
+      "sha": "169b911abade15427e2fe068f0882206424409e2",
+      "size": 489950
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-14.csv",
+      "mode": "100644",
+      "sha": "fd2bc3306a499eab46dbd834a45dc70305c2e931",
+      "size": 490743
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-15.csv",
+      "mode": "100644",
+      "sha": "1e863c67a968fb08e9058b754054573bbbc85462",
+      "size": 492102
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-16.csv",
+      "mode": "100644",
+      "sha": "120d681350f49231baf1762e77331056f4601460",
+      "size": 490832
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-17.csv",
+      "mode": "100644",
+      "sha": "7d41e1ea46a36e2060849306f95869fb3080b6ed",
+      "size": 488907
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-18.csv",
+      "mode": "100644",
+      "sha": "da3fb1d5aa69a4332d0f0a54489edaa1f96a4dfc",
+      "size": 492452
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-22.csv",
+      "mode": "100644",
+      "sha": "f92295ee4111a9bfd8d1d21a67dc89fddca55c71",
+      "size": 491362
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-23.csv",
+      "mode": "100644",
+      "sha": "2e3803d7684d8838a979a3c18a6d6593e2a487d7",
+      "size": 490939
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-24.csv",
+      "mode": "100644",
+      "sha": "8696a2dfd9b2602e42eaed6793bbc9a3f281115e",
+      "size": 490338
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-25.csv",
+      "mode": "100644",
+      "sha": "d2b4805835431e93ceabe6b30a699204f011ef0f",
+      "size": 491081
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-28.csv",
+      "mode": "100644",
+      "sha": "062cdf45dd89404670c2a173026654c7a1ed4cce",
+      "size": 491023
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-29.csv",
+      "mode": "100644",
+      "sha": "080070388e68ea0dc27fb2b80366e524ff7a63da",
+      "size": 491520
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-30.csv",
+      "mode": "100644",
+      "sha": "b4e46c17e3385ccf69fa7635c02e4793a432df6d",
+      "size": 489751
+    },
+    {
+      "path": "data/daily-prices/2025/2025-07-31.csv",
+      "mode": "100644",
+      "sha": "4beb81cb419dd2b1c75570dbcceb00a929dafd16",
+      "size": 489448
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-01.csv",
+      "mode": "100644",
+      "sha": "32d08febd15acb3c26f9795c1504c0a7eb61d111",
+      "size": 490268
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-04.csv",
+      "mode": "100644",
+      "sha": "e750c2a2d919a5aa856906912ef01d6cf50eb642",
+      "size": 491880
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-05.csv",
+      "mode": "100644",
+      "sha": "ba1ae1da04b15886d62fadf65b0163f0965f4822",
+      "size": 489885
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-06.csv",
+      "mode": "100644",
+      "sha": "d71b36c3c1c0104180d5a6307e6658e34be23b25",
+      "size": 489986
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-07.csv",
+      "mode": "100644",
+      "sha": "86324008fc07e73898016a462316faa99169351f",
+      "size": 490631
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-08.csv",
+      "mode": "100644",
+      "sha": "0e8410f04612d500d96821ea3969abf78ff0855d",
+      "size": 491843
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-12.csv",
+      "mode": "100644",
+      "sha": "4d80d0ed1f1859419cdbf540fcdcd85485b3f1c3",
+      "size": 492500
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-13.csv",
+      "mode": "100644",
+      "sha": "408397ab7e8289c4a5128eff1c36528c1a177356",
+      "size": 492027
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-14.csv",
+      "mode": "100644",
+      "sha": "a801b308f7f1beb842f48b4f6ba7b5ce1b0afce9",
+      "size": 492866
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-15.csv",
+      "mode": "100644",
+      "sha": "9add6e3548ad437927da0858fa33848b74f57235",
+      "size": 491949
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-18.csv",
+      "mode": "100644",
+      "sha": "697642f73acdcd0c8dd03fc7880517ac4be7b0d2",
+      "size": 490902
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-19.csv",
+      "mode": "100644",
+      "sha": "a6bd8d903605dd1f6ab1d2c5cccee49148865937",
+      "size": 490734
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-20.csv",
+      "mode": "100644",
+      "sha": "17176ecbd0e32f57638d3e77c4e526276ad140b7",
+      "size": 492071
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-21.csv",
+      "mode": "100644",
+      "sha": "b6e4581f499ac6e5a61c592c2326aa5d1ede9e6f",
+      "size": 491045
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-22.csv",
+      "mode": "100644",
+      "sha": "eac43cc7a86ead63f4977513e05fdb8909ba6eee",
+      "size": 490692
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-25.csv",
+      "mode": "100644",
+      "sha": "ad50e9f1b54b01e27ce5578c18c3443e7ecc0c22",
+      "size": 491623
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-26.csv",
+      "mode": "100644",
+      "sha": "ac5b0a7033aaa215d007a1a0b56b4cbdf9480f86",
+      "size": 492944
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-27.csv",
+      "mode": "100644",
+      "sha": "6f21a84bb84e0fb5ca9bb8191e03aa1c4bfea143",
+      "size": 491386
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-28.csv",
+      "mode": "100644",
+      "sha": "dbdd4480f7e450249d379110322a16f2b4fbe667",
+      "size": 490813
+    },
+    {
+      "path": "data/daily-prices/2025/2025-08-29.csv",
+      "mode": "100644",
+      "sha": "d64af2acd8cd5fc0686c789a267b8a1e8520e406",
+      "size": 490836
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-01.csv",
+      "mode": "100644",
+      "sha": "7f4a1c2584b8a1dbfdaebb75348185d6d6986f53",
+      "size": 491414
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-02.csv",
+      "mode": "100644",
+      "sha": "a18749358445bb2d4012150868dd94836e9422eb",
+      "size": 490081
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-03.csv",
+      "mode": "100644",
+      "sha": "0ca7d6b8f6beee8b68a7c2a11ce23aa416c15e81",
+      "size": 492314
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-04.csv",
+      "mode": "100644",
+      "sha": "827b929067fbe645a49ec121a6878ffd344e78f8",
+      "size": 489313
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-05.csv",
+      "mode": "100644",
+      "sha": "5011c85954c295a79bba67cbf04334bad01867b9",
+      "size": 489473
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-08.csv",
+      "mode": "100644",
+      "sha": "443700ee645b605696be5b5bac4ddc1d9b2ff523",
+      "size": 489340
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-09.csv",
+      "mode": "100644",
+      "sha": "e399e3cb691c0a196b741368e7fadb713af9dbce",
+      "size": 491915
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-10.csv",
+      "mode": "100644",
+      "sha": "e7b41d8d429472d44776f8a096e067d0ba4f47d2",
+      "size": 489932
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-11.csv",
+      "mode": "100644",
+      "sha": "44226a4a60329933f4c217d107b4b734bdfc0ce1",
+      "size": 491242
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-12.csv",
+      "mode": "100644",
+      "sha": "56ff32dcdf26ab2df1999af486bedfd4dd472409",
+      "size": 490378
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-16.csv",
+      "mode": "100644",
+      "sha": "fcb7bdf4c48fbf57e4493e2223e16c7ff2ee9868",
+      "size": 490503
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-17.csv",
+      "mode": "100644",
+      "sha": "f00a6e836dd9d693217b8f858cc0cde5b21ba79f",
+      "size": 492885
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-18.csv",
+      "mode": "100644",
+      "sha": "3ea4b78e82b76ae6a2de6b6f0774931434052679",
+      "size": 490541
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-19.csv",
+      "mode": "100644",
+      "sha": "5d7df9fe9d0d760757d64820185b0c930f5f2754",
+      "size": 491926
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-22.csv",
+      "mode": "100644",
+      "sha": "63a6a6f05680e26839158416f76aae5e0ad7d3d0",
+      "size": 489999
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-24.csv",
+      "mode": "100644",
+      "sha": "97f5ae9499846542f231ea593f5843dd1dd420a9",
+      "size": 491220
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-25.csv",
+      "mode": "100644",
+      "sha": "9f1a6ac03bab9af14d68b14f8b72c50fccb48a53",
+      "size": 490354
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-26.csv",
+      "mode": "100644",
+      "sha": "8ea454e78f1898e945d95a45603c56c3ca4eb219",
+      "size": 490525
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-29.csv",
+      "mode": "100644",
+      "sha": "c93a39478286666dd384eeef842fe5ad87c3f48c",
+      "size": 493553
+    },
+    {
+      "path": "data/daily-prices/2025/2025-09-30.csv",
+      "mode": "100644",
+      "sha": "c48200e73e2e6b7a81bdcb569c4a6303d4cd9d75",
+      "size": 491269
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-01.csv",
+      "mode": "100644",
+      "sha": "fd69236892b06bc8c583f10716c03835889c93ce",
+      "size": 495921
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-02.csv",
+      "mode": "100644",
+      "sha": "62db0e1fd2952997c4b2f2977e8baec1fcc2b236",
+      "size": 491349
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-03.csv",
+      "mode": "100644",
+      "sha": "fb8e5309391c8077bc852080f4f40994781a7e90",
+      "size": 488603
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-06.csv",
+      "mode": "100644",
+      "sha": "80146f417a32da2f6f34326d7a625071bad597cb",
+      "size": 490120
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-07.csv",
+      "mode": "100644",
+      "sha": "513733d1185064d5dbe8dccaf5b62a7cb71badc1",
+      "size": 490321
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-08.csv",
+      "mode": "100644",
+      "sha": "c4b34d7bf06dce292fd11c64e6583ca2de30a39f",
+      "size": 490794
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-09.csv",
+      "mode": "100644",
+      "sha": "787dc96cdcffd981a88dbdb05ba822454f815aa0",
+      "size": 490195
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-10.csv",
+      "mode": "100644",
+      "sha": "59c87b369a9dbaa39989db7fc0da8dfbaf1365fe",
+      "size": 494582
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-14.csv",
+      "mode": "100644",
+      "sha": "8efa0d81e7088aa8264b236c27cd6146304d795c",
+      "size": 496038
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-15.csv",
+      "mode": "100644",
+      "sha": "8f45f598fa35aa5fd5946c39b09b3100bb115bb4",
+      "size": 489329
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-16.csv",
+      "mode": "100644",
+      "sha": "059938ae4a5636b1424ce3242fafd9c2ee0166e8",
+      "size": 489259
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-17.csv",
+      "mode": "100644",
+      "sha": "8b1780ca69cf8f6d7bef3e45cb2b54f44480bb8d",
+      "size": 492146
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-20.csv",
+      "mode": "100644",
+      "sha": "e8b0c3c01d09232487d6efe713125a784ed92e1f",
+      "size": 489010
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-21.csv",
+      "mode": "100644",
+      "sha": "072772a9f0ea575ecd4fec646e306298efc261b2",
+      "size": 490099
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-22.csv",
+      "mode": "100644",
+      "sha": "6e023f78dfd2b676fa734e8f03150f9aa6ee8f06",
+      "size": 488775
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-23.csv",
+      "mode": "100644",
+      "sha": "78eafccdbea6ae29f495520913ab1764561b8a8d",
+      "size": 490012
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-24.csv",
+      "mode": "100644",
+      "sha": "8786cd68e1a2767e8e2493dcfeee3be134777dbc",
+      "size": 491193
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-27.csv",
+      "mode": "100644",
+      "sha": "47b84bf7918b1889d09aa4f8034a500632c58cc1",
+      "size": 490238
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-28.csv",
+      "mode": "100644",
+      "sha": "e23d3f84c8e4598793ba97f5c9bbd588f42244d6",
+      "size": 495003
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-29.csv",
+      "mode": "100644",
+      "sha": "b290e302d54bf24dc9d65e8f8172116aa8c0146c",
+      "size": 495307
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-30.csv",
+      "mode": "100644",
+      "sha": "a45cc574b12a4955e8b28a0f602a57b42969768d",
+      "size": 490196
+    },
+    {
+      "path": "data/daily-prices/2025/2025-10-31.csv",
+      "mode": "100644",
+      "sha": "60000174039e74637dca8fa30362990e69e1a9ef",
+      "size": 490587
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-04.csv",
+      "mode": "100644",
+      "sha": "30951c9f048b5410bbfe5b0d101d9784db341aa0",
+      "size": 491535
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-05.csv",
+      "mode": "100644",
+      "sha": "81afe4c38b639547f40ff302ecd405c836c837d7",
+      "size": 493482
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-06.csv",
+      "mode": "100644",
+      "sha": "486d4b621db5b7235145e21a6320addcf0d60c11",
+      "size": 489531
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-07.csv",
+      "mode": "100644",
+      "sha": "b4f92b0bc31988025fae08e138e52f492fb54740",
+      "size": 490266
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-10.csv",
+      "mode": "100644",
+      "sha": "5346fc9dd2314cc4f67cf560dbe1ce2151fd6e8a",
+      "size": 489526
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-11.csv",
+      "mode": "100644",
+      "sha": "20096d305c5a320d2b2552f241683c9a0325cf26",
+      "size": 490568
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-12.csv",
+      "mode": "100644",
+      "sha": "e99628972d0583ff5ee57ee0c6eb24b489e8bd0d",
+      "size": 489756
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-13.csv",
+      "mode": "100644",
+      "sha": "ee15bc124c1b7fbc36a61893dac7bf205ced56b1",
+      "size": 490811
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-14.csv",
+      "mode": "100644",
+      "sha": "f8c3157c3b1fef306df08994dcb0a932e121586a",
+      "size": 492682
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-17.csv",
+      "mode": "100644",
+      "sha": "5091ba9fb72531dc75278c13cde807de89e2ee1e",
+      "size": 493068
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-18.csv",
+      "mode": "100644",
+      "sha": "358505b4c8b3d6923f908ec468b33dbd9884ff1f",
+      "size": 494722
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-19.csv",
+      "mode": "100644",
+      "sha": "53ce9b15ec0a9add083516d5fafec4b57a3b6024",
+      "size": 490919
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-20.csv",
+      "mode": "100644",
+      "sha": "ebaa2868b0e471df3e4d1854e69df287cc2d203f",
+      "size": 489648
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-21.csv",
+      "mode": "100644",
+      "sha": "7be6bf367a52400c01d0b76beddb6bd862b5b5cf",
+      "size": 490396
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-25.csv",
+      "mode": "100644",
+      "sha": "5d0e50728d69030526d68d97882c4d91ed6c5a9e",
+      "size": 491212
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-26.csv",
+      "mode": "100644",
+      "sha": "1f1c7b7c50b344854b3f67a5e0ac86d0d109c068",
+      "size": 489166
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-27.csv",
+      "mode": "100644",
+      "sha": "8ecb37ae18114f678caae1f49c61e11bbfffc72a",
+      "size": 489182
+    },
+    {
+      "path": "data/daily-prices/2025/2025-11-28.csv",
+      "mode": "100644",
+      "sha": "1f00ea5f92eb7d979fe8826d7dd1020256aab274",
+      "size": 488917
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-01.csv",
+      "mode": "100644",
+      "sha": "9ace365c0621420ad50eff3797edbbb4e262c512",
+      "size": 493425
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-02.csv",
+      "mode": "100644",
+      "sha": "5c184b7546788c6121608de69d2b4ce15e277a7f",
+      "size": 492032
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-03.csv",
+      "mode": "100644",
+      "sha": "fee63bf95011e5dc4e8dcec3ea284b3e487c9a2e",
+      "size": 491357
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-04.csv",
+      "mode": "100644",
+      "sha": "ee365f22441e70d2b2faf1158f02748a87faa3c2",
+      "size": 488577
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-05.csv",
+      "mode": "100644",
+      "sha": "19f817aa379fa7c693fd80f3999eca5b7276c7b5",
+      "size": 491826
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-08.csv",
+      "mode": "100644",
+      "sha": "2426213012c2a1daea8f1d8978f67dbce9447c5d",
+      "size": 489343
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-09.csv",
+      "mode": "100644",
+      "sha": "9a7a607302e6ce9974bafe8b8e3b54aa96b900bd",
+      "size": 490543
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-10.csv",
+      "mode": "100644",
+      "sha": "fb2be10c761b09bcc057bb2dffdb3fe1415630a4",
+      "size": 489152
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-11.csv",
+      "mode": "100644",
+      "sha": "1bd3a553cfa4f05814589c35b8e4d9bef320c193",
+      "size": 492782
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-12.csv",
+      "mode": "100644",
+      "sha": "ded8d50dd7d4ef14906840cb9cda747cb229769b",
+      "size": 489172
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-15.csv",
+      "mode": "100644",
+      "sha": "4995ad3d607dee766aa736ddc64326a1079a6e0e",
+      "size": 489735
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-16.csv",
+      "mode": "100644",
+      "sha": "c8f53919a057319c3604e3e8e967e5987eebc9d8",
+      "size": 493078
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-17.csv",
+      "mode": "100644",
+      "sha": "59426b2c6244c7940abdf0148dba6d5db83a043d",
+      "size": 490495
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-18.csv",
+      "mode": "100644",
+      "sha": "dab9594f3e0d04a2c4298f565a133c16fd36b35b",
+      "size": 489830
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-19.csv",
+      "mode": "100644",
+      "sha": "2cb18bb777a055abcdc55e6ff39b9822a134a97e",
+      "size": 489694
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-22.csv",
+      "mode": "100644",
+      "sha": "c53af921b2a7786ae9889cd3f1eecdead1ba365f",
+      "size": 491606
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-23.csv",
+      "mode": "100644",
+      "sha": "cc45fc9c54c18f26915252d4740023a2a9e13ee3",
+      "size": 489689
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-24.csv",
+      "mode": "100644",
+      "sha": "7c5b9e5f3bba37111e767848799866879f53f49d",
+      "size": 491541
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-25.csv",
+      "mode": "100644",
+      "sha": "f2b5d7e42bc92754fc8fd27ccc0544ad2ffc9a32",
+      "size": 490114
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-26.csv",
+      "mode": "100644",
+      "sha": "e036f85aa4bf48b15b7a42349941ee1e20de4cb2",
+      "size": 491634
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-29.csv",
+      "mode": "100644",
+      "sha": "8e607f9755d3c84ad4ee3710e6fb174a37b328c6",
+      "size": 492016
+    },
+    {
+      "path": "data/daily-prices/2025/2025-12-30.csv",
+      "mode": "100644",
+      "sha": "467b3f8f5d4d527fdd2bfdc42fc60fcada8e40f2",
+      "size": 492491
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-05.csv",
+      "mode": "100644",
+      "sha": "e4445e4dbcd726f592982e3bbdeefd4adf2e4d70",
+      "size": 491439
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-06.csv",
+      "mode": "100644",
+      "sha": "8d3c81d853f00423f1a00e4386a6a6923c9abcb2",
+      "size": 490416
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-07.csv",
+      "mode": "100644",
+      "sha": "1238af04104d1cf21df43d543c6fb1c29e8376b1",
+      "size": 490997
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-08.csv",
+      "mode": "100644",
+      "sha": "3e53cc476f7e88677e70e2b5d3757c52d132faee",
+      "size": 491498
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-09.csv",
+      "mode": "100644",
+      "sha": "1349108fc314c3c25336c3e17a1f3e5b1be40437",
+      "size": 489850
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-13.csv",
+      "mode": "100644",
+      "sha": "34e99a96defbc47962f86547f2f8a62546fdda33",
+      "size": 491618
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-14.csv",
+      "mode": "100644",
+      "sha": "bbf5bc75c6f200f400fd5bf6f1ed23d30184b2c5",
+      "size": 490818
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-15.csv",
+      "mode": "100644",
+      "sha": "13e9826d9edf6972fd4c15fc2a9c3d6d18541529",
+      "size": 490351
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-16.csv",
+      "mode": "100644",
+      "sha": "018749f252707059991687a062ef442e7c8316f9",
+      "size": 490538
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-19.csv",
+      "mode": "100644",
+      "sha": "3754c430848afac59675b9c01e4e9337cf9b9de1",
+      "size": 491979
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-20.csv",
+      "mode": "100644",
+      "sha": "5f55c2fba028cb25dca75c13b81ca7a4b5a71ecd",
+      "size": 492881
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-21.csv",
+      "mode": "100644",
+      "sha": "2dcd89078d93cf26f5796a20f037e20ab1c9257d",
+      "size": 493289
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-22.csv",
+      "mode": "100644",
+      "sha": "ab7c8a90cbcb9f117654899c5eb309c30e038d8c",
+      "size": 489795
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-23.csv",
+      "mode": "100644",
+      "sha": "00dbb7572c10f6c63813284e87828878b8578800",
+      "size": 489978
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-26.csv",
+      "mode": "100644",
+      "sha": "fdb8486bcde4617d5b243f7bc2f5820395d5e0ae",
+      "size": 494542
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-27.csv",
+      "mode": "100644",
+      "sha": "871534e6666573745baaaf36d8aaf551d80f8e16",
+      "size": 490265
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-28.csv",
+      "mode": "100644",
+      "sha": "48d41c7fd2c5c7d9cf3e64ed463ff09de5c33b66",
+      "size": 493979
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-29.csv",
+      "mode": "100644",
+      "sha": "0c517c12242dc063c6f8d8bb7bdc41f3da20a528",
+      "size": 490962
+    },
+    {
+      "path": "data/daily-prices/2026/2026-01-30.csv",
+      "mode": "100644",
+      "sha": "b807193daac8113244621b71133c786d28536fd8",
+      "size": 489548
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-02.csv",
+      "mode": "100644",
+      "sha": "de0ef478746bb15f273b310b434dfb157ee9cd36",
+      "size": 491595
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-03.csv",
+      "mode": "100644",
+      "sha": "cbb19cc67f7623cd1c156aa52d3b3cf47686aaaf",
+      "size": 489031
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-04.csv",
+      "mode": "100644",
+      "sha": "294b203e1374c0de3c70bf37b3d0f526cdfe8032",
+      "size": 490115
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-05.csv",
+      "mode": "100644",
+      "sha": "04a171f41bac25aa03a6a27140cc98eac54833fd",
+      "size": 489438
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-06.csv",
+      "mode": "100644",
+      "sha": "3f8741ba13a69dd4919f6c4c1790dd39dfe20a2e",
+      "size": 491098
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-09.csv",
+      "mode": "100644",
+      "sha": "87dc75999ddd607a0739e2993a91b0d7e0e55c32",
+      "size": 490191
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-10.csv",
+      "mode": "100644",
+      "sha": "14ab58f82e5bfa30bbcdb4c579fb08a851c065e1",
+      "size": 489814
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-12.csv",
+      "mode": "100644",
+      "sha": "4ebb75ecbfd97146d4882a3cef6381e79ffcefa7",
+      "size": 491483
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-13.csv",
+      "mode": "100644",
+      "sha": "84ebdbec9f1cbc71a37d2c3fe28f7613b0cdd80d",
+      "size": 495319
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-16.csv",
+      "mode": "100644",
+      "sha": "b5e122d62efb16e15a1f27ba1be8b11651872399",
+      "size": 492308
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-17.csv",
+      "mode": "100644",
+      "sha": "a6d66e6c9c9a2e822f921539ad29d2af9ea7bee5",
+      "size": 491993
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-18.csv",
+      "mode": "100644",
+      "sha": "6334aaa3841608e7cfb32b858ff64e864ae8e341",
+      "size": 489971
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-19.csv",
+      "mode": "100644",
+      "sha": "068cf9502119341b2682cc2446a800139f73b8af",
+      "size": 490182
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-20.csv",
+      "mode": "100644",
+      "sha": "0e0dad3b840f1458fdacb79ec12ab9cd9b590782",
+      "size": 493470
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-24.csv",
+      "mode": "100644",
+      "sha": "398035bffe89b8c8654e76bdfcabee53a1fa943d",
+      "size": 492086
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-25.csv",
+      "mode": "100644",
+      "sha": "4ffaa69ed35acd71918cf0d96d89503fe36b7715",
+      "size": 491189
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-26.csv",
+      "mode": "100644",
+      "sha": "6eccfa0bc2eb04b521a0e18b4049b6234467f3fa",
+      "size": 490904
+    },
+    {
+      "path": "data/daily-prices/2026/2026-02-27.csv",
+      "mode": "100644",
+      "sha": "4dd2ba2e8e33eb408976711a08cf5347e09230d0",
+      "size": 490330
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-02.csv",
+      "mode": "100644",
+      "sha": "6d627370f1ed1d2e5ae5399c8b6b9fb14b4f7e48",
+      "size": 494782
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-03.csv",
+      "mode": "100644",
+      "sha": "440f414eb1deeeb7f5dcac828630fe574e36b574",
+      "size": 497238
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-04.csv",
+      "mode": "100644",
+      "sha": "2400177379adfb0934f37b27223f10ea4e73e294",
+      "size": 498077
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-05.csv",
+      "mode": "100644",
+      "sha": "5cd10d8cb11db9dfa7717432e2d05ba736dff162",
+      "size": 490834
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-06.csv",
+      "mode": "100644",
+      "sha": "1e2449558ace0d7d4e83dffed9be66057701ee87",
+      "size": 490679
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-09.csv",
+      "mode": "100644",
+      "sha": "8c5e72f59d2e54f5f0a0ce4899cfbc06f3fbe7f2",
+      "size": 497290
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-10.csv",
+      "mode": "100644",
+      "sha": "5ff5fa184064cbda46795e7d991787f376fad3aa",
+      "size": 489967
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-11.csv",
+      "mode": "100644",
+      "sha": "8358cbf668e01eaed15dbb1dca1972c8b1a5afcc",
+      "size": 489394
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-12.csv",
+      "mode": "100644",
+      "sha": "a2ef4c941d7d48ec31ea79fc0d903a8c702acb83",
+      "size": 494380
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-13.csv",
+      "mode": "100644",
+      "sha": "29dfbfea82db86eb1e09d103ee1536fc5dba915b",
+      "size": 491271
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-16.csv",
+      "mode": "100644",
+      "sha": "585dba07cba34a0f95dc3faa96ee57eb622d7cf2",
+      "size": 490860
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-17.csv",
+      "mode": "100644",
+      "sha": "0f3ce8df44a1d663c274e458cefc63bd0e29714d",
+      "size": 488920
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-18.csv",
+      "mode": "100644",
+      "sha": "33c4ae958485751d38ce8290cec4bc72716393ed",
+      "size": 488678
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-19.csv",
+      "mode": "100644",
+      "sha": "8ddc98700986b43a508ca9ee9d5920512d23244b",
+      "size": 495527
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-23.csv",
+      "mode": "100644",
+      "sha": "bc9a4c4d1ab1473f51720dd8a36c3cbd7a313be5",
+      "size": 496498
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-24.csv",
+      "mode": "100644",
+      "sha": "380f6360704bc2de112bf381ce99381d30649dee",
+      "size": 488449
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-25.csv",
+      "mode": "100644",
+      "sha": "bd899f0703e62b1ea51f66a8ac57e75e91facd8f",
+      "size": 488985
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-26.csv",
+      "mode": "100644",
+      "sha": "3f873ac0003c615ecb8b9623adc8df9f22cc6379",
+      "size": 491542
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-27.csv",
+      "mode": "100644",
+      "sha": "c983b7c51cbe36d0eab0f1e266f5052d360f5830",
+      "size": 489440
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-30.csv",
+      "mode": "100644",
+      "sha": "3037727ea23ed49c2d2f490e52203581bb6cc57a",
+      "size": 494843
+    },
+    {
+      "path": "data/daily-prices/2026/2026-03-31.csv",
+      "mode": "100644",
+      "sha": "fc28487b512185b34f8147df6debd8ee1ace7860",
+      "size": 489275
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-01.csv",
+      "mode": "100644",
+      "sha": "6c5f299de20619a4d80e86dc954c0e7460536127",
+      "size": 488492
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-02.csv",
+      "mode": "100644",
+      "sha": "b53899ec79d44e715fb310b3d5f294b2a9f12f1b",
+      "size": 491397
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-03.csv",
+      "mode": "100644",
+      "sha": "837cb23b8b3c2a854924af724891bf2dca7a81b0",
+      "size": 486748
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-06.csv",
+      "mode": "100644",
+      "sha": "ddce97de4e1c9fc7e2a1c3b719b8a2eb7d51e18b",
+      "size": 487559
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-07.csv",
+      "mode": "100644",
+      "sha": "ecf6947112ef24c503afe97cf4bac029a5ab3a5e",
+      "size": 487416
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-08.csv",
+      "mode": "100644",
+      "sha": "1474cf558b6e24df19b7f39cd3ccacca21afd779",
+      "size": 488384
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-09.csv",
+      "mode": "100644",
+      "sha": "0dd79f2c31b9408a30828d18cbaff9b5a658ad2c",
+      "size": 491450
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-10.csv",
+      "mode": "100644",
+      "sha": "051278c40d9434791585f2c2ee0d05fd7dec8522",
+      "size": 490134
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-13.csv",
+      "mode": "100644",
+      "sha": "42ebe13c6835c7ca14873477167f1e6910933565",
+      "size": 489743
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-14.csv",
+      "mode": "100644",
+      "sha": "2f9027762a3482f985f04b098f55e69180fce643",
+      "size": 488324
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-15.csv",
+      "mode": "100644",
+      "sha": "bf25a300f0e61993049a13505ba56d4861e1978d",
+      "size": 488182
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-16.csv",
+      "mode": "100644",
+      "sha": "b9b9138589c60bef8ee7601b44885d155ca8448c",
+      "size": 487659
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-17.csv",
+      "mode": "100644",
+      "sha": "02d2f27a9ddbe0ba7ed9bdb711c139dfc6cc1073",
+      "size": 488764
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-20.csv",
+      "mode": "100644",
+      "sha": "885153f98c5511e0a4ae5d3beeae8a75c370127d",
+      "size": 488746
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-21.csv",
+      "mode": "100644",
+      "sha": "7b71195edf51580186de67f2d50d49769c4ff6fa",
+      "size": 488824
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-22.csv",
+      "mode": "100644",
+      "sha": "e9f956b3bc82712de3b9e85880953c3c70998280",
+      "size": 490976
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-23.csv",
+      "mode": "100644",
+      "sha": "c2e09cfb16e88c10c421eb062660e47eefe3e3c7",
+      "size": 491829
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-24.csv",
+      "mode": "100644",
+      "sha": "cbd12eec28b301f341d57ed8bc484f9ce7783ee6",
+      "size": 490266
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-27.csv",
+      "mode": "100644",
+      "sha": "2c9b03cdd5ffdbeb15502f06e1a870b437ae5bb3",
+      "size": 490168
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-28.csv",
+      "mode": "100644",
+      "sha": "00e570fde900344061d03b685b4159a22b5426b9",
+      "size": 487658
+    },
+    {
+      "path": "data/daily-prices/2026/2026-04-30.csv",
+      "mode": "100644",
+      "sha": "6b7df42ebce59de826db1e3cf88bee6b78ef79e8",
+      "size": 491412
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-01.csv",
+      "mode": "100644",
+      "sha": "1d0e378d8e86929f7991e18bc49508ac4a4574e1",
+      "size": 488276
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-07.csv",
+      "mode": "100644",
+      "sha": "2beacff4d741b94703146b66e38ce52b482d072d",
+      "size": 488979
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-08.csv",
+      "mode": "100644",
+      "sha": "7dde5869366f4bc80aae00cd21f51e5e324b2657",
+      "size": 489170
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-11.csv",
+      "mode": "100644",
+      "sha": "b9d60f7d29b969d490ff687d755753884ce3beea",
+      "size": 488903
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-12.csv",
+      "mode": "100644",
+      "sha": "ce2a690b9780d366b55e28f15a707533f4347763",
+      "size": 489644
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-13.csv",
+      "mode": "100644",
+      "sha": "2f7ac9acc07f5e47c035070cf33bac59f0148697",
+      "size": 488667
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-14.csv",
+      "mode": "100644",
+      "sha": "cd7766d1d83e5c0b1207df18dae7de6fdae86837",
+      "size": 491177
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-15.csv",
+      "mode": "100644",
+      "sha": "bef3f0bc5d50654010f60b947815cbe55c27e6b7",
+      "size": 489930
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-18.csv",
+      "mode": "100644",
+      "sha": "2591a0b31903b73e35e5d35c958e250afc1b7934",
+      "size": 491710
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-19.csv",
+      "mode": "100644",
+      "sha": "ad4f7fd26bc28bb292d66d65555a42feee2f54ea",
+      "size": 487633
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-20.csv",
+      "mode": "100644",
+      "sha": "896ec97c7c12aaab8b826250110de982d541a24b",
+      "size": 491629
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-21.csv",
+      "mode": "100644",
+      "sha": "69af0ba58a4d8948db3df0c49897375b6f8f1509",
+      "size": 486812
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-22.csv",
+      "mode": "100644",
+      "sha": "4fb15b38f03eec9b5b6a3d7ab555c33add5108d4",
+      "size": 487348
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-25.csv",
+      "mode": "100644",
+      "sha": "cdf2e979792bbcc56a3f0b94aa5e7459aac753be",
+      "size": 489601
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-26.csv",
+      "mode": "100644",
+      "sha": "55e031360b51825128b55251561f34e04809a101",
+      "size": 488211
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-27.csv",
+      "mode": "100644",
+      "sha": "452b7eb75d0b9ba6953d1a66005968ae5b9e18ef",
+      "size": 488770
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-28.csv",
+      "mode": "100644",
+      "sha": "e9b1b34ce78a7a35716ef49d062f7bda81b0793d",
+      "size": 487498
+    },
+    {
+      "path": "data/daily-prices/2026/2026-05-29.csv",
+      "mode": "100644",
+      "sha": "92772fdf44dcc85224c21cbcc8080d4f86c5c4cc",
+      "size": 487243
+    },
+    {
+      "path": "data/daily-prices/2026/2026-06-01.csv",
+      "mode": "100644",
+      "sha": "de7d3956d2efa4a20ec37291dd1d8c3ada23e57e",
+      "size": 490264
+    },
+    {
+      "path": "data/daily-prices/2026/2026-06-02.csv",
+      "mode": "100644",
+      "sha": "0ba58db9f485c094f330d4b9fba36d853e1c9b1e",
+      "size": 489469
+    },
+    {
+      "path": "data/daily-prices/2026/2026-06-03.csv",
+      "mode": "100644",
+      "sha": "4685393b7ade55e7ecdcbf38d23759c0f05019fe",
+      "size": 486953
+    },
+    {
+      "path": "data/daily-prices/2026/2026-06-04.csv",
+      "mode": "100644",
+      "sha": "93b284c124888624c4cf55f1e5d7ffb1cc501399",
+      "size": 488045
+    },
+    {
+      "path": "data/daily-prices/2026/2026-06-05.csv",
+      "mode": "100644",
+      "sha": "48cdaa64e67680a86c01ea4f89dfbd6590700a83",
+      "size": 485519
+    },
+    {
+      "path": "data/daily-prices/2026/2026-06-08.csv",
+      "mode": "100644",
+      "sha": "af49ce1592c2deac64c9ff4d3c283034c76f313e",
+      "size": 490254
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-12.csv",
+      "mode": "100644",
+      "sha": "9862ac167a6845c6428dfd9623f9207c769a4d27",
+      "size": 464756
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-13.csv",
+      "mode": "100644",
+      "sha": "0abd8fbac01803726f83c5b01445945e11a52d8b",
+      "size": 464625
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-14.csv",
+      "mode": "100644",
+      "sha": "e22b7512da230c6bee90398a3fca9815603d824e",
+      "size": 464990
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-17.csv",
+      "mode": "100644",
+      "sha": "7c92155be79b14b53b073f253eca3b0a37640587",
+      "size": 466142
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-18.csv",
+      "mode": "100644",
+      "sha": "531fd9a2aff6441fce66cf5fe5a91b21efe62999",
+      "size": 465889
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-19.csv",
+      "mode": "100644",
+      "sha": "ebaa4990f9ea96d3e952c8ea86bfac8900d7b274",
+      "size": 468418
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-20.csv",
+      "mode": "100644",
+      "sha": "917f98cfd1fea9d3aedcbc5b9d2875c7bd4715a4",
+      "size": 463418
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-21.csv",
+      "mode": "100644",
+      "sha": "f03d76da2c7cfebab4172c3c2380b4f914ddbafc",
+      "size": 464150
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-24.csv",
+      "mode": "100644",
+      "sha": "f307ff556688a24c906b1e28ea98166b9ba2b19d",
+      "size": 464553
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-25.csv",
+      "mode": "100644",
+      "sha": "753443155ff721bb40c96751c9e0beddc04fc2eb",
+      "size": 464236
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-26.csv",
+      "mode": "100644",
+      "sha": "7494000f4eb13c497108850af39b6eb37c9c44e5",
+      "size": 464098
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-27.csv",
+      "mode": "100644",
+      "sha": "f98092092d6df7cb049175e73c5e9eb208e381fa",
+      "size": 464330
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-28.csv",
+      "mode": "100644",
+      "sha": "d7729c8345b10a343477f57be611f176f13df8e7",
+      "size": 464182
+    },
+    {
+      "path": "data/daily-prices/2026/2026-08-31.csv",
+      "mode": "100644",
+      "sha": "7dbce885584c91554f128193ecc6eae095fadf4f",
+      "size": 464533
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-01.csv",
+      "mode": "100644",
+      "sha": "fc1180db43510856b59b4bbadf5b907ca6b7d7f8",
+      "size": 464511
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-02.csv",
+      "mode": "100644",
+      "sha": "e5c59a2281f14503e7c6e9f1fff9aae749c548e5",
+      "size": 468519
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-03.csv",
+      "mode": "100644",
+      "sha": "cfb65b3c2a0e1cd2f867857f2d65da81a8119691",
+      "size": 463790
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-04.csv",
+      "mode": "100644",
+      "sha": "923d4efbf6b5b8da7cd285aea342661e4e479e83",
+      "size": 463145
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-07.csv",
+      "mode": "100644",
+      "sha": "7b1a4b9a0b6038cf73394a26c55203471d2eb234",
+      "size": 464980
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-08.csv",
+      "mode": "100644",
+      "sha": "10fa8708ce27427e08faa50887cb07129aeb0319",
+      "size": 466373
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-09.csv",
+      "mode": "100644",
+      "sha": "f80521607b9b9120ffc98eca21e9c3962b21ffd4",
+      "size": 464466
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-10.csv",
+      "mode": "100644",
+      "sha": "0ae9c88d4d131fedb15c1d2135c69a9a3a226449",
+      "size": 464100
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-11.csv",
+      "mode": "100644",
+      "sha": "fd1e3c37db5ff878925b53f9d7be73e586a4371b",
+      "size": 465771
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-14.csv",
+      "mode": "100644",
+      "sha": "32c433e7836c679b43598bf722c7e9d912397dee",
+      "size": 463178
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-15.csv",
+      "mode": "100644",
+      "sha": "de704341bd053f6d4b3dfa913d69c34e2cd858f7",
+      "size": 463028
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-16.csv",
+      "mode": "100644",
+      "sha": "a27ad669074b83bd3f3bb7b9feaa49b357f47c5d",
+      "size": 463306
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-17.csv",
+      "mode": "100644",
+      "sha": "50c30eaf10fdb4e91c9131481c7d490e51bd8e63",
+      "size": 462466
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-18.csv",
+      "mode": "100644",
+      "sha": "1a4e306657c72b13869da8d5863f6cb6874f3ecb",
+      "size": 464663
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-24.csv",
+      "mode": "100644",
+      "sha": "fcfb8749ad8a49f38cf1d5f7b7a648a74cd88dfd",
+      "size": 465373
+    },
+    {
+      "path": "data/daily-prices/2026/2026-09-25.csv",
+      "mode": "100644",
+      "sha": "4d8c4ccc475fd254d66d96db81c7d66eca5bf524",
+      "size": 463449
+    },
+    {
+      "path": "data/daily-prices/README.md",
+      "mode": "100644",
+      "sha": "62e5899a5cbb164a7685b9a41558a89928097c2e",
+      "size": 2366
+    },
+    {
+      "path": "data/daily-prices/latest.json",
+      "mode": "100644",
+      "sha": "dbf098a7c940b29989958197de6623314e6c0231",
+      "size": 662
+    },
+    {
+      "path": "data/historical-replay/price-coverage-2025-2026.json",
+      "mode": "100644",
+      "sha": "d5c58f09993890c7cb99481f6fe1891baa71f2ce",
+      "size": 135388
+    },
+    {
+      "path": "data/tenbagger-survivor-price-episodes-2016-2026.csv",
+      "mode": "100644",
+      "sha": "656a461b9cdb5d7826624408bbd8b9fb5dfdc504",
+      "size": 34167
+    },
+    {
+      "path": "data/tenbagger-survivor-price-episodes-2016-2026.quality.csv",
+      "mode": "100644",
+      "sha": "3a5b32d31516b1a1c39909103f85e99e87fb3e92",
+      "size": 3748
+    },
+    {
+      "path": "data/tenbagger-v0.2-price-only-pnl-2016-2026.csv",
+      "mode": "100644",
+      "sha": "250741f08c6cd16e5786de748bef0f0664803c08",
+      "size": 28912
+    },
+    {
+      "path": "data/tenbagger-v0.4-allocation-replay-2025-candidates.csv",
+      "mode": "100644",
+      "sha": "8b51c2191ad2598cce78f302f7f1c8b1da1a8d5f",
+      "size": 1546
+    },
+    {
+      "path": "data/tenbagger-v0.4-allocation-replay-2025-daily.csv",
+      "mode": "100644",
+      "sha": "da4b422a5de5a8d8b6ceb948e80ebba5711c0d26",
+      "size": 33465
+    },
+    {
+      "path": "data/tenbagger-v0.4-allocation-replay-2025-summary.json",
+      "mode": "100644",
+      "sha": "75829f24afc5f1dfb557aaaca300094c4411bb33",
+      "size": 1386
+    },
+    {
+      "path": "data/tenbagger-v0.4-allocation-replay-2025-trades.csv",
+      "mode": "100644",
+      "sha": "942868c0572d95087b836bfcb32e679fbd5bda2f",
+      "size": 6085
+    },
+    {
+      "path": "docs/README.md",
+      "mode": "100644",
+      "sha": "755d16fd564583316f131fde3257fdf734fc05d0",
+      "size": 1926
+    },
+    {
+      "path": "docs/architecture/repository-boundaries.md",
+      "mode": "100644",
+      "sha": "2ea18f65de12702d40d4d705c6ae46db17ae593c",
+      "size": 4315
+    },
+    {
+      "path": "docs/daily-pr-publication.md",
+      "mode": "100644",
+      "sha": "af72544033dcf455228686a5c4affd2dbdf23eeb",
+      "size": 9247
+    },
+    {
+      "path": "docs/jquants-private-ingestion.md",
+      "mode": "100644",
+      "sha": "5e243b89c9df44184133c09f1f41b47546ca0365",
+      "size": 9138
+    },
+    {
+      "path": "docs/operations/daily-automation-runbook-v0.1.md",
+      "mode": "100644",
+      "sha": "5942385ce8bf2efa785bddb73c9bae9072006e90",
+      "size": 15929
+    },
+    {
+      "path": "docs/operations/daily-stock-price-actions-v0.1.md",
+      "mode": "100644",
+      "sha": "22862b9f517b3a19737045bc40fc066273c6c983",
+      "size": 4449
+    },
+    {
+      "path": "docs/operations/decision-assessment-automation-v0.1.md",
+      "mode": "100644",
+      "sha": "78a941337023557cc4c94712f5ad7d1e56889670",
+      "size": 5299
+    },
+    {
+      "path": "docs/operations/historical-replay-v0.1.md",
+      "mode": "100644",
+      "sha": "8d3704b849cf0ba4aa532c2fb41a9bbd8983c1ed",
+      "size": 6761
+    },
+    {
+      "path": "docs/operations/limited-live-v0.1.md",
+      "mode": "100644",
+      "sha": "f29a5cc4ca2a4d4ff503d4149deef25d52f47b9b",
+      "size": 3551
+    },
+    {
+      "path": "docs/operations/live-gate-evidence.md",
+      "mode": "100644",
+      "sha": "e9e94f7c0b3303bb161f2ceb64154398076f7bcb",
+      "size": 12142
+    },
+    {
+      "path": "docs/operations/live-operation-playbook-v0.1.md",
+      "mode": "100644",
+      "sha": "b2133e710adbd85d52911e1999679f4d9aa05d7d",
+      "size": 15465
+    },
+    {
+      "path": "docs/operations/market-data-operation-v0.1.md",
+      "mode": "100644",
+      "sha": "9b7bea99e1f87a4ea2e0f7a0e176a6490ff0f36d",
+      "size": 5010
+    },
+    {
+      "path": "docs/operations/nightly-operation-v0.1.md",
+      "mode": "100644",
+      "sha": "ed7109e2debb1e4c6b240d53089742acf92ef4ca",
+      "size": 8964
+    },
+    {
+      "path": "docs/operations/official-source-scan-v0.1.md",
+      "mode": "100644",
+      "sha": "7499b6af386d68871a2809227b77b3776f4dd88c",
+      "size": 5496
+    },
+    {
+      "path": "docs/operations/operation-governance-v0.1.md",
+      "mode": "100644",
+      "sha": "d844188f6530b05c513e33455fd9ac96bd6e5362",
+      "size": 6493
+    },
+    {
+      "path": "docs/operations/operation-readiness-v0.1.md",
+      "mode": "100644",
+      "sha": "f3640b7b1b6f9b323eff131b6d5fba557ce5dea3",
+      "size": 8081
+    },
+    {
+      "path": "docs/operations/operation-state-v0.2.md",
+      "mode": "100644",
+      "sha": "e5dce4ff5001cf2e1387c8731c7e9383fef08f5a",
+      "size": 5349
+    },
+    {
+      "path": "docs/operations/run-integrity-v0.1.md",
+      "mode": "100644",
+      "sha": "25e025beb67d2bdee49dd54a327ed689f741a3a3",
+      "size": 3085
+    },
+    {
+      "path": "docs/private-git-market-data.md",
+      "mode": "100644",
+      "sha": "9ab742f54a391773383b04f3ffbcdd78e26cec6b",
+      "size": 7133
+    },
+    {
+      "path": "docs/research/historical-data-import-v0.1.md",
+      "mode": "100644",
+      "sha": "d346cad77b85ab1efb96dace489b397868421e68",
+      "size": 3946
+    },
+    {
+      "path": "docs/research/historical-replay-2025-2026.md",
+      "mode": "100644",
+      "sha": "93fa605c5b6536acd327988e4d8d6bb54a3bc7d7",
+      "size": 9382
+    },
+    {
+      "path": "docs/research/tenbagger-v0.2-price-only-pnl-2016-2026.md",
+      "mode": "100644",
+      "sha": "a5ef2314dd6be7eb66713058789a42e904e19d1b",
+      "size": 17789
+    },
+    {
+      "path": "docs/research/tenbagger-v0.4-allocation-replay-2025.md",
+      "mode": "100644",
+      "sha": "bcd43bda2c0bf814fee12eaafe94a60d71feed8a",
+      "size": 4321
+    },
+    {
+      "path": "docs/research/tenbagger-validation-2016-2026.md",
+      "mode": "100644",
+      "sha": "5d9148c737c4b6205411b8eafc46392c4722dcca",
+      "size": 14818
+    },
+    {
+      "path": "docs/rules/tenbagger-rule-v0.1.md",
+      "mode": "100644",
+      "sha": "62dcb689d1f4bdee87d356d22bd5c4aa0f50af7a",
+      "size": 22337
+    },
+    {
+      "path": "docs/rules/tenbagger-rule-v0.2.md",
+      "mode": "100644",
+      "sha": "c6e1d7ed76bca8e945c14477cc2bfd366607c2b6",
+      "size": 37423
+    },
+    {
+      "path": "docs/rules/tenbagger-rule-v0.3.md",
+      "mode": "100644",
+      "sha": "5c4f228ac63acf28604573df928797b662d294f1",
+      "size": 14152
+    },
+    {
+      "path": "docs/rules/tenbagger-rule-v0.4.md",
+      "mode": "100644",
+      "sha": "907994d62dad3b7ea5c9d78c8612b16c691f770e",
+      "size": 7730
+    },
+    {
+      "path": "operations/templates/capital-ledger.csv",
+      "mode": "100644",
+      "sha": "35d0ae8fa392904cc07030c5177f33bfa36e9d9e",
+      "size": 128
+    },
+    {
+      "path": "operations/templates/corporate-actions.csv",
+      "mode": "100644",
+      "sha": "c00fbaaf32bc5ebc4affe85668c7ddb86c221336",
+      "size": 189
+    },
+    {
+      "path": "operations/templates/daily-report-template.md",
+      "mode": "100644",
+      "sha": "40815e115dfd4c9c0ee2e3ce45c7db5c8788feda",
+      "size": 2792
+    },
+    {
+      "path": "operations/templates/daily-run-state-template.json",
+      "mode": "100644",
+      "sha": "4a4d416703b256280df7ef8fc8e71ed34af21ab6",
+      "size": 574
+    },
+    {
+      "path": "operations/templates/decision-log-template.md",
+      "mode": "100644",
+      "sha": "cdbcedaecdc2cc4deb44fc904f3854b2bc374739",
+      "size": 2895
+    },
+    {
+      "path": "operations/templates/earnings-calendar-history.csv",
+      "mode": "100644",
+      "sha": "45f073053ada5b3b0fd9bba580e4daaf52f2a733",
+      "size": 141
+    },
+    {
+      "path": "operations/templates/forecast-history.csv",
+      "mode": "100644",
+      "sha": "fd18b0b4cc9b848f51e5a0e62f2ba0fad74e5905",
+      "size": 388
+    },
+    {
+      "path": "operations/templates/global-risk-template.md",
+      "mode": "100644",
+      "sha": "71261583d750e2e3d07e4e7932bf78149569452a",
+      "size": 792
+    },
+    {
+      "path": "operations/templates/historical-replay-assessment-template.json",
+      "mode": "100644",
+      "sha": "6f586aa6b10b0587079f4daf3a4f7ce08a77e92f",
+      "size": 624
+    },
+    {
+      "path": "operations/templates/industry-exposure.csv",
+      "mode": "100644",
+      "sha": "41dc6ddc1ff115dc20ef97e34d4ba4bf41e6f03e",
+      "size": 107
+    },
+    {
+      "path": "operations/templates/investment-case-input-template.json",
+      "mode": "100644",
+      "sha": "861ce924f2c27fb77af09919a69fcd5e362164f2",
+      "size": 1902
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/historical-replay-review-template.json",
+      "mode": "100644",
+      "sha": "77b8a6f7d17df2bfefb3682c2ed4e1640fe932e0",
+      "size": 519
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/limited-live-plan-template.json",
+      "mode": "100644",
+      "sha": "d25f47ef988a61872e6d4f5826d2a857dfce7f10",
+      "size": 1017
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/live-approval-template.json",
+      "mode": "100644",
+      "sha": "44854094753612d20ca7ec0188b86aab1a7c5d94",
+      "size": 1435
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/personal-risk-and-broker-template.json",
+      "mode": "100644",
+      "sha": "ce31a710b3254e304e2e016eb41c620b39ba8d88",
+      "size": 1601
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/recovery-drill-template.json",
+      "mode": "100644",
+      "sha": "2591533719608afc8629f31a1754302306e2d15c",
+      "size": 851
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/v04-holdout-plan-template.json",
+      "mode": "100644",
+      "sha": "31cba5c6dca561f96326e07d77390165b76415da",
+      "size": 763
+    },
+    {
+      "path": "operations/templates/live-gate-evidence/v04-holdout-review-template.json",
+      "mode": "100644",
+      "sha": "ee26faf120dd4b6aa7fc6d96a9d68e540398765c",
+      "size": 886
+    },
+    {
+      "path": "operations/templates/market-regime-log.csv",
+      "mode": "100644",
+      "sha": "a19ae267c62956d55986df640eef6b6fe826d804",
+      "size": 221
+    },
+    {
+      "path": "operations/templates/next-day-actions-template.csv",
+      "mode": "100644",
+      "sha": "c59bfd1615b82dd3a37dad0b3030ee0ff58dab35",
+      "size": 216
+    },
+    {
+      "path": "operations/templates/operation-policy.json",
+      "mode": "100644",
+      "sha": "7e4740140300a34b42b9b9fa7d1a5d8539ca5ef3",
+      "size": 1319
+    },
+    {
+      "path": "operations/templates/order-ticket-template.csv",
+      "mode": "100644",
+      "sha": "f7f30842f9ad4e21343f7acecb9f789825524c86",
+      "size": 335
+    },
+    {
+      "path": "operations/templates/portfolio-register.csv",
+      "mode": "100644",
+      "sha": "930d9285b4482e89c962a94a1903f269340842dd",
+      "size": 589
+    },
+    {
+      "path": "operations/templates/pretrade-check-template.md",
+      "mode": "100644",
+      "sha": "2ee0fdff95a89eb4ecb8ca0e765b17bfa214a947",
+      "size": 1225
+    },
+    {
+      "path": "operations/templates/provider-health-template.json",
+      "mode": "100644",
+      "sha": "272dc1ef417e9c9a3a37ebbc46a65ee4e223fcab",
+      "size": 217
+    },
+    {
+      "path": "operations/templates/rebuy-restrictions.csv",
+      "mode": "100644",
+      "sha": "f0a71533985b063638ba32add968c435f7a0fa18",
+      "size": 138
+    },
+    {
+      "path": "operations/templates/recovered-capital-ledger.csv",
+      "mode": "100644",
+      "sha": "27098fe4fad45586dcee2580db05bf7e1f0d7e50",
+      "size": 307
+    },
+    {
+      "path": "operations/templates/research-queue-template.json",
+      "mode": "100644",
+      "sha": "5e237478d2f8afdf58b0e7f12ea32195f7ab5841",
+      "size": 99
+    },
+    {
+      "path": "operations/templates/research-results-template.md",
+      "mode": "100644",
+      "sha": "97d6ee1b73f28483be4790a867d0a6dfb8ce8320",
+      "size": 412
+    },
+    {
+      "path": "operations/templates/rule-review-log.csv",
+      "mode": "100644",
+      "sha": "54a119866852b75c129df229c4e1ad8918a9bef4",
+      "size": 329
+    },
+    {
+      "path": "operations/templates/run-coverage-template.json",
+      "mode": "100644",
+      "sha": "9efb20a07cfc1b408a7c7963579d9df23c26b627",
+      "size": 749
+    },
+    {
+      "path": "operations/templates/run-history-template.csv",
+      "mode": "100644",
+      "sha": "8a67baa8d510325096a41d70be2387f3b743d4b7",
+      "size": 193
+    },
+    {
+      "path": "operations/templates/schema-migration-log.csv",
+      "mode": "100644",
+      "sha": "517119b6bbe4dfb44a4e7da7780807c3ae97ef09",
+      "size": 88
+    },
+    {
+      "path": "operations/templates/share-count-history.csv",
+      "mode": "100644",
+      "sha": "30af3b68f78e05193759b1e160ce028403a6cd79",
+      "size": 136
+    },
+    {
+      "path": "operations/templates/source-config-template.json",
+      "mode": "100644",
+      "sha": "225c4ff0ee733a610669c7a42d48893b78766819",
+      "size": 2641
+    },
+    {
+      "path": "operations/templates/source-watermarks.json",
+      "mode": "100644",
+      "sha": "1d1fd70f3f83b1d0626207a530756355fde99832",
+      "size": 598
+    },
+    {
+      "path": "operations/templates/trade-event-ledger.csv",
+      "mode": "100644",
+      "sha": "ecf0ddfd5e69fea3d1677a4ab38c34e1ffa3e21b",
+      "size": 288
+    },
+    {
+      "path": "operations/templates/watchlist.csv",
+      "mode": "100644",
+      "sha": "46126452a55361ac7555d2643370f811cfbaf871",
+      "size": 92
+    },
+    {
+      "path": "operations/templates/work-plan-template.json",
+      "mode": "100644",
+      "sha": "812cf665a3695f332c325b137e1760bc8e460dab",
+      "size": 194
+    },
+    {
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "sha": "ec7fbb25bcd7b35c129abcc370e22df97a6971ce",
+      "size": 262
+    },
+    {
+      "path": "scripts/assessment_pipeline.py",
+      "mode": "100644",
+      "sha": "cbde873b34c60951d2cc644962cfe4ba0b7762eb",
+      "size": 13406
+    },
+    {
+      "path": "scripts/collect_daily_prices.py",
+      "mode": "100644",
+      "sha": "cb713c9518f0b9695efdf2ef2a53cb336358d199",
+      "size": 16504
+    },
+    {
+      "path": "scripts/daily_operation.py",
+      "mode": "100644",
+      "sha": "8b582aa7f7fb6d0ab1b305c7325644b76c4c2cac",
+      "size": 20604
+    },
+    {
+      "path": "scripts/daily_publication.py",
+      "mode": "100644",
+      "sha": "83a5a1c2818d959d528ab50d3ecf04124e1c5b7f",
+      "size": 26949
+    },
+    {
+      "path": "scripts/historical_replay.py",
+      "mode": "100644",
+      "sha": "5988f48d6ec925c620016686c9a1d72dda77a970",
+      "size": 98681
+    },
+    {
+      "path": "scripts/investment_case.py",
+      "mode": "100644",
+      "sha": "ef5d1b0e1afb3fff92578407616601371f4720ae",
+      "size": 21387
+    },
+    {
+      "path": "scripts/jquants_catalog.py",
+      "mode": "100644",
+      "sha": "ae78ebb677f62587b765dd8370d67bf1625c69e9",
+      "size": 5146
+    },
+    {
+      "path": "scripts/jquants_delivery.py",
+      "mode": "100644",
+      "sha": "b38e7684036a3c936c83f04ae255f06b089d6ac3",
+      "size": 18419
+    },
+    {
+      "path": "scripts/jquants_ingest.py",
+      "mode": "100644",
+      "sha": "eeb1031a3e9fc5ed97036b874fe6a51ab342e9b8",
+      "size": 26980
+    },
+    {
+      "path": "scripts/jquants_size_sample.py",
+      "mode": "100644",
+      "sha": "fdcc290fdf716d74d5afeeb5898c9cc07b03ef85",
+      "size": 3837
+    },
+    {
+      "path": "scripts/jquants_snapshot.py",
+      "mode": "100644",
+      "sha": "4a6201255bf43fc45db04cd21c473ec9edeba2db",
+      "size": 11444
+    },
+    {
+      "path": "scripts/limited_live.py",
+      "mode": "100644",
+      "sha": "dadf0d32c6b181dda7c7a506a9e7533b35979ca7",
+      "size": 21550
+    },
+    {
+      "path": "scripts/live_gate_evidence.py",
+      "mode": "100644",
+      "sha": "660ab25a83b6f41e84b1aa12123b263dbf851180",
+      "size": 102399
+    },
+    {
+      "path": "scripts/market_data_git.py",
+      "mode": "100644",
+      "sha": "1c3df506be6c2353df10a197b81785b998ddda45",
+      "size": 11563
+    },
+    {
+      "path": "scripts/market_data_storage.py",
+      "mode": "100644",
+      "sha": "b1c2365d89bfe51826ccd6e49ad4bd4a2f75e5cc",
+      "size": 1852
+    },
+    {
+      "path": "scripts/market_regime.py",
+      "mode": "100644",
+      "sha": "9840b7bbd9fa6682025ceaab15bf61340fc17a95",
+      "size": 14537
+    },
+    {
+      "path": "scripts/market_regime_sources.py",
+      "mode": "100644",
+      "sha": "62c5a31763ea6aedf8e459b83a30a7a59bea7eb4",
+      "size": 11650
+    },
+    {
+      "path": "scripts/new_operation_log.py",
+      "mode": "100644",
+      "sha": "1b6cd3278b75110f6c6201111f2bd73b713ad501",
+      "size": 2693
+    },
+    {
+      "path": "scripts/nightly_artifacts.py",
+      "mode": "100644",
+      "sha": "ed7a53bcfe17e7fdb2a97eb12b2ac15ef2852f81",
+      "size": 30399
+    },
+    {
+      "path": "scripts/nightly_operation.py",
+      "mode": "100644",
+      "sha": "ae8440d950dbc296b8022c511d9efcb33f8c5734",
+      "size": 8590
+    },
+    {
+      "path": "scripts/non_edinet_sources.py",
+      "mode": "100644",
+      "sha": "132e9b755f7f726ab38f73639c64b4a8a4738244",
+      "size": 45615
+    },
+    {
+      "path": "scripts/official_source_scan.py",
+      "mode": "100644",
+      "sha": "ebcc09fbbd21f273fbb82ed886b999299ecb9360",
+      "size": 27941
+    },
+    {
+      "path": "scripts/operation_bootstrap.py",
+      "mode": "100644",
+      "sha": "9873b2b4d8062025d1e738ac45d9b2f24b65af44",
+      "size": 10502
+    },
+    {
+      "path": "scripts/operation_policy.py",
+      "mode": "100644",
+      "sha": "e36db71dd0ea60816e6d41620a9924ae466570c2",
+      "size": 10157
+    },
+    {
+      "path": "scripts/operation_smoke.py",
+      "mode": "100644",
+      "sha": "c33bb2ae24f2cea5ed5d2f1ad0e83e5a6a220c43",
+      "size": 8164
+    },
+    {
+      "path": "scripts/operation_state.py",
+      "mode": "100644",
+      "sha": "e5ca3d57eb8015051ba14ee2f3276f05f0507209",
+      "size": 23905
+    },
+    {
+      "path": "scripts/operation_watchdog.py",
+      "mode": "100644",
+      "sha": "4f3712b3601fde1e3d5361ba82470bb246e78202",
+      "size": 3925
+    },
+    {
+      "path": "scripts/order_ticket.py",
+      "mode": "100644",
+      "sha": "c185c326be57e18536b00f4a50d615d9923229f5",
+      "size": 18374
+    },
+    {
+      "path": "scripts/position_sizing.py",
+      "mode": "100644",
+      "sha": "ea637af0cdf148789052c371343349bc3b9a60cb",
+      "size": 1567
+    },
+    {
+      "path": "scripts/price_snapshot.py",
+      "mode": "100644",
+      "sha": "8c2b2a4ce87b7ec534323b591d481140d5653cc8",
+      "size": 10970
+    },
+    {
+      "path": "scripts/run_integrity.py",
+      "mode": "100644",
+      "sha": "315c6e29753ec5440abe41dc783fa302ec724425",
+      "size": 32165
+    },
+    {
+      "path": "scripts/tenbagger_price_scan.py",
+      "mode": "100644",
+      "sha": "aab8803badb92d61fcbb8d1978314e3d87bc4ae7",
+      "size": 19051
+    },
+    {
+      "path": "scripts/tenbagger_v02_price_exit_sim.py",
+      "mode": "100644",
+      "sha": "797257f3213ca5d6b68b523a9e51b10c21761b22",
+      "size": 27117
+    },
+    {
+      "path": "scripts/tenbagger_v03_price_rules.py",
+      "mode": "100644",
+      "sha": "0570875ccc63db16ccaa242653b0213fc659f6fe",
+      "size": 4391
+    },
+    {
+      "path": "scripts/tenbagger_v04_allocation_replay.py",
+      "mode": "100644",
+      "sha": "e2529859643d65d9d5c6f23622fc36f3e9605cae",
+      "size": 28581
+    },
+    {
+      "path": "scripts/validate_daily_price_archive.py",
+      "mode": "100644",
+      "sha": "4e852fa30877c28f78347a9381a236912f586ba4",
+      "size": 6755
+    },
+    {
+      "path": "scripts/validate_public_price_guardrail.py",
+      "mode": "100644",
+      "sha": "00de200b0c90363bc50b3ae2553025e93baa6b11",
+      "size": 2770
+    },
+    {
+      "path": "scripts/validate_scheduled_price_update.py",
+      "mode": "100644",
+      "sha": "98a2d466360cac09f664230db89aa964906f10a3",
+      "size": 5167
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/edinet-2026-08-31.json",
+      "mode": "100644",
+      "sha": "9d6633ea9cd8c9090117ce80ba73e16f1e7963a3",
+      "size": 310
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/jpx-listed-2026-08-31.json",
+      "mode": "100644",
+      "sha": "5ee0ca77dcdd3a7791e535c91d16351ce83856f4",
+      "size": 442
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/jquants-bars-1234-2026-08-31.json",
+      "mode": "100644",
+      "sha": "add9252a16877ca47f0f08aa64f3758fc12bea3f",
+      "size": 2927
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/jquants-calendar-2026-08-31.json",
+      "mode": "100644",
+      "sha": "28a88ec3ceb16681d82e4f924dd05414591c28c2",
+      "size": 148
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/jquants-earnings-2026-08-31.json",
+      "mode": "100644",
+      "sha": "243f468c6c95f7d484c03379dda6c06dde44f412",
+      "size": 225
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/jquants-financials-2026-08-31.json",
+      "mode": "100644",
+      "sha": "df8a9a3dd8e1c96220598e9bf599a90aff01b80e",
+      "size": 457
+    },
+    {
+      "path": "tests/fixtures/official-source-scan/jquants-master-2026-08-31.json",
+      "mode": "100644",
+      "sha": "5ee0ca77dcdd3a7791e535c91d16351ce83856f4",
+      "size": 442
+    },
+    {
+      "path": "tests/operation_test_support.py",
+      "mode": "100644",
+      "sha": "183e302abea06d2f11e05c4304ae190b57e5b644",
+      "size": 2884
+    },
+    {
+      "path": "tests/test_assessment_pipeline.py",
+      "mode": "100644",
+      "sha": "643ec8116559f85b7b730d59a3af5a72dbcbfcec",
+      "size": 4941
+    },
+    {
+      "path": "tests/test_collect_daily_prices.py",
+      "mode": "100644",
+      "sha": "2c281ede17c14938fb6e2798ad202244ca985e0f",
+      "size": 4104
+    },
+    {
+      "path": "tests/test_daily_automation_runbook.py",
+      "mode": "100644",
+      "sha": "ba3c496b7b3f5ddf2be4043e34a1bdd00e40113a",
+      "size": 2487
+    },
+    {
+      "path": "tests/test_daily_operation.py",
+      "mode": "100644",
+      "sha": "1725409799260e969c337561f4bd0ed5b531a82b",
+      "size": 21101
+    },
+    {
+      "path": "tests/test_daily_price_dataset.py",
+      "mode": "100644",
+      "sha": "5a377cde34d7d535c0c1be995fdac8367dda5232",
+      "size": 2461
+    },
+    {
+      "path": "tests/test_daily_publication.py",
+      "mode": "100644",
+      "sha": "0685588917e1128769a32a23f43fe07d819d2d51",
+      "size": 19682
+    },
+    {
+      "path": "tests/test_daily_stock_price_workflow.py",
+      "mode": "100644",
+      "sha": "980df58d3911de864e34f989f979dff4b0c4ecd5",
+      "size": 4426
+    },
+    {
+      "path": "tests/test_historical_replay.py",
+      "mode": "100644",
+      "sha": "afc508a67589efca3a078504f4a20089976ccf7d",
+      "size": 24613
+    },
+    {
+      "path": "tests/test_investment_case.py",
+      "mode": "100644",
+      "sha": "2f3c40027b0622c24af5a577c340492cfa941f2b",
+      "size": 7379
+    },
+    {
+      "path": "tests/test_jquants_delivery.py",
+      "mode": "100644",
+      "sha": "3edf9ef10cc8774e8e332d8b8cbe2cf42040eaf1",
+      "size": 12989
+    },
+    {
+      "path": "tests/test_jquants_ingest.py",
+      "mode": "100644",
+      "sha": "79290b8282afc8db66c7d3648a2efc6165b579e2",
+      "size": 15536
+    },
+    {
+      "path": "tests/test_jquants_snapshot.py",
+      "mode": "100644",
+      "sha": "b3f14fdf95cbf4f89c271894422b919ff67b4e32",
+      "size": 11994
+    },
+    {
+      "path": "tests/test_limited_live.py",
+      "mode": "100644",
+      "sha": "efe8c8aa7e304f866ec3208115f2705bad437269",
+      "size": 8687
+    },
+    {
+      "path": "tests/test_live_gate_evidence.py",
+      "mode": "100644",
+      "sha": "d98178eee25c75c3af58bdb97cf38d07c638ced1",
+      "size": 54040
+    },
+    {
+      "path": "tests/test_live_operation_playbook.py",
+      "mode": "100644",
+      "sha": "09de638d260adb7235ed66d646375d7a181bc60a",
+      "size": 1973
+    },
+    {
+      "path": "tests/test_market_data_git.py",
+      "mode": "100644",
+      "sha": "b8d67e60f943419065ccb0b512cb6a14560fc794",
+      "size": 5858
+    },
+    {
+      "path": "tests/test_market_data_storage.py",
+      "mode": "100644",
+      "sha": "5936c3a4b70d5cdfacc63d7eb95da96037cd0572",
+      "size": 5383
+    },
+    {
+      "path": "tests/test_market_regime.py",
+      "mode": "100644",
+      "sha": "37a67ca8f8d00d5a644d839c729bc1eb4deef529",
+      "size": 8687
+    },
+    {
+      "path": "tests/test_new_operation_log.py",
+      "mode": "100644",
+      "sha": "ec4e32278ea3748a7bbda3170742b7e13b9952f1",
+      "size": 1452
+    },
+    {
+      "path": "tests/test_nightly_operation.py",
+      "mode": "100644",
+      "sha": "1d9b998031592f514a4d976f5e035215dc6ac34e",
+      "size": 24822
+    },
+    {
+      "path": "tests/test_nightly_operation_doc.py",
+      "mode": "100644",
+      "sha": "2c5fa6e2c438a83e9a615a0cbd0648fea7020538",
+      "size": 1261
+    },
+    {
+      "path": "tests/test_official_source_scan.py",
+      "mode": "100644",
+      "sha": "48efad54c169b2c1f4807e9eb963ce22cbd2e524",
+      "size": 19426
+    },
+    {
+      "path": "tests/test_operation_governance.py",
+      "mode": "100644",
+      "sha": "f3ae9d6f2692a9d3122fc0d0de324ee7ad48ffef",
+      "size": 1781
+    },
+    {
+      "path": "tests/test_operation_policy.py",
+      "mode": "100644",
+      "sha": "1403fbc897e67916c7ca9960e69ef9c15d62bb0b",
+      "size": 8304
+    },
+    {
+      "path": "tests/test_operation_resilience.py",
+      "mode": "100644",
+      "sha": "715319cb8346f1058c41559793bd79d5e9f678f1",
+      "size": 5856
+    },
+    {
+      "path": "tests/test_operation_state.py",
+      "mode": "100644",
+      "sha": "996d0a614158271a956fd252da57932cc10d1800",
+      "size": 14511
+    },
+    {
+      "path": "tests/test_operation_templates.py",
+      "mode": "100644",
+      "sha": "95e0472bd0c115de10ccb2a4b9e51ece87ad1285",
+      "size": 2632
+    },
+    {
+      "path": "tests/test_position_sizing.py",
+      "mode": "100644",
+      "sha": "3ad557c16a288c8b8ad682f335d322bdd71e4629",
+      "size": 1350
+    },
+    {
+      "path": "tests/test_price_snapshot.py",
+      "mode": "100644",
+      "sha": "d8e4a8eaa0e728c52fb40bd046c7e8d408dff249",
+      "size": 6458
+    },
+    {
+      "path": "tests/test_public_price_guardrail.py",
+      "mode": "100644",
+      "sha": "433481e6d819b1c38fe914f996164e495e5a4fd1",
+      "size": 4415
+    },
+    {
+      "path": "tests/test_rule_v0_2.py",
+      "mode": "100644",
+      "sha": "2e0850be9afe2193ba58da7fa13fad462697759b",
+      "size": 1444
+    },
+    {
+      "path": "tests/test_rule_v0_3.py",
+      "mode": "100644",
+      "sha": "dc620e37e1853e454a3049980764d94505029079",
+      "size": 1853
+    },
+    {
+      "path": "tests/test_rule_v0_4.py",
+      "mode": "100644",
+      "sha": "973157cca4766c98ae20d6658630316a54893e84",
+      "size": 1900
+    },
+    {
+      "path": "tests/test_tenbagger_price_scan.py",
+      "mode": "100644",
+      "sha": "1ff7253d688b95a7711c39f2233cbfd23fd408a7",
+      "size": 4193
+    },
+    {
+      "path": "tests/test_tenbagger_v02_price_exit_sim.py",
+      "mode": "100644",
+      "sha": "03cab35c6c7ac9c001591d331d046b36cf7728da",
+      "size": 3634
+    },
+    {
+      "path": "tests/test_tenbagger_v03_price_rules.py",
+      "mode": "100644",
+      "sha": "7db6e73a3a20d709c4431734b1dd0745b03bb30b",
+      "size": 2878
+    },
+    {
+      "path": "tests/test_tenbagger_v04_allocation_replay.py",
+      "mode": "100644",
+      "sha": "cb5ef5aa404e927d3d38502e3db78168e40e01d6",
+      "size": 3430
+    },
+    {
+      "path": "tests/test_v02_price_only_pnl_dataset.py",
+      "mode": "100644",
+      "sha": "f57b93500229f153816f122303eaf22c0452cff2",
+      "size": 1447
+    },
+    {
+      "path": "tests/test_v04_allocation_replay_dataset.py",
+      "mode": "100644",
+      "sha": "13fd55c6faa9eab4ac0216f1f4a3af93f39a448a",
+      "size": 2480
+    },
+    {
+      "path": "tests/test_validate_daily_price_archive.py",
+      "mode": "100644",
+      "sha": "09a0bda6c221b1f738d913bee6b7616d328d00e4",
+      "size": 3421
+    },
+    {
+      "path": "tests/test_validate_scheduled_price_update.py",
+      "mode": "100644",
+      "sha": "957dd65dc4ef242c3304adbb2b80fd302b90b29c",
+      "size": 4526
+    },
+    {
+      "path": "tests/test_validation_dataset.py",
+      "mode": "100644",
+      "sha": "1ce8b41c89309ac1e895cf6ba4edd87383a553e1",
+      "size": 1460
+    }
+  ]
+}

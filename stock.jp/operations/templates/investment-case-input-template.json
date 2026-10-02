@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "code": "0000",
+  "company": "会社名",
+  "as_of_jst": "2026-01-01T00:00:00+09:00",
+  "price": {
+    "value": null,
+    "source_ids": []
+  },
+  "capital": {
+    "issued_shares": null,
+    "treasury_shares": null,
+    "potential_securities": [
+      {
+        "id": "security-id",
+        "shares_at_10x_price": null,
+        "variable_strike": null,
+        "exercise_cash": null,
+        "source_ids": []
+      }
+    ],
+    "planned_base_new_shares": null,
+    "planned_downside_new_shares": null,
+    "cash": null,
+    "debt": null,
+    "source_ids": []
+  },
+  "financials": {
+    "ttm_revenue": null,
+    "assumed_normalized_net_margin_pct": null,
+    "source_ids": []
+  },
+  "market": {
+    "sam_3y": null,
+    "attainable_share_pct": null,
+    "capacity_revenue_limit": null,
+    "leader_share_pct": null,
+    "sam_evidence": null,
+    "capacity_evidence": null,
+    "market_growth_verified": null,
+    "share_gain_verified": null,
+    "share_overtake_supported": null,
+    "source_ids": []
+  },
+  "valuation": {
+    "proposed_exit_pe": null,
+    "n3_completeness": null,
+    "margin_exception_supported": null,
+    "competitor_scale_consistency": null,
+    "direct_competitors": [
+      {
+        "name": "直接競合A",
+        "exit_pe": null,
+        "net_margin_pct": null,
+        "market_cap": null,
+        "source_ids": []
+      }
+    ],
+    "source_ids": []
+  },
+  "kpi_path": {
+    "decomposition": null,
+    "year3_revenue": null,
+    "year3_net_margin_pct": null,
+    "drivers": [
+      {
+        "name": "顧客数など",
+        "current": null,
+        "year3": null,
+        "unit": "単位",
+        "source_ids": []
+      }
+    ],
+    "source_ids": []
+  },
+  "eligibility": {
+    "hard_gates_passed": null,
+    "other_score": null,
+    "liquidity_passed": null,
+    "source_ids": []
+  },
+  "risk": {
+    "unresolved_major_red_flags": []
+  }
+}

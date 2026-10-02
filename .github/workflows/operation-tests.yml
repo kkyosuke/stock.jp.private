@@ -1,0 +1,54 @@
+name: operation-tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: stock.jp
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/stock.jp/data/jquants-archive/
+            !/stock.jp/data/daily-prices/
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Install runtime and skill-validator dependencies
+        run: >-
+          python -m pip install "xlrd==2.0.2" "openpyxl==3.1.5"
+          "pypdf==6.16.1" "certifi==2026.7.22" PyYAML
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Compile Python
+        run: python -m compileall -q scripts tests
+      - name: Validate operator skill
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          skill = Path('.agents/skills/japan-stock-operator/SKILL.md').read_text()
+          assert skill.startswith('---\n')
+          metadata = yaml.safe_load(skill.split('---\n', 2)[1])
+          assert metadata['name'] == 'japan-stock-operator'
+          config = yaml.safe_load(
+              Path('.agents/skills/japan-stock-operator/agents/openai.yaml').read_text()
+          )
+          assert '$japan-stock-operator' in config['interface']['default_prompt']
+          PY
+      - name: Twenty-day offline operation smoke
+        run: python scripts/operation_smoke.py --days 20 --start-date 2026-09-01

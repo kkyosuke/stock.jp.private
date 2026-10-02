@@ -1,58 +1,61 @@
-# コード・共有データと個人分析の境界
+# 単一privateリポジトリの構成
 
-両リポジトリとも非公開・本人のみ閲覧です。「共有」は本人のプロジェクト間で再利用する意味で、
-公開・第三者配信・閲覧権限追加の許可ではありません。過去の文書やscript名のpublicは
-stock.jpの旧称です。現在の公開範囲を示しません。
+正本は `kkyosuke/stock.jp.private` だけです。`stock.jp/` は通常フォルダで、
+submodule・別repoのcheckout・AUTOMATION_PATは不要です。元の `kkyosuke/stock.jp` と
+その履歴は保持しますが、新しい運用から参照・更新しません。
 
-| 保存先 | 内容 |
+| パス（repository root基準） | 責務 |
 | --- | --- |
-| `stock.jp` | 汎用コード、ルール、研究ツール、合成fixture、共通ドキュメント |
-| `stock.jp/data/jquants-archive/` | 契約市場データ、共通の正規化データ、取得由来・checksum・再開checkpointの圧縮世代 |
-| `stock.jp.private` | 個人の分析結果、選定・監視リスト、保有・資金、判断、run報告、状態・台帳、個人別設定 |
-| Git外のruntime | API key等の認証情報。どちらのリポジトリにも保存しない |
+| `stock.jp/scripts/`, `stock.jp/tests/` | 共通コードと合成テスト |
+| `stock.jp/data/` | 移行済みの既存市場・研究データ |
+| `stock.jp/data/jquants-archive/` | 許可された将来の圧縮市場データ世代 |
+| `operations/private/` | 個人の分析・選定・状態・台帳・判断・run |
+| `operations/private/market-data/` | Git除外の取得・復元作業領域 |
+| `.github/workflows/` | 単一checkoutの検証とread-only監視 |
 
-~~~text
-stock.jp.private/                     # 個人運用の正本
-├── operations/private/
-│   ├── source-config.json            # 個人別provider・保存設定
-│   ├── state.json, *.csv, runs/       # 状態・台帳・個人判断
-│   ├── market-data/                  # Git除外の取得・復元作業領域
-│   └── market-data-staging/           # Git除外の圧縮・復元検証領域
-└── stock.jp/                          # 非公開コード・共有データの固定submodule
-    ├── data/jquants-archive/          # 圧縮世代とatomic indexの保存先
-    ├── scripts/, tests/, docs/        # 汎用処理・合成テスト・共通手順
-    └── operations/private -> ../../operations/private
-~~~
+`stock.jp/operations/private -> ../../operations/private` はsetupで作るGit除外の互換linkです。
+コードの既存root・importを維持し、個人ファイルを共通フォルダへ二重保存しません。
+個人向けCLIは従来どおり `stock.jp/scripts/` を実行します。日次PR validatorと
+`market_data_git.py stage` の `--root` はrepository rootを指定します。
+市場データと個人分析は同じrepoでも別のallowlistと日次branchで管理します。
 
-symlinkはstock.jpでGit除外します。市場データを利用する処理は既存resolverを通じて
-`operations/private/market-data/`の検証済み復元データを読みます。保存元は明示された
-`stock.jp/data/jquants-archive/`で、旧`data/daily-prices/`へのfallbackはありません。
-新しいsharedデータへ個人の銘柄選定、保有数量、口座情報、判断、注文を混ぜません。
-個人別に絞った出力はstock.jp.privateへ置き、汎用集計と区別します。
+## 起動と検証
 
-## 取得と分析の順序
+通常のclone一回でコードと追跡済みデータが揃います。旧submodule checkoutを持つ端末では
+未保存ファイルを保全し、新しいディレクトリへcloneしてください。setupは残存する
+`stock.jp/.git` を拒否し、自動削除・別repoのfetchを行いません。
 
-1. 両repositoryの採用済みSHAと未保存変更を確認し、一つのwriterだけで開始する
-2. 安全なruntime認証で契約範囲のデータを有限バッチ取得し、checkpointを保存する
-3. 圧縮・checksum・restoreを検証し、private可視性と本人限定アクセスを確認する
-4. 市場データをstock.jpの専用branch/non-draft日次PRへ保存し、検証後native auto-mergeを有効化する
-5. 通常review後に採用したstock.jp SHAを個人側のpointer更新PRで固定する
-6. 個人の分析・PAPER判定は復元済み入力のcoverage・鮮度・readiness確認後に実施する
-7. 分析結果、判断、run/state/ledgerはstock.jp.privateへ保存する
+```sh
+git clone git@github.com:kkyosuke/stock.jp.private.git
+cd stock.jp.private
+./scripts/setup-workspace.sh
+python scripts/validate_checkout.py
+```
 
-データ取得成功だけでnightly完了や投資可能とは扱いません。PAPER/HUMAN_ONLY、risk、
-coverage・validity gateは変更しません。検証済み日次PRだけnative auto-mergeを使います。LIVE昇格、broker操作は自動化しません。
-Actionsは合成fixture/保存済み状態の検証だけとし、licensed rawを復元・出力しません。
+Python依存は `stock.jp/pyproject.toml` と運用手順に従います。通常の更新はclean確認後に
+このrepoだけを `git pull --ff-only` します。共通コードの採用pointer PRは不要です。
+取得・復元済みarchiveのcoverage・鮮度・checksumとPAPER readinessは別途必須です。
+旧 `stock.jp/data/daily-prices/` へのruntime fallbackは許可しません。
+EDINET API keyがないPAPERは公式一次資料の手動fallbackを許しますが、未確認判断はWAITです。
 
-## 復旧と削除
+CIは標準checkout tokenで一度だけ取得し、圧縮市場archiveと旧日足を作業ツリーから除外します。
+合成テスト、保存済み状態、既存研究結果の整合性を検証し、新規データ取得・復元・uploadはしません。
+`stock.jp/.github/` は移行元ファイルとして保持した無効なコピーで、実行するworkflowはrootだけです。
+既存secretの値・権限・設定は変更しません。
 
-clone・submodule初期化だけでは作業領域は復元されません。圧縮世代を新しい空の領域へ
-checksum検証付きで復元し、状態・台帳検証と市場データreadinessを別々に実行します。
-GitHubへpushしてremote SHAを確認する前の一時環境は永続保存と呼びません。
+## 移行と運用境界
 
-解約・ダウングレード時の削除条件はGit履歴、branch/tag/PR参照、fork、clone、backupにも
-及びます。通常の削除commitだけでは履歴のデータは消えません。対象を確認し、破壊的な履歴整理は
-別途明示承認を得て実施します。今回、既存データ、個人監査記録や公開済み履歴は改変・削除しません。
-秘密情報のGit保存は禁止です。privateであっても例外はありません。
+移行元はcommit `91682b33004c06cb9a3ab5c63c3da595503d0f90` の691ファイルです。
+`docs/migrations/common-source-inventory.json` に全パス・mode・blob SHA・sizeを記録します。
+既存527データファイルは価格履歴・派生研究・説明とmanifestです。提供元の記述は元のREADMEを
+保全し、取得済みデータを新しい公式検証や運用可能性の証明とみなしません。
+新たに取得したJ-Quants sample・checkpoint・圧縮世代はこの移行に含めません。
+拒否済みuploadは再試行せず、別の保存先へ迂回しません。
 
-[保存の実行手順](operations/private-market-data-storage.md)を参照してください。
+PAPER/HUMAN_ONLY、risk、source、coverageのgateを維持します。復旧layout revisionは4です。
+旧revisionの成功証跡を編集して合格へ流用せず、新しいclean cloneの確認が必要です。
+復旧証跡はprivate commitと `git rev-parse HEAD:stock.jp` のcode tree SHAを照合します。
+新構成のkeyは `source_code_tree` / `recovered_code_tree`、
+`clean_clone_single_repository`、最終承認は `code_tree_reviewed` です。
+市場・個人日次PRの両方で `format`・`test`・`guardrail` のexact-head成功が必要です。
+コード・設定・本移行は通常reviewのdraft PRで、auto-merge対象ではありません。

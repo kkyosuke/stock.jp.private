@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "status": "NOT_DECIDED",
+  "decision": "NOT_DECIDED",
+  "rule_version": "v0.4",
+  "rule_frozen_at_jst": "2026-09-01T22:21:26+09:00",
+  "frozen_at_jst": null,
+  "declared_by": null,
+  "period": {
+    "from": null,
+    "through": null
+  },
+  "acceptance_criteria": {
+    "minimum_monthly_evaluation_count": 6,
+    "minimum_trade_count": 10,
+    "maximum_drawdown_floor_pct": -30.0,
+    "maximum_single_name_loss_floor_pct": -10.0,
+    "maximum_industry_loss_floor_pct": -20.0
+  },
+  "acknowledgements": {
+    "period_was_unobserved_when_frozen": false,
+    "inputs_and_execution_rules_frozen": false,
+    "thresholds_frozen_before_results": false,
+    "changes_restart_the_holdout": false,
+    "jquants_will_not_be_used": false
+  }
+}
