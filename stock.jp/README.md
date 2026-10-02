@@ -22,7 +22,7 @@
 
 ~~~bash
 python3 -m venv .venv
-.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.16.1' 'certifi==2026.7.22' PyYAML
+.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.16.1' 'pdfplumber==0.11.8' 'certifi==2026.7.22' PyYAML
 .venv/bin/python -m unittest discover -s tests -v
 ~~~
 

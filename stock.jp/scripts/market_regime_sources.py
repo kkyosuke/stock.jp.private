@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import csv
-from datetime import date, datetime
+from datetime import date, datetime, time as daytime
 from html import unescape
 from io import BytesIO, StringIO
 import re
+import math
+import unicodedata
 import ssl
 import time
 from typing import Any
@@ -16,7 +18,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import certifi
-from openpyxl import load_workbook
+import pdfplumber
 from pypdf import PdfReader
 
 
@@ -69,6 +71,116 @@ def _jpx_pdf_links(page_urls: list[str], *, timeout: int) -> list[str]:
     return sorted(links)
 
 
+# Reviewed table 3-1 layouts; the names describe every numeric column.
+_JPX_BASE = ("TOPIX", "Dividend-included TOPIX", "Ex-TOPIX", "Prime Market",
+             "Standard Market", "Growth Market", "JPX Prime 150 Index")
+_JPX_2025 = _JPX_BASE + ("Growth250", "REIT Index", "Infrastructure Funds Index",
+                       "Prime weighted average", "Prime arithmetic average",
+                       "Standard weighted average", "Standard arithmetic average")
+_JPX_2026 = _JPX_BASE + ("JPX Start-Up Acceleration 100 Index", "Growth250",
+                       "REIT Index", "Infrastructure Funds Index")
+JPX_EXTRACTION_VERSION = "jpx-table-3-1-named-layout-v2"
+
+
+def _jpx_layout(text: str, period: date, headers: tuple[str, ...] = ()) -> tuple[str, ...]:
+    compact = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
+    required = ("TOPIX", "JPXPrime150Index", "TokyoStockExchangeGrowthMarket250Index",
+                "REITIndex", "InfrastructureFundsIndex", "StandardMarket", "GrowthMarket")
+    if not all(label in compact for label in required):
+        raise MarketRegimeSourceError("unknown JPX table 3-1 column labels; re-extraction review required")
+    old = "StockPriceIndex&StockPriceAverage(EndofYear/Month/Daily)" in compact
+    new = "StockPriceIndex(EndofYear/Month/Daily)" in compact
+    startup = "JPXStart-UpAcceleration100Index" in compact
+    if old and not new and not startup and date(2025, 1, 1) <= period < date(2026, 3, 1):
+        columns = _JPX_2025
+    elif new and not old and startup and period >= date(2026, 3, 1):
+        columns = _JPX_2026
+    else:
+        raise MarketRegimeSourceError("unknown or ambiguous JPX table 3-1 layout")
+    if headers != columns:
+        raise MarketRegimeSourceError("missing, extra, reordered or unknown JPX physical column headers")
+    return columns
+
+
+
+def _english_header(text: str) -> str:
+    # Japanese and English are separate lines in the reviewed bilingual cells.
+    # Keep all English fragments; unknown English labels must not be discarded.
+    lines = [line for line in unicodedata.normalize("NFKC", text).splitlines()
+             if not re.search(r"[\u3040-\u30ff\u3400-\u9fff]", line)]
+    return re.sub(r"[^A-Za-z0-9]", "", "".join(lines))
+
+
+_JPX_HEADER_NAMES = {
+    "TOPIX": "TOPIX", "TOPIXTOPIX": "TOPIX",
+    "DividendincludedTOPIX": "Dividend-included TOPIX",
+    "TOPIXDividendincludedTOPIX": "Dividend-included TOPIX",
+    "ExTOPIX": "Ex-TOPIX", "TOPIXExTOPIX": "Ex-TOPIX",
+    "PrimeMarket": "Prime Market", "StandardMarket": "Standard Market",
+    "GrowthMarket": "Growth Market", "JPXPrime150Index": "JPX Prime 150 Index",
+    "JPXStartUpAcceleration100Index": "JPX Start-Up Acceleration 100 Index",
+    "TokyoStockExchangeGrowthMarket250Index": "Growth250",
+    "REITIndex": "REIT Index", "InfrastructureFundsIndex": "Infrastructure Funds Index",
+    "PrimeMarketWeightedStockPriceAverage": "Prime weighted average",
+    "PrimeMarketArithmeticStockPriceAverage": "Prime arithmetic average",
+    "StandardMarketWeightedStockPriceAverage": "Standard weighted average",
+    "StandardMarketArithmeticStockPriceAverage": "Standard arithmetic average",
+}
+
+
+def _jpx_physical_headers(payload: bytes) -> tuple[str, ...]:
+    """Read headers in physical left-to-right cells, including merged parents.
+
+    No plain-text-order fallback: without a complete ruled table the format is
+    unknown. All header cells and numeric columns must be accounted for.
+    """
+    recognized = []
+    with pdfplumber.open(BytesIO(payload)) as document:
+        page = document.pages[0]
+        for table in page.find_tables():
+            matrix = table.extract()
+            body = None
+            header_end = None
+            indices = []
+            for row_index, row in enumerate(matrix):
+                numeric = [i for i, cell in enumerate(row) if cell and re.fullmatch(
+                    r"[◎●r\s]*\d[\d,]*\.\d+[◎●r\s]*", cell)]
+                if header_end is None and len(numeric) >= 2:
+                    header_end = row_index
+                if len(numeric) in {11, 14}:
+                    body, indices = row_index, numeric
+                    break
+            if body is None or not header_end:
+                continue
+            if indices != list(range(indices[0], indices[0] + len(indices))):
+                raise MarketRegimeSourceError("non-contiguous JPX numeric columns")
+            cells = [table.rows[body].cells[i] for i in indices]
+            if any(cell is None for cell in cells):
+                raise MarketRegimeSourceError("missing JPX body cell geometry")
+            centers = [(cell[0] + cell[2]) / 2 for cell in cells]
+            fragments = [[] for _ in cells]
+            seen = set()
+            for row in table.rows[:header_end]:
+                for box in row.cells:
+                    if box is None or box in seen:
+                        continue
+                    seen.add(box)
+                    label = _english_header(page.crop(box).extract_text() or "")
+                    if not label or label in {"StockPriceIndex", "StockPriceAverage", "YearMonthorDay"}:
+                        continue
+                    covered = [i for i, center in enumerate(centers) if box[0] < center < box[2]]
+                    if not covered:
+                        raise MarketRegimeSourceError("extra JPX header without a numeric column")
+                    for i in covered:
+                        fragments[i].append(label)
+            labels = tuple(_JPX_HEADER_NAMES.get("".join(parts), "UNKNOWN:" + "".join(parts))
+                           for parts in fragments)
+            recognized.append(labels)
+    if len(recognized) != 1:
+        raise MarketRegimeSourceError("JPX physical header table is absent or ambiguous")
+    return recognized[0]
+
+
 def _jpx_month_points(
     payload: bytes, url: str
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -82,6 +194,13 @@ def _jpx_month_points(
         raise MarketRegimeSourceError(
             f"cannot parse JPX monthly index PDF {url}"
         ) from error
+    try:
+        headers = _jpx_physical_headers(payload)
+    except MarketRegimeSourceError:
+        raise
+    except Exception as error:
+        raise MarketRegimeSourceError("cannot verify JPX physical column layout") from error
+    columns = _jpx_layout(text, date(year, month, 1), headers)
     lines = text.splitlines()
     start = next(
         (
@@ -95,6 +214,7 @@ def _jpx_month_points(
         raise MarketRegimeSourceError(f"daily index table was not found in {url}")
     topix: list[dict[str, Any]] = []
     growth: list[dict[str, Any]] = []
+    previous_day = 0
     for line in lines[start:]:
         stripped = line.strip()
         if stripped.startswith("平均"):
@@ -105,17 +225,25 @@ def _jpx_month_points(
         day = int(first.group(1))
         try:
             session = date(year, month, day)
-        except ValueError:
-            continue
-        numbers = [
-            float(value.replace(",", ""))
-            for value in re.findall(r"\d[\d,]*\.\d+", stripped[first.end() :])
-        ]
-        if len(numbers) < 2:
-            continue
-        # JPX table 3-1 places TOPIX first and Growth Market 250 last.
-        topix.append({"date": session.isoformat(), "value": numbers[0]})
-        growth.append({"date": session.isoformat(), "value": numbers[-1]})
+        except ValueError as error:
+            raise MarketRegimeSourceError("invalid JPX daily date") from error
+        if day <= previous_day:
+            raise MarketRegimeSourceError("duplicate or unordered JPX daily date")
+        previous_day = day
+        cells = re.sub(r"[◎●r]", "", stripped[first.end() :]).strip()
+        if not cells:
+            continue  # Explicit blank calendar rows are holidays.
+        if not re.fullmatch(r"[\d, .\s]+", cells):
+            raise MarketRegimeSourceError("unrecognized JPX daily value or annotation")
+        tokens = cells.split()
+        if any(not re.fullmatch(r"\d[\d,]*\.\d+", value) for value in tokens):
+            raise MarketRegimeSourceError("malformed JPX numeric cell")
+        numbers = [float(value.replace(",", "")) for value in tokens]
+        if len(numbers) != len(columns) or any(not math.isfinite(n) or n <= 0 for n in numbers):
+            raise MarketRegimeSourceError("JPX daily row does not match the reviewed named layout")
+        values = dict(zip(columns, numbers))
+        topix.append({"date": session.isoformat(), "value": values["TOPIX"]})
+        growth.append({"date": session.isoformat(), "value": values["Growth250"]})
     if not topix:
         raise MarketRegimeSourceError(f"no daily index values parsed from {url}")
     return topix, growth
@@ -130,7 +258,7 @@ def _jpx_index_points(
         for url in links
         if (match := re.search(r"03_sisu(\d{2})(\d{2})\.pdf", url))
         and date(2000 + int(match.group(1)), int(match.group(2)), 1)
-        <= as_of.replace(day=1)
+        < as_of.replace(day=1)
     ]
     applicable.sort(
         key=lambda url: tuple(
@@ -169,6 +297,10 @@ def _jpx_index_points(
         raise MarketRegimeSourceError(
             f"JPX monthly PDFs yielded TOPIX={len(topix_points)}, Growth250={len(growth_points)} observations"
         )
+    if topix_points[-1]["date"] != as_of.isoformat() or growth_points[-1]["date"] != as_of.isoformat():
+        raise MarketRegimeSourceError(
+            "JPX monthly PDFs cannot supply an as_of close available on that date; verified daily index evidence is required"
+        )
     return topix_points, growth_points, used_urls
 
 
@@ -200,71 +332,90 @@ def _nikkei_vi_points(
     return points, final_url
 
 
-def _leading_ci(
-    page_url: str, *, as_of: date, timeout: int
-) -> tuple[list[dict[str, Any]], str, str]:
-    page_bytes, _ = _download(page_url, timeout=timeout)
+def _information_cutoff(as_of: date, cutoff_at: datetime | None = None) -> datetime:
+    cutoff = cutoff_at or datetime.combine(as_of, daytime.max, tzinfo=JST)
+    if cutoff.tzinfo is None or cutoff.utcoffset() is None:
+        raise MarketRegimeSourceError("information cutoff must include a UTC offset")
+    cutoff = cutoff.astimezone(JST)
+    if cutoff.date() != as_of:
+        raise MarketRegimeSourceError("information cutoff must remain on the declared as_of date")
+    return cutoff
+
+
+def _ci_vintage(payload: bytes, url: str) -> tuple[list[dict[str, Any]], datetime]:
+    if not url.startswith("https://www.esri.cao.go.jp/jp/stat/di/"):
+        raise MarketRegimeSourceError("CI vintage must use the official Cabinet Office origin")
+    match = re.search(r"/(20\d{2})(\d{2})(?:report|rsummary)\.pdf$", url)
+    if not match:
+        raise MarketRegimeSourceError("unrecognized Cabinet Office CI vintage URL")
+    year, month = map(int, match.groups())
     try:
-        page = page_bytes.decode("utf-8")
-    except UnicodeDecodeError:
-        page = page_bytes.decode("shift_jis")
-    matches = list(
-        re.finditer(r'href=["\']([^"\']*\d{4}ci\.xlsx)["\']', page, flags=re.IGNORECASE)
-    )
-    if not matches:
-        raise MarketRegimeSourceError(
-            "Cabinet Office page has no long-series CI workbook"
-        )
-    selected = matches[0]
-    workbook_url = urljoin(page_url, unescape(selected.group(1)))
-    context = unescape(
-        re.sub(
-            r"<[^>]+>", " ", page[max(0, selected.start() - 3000) : selected.start()]
-        )
-    )
-    published_dates = re.findall(r"(20\d{2})\)?年\s*(\d{1,2})月\s*(\d{1,2})日", context)
-    if not published_dates:
-        raise MarketRegimeSourceError(
-            "Cabinet Office CI publication date was not found"
-        )
-    published = date(*map(int, published_dates[-1]))
-    if published > as_of:
-        raise MarketRegimeSourceError(
-            f"latest Cabinet Office CI workbook was published {published}, after MRS as_of {as_of}"
-        )
-    workbook_bytes, final_url = _download(workbook_url, timeout=timeout)
-    try:
-        workbook = load_workbook(
-            BytesIO(workbook_bytes), read_only=True, data_only=True
-        )
-        sheet = workbook["指数 Indexes"]
-        points = []
-        for row in sheet.iter_rows(min_row=7, values_only=True):
-            year, month, leading = row[1], row[2], row[3]
-            if year is None or month is None or leading is None:
-                continue
-            period = date(int(year), int(month), 1)
-            if period <= as_of:
-                points.append(
-                    {"period": period.strftime("%Y-%m"), "value": float(leading)}
-                )
-    except (KeyError, TypeError, ValueError) as error:
-        raise MarketRegimeSourceError("invalid Cabinet Office CI workbook") from error
-    if not points:
-        raise MarketRegimeSourceError(
-            "Cabinet Office CI workbook contained no usable rows"
-        )
-    return (
-        points,
-        final_url,
-        datetime.combine(published, datetime.min.time(), tzinfo=JST).isoformat(
-            timespec="seconds"
-        ),
-    )
+        pages = [unicodedata.normalize("NFKC", p.extract_text() or "")
+                 for p in PdfReader(BytesIO(payload)).pages[:3]]
+        dates = re.findall(r"^令和\d+\((20\d{2})\)年(\d{1,2})月(\d{1,2})日$",
+                           re.sub(r"[ \t]", "", pages[0]), flags=re.MULTILINE)
+        if len(set(dates)) != 1:
+            raise ValueError("publication date is absent or ambiguous")
+        published = datetime(*map(int, dates[0]), 14, tzinfo=JST)
+        rows = []
+        for page in pages:
+            lines = page.splitlines()
+            for index, line in enumerate(lines):
+                found = re.fullmatch(r"\s*CI先行指数\s+([\d.\s]+)", line)
+                if not found:
+                    continue
+                months = re.findall(r"(\d{1,2})月", lines[index - 1]) if index else []
+                values = [float(v) for v in found.group(1).split()]
+                expected = [((month - 6 + i) % 12) + 1 for i in range(6)]
+                if list(map(int, months)) != expected or len(values) != 6:
+                    raise ValueError("CI six-month table layout is invalid")
+                if any(not math.isfinite(v) or v <= 0 for v in values):
+                    raise ValueError("CI value is invalid")
+                rows.append([{"period": f"{year if m <= month else year - 1:04d}-{m:02d}", "value": v}
+                             for m, v in zip(expected, values)])
+        if len(rows) != 1 or published.date() <= date(year, month, 1):
+            raise ValueError("CI vintage table is absent or ambiguous")
+        return rows[0], published
+    except Exception as error:
+        raise MarketRegimeSourceError("invalid Cabinet Office CI vintage; manual verification required") from error
+
+
+def _leading_ci(page_url: str, *, as_of: date, timeout: int,
+                cutoff_at: datetime | None = None) -> tuple[list[dict[str, Any]], str, str]:
+    cutoff = _information_cutoff(as_of, cutoff_at)
+    page_bytes, final_page = _download(page_url, timeout=timeout)
+    page = page_bytes.decode("utf-8")
+    # Each PDF contains its own revised history. Never splice a current workbook
+    # into an earlier release or combine latest/prior observations across vintages.
+    links = {urljoin(final_page, unescape(m.group(1))) for m in re.finditer(
+        r'href=["\']([^"\']*20\d{4}(?:report|rsummary)\.pdf)["\']', page)}
+    month_id = as_of.year * 12 + as_of.month
+    candidates = []
+    for url in links:
+        match = re.search(r"/(20\d{2})(\d{2})(?:report|rsummary)\.pdf$", url)
+        year, month = map(int, match.groups())
+        if 0 <= month_id - (year * 12 + month) <= 3:
+            candidates.append(url)
+    if not candidates or len(candidates) > 8:
+        raise MarketRegimeSourceError("no bounded set of historical CI vintages; manual verification required")
+    available = []
+    for url in sorted(candidates):
+        payload, final_url = _download(url, timeout=timeout)
+        points, published = _ci_vintage(payload, final_url)
+        if published <= cutoff:
+            available.append((published, final_url, points))
+    if not available:
+        raise MarketRegimeSourceError("no CI vintage was available at the information cutoff")
+    latest = max(item[0] for item in available)
+    selected = [item for item in available if item[0] == latest]
+    if len(selected) != 1:
+        raise MarketRegimeSourceError("ambiguous CI release vintage at information cutoff")
+    published, url, points = selected[0]
+    return points, url, published.isoformat(timespec="seconds")
 
 
 def collect_market_regime_series(
-    *, as_of: date, config: dict[str, Any]
+    *, as_of: date, config: dict[str, Any], cutoff_at: datetime | None = None
 ) -> dict[str, Any]:
     """Download raw inputs; any missing provider fails the whole formal MRS."""
 
@@ -284,11 +435,12 @@ def collect_market_regime_series(
         str(market["nikkei_vi_csv_url"]), as_of=as_of, timeout=timeout
     )
     ci, ci_url, ci_available = _leading_ci(
-        str(market["leading_ci_page_url"]), as_of=as_of, timeout=timeout
+        str(market["leading_ci_page_url"]), as_of=as_of, timeout=timeout, cutoff_at=cutoff_at
     )
     return {
         "schema_version": "1.0",
         "as_of": as_of.isoformat(),
+        "information_cutoff_at_jst": _information_cutoff(as_of, cutoff_at).isoformat(),
         "minimum_vi_observations": int(market.get("minimum_vi_observations", 500)),
         "minimum_breadth_coverage": float(market.get("minimum_breadth_coverage", 0.98)),
         "breadth_lookback_sessions": int(market.get("breadth_lookback_sessions", 280)),
@@ -302,6 +454,7 @@ def collect_market_regime_series(
                 "points": topix,
             },
             "growth250": {
+                "extraction_version": JPX_EXTRACTION_VERSION,
                 "source_url": "|".join(jpx_urls),
                 "primary_source": True,
                 "points": growth,

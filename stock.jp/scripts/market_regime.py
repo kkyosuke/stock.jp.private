@@ -7,7 +7,8 @@ import csv
 import json
 import math
 from dataclasses import asdict, dataclass
-from datetime import date, datetime
+from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
 
@@ -246,6 +247,14 @@ def derive_market_regime(
     series = document.get("series")
     if not isinstance(series, dict):
         raise ValueError("market-regime input requires series")
+    growth_source = series.get("growth250", {})
+    if "03_sisu" in str(growth_source.get("source_url", "")) and growth_source.get("extraction_version") != "jpx-table-3-1-named-layout-v2":
+        raise ValueError("legacy JPX Growth250 extraction is unverified; preserve and re-extract for review")
+    jst = ZoneInfo("Asia/Tokyo")
+    cutoff_text = document.get("information_cutoff_at_jst")
+    cutoff = datetime.fromisoformat(str(cutoff_text)) if cutoff_text else datetime.combine(as_of, time.max, tzinfo=jst)
+    if cutoff.tzinfo is None or cutoff.utcoffset() is None or cutoff.astimezone(jst).date() != as_of:
+        raise ValueError("information cutoff must be timezone-aware and on the MRS as_of date")
     derived: dict[str, Any] = {}
     index_values: dict[str, tuple[float, float]] = {}
     for name in ("topix", "growth250"):
@@ -321,7 +330,7 @@ def derive_market_regime(
     available = datetime.fromisoformat(str(available_at).replace("Z", "+00:00"))
     if available.tzinfo is None:
         raise ValueError("leading_ci.available_at_jst must include a UTC offset")
-    if available.date() > as_of:
+    if available > cutoff:
         raise ValueError("leading CI release was not available by MRS as_of")
     leading_points = [
         (period, value)

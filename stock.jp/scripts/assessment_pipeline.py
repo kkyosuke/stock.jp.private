@@ -110,6 +110,8 @@ def _existing_mrs(log_path: Path, as_of: str) -> dict[str, Any] | None:
     if not matches:
         return None
     row = matches[-1]
+    if "03_sisu" in str(row.get("source_urls", "")):
+        raise MarketRegimeSourceError("JPX monthly-PDF MRS log requires provenance review and re-extraction; historical log preserved")
     return {
         "status": "CURRENT",
         "as_of": as_of,
@@ -253,6 +255,11 @@ def run_assessments(
         if existing:
             market_status = existing
         else:
+            raw_path = input_root / "market-regime" / f"{target.isoformat()}.json"
+            if not fixture_dir and raw_path.is_file():
+                prior = _read_json(raw_path)
+                if "03_sisu" in str(prior.get("series", {}).get("growth250", {}).get("source_url", "")):
+                    raise MarketRegimeSourceError("existing JPX monthly-PDF research input preserved; re-extract to a separate reviewed artifact")
             fixture = fixture_dir / "market-regime-series.json" if fixture_dir else None
             if fixture and fixture.is_file():
                 raw = _read_json(fixture)
