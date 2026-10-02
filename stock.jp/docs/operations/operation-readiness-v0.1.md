@@ -6,10 +6,12 @@
 
 ## 1. 初回チェック
 
-private リポジトリで workspace を準備し、public submodule 内のコマンドを実行する。
+private リポジトリで workspace を準備し、通常フォルダ stock.jp/ 内のコマンドを実行する。
 
 ~~~bash
 ./scripts/setup-workspace.sh
+python3 -m venv stock.jp/.venv
+stock.jp/.venv/bin/pip install "xlrd==2.0.2" "openpyxl==3.1.5" "pypdf==6.16.1" "certifi==2026.7.22" PyYAML
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py migrate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
@@ -56,24 +58,29 @@ PAPER の機械ゲートは、状態 schema、運用 policy、明示設定した
 
 1. state と全台帳の検証が成功している
 2. 実行途中の一時ファイルや認証情報が含まれていない
-3. private 変更と採用した public submodule commit が同じ commit に記録されている
+3. 個人変更と採用したstock.jp/のコードが同じprivate commitに記録されている
 4. protected private remote へ push 済みである
 
 未照合注文、検証失敗、push 失敗がある間は次の注文候補を増やさない。強制 push や履歴改変はしない。
 
 ## 5. clean-clone 確認
 
-LIVE 昇格前に一度、別ディレクトリへの clean clone で現行構成を再現できることを確認する。setup、コード配置、状態 schema、台帳構成を変更した場合は `REPOSITORY_LAYOUT_REVISION` を上げ、変更後に再確認する。日次run、データ更新、単なる経過日数では再確認しない。
+LIVE 昇格前に一度、別ディレクトリへの単一repoのclean cloneで現行layout revision 4を再現できることを確認する。setup、コード配置、状態 schema、台帳構成を変更した場合は `REPOSITORY_LAYOUT_REVISION` を上げ、変更後に再確認する。日次run、データ更新、単なる経過日数では再確認しない。
 
 ~~~bash
-git clone --recurse-submodules <private-repository-url> <new-directory>
+git clone <private-repository-url> <new-directory>
 cd <new-directory>
 ./scripts/setup-workspace.sh
+python3 -m venv stock.jp/.venv
+stock.jp/.venv/bin/pip install "xlrd==2.0.2" "openpyxl==3.1.5" "pypdf==6.16.1" "certifi==2026.7.22" PyYAML
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 ~~~
 
-稼働中の checkout は上書きしない。最新 `state.json`、成功 run、handoff、全台帳、未照合注文、private commit、public submodule commit を照合し、結果を private 側の LIVE gate evidence に記録する。別媒体の mirror は要求しない。GitHub を利用できない間は新しい注文を止め、復旧後に状態を再検証する。
+稼働中の checkout は上書きしない。最新 `state.json`、成功 run、handoff、全台帳、未照合注文、private commit、stock.jp/のcode tree SHA を照合し、結果を private 側の LIVE gate evidence に記録する。repository rootで `git rev-parse HEAD` と `git rev-parse HEAD:stock.jp` を取得する。
+復旧証跡の `source_private_commit` / `recovered_private_commit`、`source_code_tree` /
+`recovered_code_tree` を照合し、`clean_clone_single_repository` を実確認に基づき記録する。
+旧revisionの成功証跡を編集して流用しない。別媒体の mirror は要求しない。GitHub を利用できない間は新しい注文を止め、復旧後に状態を再検証する。
 
 少額の実約定で運用手順を先に観察する場合は、通常LIVEの判定値を変えず
 `LIMITED_LIVE`を使う。資金上限、損失停止、追加購入禁止、1 run 1新規注文、手入力発注は

@@ -93,6 +93,10 @@ stock.jp/.venv/bin/python stock.jp/scripts/live_gate_evidence.py \
 
 単一repoのclean clone、workspace setup、state と bootstrap、最新成功 run と handoff、全台帳、未照合注文を照合する。復元した private commit と stock.jp/ のcode tree SHA は元の40桁SHAと一致しなければならない。別媒体の mirror は要求しない。
 
+復旧構成はlayout revision 4です。repository rootで `git rev-parse HEAD:stock.jp` を取得し、
+`source_code_tree` / `recovered_code_tree` を照合します。単一repoのclone確認は
+`clean_clone_single_repository` に記録し、旧submodule証跡は過去記録として保持します。
+
 証跡は日数では失効しない。setup、コード配置、状態 schema、台帳構成に影響する変更では、公開validatorの `REPOSITORY_LAYOUT_REVISION` を上げる。既存証跡はrevision不一致で失効するため、変更後にclean cloneを再確認する。稼働中checkoutを確認先にせず、一時ディレクトリを使う。repository URL、credential、口座情報は証跡へ記載しない。
 
 ## 利用者のリスク・税・証券会社確認
@@ -131,7 +135,7 @@ reviewは再生結果、履歴再生受入証跡、凍結planの3つのSHA-256�
 
 ## 最終 LIVE 昇格
 
-各コマンドの合格結果を上記の既定 evidence path へ `--write-evidence` で保存する。最後に `live-approval-template.json` を `operations/private/evidence/live-approval.json` へコピーし、private/public commit、現在のPAPER policy、6証跡のSHA-256、本人の `LIVE` 判断を記入する。
+各コマンドの合格結果を上記の既定 evidence path へ `--write-evidence` で保存する。最後に `live-approval-template.json` を `operations/private/evidence/live-approval.json` へコピーし、`private_commit_reviewed`（private commit）と `code_tree_reviewed`（stock.jp/ tree）、現在のPAPER policy、6証跡のSHA-256、本人の `LIVE` 判断を記入する。
 
 まず変更を加えない判定を実行する。
 

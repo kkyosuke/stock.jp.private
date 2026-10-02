@@ -31,7 +31,7 @@ public作業ルートから`operations/private/source-config.json`の`price_sour
 1. 提供元の取得・保存・利用条件と許可を確認する。未確認なら取得しない
 2. private設定を更新し、利用を許可されたデータだけ指定先へ用意する。既存publicデータは自動コピー・削除・履歴改変しない
 3. `python scripts/operation_bootstrap.py check --at <aware-JST-timestamp>`で検証する。欠損・stale・checksum不一致時は停止する
-4. privateコード更新とpublic submodule pointer採用をレビューする。両repoはprivateのまま。データは専用private PRの圧縮ファイルのみとし、PR本文、ログ、artifact、cacheへ出さない
+4. 単一private repoのコード更新を通常PRでレビューする。外部repoのpointer採用は不要。データは専用private PRの圧縮ファイルのみとし、PR本文、ログ、artifact、cacheへ出さない
 
 `price_snapshot.py`、MRS、shadow evidenceは同じresolverを使用する。指定先が無いときpublicの古い`data/daily-prices/`へfallbackしない。既存publicデータ・履歴は今回削除しない。旧source設定のmigrationもデータを移動しない。
 
