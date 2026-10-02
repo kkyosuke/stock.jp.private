@@ -2,6 +2,7 @@
 from datetime import date, datetime
 import hashlib
 import json
+import math
 import re
 
 PREFIX = 'nightly-source-cache/'
@@ -29,13 +30,18 @@ def digest(data):
 
 
 def strict_json(data):
+    def finite_float(value):
+        number = float(value)
+        require(math.isfinite(number))
+        return number
+
     def pairs(items):
         result = {}
         for key, value in items:
             require(key not in result)
             result[key] = value
         return result
-    return json.loads(data, object_pairs_hook=pairs,
+    return json.loads(data, object_pairs_hook=pairs, parse_float=finite_float,
                       parse_constant=lambda _: require(False))
 
 

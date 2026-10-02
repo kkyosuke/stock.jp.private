@@ -269,6 +269,52 @@ class NightlyCacheArchiveTests(unittest.TestCase):
                 self.obj.write_bytes(original)
                 self.write_receipt(self.receipt)
 
+    def test_correctly_hashed_float_overflow_fails_pack_and_restore(self):
+        original = self.obj.read_bytes()
+        for index, value in enumerate((b'1e400', b'-1e400', b'1.8e308',
+                                       b'{"nested":[-1e999]}')):
+            with self.subTest(value=value):
+                data = b'{"data":[{"Close":' + value + b'}]}\n'
+                sha = digest(data)
+                invalid = self.client.root / 'objects' / sha[:2] / (sha + '.json')
+                invalid.parent.mkdir(exist_ok=True)
+                invalid.write_bytes(data)
+                receipt = copy.deepcopy(self.receipt)
+                receipt['object'] = {'path': invalid.relative_to(self.client.root).as_posix(),
+                                     'sha256': sha, 'bytes': len(data)}
+                self.obj.unlink()
+                self.write_receipt(receipt)
+                with self.assertRaises(codec.ArchiveError):
+                    codec.pack(self.source, self.store)
+                self.forge_store()
+                target = self.root / f'overflow-restore-{index}'
+                with self.assertRaises(codec.ArchiveError):
+                    codec.verify(self.store)
+                with self.assertRaises(codec.ArchiveError):
+                    codec.restore(self.store, target)
+                self.assertFalse(target.exists())
+                invalid.unlink()
+                self.obj.write_bytes(original)
+                self.write_receipt(self.receipt)
+
+    def test_finite_exponents_restore_original_bytes_without_normalization(self):
+        data = b'{ "data": [{"values": [1.7e308, -1.7e308, 1e-400, -0.0, 1.25]}] }\n'
+        sha = digest(data)
+        obj = self.client.root / 'objects' / sha[:2] / (sha + '.json')
+        obj.parent.mkdir(exist_ok=True)
+        obj.write_bytes(data)
+        receipt = copy.deepcopy(self.receipt)
+        receipt['object'] = {'path': obj.relative_to(self.client.root).as_posix(),
+                             'sha256': sha, 'bytes': len(data)}
+        self.obj.unlink()
+        self.write_receipt(receipt)
+        codec.pack(self.source, self.store)
+        target = self.root / 'finite-restored'
+        codec.restore(self.store, target)
+        restored = target / obj.relative_to(self.source)
+        self.assertEqual(restored.read_bytes(), data)
+        self.assertEqual(digest(restored.read_bytes()), sha)
+
 
 if __name__ == '__main__':
     unittest.main()
