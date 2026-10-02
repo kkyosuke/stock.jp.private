@@ -206,6 +206,12 @@ class MarketRegimeTest(unittest.TestCase):
             self.assertEqual(result.score, 5)
             self.assertEqual(values.breadth_pct, 100)
             self.assertEqual(derived["topix"]["observation_count"], 200)
+            document["series"]["leading_ci"]["available_at_jst"] = as_of.isoformat() + "T14:00:00+09:00"
+            document["information_cutoff_at_jst"] = as_of.isoformat() + "T13:59:59+09:00"
+            with self.assertRaisesRegex(ValueError, "not available"):
+                derive_market_regime(document, archive_root=root)
+            document["information_cutoff_at_jst"] = as_of.isoformat() + "T14:00:00+09:00"
+            derive_market_regime(document, archive_root=root)
 
 
 if __name__ == "__main__":
