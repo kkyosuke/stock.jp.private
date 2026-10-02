@@ -56,6 +56,19 @@ symlinks and existing targets, preserving any active checkpoints. Credentials an
 signed URL patterns are rejected without reading runtime secrets. No codec
 command performs API acquisition, uploads, commits, trades or state migration.
 
+Nightly page checkpoints are included under `nightly-source-cache/<scope-hash>/`.
+Only hashed `pages/<query-hash>.json` receipts and
+`objects/<prefix>/<content-hash>.json` payloads are accepted. Packing locks the
+existing cache scopes as well as the ingestion archive. Lock files are not stored.
+Both packing and restoration validate the Light-plan fixed origin, supported
+nightly endpoint/query shapes, aware cutoff/retrieval timestamps, scope/query
+hashes, exact receipt fields, object paths, lengths, hashes and response schema.
+Missing or unreferenced payloads fail validation; checkpoint contents are never
+rewritten or discarded to make an archive pass. Old archives without this cache
+remain compatible. Hash validation checks internal consistency, not a provider
+signature or permission to publish. Replaying restored pages still requires the
+exact original cutoff and query; it does not constitute a fresh source check.
+
 [GitHub file guidance](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github)
 warns above 50 MiB, blocks above 100 MiB, and recommends repositories below 1 GB
 (under 5 GB strongly recommended). The
@@ -111,12 +124,14 @@ python scripts/market_data_git.py verify --store data/jquants-archive
 
 Review the complete diff for credential patterns, and verify that only market
 data and codec indexes enter `data/jquants-archive/`. No plaintext raw rows in PR
-text/logs. Commit and push on a dedicated daily data branch with a non-draft PR, rechecking
+text/logs. Commit and push on a dedicated daily data branch with a non-draft PR,
+rechecking
 private visibility immediately before push. Record the remote SHA before saying
 saved; a local commit is not durable cloud storage. No main merge is automatic.
 Eligible daily PRs use native auto-merge after exact-head CI and semantic checks,
 following `daily-pr-publication.md`; required reviews remain enforced. Code and
-configuration changes remain ordinary draft PRs. A queued PR is not yet adopted. The codec cannot prevent someone from
+configuration changes remain ordinary draft PRs. A queued PR is not yet adopted.
+The codec cannot prevent someone from
 using Git directly or changing repository visibility after upload; the operator
 must maintain access controls and perform the publication preflight every time.
 
