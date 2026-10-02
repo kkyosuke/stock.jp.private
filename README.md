@@ -11,8 +11,8 @@ stock.jp.private/
 ├── cloudflare/                    # 旧schedulerの停止用互換Worker
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
 ├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
-├── scripts/setup-workspace.sh     # submoduleとsymlinkの安全な初期化
-└── stock.jp/                      # 汎用コード・ルール・合成fixtureのsubmodule
+├── scripts/setup-workspace.sh     # 単一repo内のsymlink初期化
+└── stock.jp/                      # 共通コード・追跡済みデータの通常フォルダ
 ~~~
 
 public/private の境界は[全体構成](docs/repository-layout.md)、実行順は[private 運用手順](docs/operations/private-operation-runbook.md)、LIVE 条件は[GO/NO-GO 基準](docs/live-readiness.md)を参照してください。
@@ -30,7 +30,7 @@ read-only監視だけを担当し、収集、更新PR作成、auto-merge、夜�
 ## 初回セットアップ
 
 ~~~bash
-git clone --recurse-submodules git@github.com:kkyosuke/stock.jp.private.git
+git clone git@github.com:kkyosuke/stock.jp.private.git
 cd stock.jp.private
 ./scripts/setup-workspace.sh
 python3 -m venv stock.jp/.venv
@@ -48,7 +48,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 - stock.jp は非公開の共通コード・市場データ・汎用研究ツールを持つ。「共有」は本人のプロジェクト間での再利用で、第三者への配信許可ではない
 - private は実保有、資金、注文、判断、状態、GO/NO-GO 証跡を持つ
 - private の状態・台帳・判断は暗号化 archive にせず、private Git の通常ファイルとして追跡する
-- raw市場データはGit除外の作業領域で取得・検証し、圧縮世代をstock.jpの`data/jquants-archive/`へ保存する。個人の分析結果・選定・判断・台帳はstock.jp.privateに置く
+- raw市場データはGit除外の作業領域で取得・検証し、圧縮世代を同じrepoの`stock.jp/data/jquants-archive/`へ保存する。個人の分析結果・選定・判断・台帳はstock.jp.privateに置く
 - storage設定だけでは取得を許可しない。確認済みJ-Quants Lightを設定し、全契約対象データの取得実装を用意する。実取得には安全なruntime資格情報登録と明示したprivate Git保存先が必要。Yahoo bulk取得は停止する
 - 会社別の希薄化・SAM/SOM・競合・KPI入力は`operations/private/research-inputs/investment-cases/`に置き、publicには値を出さない
 - API key、password、token、cookie、MFA 回復コードは private Git にも保存しない
@@ -58,11 +58,11 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ## 運用開始後の全体フロー
 
-1. アシスタントがprivate main、採用済みpublic commit、前回runと未push結果を確認する
+1. アシスタントがprivate main、採用済みprivate commit、前回runと未push結果を確認する
 2. アシスタントが取得元の利用条件で許可された市場データを非公開領域で収集・検証し、一次資料を調査する
 3. 市場データはstock.jp/data/、個人分析・保有・監視対象・判断・台帳・runはstock.jp.privateへ分離する
-4. 検証・review済みpublic mainだけを採用し、PAPER readinessと全対象の調査を確認する
-5. 同一run tokenでPAPER処理を完了し、状態・台帳・証跡・public pointerをprivateへ保存する
+4. 検証・review済みprivate mainだけを採用し、PAPER readinessと全対象の調査を確認する
+5. 同一run tokenでPAPER処理を完了し、状態・台帳・証跡・採用コードのtree SHAをprivateへ保存する
 6. remoteへの保存を確認して、結果と不足・次回actionをこの会話で報告する
 
 資料欠損、競合、認証・実行環境の不足、readiness未達では`WAIT` / `NO-ACTION`とします。
@@ -74,19 +74,18 @@ stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 
 ~~~bash
 git pull --ff-only
-git submodule update --init
 ./scripts/setup-workspace.sh
 stock.jp/.venv/bin/python stock.jp/scripts/operation_state.py validate
 stock.jp/.venv/bin/python stock.jp/scripts/operation_bootstrap.py check
 ~~~
 
-成功 run の状態、台帳、採用した public submodule commit を同じ private commit に含め、remote へ push してから別端末や次の run へ進みます。競合した台帳を機械的に片側採用しません。
+成功 run の状態、台帳、採用したコードのtree SHA を同じ private commit に含め、remote へ push してから別端末や次の run へ進みます。競合した台帳を機械的に片側採用しません。
 
 `live-gate-status.sh` は判定専用で、policyやevidenceを変更しません。未達項目が1つでもあれば終了code 1を返します。現在はLIVE条件が未達なので、この終了codeが正常です。
 
 ## 暗号化を使わない方針
 
-`age`、`.zip.age`、backup 用 GitHub Release、復号鍵は新しい運用に使いません。LIVE 前に一度、または repository layout の変更後に、private repository の clean clone、submodule 初期化、状態検証、台帳照合を確認します。別mirrorと日数による再確認は要求しません。旧 archive を廃棄する場合は、必要な内容が private Git に移行済みで clean clone から復元できることを先に確認します。
+`age`、`.zip.age`、backup 用 GitHub Release、復号鍵は新しい運用に使いません。LIVE 前に一度、または repository layout の変更後に、private repository の clean clone、workspace setup、状態検証、台帳照合を確認します。別mirrorと日数による再確認は要求しません。旧 archive を廃棄する場合は、必要な内容が private Git に移行済みで clean clone から復元できることを先に確認します。
 
 ## ドキュメント
 

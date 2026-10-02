@@ -1,0 +1,14 @@
+{
+  "metadata": {"resultset": {"count": 1}},
+  "results": [
+    {
+      "docID": "S100TEST",
+      "edinetCode": "E00001",
+      "secCode": "12340",
+      "filerName": "Example Corp",
+      "docDescription": "臨時報告書",
+      "docTypeCode": "180",
+      "submitDateTime": "2026-08-31 17:45"
+    }
+  ]
+}

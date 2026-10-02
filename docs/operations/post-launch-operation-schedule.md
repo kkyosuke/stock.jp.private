@@ -24,7 +24,7 @@ GitHub Actionsの成功やこの文書のmergeを、日次実行の稼働証拠�
 
 LIMITED_LIVEは、専用資金3,000,000円、1 run 1新規注文、追加購入禁止、本人の累積損失停止を
 強制する少額観察段階です。実際の資金分離後に`LIMITED_LIVE_FUNDING`を台帳へ記録し、
-最新PAPER runの公式coverage、layout revision 3のclean-clone、個人checklist、
+最新PAPER runの公式coverage、layout revision 4のclean-clone、個人checklist、
 2025年diagnosticの制約と最大DDを本人が確認した後だけ昇格します。
 通常LIVE gateは未完了のまま明示し、LIMITED_LIVEの経過だけで通常LIVEへ自動昇格しません。
 

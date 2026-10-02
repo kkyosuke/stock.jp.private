@@ -98,12 +98,11 @@ def github(path: str):
         return json.load(response)
 
 
-def remote_alerts(private_repo: str, public_repo: str, now: datetime) -> list[str]:
-    # Observe persisted inputs, not retired collection/auto-merge workflow runs.
-    tip = github(f"{public_repo}/commits/main")
-    pointer = github(f"{private_repo}/contents/stock.jp?ref=main")
-    if tip["sha"] != pointer["sha"] and now - parse_time(tip["commit"]["committer"]["date"]) > timedelta(hours=3):
-        return ["public main differs from the reviewed private pointer; assistant review required"]
+def remote_alerts(private_repo: str, now: datetime) -> list[str]:
+    tip = github(f"{private_repo}/commits/main")
+    current = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
+    if tip["sha"] != current:
+        return ["checkout differs from canonical private main; assistant review required"]
     return []
 
 
@@ -240,7 +239,7 @@ def main() -> int:
             manifest = private_price_manifest()
             report["price_date"] = manifest["latest_trading_date"]
         if not args.offline:
-            report["alerts"].extend(remote_alerts(os.environ["GITHUB_REPOSITORY"], "kkyosuke/stock.jp", now))
+            report["alerts"].extend(remote_alerts(os.environ["GITHUB_REPOSITORY"], now))
     except Exception as error:
         report["alerts"].append(f"health collection failed: {type(error).__name__}: {error}")
     report["status"] = "ATTENTION" if report["alerts"] else "OK"

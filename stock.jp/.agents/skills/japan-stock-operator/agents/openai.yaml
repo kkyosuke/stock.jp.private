@@ -1,0 +1,4 @@
+interface:
+  display_name: "日本株夜間運用"
+  short_description: "夜1回で調査、翌日判断、注文候補、引き継ぎを実行"
+  default_prompt: "$japan-stock-operator を使って、今日の夜間運用を最後まで実行してください。"

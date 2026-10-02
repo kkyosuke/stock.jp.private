@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.1",
+  "decision": "NOT_DECIDED",
+  "rule_version": "v0.4",
+  "accepted_by": null,
+  "accepted_at_jst": null,
+  "replay_result_sha256": "{{REPLAY_RESULT_SHA256}}",
+  "drawdown_reviewed": false,
+  "concentration_loss_reviewed": false,
+  "data_limitations_reviewed": false,
+  "accepted_v04_metrics": {
+    "return_pct": null,
+    "maximum_drawdown_pct": null,
+    "maximum_single_name_loss_contribution_pct": null,
+    "maximum_industry_loss_contribution_pct": null,
+    "trade_count": null
+  }
+}

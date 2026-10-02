@@ -1,0 +1,22 @@
+{
+  "schema_version": "2.1",
+  "state_revision": 0,
+  "timezone": "Asia/Tokyo",
+  "schedule": "weekdays 21:00",
+  "last_successful_run_at_jst": null,
+  "last_disclosure_cutoff_jst": null,
+  "last_price_date": null,
+  "last_run_id": null,
+  "pending_reviews": [],
+  "pending_orders": [],
+  "data_gaps": [],
+  "next_run_at_jst": null,
+  "unreconciled_ticket_ids": [],
+  "last_ledger_reconciliation_at_jst": null,
+  "consecutive_successful_runs": 0,
+  "last_rule_reviews": {
+    "monthly_operations": null,
+    "quarterly_performance": null,
+    "annual_promotion": null
+  }
+}

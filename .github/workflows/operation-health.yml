@@ -8,7 +8,7 @@ on:
   push:
     branches: [main]
     paths:
-      - stock.jp
+      - stock.jp/**
       - operations/private/**
       - scripts/operation_health.py
       - scripts/validate_checkout.py
@@ -33,39 +33,11 @@ jobs:
         with:
           ref: main
           persist-credentials: false
-      - name: Resolve committed stock.jp gitlink
-        id: stock-jp-pin
-        shell: bash
-        run: |
-          sha=$(git rev-parse HEAD:stock.jp)
-          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
-
-      # Owner approved the existing PAT for this checkout only. Its grants
-      # are not inspected or changed; no write operation uses this credential.
-      - name: Require approved stock.jp checkout credential
-        shell: bash
-        env:
-          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
-        run: |
-          if [[ -z "$AUTOMATION_PAT" ]]; then
-            echo '::error::AUTOMATION_PAT is not configured. Configure the approved existing secret in repository Actions settings.'
-            exit 1
-          fi
-
-      - name: Check out pinned private stock.jp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          repository: kkyosuke/stock.jp
-          ref: ${{ steps.stock-jp-pin.outputs.sha }}
-          path: stock.jp
-          token: ${{ secrets.AUTOMATION_PAT }}
-          persist-credentials: false
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /*
-            !/data/jquants-archive/
-
+            !/stock.jp/data/jquants-archive/
+            !/stock.jp/data/daily-prices/
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:

@@ -5,7 +5,7 @@
 **LIVE NO-GO**。`operation_bootstrap.py check` が `live_go: true` を返し、利用者が evidence を確認して明示承認するまで変更しません。CI、backtest、off-line smoke の成功だけでは GO にしません。
 
 **LIMITED_LIVEも現在NO-GO**。専用資金は3,000,000円を上限として事前記録しましたが、
-本人の累積損失停止率と承認、公式source coverage、layout revision 3のclean-clone、
+本人の累積損失停止率と承認、公式source coverage、layout revision 4のclean-clone、
 個人checklistが未完了です。`limited_live.py status`が`eligible: true`になるまでPAPERを維持します。
 
 ## LIMITED_LIVEの条件
@@ -38,7 +38,7 @@ stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp apply
 | `point_in_time_full_universe_validation` | 上場廃止等を含む当時点母集団で入口・出口を再生し、欠損を報告 | dataset manifest、coverage、run report、受入記録 |
 | `historical_replay_2025_2026_accepted` | 未来情報なしの2025–2026 replayを人がreview | 成績、最大DD、trade list、欠損、承認記録 |
 | `official_source_coverage` | 最新の完了済みPAPER runで必須一次情報源とrun integrityを確認 | provider health、source log、manual fallback記録 |
-| `private_repository_recovery` | 現行layoutをclean cloneし、stateとledgerを照合 | clean-clone report、layout revision、private/public commit |
+| `private_repository_recovery` | 現行layoutをclean cloneし、stateとledgerを照合 | clean-clone report、layout revision、private commitとcode tree SHA |
 | `personal_risk_and_broker_check` | 本人が損失許容・税・broker仕様・securityを確認 | 本人のsigned checklist |
 | `v04_holdout_promotion` | v0.4の集中riskをholdoutで受入 | comparison report、承認記録 |
 | `approval` | 全gate後に本人がLIVE、日時、対象版を明示 | approval file とpolicyの3項目 |
@@ -89,10 +89,10 @@ PAPERの経過日数と連続run数には最低条件を設けません。365日
 
 1. 公式履歴入力を投入してpoint-in-time、2025〜2026回顧的履歴再生、最新PAPER runの公式coverageの各コマンドを合格させ、`--write-evidence`で保存する
 2. v0.4凍結後の未観測期間と受入基準を`v04-holdout-plan.json`で事前固定し、期間終了まで再調整なしでforward replayを完了する
-3. 現行layout revision 3のclean-clone確認と、90日以内の本人checklistを合格させる
+3. 現行layout revision 4のclean-clone確認と、90日以内の本人checklistを合格させる
 4. v0.4 holdout reviewを本人が`PROMOTE_V0_4_TO_LIVE`と明示する
 5. `operation_state.py validate`を成功させる
-6. `live-approval.json`に全証跡hash、private/public commit、現在のPAPER policy hash、本人の`LIVE`と日時を記録する
+6. `live-approval.json`に全証跡hash、private commitとcode tree SHA、現在のPAPER policy hash、本人の`LIVE`と日時を記録する
 7. `live_gate_evidence.py --root stock.jp promote-live`が`eligible: true`であることを確認する
 8. 同じ入力のまま`promote-live --apply`を1回だけ実行する
 9. `operation_bootstrap.py check`の`live_go: true`を確認する
@@ -105,14 +105,14 @@ PAPERの経過日数と連続run数には最低条件を設けません。365日
 最終承認とpolicy変更を同じ未追跡作業のまま進めず、次の3段階をprivate Gitへ残します。
 
 1. 6つの合格証跡と、最終承認以外のreviewをcommitしてprotected remoteへpushする
-2. そのprivate commit、採用public commit、PAPER policyと6証跡のSHA-256を `live-approval.json` に記入し、別commitでpushする
+2. そのprivate commitを `private_commit_reviewed`、stock.jp/のcode tree SHAを `code_tree_reviewed`、PAPER policyと6証跡のSHA-256を `live-approval.json` に記入し、別commitでpushする
 3. `promote-live` をread-onlyで再実行し、本人が出力を確認してから `--apply` し、変更されたpolicyと `live-readiness.json` を3つ目のcommitでpushする
 
-commitとhashは次のread-only commandで取得します。出力を公開Issue、public PR、public Actionsへ貼りません。
+commitとhashはstock.jp.privateのrepository rootから次のread-only commandで取得します。出力を公開Issue、public PR、public Actionsへ貼りません。
 
 ~~~bash
-git rev-parse HEAD
-git -C stock.jp rev-parse HEAD
+git rev-parse HEAD          # private_commit_reviewed
+git rev-parse HEAD:stock.jp # code_tree_reviewed（commitではなくtree）
 shasum -a 256 operations/private/operation-policy.json
 shasum -a 256 operations/private/evidence/{point-in-time,historical-replay,official-coverage,repository-recovery,personal-risk,v04-promotion}.json
 ~~~

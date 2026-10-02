@@ -70,10 +70,10 @@
     "trading_calendar": true
   },
   "market_data_git": {
-    "repository": "kkyosuke/stock.jp",
+    "repository": "kkyosuke/stock.jp.private",
     "storage": "private_git_compressed",
     "staging_root": "operations/private/market-data",
-    "store_root": "data/jquants-archive",
+    "store_root": "stock.jp/data/jquants-archive",
     "chunk_bytes": 1048576,
     "max_shard_bytes": 26214400,
     "max_store_bytes": 786432000,

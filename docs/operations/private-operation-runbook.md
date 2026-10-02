@@ -1,6 +1,6 @@
 # private 運用手順
 
-現在、両repoは非公開・本人限定です。publicという旧称は共通コード・データrepoのstock.jpを指します。
+正本は非公開stock.jp.privateです。stock.jp/は通常フォルダです。
 [現行の境界](../repository-layout.md)を優先します。
 
 ## 1. setup
@@ -8,7 +8,6 @@
 private repository の root で実行します。
 
 ~~~bash
-git submodule update --init --recursive
 ./scripts/setup-workspace.sh
 python3 -m venv stock.jp/.venv
 stock.jp/.venv/bin/pip install 'xlrd==2.0.2' 'openpyxl==3.1.5' 'pypdf==6.16.1' 'certifi==2026.7.22' PyYAML
@@ -26,56 +25,28 @@ Yahoo bulk取得を停止します。credentialはチャットやGitへ保存せ
 秘密情報管理経路で設定します。
 
 raw市場データとmanifestは`operations/private/market-data/daily-prices/`へ保存し、
-作業領域としてGit除外します。圧縮正本は非公開stock.jpの`data/jquants-archive/`へ保存します。
+作業領域としてGit除外します。圧縮正本は同じrepoの`stock.jp/data/jquants-archive/`へ保存します。
 個人分析・選定・状態・台帳はstock.jp.privateへ置きます。旧archiveへのfallbackはありません。
 [非公開保存・移行手順](private-market-data-storage.md)の取得条件と環境確認が未完了なら
 全市場価格の処理はWAIT / NO-ACTIONとします。会社IR・TDnet・JPX等の一次資料調査は
 独立して続けられますが、価格欠損を推測で埋めず、nightly完了やLIVE合格を宣言しません。
 既存archiveの移動・削除、Git履歴の扱いは利用条件を確認したうえで別途決定します。
 
-### 非公開submoduleを読むCI認証
+### 単一checkoutのCI
 
-親repoの標準 `GITHUB_TOKEN` は別のprivate repoであるstock.jpをcloneできません。
-required checkを省略せず、親checkoutとstock.jp checkoutを分けます。
-stock.jpのrefは親commitのgitlinkから解決し、mainや未reviewのbranchへ追従しません。
+rootのworkflowは標準tokenで同じrepoを一度だけcheckoutします。AUTOMATION_PATは不要です。
+既存secretは変更せず、合成testと全required checkを維持します。
 
-本人の明示承認により、既存のActions secret `AUTOMATION_PAT` をstock.jpのcheckoutに使用します。
-このPAT自体のscopeは確認していないため「読み取り専用token」とは断言しません。
-workflow内での利用を固定stock.jp commitの読み取りに限定し、書き込み処理には渡しません。
-値の取得・表示、権限変更、新しいcredentialの作成・登録は行いません。
-親checkoutは標準tokenを使い、両checkoutとも `persist-credentials: false` とします。
+## 2. コード更新の採用
 
-secretが未登録なら明示エラーで停止し、repoへの読取権限が足りなければcheckoutが失敗します。
-別credentialへのfallbackやrequired checkのスキップは行いません。失敗時はsanitized errorを
-確認し、本人が[Actions secrets設定](https://github.com/kkyosuke/stock.jp.private/settings/secrets/actions)
-で既存設定を確認します。値をチャット、Git、コマンド引数、logへ貼り付けません。
-
-将来、本人が最小権限へ切り替える場合はstock.jpだけ・Contents: read-onlyのfine-grained tokenを
-別途設定できますが、今回の前提や実施内容ではありません。データ圧縮世代はsparse checkoutで
-作業ツリーから除外し、合成テストと既存required checkを維持します。
-
-## 2. public update の採用
-
-汎用コード・ルール・合成fixtureをpublic側の通常reviewで確定し、
-merge済みpublic `main`のcommitだけを採用します。raw市場データはpublicへ公開しません。Actionsによる収集、同期PR、auto-mergeはありません。
-[日次実行契約](assistant-daily-operation.md)と[submodule採用手順](automatic-submodule-update.md)を参照します。
-
-code・rule・workflow変更は日次data差分と分けてreviewします。既存のdata-only validatorを
-迂回しません。この構成変更のpublic commitも通常review/merge後、明示的なpointer PRで採用します。
-
-~~~bash
-git -C stock.jp fetch origin main
-git -C stock.jp switch --detach origin/main
-git diff --submodule=log -- stock.jp
-~~~
-
-この例はcheckoutの準備です。検証、private整合性確認、reviewを省略する承認ではありません。
-未mergeのpublic branch tip、未pushのprivate run、未解消競合では新しいrunを開始しません。
+共通コードも個人機能もstock.jp.privateの通常review PRで更新します。
+コード・rule・workflow変更は日次data/result PRと分離し、意味validatorを迂回しません。
+外部stock.jpのfetch、submodule同期、pointer更新は行いません。
 
 ## 3. 夜間 run 前
 
 1. 別端末に未pushの runがないことを確認する
-2. `git pull --ff-only` と `git submodule update --init` を実行する
+2. `git pull --ff-only` を実行する
 3. `./scripts/setup-workspace.sh` を実行する
 4. state/ledger validate を実行する
 5. 設定済みprivate archiveのmanifest、日付、coverage、checksumを確認する
@@ -93,7 +64,7 @@ PAPER は `paper_go: true`、LIVE は `live_go: true` が必要です。LIVE へ
 
 少額限定実運用は3,000,000円の専用資金枠で行い、通常LIVEと分離します。
 `limited-live-plan.json`の累積損失停止率と本人項目を確定し、公式coverage、
-layout revision 3のclean-clone、個人checklistが合格した後だけ次を実行します。
+layout revision 4のclean-clone、個人checklistが合格した後だけ次を実行します。
 
 ~~~bash
 stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp status
@@ -125,7 +96,7 @@ run 後に次を照合します。
 - trade/capital/portfolio ledger の数量と残高
 - source coverage と data gap
 - `assessment-status.json`と会社別の希薄化・SAM/SOM・10倍経路。`INCOMPLETE`/`STALE`なら不足項目を一次資料から`research-inputs/investment-cases/<code>.json`へ補う
-- 変更した private file と public submodule commit
+- 変更した private file と コードtree SHA
 
 実行の成功・失敗を private Git の1 commitへ記録し、push成功後に次の端末・runへ進みます。認証情報、一時 download、巨大な raw data が混入していないことを diff で確認します。
 
@@ -178,18 +149,18 @@ holdoutは`v04-holdout-plan.json`へ未観測期間と基準を先に記入し�
 
 ## 7. clean-clone 確認
 
-LIVE昇格前に一度、稼働中とは別の空ディレクトリで実施します。setup、submodule、状態schema、台帳構成を変えた場合はpublic validatorの `REPOSITORY_LAYOUT_REVISION` を上げ、変更後に再実施します。日次run、データ更新、経過日数だけでは再実施しません。
+LIVE昇格前に一度、稼働中とは別の空ディレクトリで実施します。setup、コード配置、状態schema、台帳構成を変えた場合は共通validatorの `REPOSITORY_LAYOUT_REVISION` を上げ、変更後に再実施します。日次run、データ更新、経過日数だけでは再実施しません。
 
 1. 通常のprivate repositoryをcloneする
-2. submodule と symlink を setup する
+2. symlink を setup する
 3. Python environment を再構築し、利用条件と承認済み手順に従ってprivate local archiveを別途準備する
 4. state/ledger validate と readiness check を実行する。Git cloneだけではraw archiveは復元されない
 5. 最新成功 run、handoff、未照合ticket、全ledgerを稼働中と照合する
-6. layout revision、private/public commit、実施日時、結果、差異をevidenceに残す
+6. layout revision、private commitとコードtree SHA、実施日時、結果、差異をevidenceに残す
 
 別媒体のmirrorは要求しません。稼働中のdirectoryを上書きしません。clean cloneできない間、またはGitHubを利用できない間は、PAPER/LIVEとも新しい注文候補を作りません。
 
-今回のLIMITED_LIVE policy schemaと証跡追加によりlayout revisionは3です。過去の既存証跡を編集して
+今回の単一repo移行によりlayout revisionは4です。過去の既存証跡を編集して
 流用せず、変更をcommit・pushした後に`REPOSITORY_LAYOUT_CHANGE`として再実施します。
 
 ## 8. access control

@@ -50,14 +50,14 @@ class OperationHealthTest(unittest.TestCase):
         def api(path):
             self.assertNotIn("actions/workflows", path)
             return {"sha": "same"}
-        with patch.object(health, "github", side_effect=api):
-            self.assertEqual(health.remote_alerts("owner/private", "owner/public", health.parse_time("2026-09-11T21:00:00+09:00")), [])
+        with patch.object(health, "github", side_effect=api), patch.object(health.subprocess, "check_output", return_value="same\n"):
+            self.assertEqual(health.remote_alerts("owner/private", health.parse_time("2026-09-11T21:00:00+09:00")), [])
 
     def test_pointer_drift_requires_review(self):
         def api(path):
             return {"sha": "public", "commit": {"committer": {"date": "2026-09-01T00:00:00Z"}}} if "commits/main" in path else {"sha": "private"}
-        with patch.object(health, "github", side_effect=api):
-            self.assertTrue(health.remote_alerts("owner/private", "owner/public", health.parse_time("2026-09-11T21:00:00+09:00")))
+        with patch.object(health, "github", side_effect=api), patch.object(health.subprocess, "check_output", return_value="same\n"):
+            self.assertTrue(health.remote_alerts("owner/private", health.parse_time("2026-09-11T21:00:00+09:00")))
 
     def test_successful_data_sync_does_not_hide_missed_research(self):
         report = health.local_report(

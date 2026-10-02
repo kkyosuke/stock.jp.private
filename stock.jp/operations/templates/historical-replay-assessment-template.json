@@ -1,0 +1,23 @@
+{
+  "evaluation_date": "YYYY-MM-DD",
+  "decision_at_jst": "YYYY-MM-DDTHH:MM:SS+09:00",
+  "review_type": "MONTHLY",
+  "issue_id": "PERMANENT_ISSUE_ID",
+  "code": "0000",
+  "sector": "JPX_33_SECTOR",
+  "status": "COMPLETE_FAIL",
+  "hard_gates_passed": false,
+  "score": null,
+  "market_score": null,
+  "reverse_score": null,
+  "other_score": null,
+  "liquidity_passed": false,
+  "entry_ready": false,
+  "add_ready": false,
+  "required_revenue_cagr_pct": null,
+  "dilution_outlook_pct": null,
+  "major_kpi_missed": false,
+  "exit_rule": "",
+  "source_ids": [],
+  "latest_source_published_at_jst": "YYYY-MM-DDTHH:MM:SS+09:00"
+}
