@@ -223,7 +223,8 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
     at = (at or datetime.now(JST))
     require(at.tzinfo is not None, 'aware execution time required')
     at = at.astimezone(JST)
-    day = run_date or at.date()
+    target = getattr(remote, 'target_day', None)
+    day = target or run_date or at.date()
     require(day <= at.date(), 'future run date forbidden')
     config_path = root / 'operations/private/source-config.json'
     config = ingest.read_json(config_path)
@@ -260,7 +261,7 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
             for p in (archive / 'datasets').glob('*/*/checkpoint.json'):
                 recover_published_checkpoint(archive, p.parent.parent.name, date.fromisoformat(p.parent.name))
             path = run_path(archive, day)
-            require(run_date is None or path.is_file(), 'explicit run date must resume an existing journal')
+            require(target is not None or run_date is None or path.is_file(), 'explicit run date must resume an existing journal')
             for p in (archive / 'runs').glob('*T120000Z.json'):
                 old = read_state(p)
                 for key, receipt in old['tasks'].items():
@@ -269,9 +270,10 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                     require(revision.is_file() and ingest.digest(revision.read_bytes()) == receipt['manifest_sha256'],
                             'historical run receipt is missing or corrupt')
                 require(p == run_path(archive, date.fromisoformat(old['run_date'])), 'run filename mismatch')
-                require(p == path or old['status'] in {'COLLECTED', 'HOLIDAY'},
+                require(p == path or old['status'] in {'COLLECTED', 'HOLIDAY'}
+                        or target is not None and remote.can_defer(old),
                         'resume prior unfinished run first; blocked or exhausted runs need operator review')
-                require(date.fromisoformat(old['run_date']) <= day, 'cannot start a run before an existing later run')
+                require(target is not None or date.fromisoformat(old['run_date']) <= day, 'cannot start a run before an existing later run')
             previous_report = ingest.read_json(archive / 'latest.json', {})
             if previous_report.get('scope') == 'daily_bounded':
                 previous_date = date.fromisoformat(previous_report['daily_run']['run_date'])
@@ -295,7 +297,9 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                 if remote is not None and not local_only:
                     remote.sync(state)
             def result():
-                return {'status': state['status'], 'run_date': state['run_date'], 'data_date': state['data_date'],
+                return {'status': ('WAIT_TARGET_ORDER' if getattr(remote, 'wait_for_target', None) else state['status']),
+                        **({'next_target_date': remote.wait_for_target} if getattr(remote, 'wait_for_target', None) else {}),
+                        'run_date': state['run_date'], 'data_date': state['data_date'],
                         'requests_used': len(state['requests']), 'budget': state['budget'], 'tasks_completed': len(state['tasks']),
                         'readiness': 'NOT_EVALUATED', 'remote_saved': False, 'error': state['error'],
                         'http_status': state['http_status'], 'retry_not_before': state['retry_not_before'],
@@ -315,8 +319,15 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                 return result()
             save()
             client = None
-            def fetch(name, task_day, *, final=False):
+            def get_client():
                 nonlocal client
+                if client is None:
+                    kwargs = {'transport': transport}
+                    if sleep is not None: kwargs['sleep'] = sleep
+                    client = DurableClient(state, lambda: save(local_only=True),
+                                           lambda: datetime.now(JST), remote=remote, **kwargs)
+                return client
+            def fetch(name, task_day, *, final=False):
                 key = name + ':' + task_day.isoformat()
                 if key in state['tasks']:
                     return partition(archive, name, task_day)
@@ -328,18 +339,12 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                 if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily') and existing and not existing[1]:
                     reusable = False
                 if not reusable:
-                    if client is None:
-                        kwargs = {'transport': transport}
-                        if sleep is not None:
-                            kwargs['sleep'] = sleep
-                        client = DurableClient(state, lambda: save(local_only=True),
-                                               lambda: datetime.now(JST), remote=remote, **kwargs)
                     validate_checkpoint(archive, name, task_day)
                     checkpoint = archive / 'datasets' / name / task_day.isoformat() / 'checkpoint.json'
                     if final and checkpoint.exists():
                         require(aware(ingest.read_json(checkpoint)['started_at']) >= final_after,
                                 'provisional checkpoint requires its original run; do not overwrite')
-                    ingest.collect_partition(archive, BY_NAME[name], task_day, client,
+                    ingest.collect_partition(archive, BY_NAME[name], task_day, get_client(),
                                              page_saved=(lambda: remote.page_saved(state)) if remote is not None else None)
                     existing = partition(archive, name, task_day)
                 m, rows, digest = existing
@@ -357,24 +362,28 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
             try:
                 state['status'] = 'RUNNING'; state['error'] = None
                 state['http_status'] = None; state['retry_not_before'] = None
-                # Complete prior provisional financial dates before consuming today's budget.
-                for p in sorted((archive / 'datasets/financial_summary').glob('*/latest.json')):
-                    task_day = date.fromisoformat(p.parent.name)
-                    if task_day < day and at >= datetime.combine(task_day + timedelta(days=1), time(0, 30), JST):
-                        m = partition(archive, 'financial_summary', task_day)[0]
-                        if aware(m['started_at']) < datetime.combine(task_day + timedelta(days=1), time(0, 30), JST):
-                            fetch('financial_summary', task_day, final=True)
-                calendar = fetch('trading_calendar', day)[1]
-                require(len(calendar) == 1 and calendar[0].get('Date') == day.isoformat()
-                        and str(calendar[0].get('HolDiv')) in ('0', '1', '2', '3'), 'invalid trading calendar')
-                if str(calendar[0]['HolDiv']) in ('0', '3'):
-                    state['status'] = 'HOLIDAY'
+                if target is not None and remote.profile == 'history':
+                    remote.collect_history(state, archive, get_client, fetch, save)
+                    if state['status'] == 'COLLECTED': ingest.publish_snapshot(root, archive, day)
                 else:
-                    state['data_date'] = day.isoformat()
-                    for name in NAMES[1:]:
-                        fetch(name, day)
-                    ingest.publish_snapshot(root, archive, day)
-                    state['status'] = 'COLLECTED'
+                    # Complete prior provisional financial dates before consuming today's budget.
+                    for p in sorted((archive / 'datasets/financial_summary').glob('*/latest.json')):
+                        task_day = date.fromisoformat(p.parent.name)
+                        if task_day < day and at >= datetime.combine(task_day + timedelta(days=1), time(0, 30), JST):
+                            m = partition(archive, 'financial_summary', task_day)[0]
+                            if aware(m['started_at']) < datetime.combine(task_day + timedelta(days=1), time(0, 30), JST):
+                                fetch('financial_summary', task_day, final=True)
+                    calendar = fetch('trading_calendar', day)[1]
+                    require(len(calendar) == 1 and calendar[0].get('Date') == day.isoformat()
+                            and str(calendar[0].get('HolDiv')) in ('0', '1', '2', '3'), 'invalid trading calendar')
+                    if str(calendar[0]['HolDiv']) in ('0', '3'):
+                        state['status'] = 'HOLIDAY'
+                    else:
+                        state['data_date'] = day.isoformat()
+                        for name in NAMES[1:]:
+                            fetch(name, day)
+                        ingest.publish_snapshot(root, archive, day)
+                        state['status'] = 'COLLECTED'
             except PublicationPending:
                 state['status'], state['error'] = 'PAUSED', 'publication_pending'
             except ingest.RequestBudgetExhausted:
@@ -392,6 +401,10 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                 # Failures preserve a truthful partial archive, never full history completeness.
                 report = ingest.planned_status('light', (), day)
                 report.update(scope='daily_bounded', daily_run=result(), all_entitled_complete=False)
+                if target is not None:
+                    report.update(scope='target_date_bounded', target_date=day.isoformat(),
+                                  profile=remote.profile, knowledge='retrieved_now_not_point_in_time',
+                                  execution_started_at=state['started_at'])
                 ingest.atomic_json(archive / 'latest.json', report)
                 if remote is not None:
                     remote.sync(state)

@@ -63,7 +63,7 @@ def gate(facts, *, now=None):
 def validate(document):
     required = {'version', 'writer', 'fence', 'blocked_campaigns', 'runs', 'snapshot'}
     require(isinstance(document, dict) and required <= set(document)
-            and set(document) <= required | {'history','publication_intent','transaction','github_budget','approval_binding','adopted_history','github_pause'}, 'invalid checkpoint schema')
+            and set(document) <= required | {'history','publication_intent','transaction','github_budget','approval_binding','adopted_history','github_pause','targets','run_owner','owner_history'}, 'invalid checkpoint schema')
     if document.get('publication_intent') is not None:
         intent=document['publication_intent']
         require(set(intent)=={'id','state','method','path','request_sha256','identifiers','response'}
@@ -91,6 +91,18 @@ def validate(document):
         require(run['phase'] in {'IDLE', 'IN_FLIGHT', 'PAUSED', 'BLOCKED', 'COLLECTED', 'RESTORED'}, 'invalid phase')
         if run['retry_not_before'] is not None:
             daily.aware(run['retry_not_before'])
+    if set(document) & {'targets', 'run_owner', 'owner_history'}:
+        try:
+            from scripts.actions_owner import validate_ledger
+        except ModuleNotFoundError:
+            from actions_owner import validate_ledger
+        validate_ledger(document)
+    if 'targets' in document:
+        try:
+            from scripts.actions_targets import validate as validate_targets
+        except ModuleNotFoundError:
+            from actions_targets import validate as validate_targets
+        validate_targets(document)
     if document.get('history') is not None:
         validate_history_envelope(document['history'])
     require(document['snapshot'] is None or isinstance(document['snapshot'], dict), 'invalid snapshot')
@@ -471,6 +483,23 @@ class HistoryCheckpoint(RunnerCheckpoint):
 
 def check_transition(previous,value):
     require(previous['writer']==value['writer'], 'writer ownership changed')
+    if 'targets' in previous:
+        try:
+            from scripts.actions_targets import transition
+        except ModuleNotFoundError:
+            from actions_targets import transition
+        require('targets' in value, 'target ledger deletion forbidden')
+        transition(previous['targets'], value['targets'])
+    if previous.get('owner_history'):
+        require(value.get('owner_history', [])[:len(previous['owner_history'])] == previous['owner_history'],
+                'owner audit deletion forbidden')
+    if previous.get('run_owner') == value.get('run_owner'):
+        require(previous.get('owner_history') == value.get('owner_history'), 'owner history changed without transfer')
+    else:
+        audit = value.get('owner_history', [])
+        require(len(audit) == len(previous.get('owner_history', [])) + 1
+                and audit[-1]['previous'] == previous.get('run_owner')
+                and audit[-1]['current'] == value.get('run_owner'), 'owner transfer receipt missing')
     if previous.get('adopted_history'):
         require(value.get('adopted_history')==previous['adopted_history'],'adopted history receipt changed')
     if previous.get('approval_binding'):

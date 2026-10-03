@@ -162,7 +162,7 @@ def market_semantics(root, head, scratch, entries):
                    or re.fullmatch(r'jquants/(latest|size-sample)\.json', name)
                    or re.fullmatch(r'jquants/objects/[0-9a-f]{2}/[0-9a-f]{64}\.json', name)
                    or re.fullmatch(r'jquants/runs/[0-9TZ]+\.json', name)
-                   or name in {'jquants/history/state.json', 'jquants/history-marker.json'}
+                   or name in {'jquants/history/state.json', 'jquants/history-marker.json', 'jquants/target-history/ranges.json'}
                    or re.fullmatch(r'jquants/datasets/[a-z_]+/(state\.json|[0-9-]{10}/(latest\.json|checkpoint\.json|revisions/[0-9a-f]{64}\.json))', name)
                    or re.fullmatch(r'daily-prices/(latest\.json|[0-9]{4}/[0-9-]{10}\.csv|revisions/[0-9-]{10}/[0-9a-f]{64}/([0-9-]{10}\.csv|manifest-[0-9a-f]{64}\.json))', name))
         require(allowed, 'unexpected restored market member')
