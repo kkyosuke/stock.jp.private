@@ -43,6 +43,31 @@ class ProtocolTests(unittest.TestCase):
         self.boundary.begin(DAY, MAIN, CONFIG)
         self.calls = 0
 
+    def test_history_design_distinguishes_adopted_terminal_without_enabling_adapter(self):
+        journal = {'status': 'COMPLETE', 'campaign': 'synthetic-only'}
+        evidence = dict(repository=p.REPOSITORY, visibility='private', publication_rejected=False,
+                        unresolved_campaign=False, publication_authorized=True,
+                        main_sha=MAIN, approved_main_sha=MAIN, generation=PAGE, approved_generation=PAGE,
+                        journal_sha256=p.checksum(journal), terminal_semantics_verified=True,
+                        marker_matches_journal=True, all_file_hashes_verified=True,
+                        main_contains_generation=True, approval_independently_verified=True)
+        result = p.history_transition_plan(journal, evidence)
+        self.assertEqual(result['classification'], 'ADOPTED_TERMINAL_DESIGN_BASELINE')
+        self.assertFalse(result['execution_allowed'])
+        self.assertTrue(result['retain_history_evidence'])
+        for status in ('RUNNING', 'PAUSED', 'BATCH_EXHAUSTED', 'BLOCKED'):
+            with self.assertRaises(p.Stopped):
+                p.history_transition_plan({**journal, 'status': status}, evidence)
+        for key, value in [('publication_rejected', True), ('unresolved_campaign', True),
+                           ('approved_main_sha', 'd' * 40), ('approved_generation', 'd' * 64),
+                           ('journal_sha256', 'd' * 64), ('terminal_semantics_verified', False),
+                           ('marker_matches_journal', False), ('all_file_hashes_verified', False),
+                           ('main_contains_generation', False), ('approval_independently_verified', False)]:
+            with self.assertRaises(p.Stopped):
+                p.history_transition_plan(journal, {**evidence, key: value})
+        with self.assertRaisesRegex(p.Stopped, 'journal binding'):
+            p.history_transition_plan({**journal, 'campaign': 'forged'}, evidence)
+
     def send(self, endpoint, query):
         self.assertEqual(self.remote.state['runs'][DAY]['status'], 'IN_FLIGHT')
         self.calls += 1

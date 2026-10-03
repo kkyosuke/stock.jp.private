@@ -22,7 +22,8 @@ class GitMock:
     def __init__(self):
         self.calls, self.objects = [], {}
         self.fail_patch = self.lose_ack = self.race = self.fail_blob = False
-        self.document = dict(version=1, writer='actions-v1', blocked_campaigns=[], runs={}, snapshot=None)
+        self.document = dict(version=2, writer='actions-v1', fence='0' * 32,
+                             blocked_campaigns=[], runs={}, snapshot=None)
         self.head = self.seed(self.document)
 
     def put(self, obj):
@@ -61,7 +62,8 @@ class GitMock:
         if method == 'PATCH':
             if self.race:
                 self.head = self.put(dict(tree=self.objects[self.head]['tree'], parents=[self.head], race=True))
-            if self.fail_patch or self.objects[body['sha']]['parents'] != [self.head]:
+            # GitHub accepts an idempotent PATCH to the current target SHA.
+            if self.fail_patch or (body['sha'] != self.head and self.objects[body['sha']]['parents'] != [self.head]):
                 raise OSError('non-fast-forward')
             assert body['force'] is False
             self.head = body['sha']
@@ -287,3 +289,54 @@ class RemoteDailyTests(unittest.TestCase):
         with self.assertRaisesRegex(r.RemoteStop, 'not adopted'):
             self.remote_run()
         self.assertEqual(len(self.calls), 9)
+
+    def test_git_mock_accepts_same_target_update(self):
+        result = self.git('PATCH', '/repos/' + r.REPO + '/git/refs/' + r.REF,
+                          {'sha': self.git.head, 'force': False})
+        self.assertEqual(result['object']['sha'], self.git.head)
+
+    def test_identical_reservation_bodies_have_unique_commits_and_single_ack(self):
+        # The server clock/author/tree/parent are identical. Interleave caller B
+        # at caller A's PATCH, after both could have observed the same parent.
+        # A broken fixed-message implementation generates one SHA and both ACK.
+        self.remote_run()
+        expected, document = self.store.read()
+        document['fence'] = 'f' * 32
+        run = document['runs'][self.at.date().isoformat()]
+        receipt = copy.deepcopy(run['state']['requests'][-1])
+        run['state']['requests'].append(receipt)
+        run['reservation_ids'].append('e' * 32)
+        run['phase'] = 'IN_FLIGHT'
+        winners, commits = [], []
+        original = GitMock.__call__
+        interleaved = False
+
+        def concurrent(git, method, path, body):
+            nonlocal interleaved
+            if method == 'PATCH' and not interleaved:
+                interleaved = True
+                # Same requested document, including reservation ID and fence.
+                self.store.cas(expected, copy.deepcopy(document))
+                winners.append('B may send')
+            result = original(git, method, path, body)
+            if path.endswith('/git/commits') and method == 'POST':
+                commits.append(result['sha'])
+            return result
+
+        with patch.object(GitMock, '__call__', concurrent):
+            with self.assertRaises(r.RemoteStop):
+                self.store.cas(expected, copy.deepcopy(document))
+                winners.append('A may send')
+        self.assertEqual(winners, ['B may send'])
+        self.assertEqual(len(commits), 2)
+        self.assertEqual(len(set(commits)), 2)
+        self.assertEqual(len(self.ledger()['state']['requests']), 10)
+        self.assertEqual(self.ledger()['reservation_ids'][-1], 'e' * 32)
+
+    def test_reservation_id_rewrite_rejected(self):
+        self.remote_run()
+        revision, document = self.store.read()
+        document['fence'] = 'f' * 32
+        document['runs'][self.at.date().isoformat()]['reservation_ids'][0] = 'e' * 32
+        with self.assertRaisesRegex(r.RemoteStop, 'identity rewrite'):
+            self.store.cas(revision, document)

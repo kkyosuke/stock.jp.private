@@ -35,6 +35,37 @@ def checksum(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
+def history_transition_plan(journal, evidence):
+    """Design classification only; never authorizes the current remote adapter.
+
+    Evidence must eventually be produced by a trusted verifier reading adopted
+    main, every retained file and the independent approval registry. These
+    synthetic inputs are not an implemented verifier or an activation mechanism.
+    """
+    require(isinstance(journal, dict) and journal.get('status') == 'COMPLETE',
+            'unfinished history campaign')
+    require(evidence.get('publication_rejected') is False
+            and evidence.get('unresolved_campaign') is False
+            and evidence.get('publication_authorized') is True, 'history publication blocked')
+    require(evidence.get('repository') == REPOSITORY and evidence.get('visibility') == 'private',
+            'history baseline repository mismatch')
+    for key in ('main_sha', 'approved_main_sha'):
+        require(isinstance(evidence.get(key), str) and re.fullmatch('[0-9a-f]{40}', evidence[key]),
+                'invalid adopted main identity')
+    require(evidence['main_sha'] == evidence['approved_main_sha'], 'unapproved history baseline')
+    for key in ('generation', 'approved_generation'):
+        require(isinstance(evidence.get(key), str) and re.fullmatch('[0-9a-f]{64}', evidence[key]),
+                'invalid adopted generation')
+    require(evidence['generation'] == evidence['approved_generation'], 'history generation mismatch')
+    require(evidence.get('journal_sha256') == checksum(journal), 'history journal binding mismatch')
+    for key in ('terminal_semantics_verified', 'marker_matches_journal', 'all_file_hashes_verified',
+                'main_contains_generation', 'approval_independently_verified'):
+        require(evidence.get(key) is True, 'unverified history evidence: ' + key)
+    return {'classification': 'ADOPTED_TERMINAL_DESIGN_BASELINE', 'execution_allowed': False,
+            'blocker': 'history-aware adapter and trusted evidence verifier not implemented',
+            'retain_history_evidence': True}
+
+
 def preflight(facts):
     """Facts must be independently observed, never populated from PR text."""
     checks = {

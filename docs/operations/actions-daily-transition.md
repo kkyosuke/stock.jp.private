@@ -98,3 +98,25 @@ collector は schedule と信頼済み手動起動だけに限定し、push/PR �
 現在の daily adapter は履歴 directory/marker をローカルで検出すると Git 読取り前に拒否する。remote `blocked_campaigns` が空でない場合も書込み前に停止する。既存拒否 batch を入力・初期化 seed・復旧素材に使わない。履歴 runner の remote hooks、累積 600 回の同期予約、履歴専用 snapshot/復元、終了判定の統合試験は未実装であり、この draft では実行できない。
 
 将来、別途承認された履歴取得が完了し、全件検証・データ PR/CI・main 採用・全 hash 復元確認が成功した後、一時 workflow コードを撤去する PR を提案する。取得 data、journal、checkpoint、CI/検証証跡は削除しない。今回 workflow の撤去や実行はしない。
+
+## 完了履歴から日次への移行：現adapterでは未対応
+
+現在の `reject_history` は directory/marker の存在だけで拒否する。これは未解決・拒否済み履歴だけでなく、正当に COMPLETE となり main に採用された履歴にも適用される。したがって、前節の履歴完了後にそのまま日次 workflow を有効化しても動作しない。これは有効化前に解消すべき実装 blocker であり、marker/journal を削除して通す運用は禁止する。
+
+将来の設計は「採用済み terminal history 基点を証拠で束縛する」方式とする。
+
+1. 信頼済み verifier が private repository の採用済み main SHA と archive generation を独立に取得し、別途承認された基点 identity と一致させる。PR 本文、workflow input、取得 branch 自身の主張を承認証拠にしない。
+2. その generation を復元し、既存 `validate_history` と archive validator により COMPLETE、固定 campaign identity、対象 session・全 task/range・累積予約予算・marker 整合を確認する。全ファイル hash と journal hash を基点に束縛する。単に `status=COMPLETE` と書かれた journal は受け入れない。
+3. 承認台帳で対象 campaign に公開拒否・未解決状態が残っていないことを照合する。実行環境内の自己申告 boolean を根拠に解除しない。現在拒否されている campaign を、この文書変更で承認基点へ登録しない。
+4. 日次 snapshot には履歴 journal/marker/immutable revisions を保持する。毎回、その履歴部分が基点と一致することを検証し、日次の新規ページ・revision・journal だけを追加する。履歴証跡の削除・変更、別 campaign への差替え、基点 SHA/generation の不一致は取得・アップロード前に停止する。共通 latest pointer の更新と immutable 履歴証跡の保持は区別する。
+5. main 更新時は新しい採用済み generation と履歴基点の継承を再検証する。履歴完了後の一時 workflow 撤去でも、この証拠連鎖は残す。
+
+`history_transition_plan` と合成 fixture は、採用済み COMPLETE、未完了、拒否、identity/hash/検証証跡の欠落・不一致を区別する設計模型である。採用済み分類でも `execution_allowed=false` を返す。信頼済み verifier、承認台帳との照合、history-aware snapshot adapter は未実装であり、自己申告の検証済み flag に真正性を与えるものではない。現 remote adapter の全履歴拒否と両 workflow の default-off は維持する。
+
+## 同一予約の二重ACK防止
+
+Git の非 force ref 更新は expected-old-SHA を条件にする真の CAS ではない。同一親・tree・message・作者・時刻から同じ commit SHA が生成されると、同じ target への二つの更新がともに成功し得る。non-fast-forward 拒否だけを予算保証として扱わない。
+
+checkpoint schema v2 は永続 fence と各予約の一意な `reservation_ids` を持つ。予約IDは既存 journal の request と一対一に対応し、削除・差替えを拒否する。各更新では新しい fence を保存し、Git adapter はさらに CAS 試行ごとの UUID nonce を commit message に記録する。同じ予約bodyを二つの caller が提示しても candidate commit は別 SHA となるため、一方が先に更新した ref にもう一方の sibling commit を非 force で採用できない。ACK後の同一fence/body読み戻しが成功した caller だけが取得へ進む。transport は書込みの自動再試行をしない。
+
+合成 GitMock は現実と同じく current target への更新を成功させる。二つの caller が同じ parent と完全に同じ予約bodyを使う交差実行テストで、candidate SHA が二つ、成功ACKが一つとなることを確認する。未知のACK失敗・IN_FLIGHT予約を自動再送しない規則も維持する。UUIDの一意性に加え、将来の実通信adapterで同じ競合条件を隔離統合試験する必要があり、現時点で実サービス実行を有効化するものではない。

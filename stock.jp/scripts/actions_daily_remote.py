@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import re
 import tempfile
+import uuid
 from zoneinfo import ZoneInfo
 
 try:
@@ -57,9 +58,10 @@ def gate(facts):
 
 def validate(document):
     require(isinstance(document, dict) and set(document) ==
-            {'version', 'writer', 'blocked_campaigns', 'runs', 'snapshot'}, 'invalid checkpoint schema')
-    require(document['version'] == 1 and isinstance(document['writer'], str)
+            {'version', 'writer', 'fence', 'blocked_campaigns', 'runs', 'snapshot'}, 'invalid checkpoint schema')
+    require(document['version'] == 2 and isinstance(document['writer'], str)
             and re.fullmatch('[A-Za-z0-9_-]{1,80}', document['writer']), 'invalid writer')
+    require(isinstance(document['fence'], str) and re.fullmatch('[0-9a-f]{32}', document['fence']), 'invalid fence')
     require(document['blocked_campaigns'] == [], 'blocked campaign; no migration or publication')
     require(isinstance(document['runs'], dict), 'invalid global daily ledger')
     # Import lazily to avoid a daily-runner module cycle.
@@ -68,8 +70,12 @@ def validate(document):
     except ModuleNotFoundError:
         import jquants_daily as daily
     for day, run in document['runs'].items():
-        require(isinstance(run, dict) and set(run) == {'state', 'phase', 'retry_not_before'}, 'invalid remote run')
+        require(isinstance(run, dict) and set(run) == {'state', 'phase', 'retry_not_before', 'reservation_ids'}, 'invalid remote run')
         daily.validate_state(run['state'])
+        ids = run['reservation_ids']
+        require(isinstance(ids, list) and len(ids) == len(run['state']['requests'])
+                and all(isinstance(n, str) and re.fullmatch('[0-9a-f]{32}', n) for n in ids)
+                and len(set(ids)) == len(ids), 'invalid reservation identities')
         require(day == run['state']['run_date'], 'run date mismatch')
         require(run['phase'] in {'IDLE', 'IN_FLIGHT', 'PAUSED', 'BLOCKED', 'COLLECTED', 'RESTORED'}, 'invalid phase')
         if run['retry_not_before'] is not None:
@@ -133,11 +139,21 @@ class GitCheckpointStore:
             require(after['budget'] == before['budget'] and after['config_sha256'] == before['config_sha256']
                     and after['requests'][:len(before['requests'])] == before['requests'],
                     'daily budget or reservation history rewrite forbidden')
+            require(value['runs'][day]['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'],
+                    'reservation identity rewrite forbidden')
+        require(value['fence'] != previous['fence'], 'fresh checkpoint fence required')
         # No base_tree: this isolated branch contains only checkpoint.json.
         blob = self.call('POST', '/git/blobs', {'content': base64.b64encode(raw).decode(), 'encoding': 'base64'})
         require(blob.get('sha') == git_blob(raw), 'blob acknowledgement mismatch')
         tree = self.call('POST', '/git/trees', {'tree': [dict(path='checkpoint.json', mode='100644', type='blob', sha=blob['sha'])]})
-        commit = self.call('POST', '/git/commits', {'message': 'Daily checkpoint', 'tree': sha(tree['sha']), 'parents': [expected]})
+        # Git ref PATCH is not expected-old-SHA CAS: same-target updates can
+        # both succeed. Even identical bodies must produce different candidate
+        # commits, including within the same Git timestamp second. The attempt
+        # nonce is stored in the immutable commit alongside the state fence.
+        attempt = uuid.uuid4().hex
+        commit = self.call('POST', '/git/commits', {
+            'message': 'Daily checkpoint fence=' + value['fence'] + ' attempt=' + attempt,
+            'tree': sha(tree['sha']), 'parents': [expected]})
         revision = sha(commit['sha'])
         ack = self.call('PATCH', '/git/refs/' + REF, {'sha': revision, 'force': False})
         require(ack.get('object', {}).get('sha') == revision, 'ref acknowledgement mismatch')
@@ -202,6 +218,7 @@ class RunnerCheckpoint:
     def commit(self):
         require(not self.poisoned, 'checkpoint failure requires fresh verified recovery')
         try:
+            self.document['fence'] = uuid.uuid4().hex
             validate(self.document)
             revision = self.store.cas(self.revision, copy.deepcopy(self.document))
             actual, restored = self.store.read()
@@ -244,7 +261,8 @@ class RunnerCheckpoint:
             require(runs[self.day]['state'] == state, 'journal mismatch; do not reset budget')
         else:
             require(not state['requests'], 'cannot import existing campaign or consumed journal')
-            runs[self.day] = {'state': copy.deepcopy(state), 'phase': 'IDLE', 'retry_not_before': None}
+            runs[self.day] = {'state': copy.deepcopy(state), 'phase': 'IDLE', 'retry_not_before': None,
+                              'reservation_ids': []}
             self.sync(state)
 
     def sync(self, state):
@@ -273,6 +291,7 @@ class RunnerCheckpoint:
         require(state['config_sha256'] == run['state']['config_sha256'] and state['budget'] == run['state']['budget'], 'run configuration changed')
         run['state'] = copy.deepcopy(state)
         run['phase'] = 'IN_FLIGHT'
+        run['reservation_ids'].append(uuid.uuid4().hex)
         self.document['snapshot'] = capture(self.source)
         self.commit()  # no financial API until CAS and readback both succeed
 
