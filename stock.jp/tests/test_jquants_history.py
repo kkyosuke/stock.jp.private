@@ -107,3 +107,123 @@ class HistoryTest(unittest.TestCase):
         codec.pack(source,self.root/'stock.jp/data/jquants-archive');git('add','stock.jp/data');git('commit','-m','bounded history')
         proof=publication.validate_local(self.root,'market','2026-10-02',base,git('rev-parse','HEAD'))
         self.assertEqual(proof['history_status'],'BATCH_EXHAUSTED')
+
+    def test_final_reservation_crash_can_resume_same_or_next_batch(self):
+        for limit in (1,12):
+            for inspect_same_batch in (True,False):
+                with self.subTest(limit=limit,inspect_same_batch=inspect_same_batch):
+                    self.setUp()
+                    config_path=self.private/'source-config.json'
+                    config=json.loads(config_path.read_text());config['jquants']['ingestion']['max_requests_per_run']=limit
+                    config_path.write_text(json.dumps(config))
+                    attempts=0
+                    def crash_last(endpoint,query):
+                        nonlocal attempts
+                        attempts+=1
+                        if attempts==limit:raise KeyboardInterrupt()
+                        return self.transport(endpoint,query)
+                    with self.assertRaises(KeyboardInterrupt):self.run_history(transport=crash_last)
+                    path=self.private/'market-data/jquants/history/state.json'
+                    before=json.loads(path.read_text())
+                    self.assertEqual(before['status'],'RUNNING');self.assertEqual(len(before['batches'][0]),limit)
+                    if inspect_same_batch:
+                        calls=len(self.calls);paused=self.run_history()
+                        self.assertEqual(paused['status'],'PAUSED');self.assertEqual(len(self.calls),calls)
+                        after=json.loads(path.read_text());self.assertEqual(after['batches'],before['batches'])
+                        self.assertEqual(after['tasks'],before['tasks']);self.assertEqual(after['ranges'],before['ranges'])
+                        self.assertEqual(self.run_history(),paused)
+                    resumed=self.run_history(batch=2)
+                    self.assertIn(resumed['status'],('COMPLETE','BATCH_EXHAUSTED'))
+                    after=json.loads(path.read_text());self.assertEqual(after['batches'][0],before['batches'][0])
+                    self.assertEqual(len(after['batches']),2);self.assertLessEqual(len(after['batches'][1]),limit)
+                    self.assertGreater(resumed['requests_used'],limit)
+
+    def test_last_campaign_reservation_crash_stops_without_refund(self):
+        def crash(endpoint,query):raise KeyboardInterrupt()
+        with self.assertRaises(KeyboardInterrupt):self.run_history(transport=crash)
+        path=self.private/'market-data/jquants/history/state.json';state=json.loads(path.read_text())
+        # Fixture represents the same persisted reservation boundary in batch 50.
+        receipt=state['batches'][0][0];state['batches']=[[dict(receipt) for _ in range(12)] for _ in range(50)]
+        path.write_text(json.dumps(state))
+        result=self.run_history(batch=50)
+        self.assertEqual(result['status'],'EXHAUSTED');self.assertEqual(result['requests_used'],600)
+        self.assertEqual(json.loads(path.read_text())['batches'],state['batches']);self.assertEqual(self.calls,[])
+
+    def add_interrupted_correction(self):
+        archive=self.private/'market-data/jquants'
+        def correction(endpoint,query):
+            return {'data':[{'Date':str(self.end),'Code':'12340','O':200,'H':201,'L':199,'C':200,'Vo':100,'Va':20000}],
+                    'pagination_key':'correction-next'}
+        client=i.Client(plan='light',transport=correction,max_requests=1,sleep=lambda _:None,retries=0)
+        with self.assertRaises(i.RequestBudgetExhausted):i.collect_partition(archive,h.BY_NAME['equities_daily'],self.end,client)
+        return archive/'datasets/equities_daily'/str(self.end)/'checkpoint.json'
+
+    def test_unfinished_correction_takes_priority_over_old_latest(self):
+        import csv
+        archive=self.private/'market-data/jquants';client=i.Client(plan='light',transport=self.transport,sleep=lambda _:None,retries=0)
+        for name in ('equities_master','equities_daily'):i.collect_partition(archive,h.BY_NAME[name],self.end,client)
+        checkpoint=self.add_interrupted_correction();self.calls.clear()
+        def resume(endpoint,query):
+            if endpoint=='/equities/bars/daily':
+                self.calls.append((endpoint,query));self.assertEqual(query['pagination_key'],'correction-next')
+                return {'data':[]}
+            return self.transport(endpoint,query)
+        result=self.run_history(sessions=1,transport=resume)
+        self.assertEqual(result['status'],'COMPLETE');self.assertEqual(result['requests_used'],3)
+        self.assertFalse(checkpoint.exists())
+        self.assertEqual(i.partition_rows(archive,'equities_daily',self.end)[0]['C'],200)
+        with (self.private/'market-data/daily-prices/2026/2026-10-02.csv').open() as stream:
+            self.assertEqual(next(csv.DictReader(stream))['終値'],'200')
+
+    def test_completed_history_cannot_hide_new_unfinished_correction(self):
+        self.assertEqual(self.run_history(sessions=1)['status'],'COMPLETE')
+        checkpoint=self.add_interrupted_correction();count=len(self.calls)
+        with self.assertRaises(ValueError):self.run_history(sessions=1)
+        self.assertTrue(checkpoint.exists());self.assertEqual(len(self.calls),count)
+    def test_low_disk_pauses_before_request_and_keeps_measurement(self):
+        from unittest.mock import patch
+        from scripts import history_resources as resources
+        original=resources.inspect
+        def low_disk(*args):
+            report=original(*args);report['free_bytes']=resources.MIN_FREE-1;return report
+        with patch.object(resources,'inspect',side_effect=low_disk):result=self.run_history()
+        self.assertEqual(result['status'],'PAUSED');self.assertEqual(result['requests_used'],0);self.assertEqual(self.calls,[])
+        state=json.loads((self.private/'market-data/jquants/history/state.json').read_text())
+        self.assertEqual(state['resource_checks']['1']['free_bytes'],resources.MIN_FREE-1)
+    def test_response_cap_rejects_before_archiving(self):
+        from unittest.mock import patch
+        with patch.object(h.resources,'MAX_RESPONSE',128):result=self.run_history()
+        self.assertEqual(result['status'],'BLOCKED');self.assertEqual(result['requests_used'],1)
+        self.assertEqual(list((self.private/'market-data/jquants/objects').glob('*/*.json')),[])
+    def test_full_market_scale_one_session(self):
+        import resource
+        def full_market(endpoint,query):
+            if endpoint=='/equities/master':return {'data':[{'Date':str(self.end),'Code':f'{n}0','Mkt':'0111','ProdCat':'011',
+                'CoName':'Synthetic full-market company','CoNameEn':'Synthetic Example','MktNm':'Prime','S33Nm':'Synthetic sector'} for n in range(1000,7000)]}
+            if endpoint=='/equities/bars/daily':return {'data':[{'Date':str(self.end),'Code':f'{n}0','O':100,'H':101,'L':99,'C':100,
+                'Vo':1000,'Va':100000,'AdjO':100,'AdjH':101,'AdjL':99,'AdjC':100,'AdjVo':1000,'AdjFactor':1} for n in range(1000,7000)]}
+            return self.transport(endpoint,query)
+        result=self.run_history(sessions=1,transport=full_market)
+        self.assertEqual(result['status'],'COMPLETE')
+        manifest=json.loads((self.private/'market-data/daily-prices/latest.json').read_text())
+        self.assertEqual(manifest['universe']['count'],6000)
+        # Linux CI peak RSS includes the whole unittest process, not just this run.
+        self.assertLess(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,h.resources.MAX_ADDRESS_SPACE)
+
+    def test_wire_response_read_is_bounded(self):
+        from unittest.mock import MagicMock
+        from scripts.jquants_ingest import Client,ApiError
+        client=Client(plan='light',max_response_bytes=128,transport=lambda *_:None);client.transport=None
+        response=MagicMock();response.status=200;response.read.return_value=b' '*129
+        client.opener.open=MagicMock();client.opener.open.return_value.__enter__.return_value=response
+        with self.assertRaises(ApiError):client._request('/equities/master',{})
+        response.read.assert_called_once_with(129)
+    def test_raw_and_staging_caps_stop_before_request(self):
+        from unittest.mock import patch
+        original=h.resources.inspect
+        for field,value in (('raw_bytes',h.resources.MAX_RAW),('staging_bytes',h.resources.MAX_STAGING+1)):
+            def oversized(*args):
+                report=original(*args);report[field]=value;return report
+            with patch.object(h.resources,'inspect',side_effect=oversized):result=self.run_history()
+            self.assertEqual(result['status'],'PAUSED');self.assertEqual(result['requests_used'],0)
+            self.assertEqual(self.calls,[])

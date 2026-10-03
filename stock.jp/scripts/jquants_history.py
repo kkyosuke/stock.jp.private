@@ -12,11 +12,12 @@ from pathlib import Path
 import re
 try:
     from scripts import jquants_daily as daily, jquants_ingest as ingest
-    from scripts import market_data_git as codec
+    from scripts import market_data_git as codec, history_resources as resources
     from scripts.jquants_catalog import BASE_URL, BY_NAME
 except ModuleNotFoundError:
     import jquants_daily as daily, jquants_ingest as ingest
     import market_data_git as codec
+    import history_resources as resources
     from jquants_catalog import BASE_URL, BY_NAME
 
 NAMES = ('trading_calendar', 'topix_daily', 'equities_master', 'equities_daily')
@@ -25,7 +26,7 @@ require = daily.require
 
 def validate_history(state, read):
     require(set(state) == {'version','as_of','sessions','config_sha256','batch_limit','batches',
-        'ranges','days','tasks','status','retry_not_before'}, 'invalid history journal schema')
+        'ranges','days','tasks','status','retry_not_before','resource_checks'}, 'invalid history journal schema')
     end = date.fromisoformat(state['as_of'])
     require(state['version'] == 1 and type(state['sessions']) is int and 1 <= state['sessions'] <= 280,
             'invalid history extent')
@@ -44,6 +45,9 @@ def validate_history(state, read):
                     receipt['endpoint'] in {BY_NAME[n].endpoint for n in NAMES}, 'invalid request receipt')
             require(re.fullmatch('[0-9a-f]{64}', receipt['query_sha256']) is not None, 'invalid query digest')
             daily.aware(receipt['reserved_at'])
+    require(isinstance(state['resource_checks'],dict) and set(state['resource_checks']) <= {str(i) for i in range(1,len(batches)+1)}, 'invalid resource checks')
+    for report in state['resource_checks'].values():
+        require(set(report)=={'raw_bytes','staging_bytes','free_bytes','max_raw_bytes','max_staging_bytes','min_free_bytes','max_response_bytes','max_address_space_bytes'} and all(type(v) is int and v>=0 for v in report.values()), 'invalid resource report')
     require(isinstance(state['ranges'],dict) and set(state['ranges']) <= {'trading_calendar','topix_daily'}, 'invalid range tasks')
     for name, r in state['ranges'].items():
         require(set(r)=={'query','pages','next_key','seen_keys','complete'}, 'invalid range checkpoint')
@@ -84,14 +88,15 @@ def validate_history(state, read):
 
 
 class HistoryClient(ingest.Client):
-    def __init__(self,state,save,**kwargs):
-        super().__init__(plan='light',retries=0,**kwargs)
-        self.state,self.save=state,save
+    def __init__(self,state,save,check_resources,**kwargs):
+        super().__init__(plan='light',retries=0,max_response_bytes=resources.MAX_RESPONSE,**kwargs)
+        self.state,self.save,self.check_resources=state,save,check_resources
     def _request(self,endpoint,params):
         s=self.state
         if len(s['batches'][-1])>=s['batch_limit'] or sum(map(len,s['batches']))>=600:
             raise ingest.RequestBudgetExhausted('bounded history budget')
         require(endpoint in {BY_NAME[n].endpoint for n in NAMES},'history endpoint not allowed')
+        self.check_resources()
         previous=next((b[-1] for b in reversed(s['batches']) if b),None)
         if previous:
             elapsed=(datetime.now(daily.JST)-daily.aware(previous['reserved_at'])).total_seconds()
@@ -99,7 +104,9 @@ class HistoryClient(ingest.Client):
         s['batches'][-1].append({'endpoint':endpoint,'query_sha256':ingest.digest(ingest.encoded(params)),
                               'reserved_at':datetime.now(daily.JST).isoformat()})
         self.save()  # Ambiguous crashes and failures remain charged.
-        return super()._request(endpoint,params)
+        result=super()._request(endpoint,params)
+        if len(ingest.encoded(result))>resources.MAX_RESPONSE:raise ingest.ApiError(200,'response_too_large')
+        return result
 
 
 def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
@@ -130,7 +137,7 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
                 require(not (archive/'history').exists() and not (archive/'history-marker.json').exists(),'history journal missing; do not reset campaign')
                 state={'version':1,'as_of':as_of.isoformat(),'sessions':sessions,'config_sha256':cfg,
                        'batch_limit':settings['max_requests_per_run'],'batches':[[]],'ranges':{},'days':[],
-                       'tasks':{},'status':'RUNNING','retry_not_before':None}
+                       'tasks':{},'status':'RUNNING','retry_not_before':None,'resource_checks':{}}
             else:
                 validate_history(state,lambda n:(source/n).read_bytes())
                 require((state['as_of'],state['sessions'],state['config_sha256'],state['batch_limit'])==
@@ -140,6 +147,13 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
             def result():
                 return {'status':state['status'],'batch':len(state['batches']),'requests_used':sum(map(len,state['batches'])),
                         'sessions_completed':len(state['tasks'])//2,'readiness':'NOT_EVALUATED','remote_saved':False}
+            # A crash can leave the final reservation durable but not its outcome.
+            # Never refund it or call the batch successfully exhausted: PAUSED
+            # remains ineligible for automatic publication. An explicitly selected
+            # next batch can resume the existing checkpoints within the total cap.
+            if state['status']=='RUNNING' and len(state['batches'][-1])>=state['batch_limit']:
+                state['status']='EXHAUSTED' if len(state['batches'])>=50 or sum(map(len,state['batches']))>=600 else 'PAUSED'
+                save()
             if state['status'] in {'COMPLETE','EXHAUSTED','BLOCKED'}:return result()
             if state['retry_not_before'] and datetime.now(daily.JST)<daily.aware(state['retry_not_before']):return result()
             if batch==len(state['batches'])+1:
@@ -154,7 +168,10 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
             require(ingest.read_json(marker)=={'as_of':state['as_of'],'sessions':state['sessions']},'history marker mismatch')
             kwargs={'transport':transport}
             if sleep is not None:kwargs['sleep']=sleep
-            client=HistoryClient(state,save,**kwargs)
+            def check_resources():
+                report=resources.inspect(source,private/'market-data-staging')
+                state['resource_checks'][str(len(state['batches']))]=report;save();resources.enforce(report)
+            client=HistoryClient(state,save,check_resources,**kwargs)
             def range_rows(name,start):
                 r=state['ranges'].setdefault(name,{'query':{'from':start,'to':state['as_of']},'pages':[],
                                                   'next_key':None,'seen_keys':[],'complete':False})
@@ -186,19 +203,22 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
                     day=date.fromisoformat(day_text)
                     for name in ('equities_master','equities_daily'):
                         key=name+':'+day_text
-                        if key in state['tasks']:continue
+                        checkpoint=archive/'datasets'/name/day_text/'checkpoint.json'
+                        if key in state['tasks'] and not checkpoint.exists():continue
                         existing=daily.partition(archive,name,day)
-                        if existing is None or not existing[1]:
+                        if checkpoint.exists() or existing is None or not existing[1]:
                             ingest.collect_partition(archive,BY_NAME[name],day,client)
                             existing=daily.partition(archive,name,day)
                         require(existing and existing[1] and all(r.get('Date')==day_text for r in existing[1]),'missing or invalid daily partition')
                         state['tasks'][key]=existing[2];save()
                     ingest.publish_snapshot(root,archive,day)
                 state['status']='COMPLETE'
+            except resources.ResourceLimit:
+                state['status']='PAUSED'
             except ingest.RequestBudgetExhausted:
                 state['status']='EXHAUSTED' if len(state['batches'])>=50 or sum(map(len,state['batches']))>=600 else 'BATCH_EXHAUSTED'
             except ingest.ApiError as error:
-                state['status']='BLOCKED' if error.status in {401,403} else 'PAUSED'
+                state['status']='BLOCKED' if error.status in {200,401,403} else 'PAUSED'
                 if state['status']=='PAUSED' and len(state['batches'][-1])>=state['batch_limit']:
                     state['status']='EXHAUSTED' if len(state['batches'])>=50 else 'PAUSED'
                 if error.status==429:state['retry_not_before']=(datetime.now(daily.JST)+timedelta(seconds=120)).isoformat()
@@ -212,7 +232,7 @@ def main():
     p.add_argument('--as-of',type=date.fromisoformat,required=True);p.add_argument('--sessions',type=int,default=280)
     p.add_argument('--batch',type=int,required=True);a=p.parse_args()
     try:
-        daily.checkout_preflight(a.root);result=run(a.root,as_of=a.as_of,sessions=a.sessions,batch=a.batch)
+        resources.constrain_memory();daily.checkout_preflight(a.root);result=run(a.root,as_of=a.as_of,sessions=a.sessions,batch=a.batch)
     except Exception:result={'status':'BLOCKED','error':'history_preflight_or_validation','remote_saved':False}
     print(json.dumps(result));return 0 if result['status']=='COMPLETE' else 2
 

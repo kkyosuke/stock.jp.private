@@ -40,6 +40,9 @@ def validate_archive(names, read):
             from jquants_history import validate_history
         state = json.loads(read(history))
         validate_history(state, read)
+        if state["status"] == "COMPLETE":
+            require(not any(f"jquants/datasets/{dataset}/{day}/checkpoint.json" in names
+                            for day in state["days"] for dataset in ("equities_master", "equities_daily")))
         marker = "jquants/history-marker.json"
         if any(state["batches"]):
             require(marker in names)

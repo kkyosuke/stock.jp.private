@@ -18,6 +18,8 @@ calendarの550暦日lookbackを含めLightの5年履歴内に収める。
 - `jquants/history/state.json`とmarker、範囲応答のpage object、日別partition checkpointを保存。
 - 復元後も使用数・固定期間・設定hash・選択営業日・全参照raw hashを再検証。
 - 既存の正しい日別partitionは再利用し、過去revisionを残す。calendar/TOPIX rangeは完了後再取得しない。
+  対象日に未完了の訂正checkpointがあれば古いlatestを再利用せず、checkpoint再開を優先する。
+  完了済み計画に未完了訂正が残った場合はCOMPLETEとして受理せず、reviewへ戻す。
 - dailyとworkspace／archive lockを共有。未完了daily journalがあれば開始しない。
 - batchを自動繰上げしない。消尽後だけ次の番号を明示。総上限・50枠到達は停止。
 - COMPLETEでも全契約datasetの履歴完了、PAPER完了、投資可とはしない。
@@ -30,12 +32,22 @@ python stock.jp/scripts/jquants_history.py --root "$PWD" \
 次のbatchに進む前に成果物をpack／verifyし、データPR経由で保存・採用・復元を確認する。
 既存の未保存成果物へ古いmain世代をoverlayしない。環境喪失により未保存予約が不明なら停止。
 CLIは清潔な最新mainを要求するため、保存用branchのまま次batchを開始しない。
+最終送信枠の予約後にクラッシュしてRUNNINGが残った場合、再開時に予約を戻さずPAUSEDへ
+永続正規化する。同じbatchでは通信せず、総上限内で明示した次batchだけ再開できる。
+50 batch／600送信到達時はEXHAUSTEDとし、自動採用は許可しない。
 正常なbatch予算消尽はBATCH_EXHAUSTEDとして保存可能。PAUSED/BLOCKED/EXHAUSTED/RUNNINGは
 保存PRを作れても自動採用gateで拒否し、通常reviewに戻す。
 1ページ／partitionなら280営業日で562送信・47 batchが目安。
 ページ追加・失敗により600で未完了になる場合は残範囲を報告し、上限を増やさない。
 
-280営業日の容量目安はraw＋派生CSV約0.9GB、圧縮0.1〜0.2GB。
+6000銘柄の合成1営業日を実測するとraw＋派生CSV 3,203,211 bytes、
+圧縮58,346 bytes、process peak RSS 52,596,736 bytes、所要1.201秒だった。
+280倍のraw単純外挿は896,899,080 bytes（約0.9GB）。同一形状の合成値であり、
+実レスポンスの銘柄名長・pagination・訂正履歴を含む実市場容量や全期間RSSの保証ではない。
+毎送信前にraw 2GiB、staging 2GiB、空きdisk最低6GiBを検査し、
+検査値をhistory journalへ永続化する。容量不足は送信せずPAUSED。
+HTTP応答は16MiBで読取りを打ち切り、超過応答は保存せずBLOCKED。
+CLIのaddress-space上限は1GiBで、停止しても予約済み送信枠は戻さない。
 訂正revision・複数復元領域・Git object分は別途必要。codecの750MiB store、8GiB restore上限は維持する。
 各保存時に実測容量を確認し、上限を黙って変更しない。
 
@@ -65,6 +77,12 @@ python stock.jp/scripts/recovery_drill.py \
   --operator ACTUAL_OPERATOR --output /private/staging/new-recovery-drill.json
 ```
 
+schema 1.2は対象commit、archive世代、private台帳・state、validator code、
+選択したPAPER run／attemptと全成果物hash、検査結果をmanifestに固定する。
+coverageの最新成功v0.4 PAPERと同じrun／attemptだけをhandoff・run integrity検証に使う。
+gateはbooleanやSHA文字列だけを信用せず、保存されたGit commitの入力を隔離復元して再検証する。
+後日の日次更新は過去の証跡を失効させないが、当時のGit objectは必要。
+旧schemaの証跡は新しい実復元検証を要し、手動の版番号更新では通過しない。
 最新の成功PAPERやhandoffがなければ対応checkはfalseで、正式recovery gateは未達のまま。
 旧証跡のlayout/SHAだけを書換えて合格扱いにしない。個人リスク確認・本人承認は生成しない。
 

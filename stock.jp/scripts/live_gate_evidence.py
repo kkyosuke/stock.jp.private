@@ -17,6 +17,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import subprocess
 from typing import Any
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
@@ -1221,6 +1222,12 @@ def evaluate_official_coverage(
         blockers=blockers,
         metrics={
             "run_count": len(selected),
+            "selected_run": ({
+                **{key: selected[0].get(key, "") for key in
+                   ("run_id", "attempt", "price_date", "completed_at_jst", "source_cutoff_jst")},
+                "history_row_sha256": hashlib.sha256(json.dumps(selected[0], sort_keys=True,
+                    ensure_ascii=False, separators=(",", ":")).encode()).hexdigest(),
+            } if selected else None),
             "live_network_run_count": live_network_count,
             "checked_run_counts": checked_counts,
         },
@@ -1259,8 +1266,8 @@ def evaluate_repository_recovery(
             metrics={},
             inputs=[],
         )
-    if drill.get("schema_version") != "1.1":
-        blockers.append("recovery drill schema_version must be 1.1")
+    if drill.get("schema_version") != "1.2":
+        blockers.append("recovery drill schema_version must be 1.2")
     if not isinstance(drill.get("drill_id"), str) or not drill.get(
         "drill_id", ""
     ).strip():
@@ -1339,10 +1346,21 @@ def evaluate_repository_recovery(
     ).strip():
         blockers.append("recovery result_notes is required")
 
+    provenance_metrics = {}
+    try:
+        try:
+            from scripts.recovery_provenance import verify as verify_recovery_provenance
+        except ModuleNotFoundError:
+            from recovery_provenance import verify as verify_recovery_provenance
+        provenance_metrics = verify_recovery_provenance(root, drill)
+    except (ValueError, OSError, KeyError, TypeError, subprocess.CalledProcessError) as error:
+        blockers.append(f"recovery provenance validation failed: {error}")
+
     return _result(
         gate=REPOSITORY_RECOVERY_GATE,
         blockers=blockers,
         metrics={
+            **provenance_metrics,
             "drill_id": drill.get("drill_id"),
             "completed_at_jst": completed.isoformat(timespec="seconds")
             if completed

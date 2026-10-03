@@ -4,7 +4,6 @@ Prepare a separate clean GitHub clone and restore its private archive beforehand
 The output is a new reviewable evidence file, not an automatic policy promotion.
 """
 import argparse
-import csv
 from datetime import datetime
 import hashlib
 import importlib.util
@@ -14,9 +13,11 @@ import subprocess
 try:
     from scripts.live_gate_evidence import REPOSITORY_LAYOUT_REVISION, JST, evaluate_official_coverage
     from scripts.operation_state import validate_workspace
+    from scripts.run_integrity import validate_run_artifacts, RunIntegrityError
 except ModuleNotFoundError:
     from live_gate_evidence import REPOSITORY_LAYOUT_REVISION, JST, evaluate_official_coverage
     from operation_state import validate_workspace
+    from run_integrity import validate_run_artifacts, RunIntegrityError
 
 REPO='kkyosuke/stock.jp.private'
 
@@ -34,6 +35,33 @@ def _bootstrap(recovered,at):
     spec=importlib.util.spec_from_file_location('recovery_health',recovered/'scripts/operation_health.py')
     health=importlib.util.module_from_spec(spec);spec.loader.exec_module(health)
     return health.command_json('operation_bootstrap.py',at)
+
+
+def validated_paper_run(public):
+    """Use coverage's exact latest-attempt v0.4 row, never a second selection."""
+    coverage=evaluate_official_coverage(root=public)
+    selected=coverage.get('metrics',{}).get('selected_run')
+    if not selected:return coverage,None,False,['no canonical completed v0.4 PAPER run']
+    record=dict(selected);errors=[]
+    try:
+        run_id=selected['run_id']
+        from datetime import date
+        if date.fromisoformat(run_id).isoformat()!=run_id:raise ValueError('invalid run ID')
+        run_dir=public/'operations/private/runs'/run_id
+        handoff_path=run_dir/'handoff.json';handoff=json.loads(handoff_path.read_text())
+        attempt=int(selected['attempt'])
+        if attempt<1 or type(handoff.get('attempt')) is not int or handoff['attempt']!=attempt:
+            raise ValueError('handoff attempt differs from selected history attempt')
+        expected={'run_id':run_id,'status':'completed','operation_mode':'PAPER','active_rule_version':'v0.4',
+                  'completed_at_jst':selected['completed_at_jst']}
+        if any(handoff.get(k)!=v for k,v in expected.items()):raise ValueError('handoff identity differs from selected history row')
+        validate_run_artifacts(root=public,run_id=run_id,completed_at=selected['completed_at_jst'],
+                              source_cutoff=selected['source_cutoff_jst'],price_date=selected['price_date'])
+        record['handoff_sha256']=hashlib.sha256(handoff_path.read_bytes()).hexdigest()
+        record['artifact_hashes']=hashes(run_dir)
+    except (KeyError,TypeError,ValueError,OSError,RunIntegrityError) as error:
+        errors.append(str(error))
+    return coverage,record,not errors and coverage['eligible'],errors
 
 
 def generate(source,recovered,operator):
@@ -57,26 +85,31 @@ def generate(source,recovered,operator):
     archive_equal=bool(archive_before) and archive_before==archive_after
     public=recovered/'stock.jp';errors=validate_workspace(public)
     bootstrap=_bootstrap(recovered,started.isoformat())
-    with (recovered/'operations/private/run-history.csv').open() as stream:
-        history=list(csv.DictReader(stream))
-    completed=[r for r in history if r.get('status')=='COMPLETED' and r.get('operation_mode')=='PAPER']
-    latest=completed[-1] if completed else None
-    handoff=(recovered/'operations/private/runs'/latest['run_id']/'handoff.json') if latest else None
-    handoff_ok=bool(handoff and handoff.is_file() and json.loads(handoff.read_text()).get('status')=='completed')
-    coverage=evaluate_official_coverage(root=public)
+    coverage,selected_run,run_ok,run_errors=validated_paper_run(public)
     ledger_keys=[k for k in original if 'ledger' in Path(k).name]
     ledger_ok=bool(ledger_keys) and all(restored.get(k)==original[k] for k in ledger_keys)
     state_equal=restored.get('state.json')==original.get('state.json')
     checks={'clean_clone_single_repository':archive_equal,'workspace_setup':True,'state_validation':not errors,
-            'paper_bootstrap_check':bootstrap.get('paper_go') is True,'latest_successful_run':bool(latest) and coverage['eligible'],
-            'latest_handoff':handoff_ok,'all_ledgers':ledger_ok,'unreconciled_orders':state_equal and ledger_ok and not errors}
+            'paper_bootstrap_check':bootstrap.get('paper_go') is True,'latest_successful_run':run_ok,
+            'latest_handoff':run_ok,'all_ledgers':ledger_ok,'unreconciled_orders':state_equal and ledger_ok and not errors}
+    try:
+        try:
+            from scripts.recovery_provenance import capture
+        except ModuleNotFoundError:
+            from recovery_provenance import capture
+        provenance=capture(source,recovered,selected_run,checks,{'state_errors':errors,
+            'paper_go':bootstrap.get('paper_go') is True,'run_errors':run_errors,'coverage':coverage})
+        provenance_errors=[]
+    except (ValueError,OSError,subprocess.CalledProcessError,KeyError) as error:
+        provenance=None;provenance_errors=['provenance capture failed: '+str(error)]
+        checks['clean_clone_single_repository']=False
     if hashes(source/'operations/private')!=original or hashes(recovered/'operations/private')!=restored:raise ValueError('recovery inspection changed private files')
-    return {'schema_version':'1.1','drill_id':'recovery-'+started.strftime('%Y%m%dT%H%M%S'),'operator':operator,
+    return {'schema_version':'1.2','drill_id':'recovery-'+started.strftime('%Y%m%dT%H%M%S'),'operator':operator,
             'repository_visibility':'PRIVATE','reason':'REPOSITORY_LAYOUT_CHANGE','repository_layout_revision':REPOSITORY_LAYOUT_REVISION,
             'started_at_jst':started.isoformat(),'completed_at_jst':datetime.now(JST).isoformat(),
             'source_private_commit':source_sha,'recovered_private_commit':recovered_sha,
             'source_code_tree':git(source,'rev-parse','HEAD:stock.jp'),'recovered_code_tree':git(recovered,'rev-parse','HEAD:stock.jp'),
-            'checks':checks,'result_notes':'Generated from actual clones. Missing PAPER/source evidence stays false; no user risk approval is inferred.'}
+            'checks':checks,'provenance':provenance,'provenance_errors':provenance_errors,'selected_run':selected_run,'run_validation_errors':run_errors,'result_notes':'Generated from actual clones. Missing PAPER/source evidence stays false; no user risk approval is inferred.'}
 
 
 def main():

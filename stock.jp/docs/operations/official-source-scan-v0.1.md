@@ -28,11 +28,11 @@ TDnetと会社IRは、エージェントが一次サイトを確認する`PENDIN
 
 ## 2. 認証情報
 
-EDINETのAPIキーは環境変数だけで渡す。JSON、チャット、ログ、コマンド引数、Git管理下へ値を書かない。J-QuantsのAPIキーは設定しない。
-
-~~~bash
-export EDINET_API_KEY='EDINETで発行した値'
-~~~
+`EDINET_API_KEY`と`JQUANTS_API_KEY`は、実際にcollectorを実行する環境の承認済みsecret機構から環境変数として渡す。
+J-Quantsは[private取得の認証手順](../jquants-private-ingestion.md)を参照し、既存の承認済みLight収集経路を使う。
+値をJSON、チャット、ログ、コマンド引数、Git管理下やfixtureへ書かず、有無だけを確認する。
+GitHub Actionsのsecretを外部collectorから読み出そうとしない。認証不足・拒否時は停止して報告する。
+収集用credentialの利用許可は、LIVE昇格や既存forward holdoutへのデータ採用承認を意味しない。
 
 変数名、エンドポイント、timeoutは`operations/private/source-config.json`で設定する。値そのものは保存しない。公開ページ確認には認証値を保存せず、URL、確認範囲、公開日時、取得日時を`sources.csv`へ残す。
 

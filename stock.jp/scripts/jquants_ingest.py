@@ -130,7 +130,7 @@ class Client:
     """Fixed-origin API-key client, serial pacing, bounded transient retries."""
     def __init__(self, *, plan: str, timeout: int = 30, max_requests: int | None = None,
                  transport: Callable | None = None, sleep: Callable = time.sleep,
-                 monotonic: Callable = time.monotonic, retries: int = 5, download_hosts: tuple[str, ...] = ()):
+                 monotonic: Callable = time.monotonic, retries: int = 5, download_hosts: tuple[str, ...] = (), max_response_bytes: int | None = None):
         if plan not in PLANS:
             raise IngestionError("verify and configure the purchased plan before collection")
         self._key = os.environ.get("JQUANTS_API_KEY", "") if transport is None else ""
@@ -138,6 +138,7 @@ class Client:
             raise IngestionError("JQUANTS_API_KEY is not set; collection blocked")
         if max_requests is not None and max_requests < 1:
             raise ValueError("max_requests must be positive")
+        self.max_response_bytes = max_response_bytes
         self.transport, self.timeout, self.max_requests = transport, timeout, max_requests
         self.download_hosts = download_hosts
         self.sleep, self.monotonic, self.retries = sleep, monotonic, retries
@@ -155,13 +156,16 @@ class Client:
             with self.opener.open(request, timeout=self.timeout) as response:
                 if response.status == 210:
                     raise ApiError(210, "not_available")
-                return json.loads(response.read(), parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
+                data = response.read() if self.max_response_bytes is None else response.read(self.max_response_bytes + 1)
+                if self.max_response_bytes is not None and len(data) > self.max_response_bytes:
+                    raise ApiError(200, "response_too_large")
+                return json.loads(data, parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
         except HTTPError as error:
             # Never persist error bodies, URLs containing signed tokens, or headers.
             kind = "access_denied_unclassified" if error.code == 403 else "api_error"
             if error.code in {401, 403}:
                 try:
-                    message = json.loads(error.read()).get("message", "")
+                    message = json.loads(error.read(self.max_response_bytes + 1) if self.max_response_bytes is not None else error.read()).get("message", "")
                     if message == "The incoming api key is invalid or expired." or error.code == 401:
                         kind = "authentication_failed"
                 except (ValueError, TypeError, AttributeError):
