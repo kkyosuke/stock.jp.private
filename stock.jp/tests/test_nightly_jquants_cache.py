@@ -171,16 +171,17 @@ class NightlyCacheTest(unittest.TestCase):
         config = json.loads((private / 'source-config.json').read_text())
         config['jquants']['plan'] = 'light'
         config['jpx_listed_master']['enabled'] = False
-        config['jquants']['minimum_liquidity_sessions'] = 1
+        config['jquants']['minimum_liquidity_sessions'] = 20
         run_dir = private / 'runs/2026-10-02'
         cutoff = datetime.fromisoformat(self.cutoff)
         def transport(endpoint, params):
             self.calls.append((endpoint, params.copy()))
             if endpoint == '/markets/calendar':
-                return {'data': [{'Date': '2026-10-05', 'HolDiv': '1'}]}
+                start=date.fromisoformat(params['from']);end=date.fromisoformat(params['to'])
+                return {'data': [{'Date': str(start+timedelta(days=i)), 'HolDiv': '1' if (start+timedelta(days=i)).weekday()<5 else '0'} for i in range((end-start).days+1)]}
             if endpoint == '/equities/bars/daily':
-                return {'data': [{'Date': '2026-10-02', 'Code': '12340', 'O': 10, 'H': 10,
-                                  'L': 10, 'C': 10, 'Vo': 100, 'Va': 1000, 'AdjFactor': 1}]}
+                return {'data': [{'Date': str(date(2026,10,2)-timedelta(days=i)), 'Code': '12340', 'O': 10, 'H': 10,
+                                  'L': 10, 'C': 10, 'Vo': 100, 'Va': 1000, 'AdjFactor': 1} for i in range(40) if (date(2026,10,2)-timedelta(days=i)).weekday()<5]}
             return {'data': []}
         clients = []
         def factory(**kwargs):

@@ -45,8 +45,11 @@ stock.jp/.venv/bin/python stock.jp/scripts/limited_live.py --root stock.jp apply
 
 gate を `true` にする場合は、`operations/private/evidence/` 内の型付き evidence file を同時に指定します。空ファイル、予定、口頭確認、チャット、真偽値だけの手編集は evidence にしません。
 
-J-Quantsは使用せず、新規取得もLIVE証跡への採用も行いません。point-in-timeと履歴再生は、
-再利用可能な公式公開データまたは一次資料から再構築できた範囲だけを証跡にします。
+2026-10-03時点では、本人承認済みLight契約内の日次収集・上限付き履歴収集とPAPER準備に
+J-Quantsを使用します。Standardへの変更や有料指数の導入は行いません。
+収集許可はLIVE／forward holdoutへの採用承認ではなく、既存holdoutの
+`jquants_will_not_be_used`条件は維持します。条件変更が必要なら別の事前計画・本人判断に分離し、
+既存結果を遡って合格にしません。
 
 ### v0.4 holdoutの時系列制約
 

@@ -31,6 +31,20 @@ def validate_archive(names, read):
     provider page hashes embedded in historical manifests still match.
     """
     names = set(names)
+    history = "jquants/history/state.json"
+    if "jquants/history-marker.json" in names or any(name.startswith("jquants/history/") for name in names):
+        require(history in names)
+        try:
+            from scripts.jquants_history import validate_history
+        except ModuleNotFoundError:
+            from jquants_history import validate_history
+        state = json.loads(read(history))
+        validate_history(state, read)
+        marker = "jquants/history-marker.json"
+        if any(state["batches"]):
+            require(marker in names)
+        if marker in names:
+            require(json.loads(read(marker)) == {"as_of": state["as_of"], "sessions": state["sessions"]})
     for name in sorted(names):
         if re.fullmatch(r'jquants/runs/[0-9]{8}T120000Z\.json', name):
             journal = json.loads(read(name))

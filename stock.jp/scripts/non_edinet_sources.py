@@ -30,6 +30,11 @@ import certifi
 from openpyxl import load_workbook
 
 
+try:
+    from scripts.liquidity_window import trading_value_window
+except ModuleNotFoundError:
+    from liquidity_window import trading_value_window
+
 JST = ZoneInfo("Asia/Tokyo")
 TLS_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 USER_AGENT = "Mozilla/5.0 (compatible; stock.jp nightly research/0.1)"
@@ -641,6 +646,61 @@ def collect_non_edinet_sources(
         else:
             provider("jquants_security_master", "DISABLED", 0, 0, "dataset disabled")
 
+        calendar_rows = []
+        if jq_config.get("trading_calendar_enabled", True):
+            try:
+                forward = max(7, int(jq_config.get("calendar_forward_days", 21)))
+                stem = f"jquants-calendar-{run_id}"
+                if fixture_dir:
+                    rows, pages = _fixture_pages(fixture_dir, stem)
+                else:
+                    rows, pages = _jquants_pages(
+                        base_url=base_url, path="markets/calendar",
+                        params={"from": (cutoff_at.date() - timedelta(days=max(60, int(jq_config.get("liquidity_lookback_calendar_days", 45))))).isoformat(), "to": (cutoff_at.date() + timedelta(days=forward)).isoformat()},
+                        client=jq_client, timeout=timeout,
+                    )
+                raw_path = raw_dir / f"{stem}.json"
+                _atomic_json(raw_path, {"pages": pages})
+                calendar_rows = [
+                    {"date": _date_text(row.get("Date")), "holiday_division": _text(row.get("HolDiv"))}
+                    for row in rows if _date_text(row.get("Date"))
+                ]
+                _atomic_json(
+                    run_dir / "trading-calendar.json",
+                    {
+                        "schema_version": "1.0", "provider": "J-Quants API V2",
+                        "retrieved_at_jst": retrieved, "rows": calendar_rows,
+                    },
+                )
+                endpoint = f"{base_url}/markets/calendar"
+                next_sessions = [
+                    row for row in calendar_rows
+                    if date.fromisoformat(row["date"]) > cutoff_at.date()
+                    and row["holiday_division"] in {"1", "2"}
+                ]
+                if not next_sessions:
+                    raise NonEdinetSourceError("trading calendar has no future cash-equity session")
+                manifest["datasets"]["trading_calendar"] = {
+                    **_manifest_entry(run_dir / "trading-calendar.json", run_dir, len(calendar_rows), endpoint),
+                    "raw_path": raw_path.relative_to(run_dir).as_posix(),
+                    "raw_sha256": _sha256(raw_path),
+                }
+                provider("jquants_trading_calendar", "OK", len(pages), len(rows))
+                successful_gap_sources.add("trading_calendar")
+                sources.append(
+                    _source_row(
+                        source_id=f"jquants-calendar-{run_id}", category="trading_calendar", code="",
+                        title=f"Official trading calendar through {calendar_rows[-1]['date']}",
+                        published_at=_query_published(cutoff_at.date(), cutoff_at),
+                        retrieved_at=retrieved, url=endpoint,
+                        notes="official JPX/OSE holiday divisions; cash-equity next session derived from HolDiv 1/2",
+                    )
+                )
+            except (KeyError, NonEdinetSourceError, ValueError, OSError) as error:
+                provider("jquants_trading_calendar", "ERROR", 0, 0, str(error))
+        else:
+            provider("jquants_trading_calendar", "DISABLED", 0, 0, "dataset disabled")
+
         # Official bars are fetched per active target over enough calendar days
         # to calculate a 20-session liquidity measure.
         all_bars: list[dict[str, Any]] = []
@@ -679,21 +739,17 @@ def collect_non_edinet_sources(
                 maximum_age = max(0, int(jq_config.get("maximum_official_price_age_days", 7)))
                 for code in sorted(targets):
                     code_rows = [row for row in normalized_bars if row["code"] == code]
-                    eligible = [
-                        row for row in code_rows
-                        if _number(row["trading_value"]) is not None
-                        and float(row["trading_value"]) > 0
-                        and date.fromisoformat(row["date"]) <= cutoff_at.date()
-                    ]
-                    eligible = sorted(eligible, key=lambda row: row["date"])[-minimum_sessions:]
-                    if len(eligible) < minimum_sessions:
-                        missing.append(f"{code}: {len(eligible)}/{minimum_sessions} sessions")
+                    try:
+                        window, values = trading_value_window(all_bars, calendar_rows,
+                            code=code, cutoff=cutoff_at.date(), sessions=minimum_sessions)
+                    except ValueError as error:
+                        missing.append(f"{code}: {error}")
                         continue
-                    latest = eligible[-1]
+                    eligible = [row for row in code_rows if row["date"] in window]
+                    latest = next(row for row in eligible if row["date"] == window[-1])
                     if (cutoff_at.date() - date.fromisoformat(latest["date"])).days > maximum_age:
                         missing.append(f"{code}: latest official bar is stale ({latest['date']})")
                         continue
-                    values = [float(row["trading_value"]) for row in eligible]
                     liquidity_rows.append(
                         {
                             "as_of_date": latest["date"], "code": code,
@@ -720,7 +776,7 @@ def collect_non_edinet_sources(
                 _atomic_csv(liquidity_path, LIQUIDITY_FIELDS, liquidity_rows)
                 manifest["datasets"]["liquidity_20d"] = {
                     **_manifest_entry(liquidity_path, run_dir, len(liquidity_rows), endpoint),
-                    "calculation": "last 20 positive official daily trading-value observations at or before cutoff",
+                    "calculation": "last 20 consecutive official cash-equity sessions; explicit no-execution value is zero; missing or invalid fails",
                 }
                 if missing:
                     bar_error = "; ".join(missing)
@@ -949,59 +1005,6 @@ def collect_non_edinet_sources(
         else:
             provider("jquants_earnings_calendar", "DISABLED", 0, 0, "dataset disabled")
 
-        if jq_config.get("trading_calendar_enabled", True):
-            try:
-                forward = max(7, int(jq_config.get("calendar_forward_days", 21)))
-                stem = f"jquants-calendar-{run_id}"
-                if fixture_dir:
-                    rows, pages = _fixture_pages(fixture_dir, stem)
-                else:
-                    rows, pages = _jquants_pages(
-                        base_url=base_url, path="markets/calendar",
-                        params={"from": run_id, "to": (cutoff_at.date() + timedelta(days=forward)).isoformat()},
-                        client=jq_client, timeout=timeout,
-                    )
-                raw_path = raw_dir / f"{stem}.json"
-                _atomic_json(raw_path, {"pages": pages})
-                calendar_rows = [
-                    {"date": _date_text(row.get("Date")), "holiday_division": _text(row.get("HolDiv"))}
-                    for row in rows if _date_text(row.get("Date"))
-                ]
-                _atomic_json(
-                    run_dir / "trading-calendar.json",
-                    {
-                        "schema_version": "1.0", "provider": "J-Quants API V2",
-                        "retrieved_at_jst": retrieved, "rows": calendar_rows,
-                    },
-                )
-                endpoint = f"{base_url}/markets/calendar"
-                next_sessions = [
-                    row for row in calendar_rows
-                    if date.fromisoformat(row["date"]) > cutoff_at.date()
-                    and row["holiday_division"] in {"1", "2"}
-                ]
-                if not next_sessions:
-                    raise NonEdinetSourceError("trading calendar has no future cash-equity session")
-                manifest["datasets"]["trading_calendar"] = {
-                    **_manifest_entry(run_dir / "trading-calendar.json", run_dir, len(calendar_rows), endpoint),
-                    "raw_path": raw_path.relative_to(run_dir).as_posix(),
-                    "raw_sha256": _sha256(raw_path),
-                }
-                provider("jquants_trading_calendar", "OK", len(pages), len(rows))
-                successful_gap_sources.add("trading_calendar")
-                sources.append(
-                    _source_row(
-                        source_id=f"jquants-calendar-{run_id}", category="trading_calendar", code="",
-                        title=f"Official trading calendar through {calendar_rows[-1]['date']}",
-                        published_at=_query_published(cutoff_at.date(), cutoff_at),
-                        retrieved_at=retrieved, url=endpoint,
-                        notes="official JPX/OSE holiday divisions; cash-equity next session derived from HolDiv 1/2",
-                    )
-                )
-            except (KeyError, NonEdinetSourceError, ValueError, OSError) as error:
-                provider("jquants_trading_calendar", "ERROR", 0, 0, str(error))
-        else:
-            provider("jquants_trading_calendar", "DISABLED", 0, 0, "dataset disabled")
 
     jq_providers = [providers[name] for name, flag in jq_dataset_flags.items()
                     if jq_enabled and jq_config.get(flag, True)]
