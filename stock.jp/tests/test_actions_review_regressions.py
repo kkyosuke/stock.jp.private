@@ -208,7 +208,7 @@ class FullTreeScopeTests(unittest.TestCase):
         self.assertEqual(result['status'],'RESTORED');self.assertEqual(len(fixture.fixture.calls),9)
         self.assertLess(clock[0]-started,5*3600)
         print(json.dumps(dict(cold_business_daily_280=True,provider_calls=len(fixture.fixture.calls),
-            github_calls=len(fixture.remote.calls)-calls,simulated_elapsed_seconds=round(clock[0]-started,1))),flush=True)
+            github_rest_calls=len(fixture.remote.calls)-calls,simulated_elapsed_seconds=round(clock[0]-started,1))),flush=True)
     def test_truncated_tree_never_accepted(self):
         fixture=integration.DriverTests();fixture.setUp();self.addCleanup(fixture.doCleanups)
         original=fixture.remote.handle

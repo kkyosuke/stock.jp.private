@@ -41,7 +41,7 @@ def main():
             driver=d.Driver(fixture.root,request,history.transport,pin=fixture.remote.pin,writer='actions-v1',context=fixture.context,
                             clock=now,sleep=lambda _:None,live_handover_probe=controller.read)
             with patch.object(d.daily.ingest,'utc_now',side_effect=lambda:now().isoformat()):result=driver.execute('history')
-            item=dict(segment=segment,status=result['status'],provider_calls=len(history.calls),github_calls=len(fixture.remote.calls)-count,
+            item=dict(segment=segment,status=result['status'],provider_calls=len(history.calls),github_rest_calls=len(fixture.remote.calls)-count,
                       simulated_elapsed_seconds=round(clock[0]-start,1));segments.append(item);print(json.dumps(item),flush=True)
             if result['status']=='RESTORED':break
             assert result['status']=='PAUSED_GITHUB_BUDGET',result
@@ -58,13 +58,13 @@ def main():
         with patch.object(d.daily.ingest,'utc_now',side_effect=lambda:now().isoformat()):
             result=d.Driver(fixture.root,request,fixture.fixture.transport,pin=fixture.remote.pin,writer='actions-v1',
                 context=fixture.context,clock=now,sleep=lambda _:None,live_handover_probe=controller.read).execute('daily')
-        print(json.dumps(dict(fresh_daily=result,provider_calls=len(fixture.fixture.calls),github_calls=len(fixture.remote.calls)-count,
+        print(json.dumps(dict(fresh_daily=result,provider_calls=len(fixture.fixture.calls),github_rest_calls=len(fixture.remote.calls)-count,
                               simulated_elapsed_seconds=round(clock[0]-start,1))),flush=True)
         assert result['status']=='RESTORED',result
         store=fixture.root/'stock.jp/data/jquants-archive'
         print(json.dumps(dict(history_segments=len(segments),history_requests=len(history.calls),
             adopted_archive_objects=len(list((store/'objects').rglob('*.gz'))),controller_reads=controller.reads,
-            total_github_calls=len(fixture.remote.calls),total_simulated_seconds=round(clock[0]-started,1))),flush=True)
+            total_github_rest_calls=len(fixture.remote.calls),total_simulated_seconds=round(clock[0]-started,1))),flush=True)
     finally:
         history.doCleanups();fixture.doCleanups()
 

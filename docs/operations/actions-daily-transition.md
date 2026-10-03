@@ -165,7 +165,7 @@ checkpointの `adopted_history` に保存する。後続CASで変更・削除を
 実サービス上のtoken有効性やCI起動・merge成功を、このmock結果から保証しない。
 
 280session・47batchを実runnerで作ったmainから、cacheなし・checkpointなしで月曜の日次を開始する
-回帰試験は、provider 9回、GitHub 2,353回、pacing込みの模擬経過5,428.9秒でRESTOREDとなった。
+回帰試験は、provider 9回、GitHub REST 2,353回＋GraphQL 2回、pacing込みの模擬経過5,428.9秒でRESTOREDとなった。
 正規化manifestは280件、master/barsのraw partition revisionは560件で、batchごとに増殖しない。
 API回数と模擬時刻は合成1銘柄fixtureの測定値であり、実通信やCPU処理時間の上限保証ではない。
 4,000銘柄の容量試験は上記の独立した試験である。
@@ -173,6 +173,22 @@ API回数と模擬時刻は合成1銘柄fixtureの測定値であり、実通信
 全期間のremote checkpoint→publication→adoption→fresh dailyを通すopt-in smokeは、
 `stock.jp` から `PYTHONPATH=.:tests python tests/actions_fullperiod_smoke.py` で実行できる。
 全通信は合成であり、rate待機は注入clockを進める。全raw hashの反復検証を含むため数十分かかる。
+
+全期間smokeは、280session・562 provider requestsを8回の実行で完了し、合成PR/CI/merge後の
+全raw hash復元と直後の休日の日次までRESTOREDとなった。履歴採用時のarchive objectは1,685件。
+GitHub予算による7回のpause後も同じcampaignを継続し、予算・承認・不変履歴をリセットしていない。
+
+| 経路 | provider回数 | REST回数 | GraphQL回数 | pacing込み模擬秒 |
+| --- | ---: | ---: | ---: | ---: |
+| 全280日履歴（8実行の合計） | 562 | 29,690 | 2 | 129,161.5 |
+| 直後の休日の日次 | 1 | 2,048 | 2 | 3,997.6 |
+| 別試験のcold開始・月曜日次 | 9 | 2,353 | 2 | 5,428.9 |
+
+履歴の各実行は最大17,344.9秒の模擬経過で、5時間予算内に停止した。
+このsmokeのclockはCPU処理・実ネットワーク遅延を数えない。単一jobで全履歴が終わる主張ではない。
+全期間smokeは45fdd44の実装で開始し、db01849の「大量読取り前の予算復元」は別の追加回帰とCIで確認した。
+smokeのJSONにある旧 `github_calls` はREST呼出数を指す。GraphQLの2回/PRは別に計数するが、
+そのpacingは模擬経過に含まれる。最新の出力項目名は `github_rest_calls` に揃えた。
 
 既存secret名はユーザー提供画面で確認されたものを使う。値と実scopeは未確認。
 以前のmetadata照会は403 `Resource not accessible by integration`で、別経路による回避をしていない。
