@@ -367,18 +367,22 @@ def secure_private_tree(root: Path = PROJECT_ROOT) -> None:
     for directory, child_directories, filenames in os.walk(private):
         directory_path = Path(directory)
         if not directory_path.is_symlink():
-            directory_path.chmod(0o700)
+            if directory_path.stat().st_mode & 0o7777 != 0o700:
+                directory_path.chmod(0o700)
         child_directories[:] = [
             name
             for name in child_directories
             if not (directory_path / name).is_symlink()
         ]
         for name in child_directories:
-            (directory_path / name).chmod(0o700)
+            child = directory_path / name
+            if child.stat().st_mode & 0o7777 != 0o700:
+                child.chmod(0o700)
         for name in filenames:
             path = directory_path / name
             if not path.is_symlink():
-                path.chmod(0o600)
+                if path.stat().st_mode & 0o7777 != 0o600:
+                    path.chmod(0o600)
 
 
 def initialize_or_migrate_workspace(
