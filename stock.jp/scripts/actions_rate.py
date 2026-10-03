@@ -15,7 +15,7 @@ class BudgetedTransport:
     WRITE_LIMIT=360
     def __init__(self,request,*,clock=time.time,sleep=time.sleep,deadline=None):
         self.request=request;self.clock=clock;self.sleep=sleep;self.deadline=deadline or clock()+5*3600
-        self.restored=False
+        self.restored=False;self.wait_epoch=0
         self.window=int(clock()//3600);self.reads=self.writes=0;self.last_read=self.last_write=0.;self.blocked=0.
     def state(self):
         # Allowance for checkpoint CAS/readback after this state is serialized.
@@ -54,14 +54,34 @@ class BudgetedTransport:
         return self._paced('GET',lambda:self.request.review_decision(number,head,reviews))
     def __call__(self,method,path,body=None):
         return self._paced(method,lambda:self.request(method,path,body))
-    def _paced(self,method,operation):
+    def mutation(self,method,path,body,*,before_io,prepare_io=None):
+        if method=='GET':raise RemoteStop('guarded mutation requires a write')
+        return self._paced(method,lambda:self.request(method,path,body),before_io=before_io,prepare_io=prepare_io)
+    def _paced(self,method,operation,*,before_io=None,prepare_io=None):
         for attempt in range(2):
-            self._roll();write=method!='GET'
-            earliest=max(self.clock(),self.blocked,self.last_read+1.6,self.last_write+10.1 if write else 0)
-            if self.reads>=self.READ_LIMIT or write and self.writes>=self.WRITE_LIMIT:
-                earliest=max(earliest,(self.window+1)*3600)
-            if earliest>=self.deadline:raise BudgetPause('GitHub budget deadline; stop without sending')
-            self.sleep(max(0,earliest-self.clock()));self._roll()
+            write=method!='GET';prepared=False
+            while True:
+                self._roll()
+                earliest=max(self.clock(),self.blocked,self.last_read+1.6,self.last_write+10.1 if write else 0)
+                quota_wait=self.reads>=self.READ_LIMIT or write and self.writes>=self.WRITE_LIMIT
+                if quota_wait:
+                    earliest=max(earliest,(self.window+1)*3600)
+                if earliest>=self.deadline:raise BudgetPause('GitHub budget deadline; stop without sending')
+                if earliest>self.clock() and (quota_wait or self.clock()<self.blocked):
+                    self.wait_epoch+=1;prepared=False
+                self.sleep(max(0,earliest-self.clock()));self._roll()
+                if prepare_io and not prepared:
+                    epoch=self.wait_epoch
+                    prepare_io();prepared=epoch==self.wait_epoch
+                    continue  # re-budget/pace after evidence reads; no final observation yet
+                if before_io:before_io()
+                if self.clock()>=self.deadline:raise BudgetPause('GitHub budget deadline after final observation')
+                self._roll()
+                # A slow observation (or callback doing paced reads) can change
+                # the time window/counters. Any further wait needs a new check.
+                if before_io and (self.clock()<max(self.blocked,self.last_read+1.6,self.last_write+10.1 if write else 0)
+                    or self.reads>=self.READ_LIMIT or write and self.writes>=self.WRITE_LIMIT):continue
+                break
             self.reads+=1;self.last_read=self.clock()
             if write:self.writes+=1;self.last_write=self.clock()
             try:return operation()

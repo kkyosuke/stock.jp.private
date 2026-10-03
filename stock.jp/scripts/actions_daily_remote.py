@@ -44,7 +44,7 @@ def git_blob(data):
     return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
 
 
-def gate(facts):
+def gate(facts, *, now=None):
     require(isinstance(facts, dict), 'activation evidence missing')
     for key in ('enabled', 'publication_authorized', 'checkpoint_authorized',
                 'old_scheduler_stopped', 'main_restored_and_verified', 'exclusive_writer'):
@@ -56,7 +56,8 @@ def gate(facts):
             ('PAPER', 'HUMAN_ONLY', 'light'), 'execution boundary mismatch')
     if 'expires_at' in facts:
         expiry=datetime.fromisoformat(facts['expires_at'])
-        require(expiry.tzinfo is not None and datetime.now(expiry.tzinfo)<expiry,'approval expired')
+        current=now if now is not None else datetime.now(expiry.tzinfo)
+        require(expiry.tzinfo is not None and current.tzinfo is not None and current<expiry,'approval expired')
 
 
 def validate(document):
@@ -234,6 +235,7 @@ class RunnerCheckpoint:
 
     def before_provider_io(self):
         if self.authorization.get('handover_check'):self.authorization['handover_check']()
+        gate(self.authorization,now=self.clock())
         run=self.document['runs'][self.day]
         require(run['phase']=='IN_FLIGHT','provider requires verified reservation')
         now=self.clock()
@@ -392,6 +394,7 @@ class HistoryCheckpoint(RunnerCheckpoint):
 
     def before_provider_io(self):
         if self.authorization.get('handover_check'):self.authorization['handover_check']()
+        gate(self.authorization,now=self.clock())
         require(self.document['history']['phase']=='IN_FLIGHT','history provider requires verified reservation')
         # Historical as_of is fixed; do not apply the daily JST run-date boundary.
 

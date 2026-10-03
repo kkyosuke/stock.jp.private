@@ -66,7 +66,9 @@ lease復活、異なるowner/lease/epochは独立した検証で拒否する。
 同じ親・bodyを競合送信しても同じcommitにならず、sibling更新の片方だけが採用される。
 結果不明の予約はIN_FLIGHTのまま停止し、返金・自動再送・新runへの付替えをしない。
 
-日次は、paced CAS完了後の実送信直前にもJST運用日を再確認する。日跨ぎなら予約を保持して送信しない。
+日次・履歴とも、予約CASとhandover照合が終わった実provider送信直前にgateとapproval期限を再確認する。
+同日内に失効しても予約はIN_FLIGHTのまま保持し、送信・返金・自動付替えをしない。
+日次はJST運用日も再確認し、日跨ぎなら同じく予約を保持して送信しない。
 履歴の固定as_ofにはこの日次境界を適用しない。
 
 日次は最大12回。履歴は最大280営業日・600回・50batch×12回を維持する。
@@ -107,6 +109,20 @@ request間1.6秒、write間10.1秒以上を空ける。GraphQL review照会も�
 
 公開transactionはBLOBS→TREE→COMMIT→REF→PR→CI→MERGE→RESTOREを永続化する。
 各write前にPENDING intent、応答後にACKEDを保存する。CI待ち・公開再開中は新規取得を行わない。
+
+publicationのblob/tree/commit/ref/PR/mergeは、次の順序で実送信を制御する。
+
+1. GitHub headroom待機後に承認・handoverを照合し、PENDING intentをcheckpointへ保存する。
+2. transportのpacingとrate-limit待機を終える。mergeではこの位置からhead/base・CI・reviewを再取得する。
+3. 証拠取得中または取得後にrate/quota待機が入った場合、取得途中の証拠を捨てて再取得する。
+   通常のrequest間隔も再計算し、merge証拠は取得開始から実送信まで60秒以内を必須にする。
+4. 最後のpacing後に、GitHub読取りを伴わない独立controller/lease観測を実行する。
+   その観測後にmerge証拠の鮮度、gate、approval期限を確認し、後続の待機・checkpoint書込みなしで送信する。
+5. 既知のrate拒否後の再試行も2〜4を繰り返す。観測失敗・復活・失効・証拠の変更なら送信を止める。
+
+head/base・CI・reviewの取得には複数のHTTP readを使い、上記60秒の鮮度検査とSHA指定merge、
+既存のサーバー側保護を組み合わせる。GitHubの複数readとmergeを原子的に固定するAPIではない。
+送信前の拒否でも保存済みPENDINGを自動消去・再送せず、明示的な確認を必要とする。
 
 - refのACK喪失は、期待refとSHAを読んで照合する。
 - PR作成のACK喪失は、head SHA/tree/generation、両repo、作者、base/ref、open・non-draft状態を照合する。
@@ -188,7 +204,9 @@ GitHub予算による7回のpause後も同じcampaignを継続し、予算・承
 このsmokeのclockはCPU処理・実ネットワーク遅延を数えない。単一jobで全履歴が終わる主張ではない。
 全期間smokeは45fdd44の実装で開始し、db01849の「大量読取り前の予算復元」は別の追加回帰とCIで確認した。
 smokeのJSONにある旧 `github_calls` はREST呼出数を指す。GraphQLの2回/PRは別に計数するが、
-そのpacingは模擬経過に含まれる。最新の出力項目名は `github_rest_calls` に揃えた。
+そのpacingは模擬経過に含まれる。出力項目名は `github_rest_calls` に揃えた。
+上表は68be4cb以前の測定である。その後の送信境界修正ではmerge証拠をもう一度取得するため、
+現在の正常採用はGraphQL 3回/PRとなり、REST数と経過も増える。過去の数値を最新実装の測定値とは扱わない。
 
 既存secret名はユーザー提供画面で確認されたものを使う。値と実scopeは未確認。
 以前のmetadata照会は403 `Resource not accessible by integration`で、別経路による回避をしていない。

@@ -45,10 +45,22 @@ def verify(request,scope,pin,*,main,initialized=False,now=None,live_probe=None,c
               ('controller','scheduler_id','enabled','active_run_ids','observed_at','epoch','observed_by',
                'owner','lease_id','lease_state','lease_owner','next_writer')),
               'controller source evidence differs from handover receipt')
-    # The pinned receipt records a historical handover, not current liveness.
-    # Only a separately authenticated controller/lease read can refresh evidence.
+    return verify_live(scope,live_probe=live_probe,now=now,clock=clock)
+
+
+def verify_live(scope,*,live_probe,now=None,clock=None):
+    """Independent controller/lease read only: safe at the final HTTP boundary.
+
+    GitHub approval/receipt reads belong to verify(), before request pacing.
+    Never perform those paced reads after this final observation.
+    """
+    identity={'scheduler_id':scope['old_scheduler_id'],'owner':scope['old_writer'],
+              'lease_id':scope['old_lease_id'],'epoch':scope['handover_epoch'],'next_writer':scope['writer']}
+    r.require(all(isinstance(value,str) and value for value in identity.values()),'handover identity missing')
     r.require(callable(live_probe),'live independent scheduler/lease transport unavailable; activation blocked')
-    observation=live_probe(dict(identity))
+    try:observation=live_probe(dict(identity))
+    except Exception:
+        raise r.RemoteStop('independent scheduler/lease observation unavailable') from None
     r.require(isinstance(observation,dict) and all(observation.get(k)==v for k,v in identity.items()),
               'live handover identity mismatch')
     r.require(observation.get('controller')=='chatgpt-automations'
@@ -56,10 +68,14 @@ def verify(request,scope,pin,*,main,initialized=False,now=None,live_probe=None,c
               and observation.get('enabled') is False and observation.get('active_run_ids')==[]
               and observation.get('lease_state')=='released' and 'lease_owner' in observation
               and observation['lease_owner'] is None,'old scheduler or lease is active or unobserved')
-    observed=datetime.fromisoformat(observation['observed_at'])
-    checked_at=clock() if clock else now
+    try:observed=datetime.fromisoformat(observation['observed_at'])
+    except (KeyError,TypeError,ValueError):
+        raise r.RemoteStop('invalid independent scheduler/lease clock') from None
+    checked_at=clock() if clock else now or datetime.now(timezone.utc)
     r.require(observed.tzinfo is not None and 0 <= (checked_at-observed).total_seconds() <= 60,
               'stale independent scheduler/lease observation')
+    expiry=datetime.fromisoformat(scope['expires_at'])
+    r.require(expiry.tzinfo is not None and checked_at<expiry,'approval expired at publication boundary')
     return dict(scheduler_id=observation['scheduler_id'],enabled=observation['enabled'],
                 active_writers=len(observation['active_run_ids']),next_writer=observation['next_writer'],
                 observed_at=observation['observed_at'],handover_identity=identity,

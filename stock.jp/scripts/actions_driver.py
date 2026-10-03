@@ -115,6 +115,7 @@ class Driver:
                 def revalidate_handover():
                     return attest.verify(self.request,scope,self.pin,main=main,initialized=initialized,now=self.clock(),live_probe=self.live_handover_probe,clock=self.clock)
                 facts['handover_check']=revalidate_handover
+                facts['publication_io_check']=lambda:attest.verify_live(scope,live_probe=self.live_handover_probe,clock=self.clock)
                 store=ShardedStore(self.request,authorization=facts,cache=work/'cache')
                 if (adopted/'jquants/history/state.json').exists():
                     # verify_scope already compared this against the pinned baseline.
@@ -300,7 +301,21 @@ class Driver:
                     pub.publication.allow_auto_merge(proof,observed)
             def ack(result):
                 r.require(result.get('merged') is True,'merge not confirmed');t.update(merged=r.sha(result['sha']),stage='RESTORE')
-            write('PUT',pub.PREFIX+'/pulls/'+str(t['number'])+'/merge',{'sha':t['head'],'merge_method':'squash'},ack)
+            evidence_at_send={}
+            def prepare_merge_io():
+                started=self.clock()
+                observed=pub.evidence(self.request,t['number'],proof,review_probe=self.request.review_decision)
+                pub.publication.allow_auto_merge(proof,observed)
+                evidence_at_send.update(started=started,observed=observed)
+            def check_merge_io():
+                r.require('started' in evidence_at_send and 0 <= (self.clock()-evidence_at_send['started']).total_seconds() <= 60,
+                          'merge evidence expired during pacing; no send')
+                pub.publication.allow_auto_merge(proof,evidence_at_send['observed'])
+            checkpoint.authorization.update(merge_io_prepare=prepare_merge_io,merge_io_check=check_merge_io)
+            try:
+                write('PUT',pub.PREFIX+'/pulls/'+str(t['number'])+'/merge',{'sha':t['head'],'merge_method':'squash'},ack)
+            finally:
+                checkpoint.authorization.pop('merge_io_prepare',None);checkpoint.authorization.pop('merge_io_check',None)
         main=self.request('GET',pub.PREFIX+'/git/ref/heads/main',None)['object']['sha']
         r.require(main==t['merged'],'main advanced after merge; verify separately')
         with tempfile.TemporaryDirectory() as tmp:

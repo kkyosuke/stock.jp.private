@@ -16,9 +16,10 @@ class IntentTransport:
     def __call__(self, method, path, body=None):
         if method=='GET':
             return self.request(method,path,body)
-        remote.gate(self.checkpoint.authorization)
-        if self.checkpoint.authorization.get('handover_check'):self.checkpoint.authorization['handover_check']()
+        clock=getattr(self.checkpoint,'clock',None)
+        remote.gate(self.checkpoint.authorization,now=clock() if callable(clock) else None)
         if hasattr(self.request,'before_publication'):self.request.before_publication()
+        if self.checkpoint.authorization.get('handover_check'):self.checkpoint.authorization['handover_check']()
         pending=self.checkpoint.document.get('publication_intent')
         remote.require(not pending or pending['state']=='ACKED','publication write outcome unresolved')
         digest=codec.digest(codec.encoded([method,path,body]))
@@ -38,7 +39,23 @@ class IntentTransport:
         self.checkpoint.document['publication_intent']=intent
         self.checkpoint.commit()
         # Crash/lost ACK leaves PENDING. No error response text/body is stored.
-        response=self.request(method,path,body)
+        is_merge=bool(re.fullmatch(r'/repos/kkyosuke/stock\.jp\.private/pulls/[1-9][0-9]*/merge',path))
+        prepare_io=self.checkpoint.authorization.get('merge_io_prepare') if is_merge else None
+        merge_check=self.checkpoint.authorization.get('merge_io_check') if is_merge else None
+        remote.require(not is_merge or callable(prepare_io) and callable(merge_check),'merge send-boundary evidence unavailable')
+        def before_io():
+            check=self.checkpoint.authorization.get('publication_io_check') or self.checkpoint.authorization.get('handover_check')
+            if check:check()
+            if merge_check:merge_check()
+            clock=getattr(self.checkpoint,'clock',None)
+            remote.gate(self.checkpoint.authorization,now=clock() if callable(clock) else None)
+        if hasattr(self.request,'mutation'):
+            response=self.request.mutation(method,path,body,before_io=before_io,prepare_io=prepare_io)
+        else:
+            remote.require(not hasattr(self.request,'before_publication'),'publication transport lacks guarded mutation boundary')
+            if prepare_io:prepare_io()
+            before_io()
+            response=self.request(method,path,body)
         allowed={'sha','number','merged','object'}
         saved={k:copy.deepcopy(v) for k,v in response.items() if k in allowed}
         if 'object' in saved:
