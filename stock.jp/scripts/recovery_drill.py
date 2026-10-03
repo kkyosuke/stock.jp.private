@@ -98,7 +98,8 @@ def generate(source,recovered,operator):
         except ModuleNotFoundError:
             from recovery_provenance import capture
         provenance=capture(source,recovered,selected_run,checks,{'state_errors':errors,
-            'paper_go':bootstrap.get('paper_go') is True,'run_errors':run_errors,'coverage':coverage})
+            'paper_go':bootstrap.get('paper_go') is True,'run_errors':run_errors,'coverage':coverage},
+            inspection_at_jst=started.isoformat())
         provenance_errors=[]
     except (ValueError,OSError,subprocess.CalledProcessError,KeyError) as error:
         provenance=None;provenance_errors=['provenance capture failed: '+str(error)]

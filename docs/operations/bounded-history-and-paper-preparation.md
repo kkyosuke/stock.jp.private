@@ -20,6 +20,8 @@ calendarの550暦日lookbackを含めLightの5年履歴内に収める。
 - 既存の正しい日別partitionは再利用し、過去revisionを残す。calendar/TOPIX rangeは完了後再取得しない。
   対象日に未完了の訂正checkpointがあれば古いlatestを再利用せず、checkpoint再開を優先する。
   完了済み計画に未完了訂正が残った場合はCOMPLETEとして受理せず、reviewへ戻す。
+  ただしquery・started_at・全pageが検証済みの公開revisionと完全一致する完了checkpointは、
+  削除直前のクラッシュ残骸として先に安全回復し、新訂正とは区別する。
 - dailyとworkspace／archive lockを共有。未完了daily journalがあれば開始しない。
 - batchを自動繰上げしない。消尽後だけ次の番号を明示。総上限・50枠到達は停止。
 - COMPLETEでも全契約datasetの履歴完了、PAPER完了、投資可とはしない。
@@ -81,7 +83,14 @@ schema 1.2は対象commit、archive世代、private台帳・state、validator co
 選択したPAPER run／attemptと全成果物hash、検査結果をmanifestに固定する。
 coverageの最新成功v0.4 PAPERと同じrun／attemptだけをhandoff・run integrity検証に使う。
 gateはbooleanやSHA文字列だけを信用せず、保存されたGit commitの入力を隔離復元して再検証する。
+coverageの判定基準は保存されたrunのprice_date／source_cutoff。監査実行時刻
+`evaluated_at_jst`だけは再評価結果との比較から除き、元の監査時刻はmanifest hashで保護する。
+採否・blocker・metrics・全入力hashは引き続き比較し、再検証の時刻差で失効させない。
 後日の日次更新は過去の証跡を失効させないが、当時のGit objectは必要。
+bootstrapはmanifestに保存したinspection_at_jst（生成時の開始時刻）で再実行する。
+再検証は現在のコードで過去入力を評価する。当時のvalidator hashと、
+再検証で実行したvalidator hashを区別して記録し、過去コードを実行したとは扱わない。
+標準のstock.jp rootからもGit最上位のcommitted private filesを照合する。
 旧schemaの証跡は新しい実復元検証を要し、手動の版番号更新では通過しない。
 最新の成功PAPERやhandoffがなければ対応checkはfalseで、正式recovery gateは未達のまま。
 旧証跡のlayout/SHAだけを書換えて合格扱いにしない。個人リスク確認・本人承認は生成しない。

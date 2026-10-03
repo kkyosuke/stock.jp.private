@@ -227,3 +227,21 @@ class HistoryTest(unittest.TestCase):
             with patch.object(h.resources,'inspect',side_effect=oversized):result=self.run_history()
             self.assertEqual(result['status'],'PAUSED');self.assertEqual(result['requests_used'],0)
             self.assertEqual(self.calls,[])
+
+    def test_completed_campaign_recovers_only_exact_published_checkpoint(self):
+        result=self.run_history(sessions=1);count=len(self.calls)
+        archive=self.private/'market-data/jquants'
+        directory=archive/'datasets/equities_daily'/str(self.end)
+        manifest=json.loads((directory/'latest.json').read_text())
+        checkpoint={key:manifest[key] for key in ('query','started_at','pages')}
+        checkpoint.update(endpoint='/equities/bars/daily',next_key=None,seen_keys=[],complete=True)
+        path=directory/'checkpoint.json'
+        path.write_text(json.dumps(checkpoint))
+        before={str(p.relative_to(archive)):p.read_bytes() for p in archive.rglob('*') if p.is_file() and p.name not in ('checkpoint.json','.ingestion.lock')}
+        self.assertEqual(self.run_history(sessions=1),result);self.assertFalse(path.exists())
+        self.assertEqual(len(self.calls),count)
+        self.assertEqual(before,{str(p.relative_to(archive)):p.read_bytes() for p in archive.rglob('*') if p.is_file() and p.name not in ('checkpoint.json','.ingestion.lock')})
+        checkpoint['started_at']='2026-10-03T00:00:01+09:00'
+        path.write_text(json.dumps(checkpoint))
+        with self.assertRaises(ValueError):self.run_history(sessions=1)
+        self.assertTrue(path.exists());self.assertEqual(len(self.calls),count)

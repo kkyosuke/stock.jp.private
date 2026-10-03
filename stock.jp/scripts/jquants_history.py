@@ -123,6 +123,11 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
         require(source.is_dir(),'restore adopted archive before history collection')
         codec.safe_tree(source);archive=source/'jquants'
         with ingest.archive_lock(archive):
+            # A published final checkpoint can survive a crash before unlink.
+            # Reconcile only exact, fully validated published matches before
+            # the COMPLETE campaign validator rejects remaining checkpoints.
+            for p in (archive/'datasets').glob('*/*/checkpoint.json'):
+                daily.recover_published_checkpoint(archive,p.parent.parent.name,date.fromisoformat(p.parent.name))
             members={p.relative_to(source).as_posix() for p in source.rglob('*') if p.is_file()}
             codec.validate_archive(members,lambda n:(source/n).read_bytes())
             for p in (archive/'runs').glob('*.json'):

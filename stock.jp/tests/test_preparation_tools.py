@@ -25,8 +25,9 @@ class RecoveryTest(unittest.TestCase):
                 return 'a'*40 if args[-1]=='HEAD' else 'b'*40
             def github(command,**kwargs):
                 return json.dumps({'private':True} if command[-1].endswith(r.REPO) else {'object':{'sha':'a'*40}})
-            with patch.object(r,'git',side_effect=git),patch.object(r.subprocess,'check_output',side_effect=github),patch.object(r,'_bootstrap',return_value={'paper_go':True}),patch.object(r,'validate_workspace',return_value=[]),patch.object(r,'evaluate_official_coverage',return_value={'eligible':False}),patch('scripts.recovery_provenance.capture',side_effect=ValueError('synthetic uncommitted clone')):
+            with patch.object(r,'git',side_effect=git),patch.object(r.subprocess,'check_output',side_effect=github),patch.object(r,'_bootstrap',return_value={'paper_go':True}),patch.object(r,'validate_workspace',return_value=[]),patch.object(r,'evaluate_official_coverage',return_value={'eligible':False}),patch('scripts.recovery_provenance.capture',side_effect=ValueError('synthetic uncommitted clone')) as capture:
                 result=r.generate(*roots,'synthetic-test-operator')
+            self.assertEqual(capture.call_args.kwargs['inspection_at_jst'],result['started_at_jst'])
             self.assertEqual(result['repository_layout_revision'],4)
             self.assertEqual(result['source_code_tree'],'b'*40)
             self.assertFalse(result['checks']['latest_successful_run'])
