@@ -14,5 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Disabled pending separate implementation and execution authorization
-        run: echo 'STOP_DISABLED; history adapter and approval gates not connected'
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/operations/private/
+            !/stock.jp/data/jquants-archive/
+            !/stock.jp/data/daily-prices/
+      - name: Offline readiness report only
+        run: python stock.jp/scripts/actions_readiness.py

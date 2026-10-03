@@ -54,11 +54,21 @@ def gate(facts):
     require(facts.get('repository') == REPO and facts.get('visibility') == 'private', 'repository mismatch')
     require((facts.get('mode'), facts.get('submission'), facts.get('plan')) ==
             ('PAPER', 'HUMAN_ONLY', 'light'), 'execution boundary mismatch')
+    if 'expires_at' in facts:
+        expiry=datetime.fromisoformat(facts['expires_at'])
+        require(expiry.tzinfo is not None and datetime.now(expiry.tzinfo)<expiry,'approval expired')
 
 
 def validate(document):
-    require(isinstance(document, dict) and set(document) ==
-            {'version', 'writer', 'fence', 'blocked_campaigns', 'runs', 'snapshot'}, 'invalid checkpoint schema')
+    required = {'version', 'writer', 'fence', 'blocked_campaigns', 'runs', 'snapshot'}
+    require(isinstance(document, dict) and required <= set(document)
+            and set(document) <= required | {'history','publication_intent'}, 'invalid checkpoint schema')
+    if document.get('publication_intent') is not None:
+        intent=document['publication_intent']
+        require(set(intent)=={'id','state','method','path','request_sha256','identifiers','response'}
+                and intent['state'] in {'PENDING','ACKED'}
+                and re.fullmatch('[0-9a-f]{32}',intent['id'])
+                and re.fullmatch('[0-9a-f]{64}',intent['request_sha256']), 'invalid publication intent')
     require(document['version'] == 2 and isinstance(document['writer'], str)
             and re.fullmatch('[A-Za-z0-9_-]{1,80}', document['writer']), 'invalid writer')
     require(isinstance(document['fence'], str) and re.fullmatch('[0-9a-f]{32}', document['fence']), 'invalid fence')
@@ -80,6 +90,8 @@ def validate(document):
         require(run['phase'] in {'IDLE', 'IN_FLIGHT', 'PAUSED', 'BLOCKED', 'COLLECTED', 'RESTORED'}, 'invalid phase')
         if run['retry_not_before'] is not None:
             daily.aware(run['retry_not_before'])
+    if document.get('history') is not None:
+        validate_history_envelope(document['history'])
     require(document['snapshot'] is None or isinstance(document['snapshot'], dict), 'invalid snapshot')
     codec.scan(codec.encoded(document))
 
@@ -133,6 +145,12 @@ class GitCheckpointStore:
         require(len(raw) <= LIMIT, 'checkpoint size exceeds reviewed limit')
         current, previous = self.read()
         require(current == expected and previous['writer'] == value['writer'], 'stale writer or parent')
+        pending=previous.get('publication_intent')
+        if pending and pending['state']=='PENDING':
+            updated=value.get('publication_intent')
+            require(updated is not None and all(updated.get(k)==pending[k]
+                    for k in ('id','method','path','request_sha256','identifiers')),
+                    'unresolved publication intent cannot be replaced')
         for day, old in previous['runs'].items():
             require(day in value['runs'], 'daily ledger deletion forbidden')
             before, after = old['state'], value['runs'][day]['state']
@@ -141,6 +159,11 @@ class GitCheckpointStore:
                     'daily budget or reservation history rewrite forbidden')
             require(value['runs'][day]['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'],
                     'reservation identity rewrite forbidden')
+        if previous.get('history'):
+            old, new = previous['history'], value.get('history')
+            require(new is not None, 'history ledger deletion forbidden')
+            history_monotonic(old['state'], new['state'])
+            require(new['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'], 'history reservation rewrite')
         require(value['fence'] != previous['fence'], 'fresh checkpoint fence required')
         # No base_tree: this isolated branch contains only checkpoint.json.
         blob = self.call('POST', '/git/blobs', {'content': base64.b64encode(raw).decode(), 'encoding': 'base64'})
@@ -167,9 +190,9 @@ def reject_history(source):
             'history payload forbidden in daily Actions adapter')
 
 
-def capture(source):
+def capture(source, history_check=reject_history):
     """Use the adopted codec on an isolated copy; caller holds source locks."""
-    reject_history(source)
+    history_check(source)
     codec.safe_tree(source)
     with tempfile.TemporaryDirectory() as temporary:
         copied, store = Path(temporary) / 'source', Path(temporary) / 'store'
@@ -185,7 +208,7 @@ def capture(source):
                 for p in store.rglob('*') if p.is_file()}
 
 
-def unpack(snapshot, destination):
+def unpack(snapshot, destination, history_check=reject_history):
     require(isinstance(snapshot, dict) and 'current.json' in snapshot, 'snapshot missing')
     with tempfile.TemporaryDirectory() as temporary:
         store = Path(temporary) / 'store'
@@ -199,7 +222,7 @@ def unpack(snapshot, destination):
                 raise RemoteStop('invalid codec encoding') from None
             codec.atomic(store / name, raw)
         codec.restore(store, destination)
-        reject_history(destination)
+        history_check(destination)
 
 
 class RunnerCheckpoint:
@@ -208,9 +231,10 @@ class RunnerCheckpoint:
     The trusted caller must verify evidence; booleans are not a permission grant.
     No bootstrap or terminal-to-next-day adoption transition is provided here.
     """
-    def __init__(self, store, *, writer, authorization=None, clock=None):
+    def __init__(self, store, *, writer, authorization=None, clock=None, history_check=reject_history):
         self.store, self.writer = store, writer
         self.authorization = authorization or {}
+        self.history_check = history_check
         self.clock = clock or (lambda: datetime.now(ZoneInfo('Asia/Tokyo')))
         self.poisoned = False
         self.document = self.revision = self.day = self.source = None
@@ -231,27 +255,33 @@ class RunnerCheckpoint:
     def prepare(self, source):
         gate(self.authorization)
         self.source = Path(source)
-        reject_history(self.source)  # before even read-only GitHub communication
+        self.history_check(self.source)  # before even read-only GitHub communication
         self.revision, self.document = self.store.read()
         validate(self.document)
         require(self.document['writer'] == self.writer, 'writer ownership mismatch')
+        require(not self.document.get('publication_intent'),
+                'publication transaction requires adoption/recovery before collection')
         require(all(r['phase'] != 'IN_FLIGHT' for r in self.document['runs'].values()),
                 'ambiguous reservation; no automatic resend/refund')
+        require(not self.document.get('history') or self.document['history']['phase'] != 'IN_FLIGHT',
+                'ambiguous history reservation')
         snapshot = self.document['snapshot']
         if snapshot is not None:
             with tempfile.TemporaryDirectory() as temporary:
                 restored = Path(temporary) / 'restored'
-                unpack(snapshot, restored)
+                unpack(snapshot, restored, self.history_check)
                 if self.source.exists() and any(p.is_file() and p.name != '.ingestion.lock' for p in self.source.rglob('*')):
-                    require(capture(self.source) == snapshot, 'local/remote checkpoint divergence')
+                    require(capture(self.source, self.history_check) == snapshot, 'local/remote checkpoint divergence')
                 else:
                     for path in restored.rglob('*'):
                         if path.is_file():
                             codec.atomic(self.source / path.relative_to(restored), path.read_bytes())
         else:
-            require(not self.document['runs'], 'missing snapshot; budget must not reset')
+            require(not self.document['runs'] and not self.document.get('history'), 'missing snapshot; budget must not reset')
 
     def attach(self, state):
+        require(not self.document.get('history') or self.document['history']['phase'] == 'RESTORED',
+                'history campaign not adopted and restored')
         self.day = state['run_date']
         runs = self.document['runs']
         require(all(day <= self.day for day in runs), 'out-of-order daily run')
@@ -274,7 +304,7 @@ class RunnerCheckpoint:
         run['state'] = copy.deepcopy(state)
         if state['status'] in {'COLLECTED', 'HOLIDAY'}:
             run['phase'] = 'COLLECTED'  # publication and restore still required
-        self.document['snapshot'] = capture(self.source)
+        self.document['snapshot'] = capture(self.source, self.history_check)
         self.commit()
 
     def reserve(self, state):
@@ -292,14 +322,14 @@ class RunnerCheckpoint:
         run['state'] = copy.deepcopy(state)
         run['phase'] = 'IN_FLIGHT'
         run['reservation_ids'].append(uuid.uuid4().hex)
-        self.document['snapshot'] = capture(self.source)
+        self.document['snapshot'] = capture(self.source, self.history_check)
         self.commit()  # no financial API until CAS and readback both succeed
 
     def page_saved(self, state):
         run = self.document['runs'][self.day]
         require(run['phase'] == 'IN_FLIGHT', 'no response reservation')
         # Includes the immutable page AND pagination checkpoint, not just payload.
-        self.document['snapshot'] = capture(self.source)
+        self.document['snapshot'] = capture(self.source, self.history_check)
         run['state'] = copy.deepcopy(state)
         run['phase'], run['retry_not_before'] = 'IDLE', None
         self.commit()
@@ -311,4 +341,108 @@ class RunnerCheckpoint:
             return  # unknown I/O or invalid response remains charged IN_FLIGHT
         run['phase'] = 'BLOCKED' if status in {401, 403} else 'PAUSED'
         run['retry_not_before'] = (self.clock() + timedelta(seconds=120)).isoformat() if status == 429 else None
+        self.commit()
+
+
+def history_receipts(state):
+    return [receipt for batch in state['batches'] for receipt in batch]
+
+
+def history_monotonic(old, new):
+    for key in ('as_of', 'sessions', 'config_sha256', 'batch_limit'):
+        require(new[key] == old[key], 'history identity changed')
+    before, after = history_receipts(old), history_receipts(new)
+    require(after[:len(before)] == before and len(new['batches']) >= len(old['batches']), 'history budget reset')
+    require(new['batches'][:len(old['batches'])-1] == old['batches'][:-1], 'prior batch rewrite')
+    require(new['batches'][len(old['batches'])-1][:len(old['batches'][-1])] == old['batches'][-1], 'batch reservation rewrite')
+
+
+def validate_history_envelope(run):
+    require(set(run) == {'state','phase','retry_not_before','reservation_ids'}, 'invalid history envelope')
+    state = run['state']
+    require(type(state['sessions']) is int and 1 <= state['sessions'] <= 280
+            and type(state['batch_limit']) is int and 1 <= state['batch_limit'] <= 12, 'invalid history limits')
+    batches = state['batches']
+    require(isinstance(batches, list) and 1 <= len(batches) <= 50
+            and all(isinstance(b, list) and len(b) <= state['batch_limit'] for b in batches)
+            and all(len(b) == state['batch_limit'] for b in batches[:-1]), 'invalid history batches')
+    receipts = history_receipts(state)
+    require(len(receipts) <= 600 and len(run['reservation_ids']) == len(receipts)
+            and len(set(run['reservation_ids'])) == len(receipts)
+            and all(re.fullmatch('[0-9a-f]{32}', n) for n in run['reservation_ids']), 'invalid history reservations')
+    require(run['phase'] in {'IDLE','IN_FLIGHT','PAUSED','BLOCKED','COLLECTED','RESTORED'}, 'invalid history phase')
+
+
+class HistoryCheckpoint(RunnerCheckpoint):
+    """Only a fresh authorized campaign or this remote journal can be attached."""
+    def __init__(self, store, *, campaign, **kwargs):
+        self.campaign = dict(campaign)
+        super().__init__(store, history_check=self.check_history, **kwargs)
+
+    def check_history(self, source):
+        path = Path(source)/'jquants/history/state.json'
+        if path.exists():
+            state = ingest.read_json(path)
+            require(all(state.get(k) == v for k,v in self.campaign.items()), 'history outside approved campaign')
+
+    def prepare(self, source):
+        # Never import an existing local history as a new remote campaign.
+        super().prepare(source)
+        require(all(r['phase'] == 'RESTORED' for r in self.document['runs'].values()), 'daily writer unresolved')
+        path = self.source/'jquants/history/state.json'
+        if path.exists() and not self.document.get('history'):
+            require(not history_receipts(ingest.read_json(path)), 'existing history import forbidden')
+
+    def attach(self, state):
+        require(all(state.get(k) == v for k,v in self.campaign.items()), 'history campaign identity mismatch')
+        run = self.document.get('history')
+        if run:
+            require(run['state'] == state, 'history remote journal mismatch')
+        else:
+            require(not history_receipts(state), 'history budget import forbidden')
+            self.document['history'] = {'state':copy.deepcopy(state), 'phase':'IDLE',
+                                        'retry_not_before':None, 'reservation_ids':[]}
+            self.sync(state)
+
+    def sync(self, state):
+        require(not self.poisoned, 'checkpoint failure requires fresh recovery')
+        run = self.document['history']
+        if run['phase'] == 'IN_FLIGHT':
+            return
+        history_monotonic(run['state'], state)
+        require(history_receipts(state) == history_receipts(run['state']), 'unreserved history request')
+        run['state'] = copy.deepcopy(state)
+        if state['status'] == 'COMPLETE':
+            run['phase'] = 'COLLECTED'
+        self.document['snapshot'] = capture(self.source, self.history_check)
+        self.commit()
+
+    def reserve(self, state):
+        run = self.document['history']
+        require(run['phase'] in {'IDLE','PAUSED'}, 'history ambiguous or blocked')
+        if run['retry_not_before']:
+            require(self.clock() >= datetime.fromisoformat(run['retry_not_before']), 'history cooldown pending')
+        history_monotonic(run['state'], state)
+        require(len(history_receipts(state)) == len(history_receipts(run['state']))+1, 'history reservation increment invalid')
+        run['state'] = copy.deepcopy(state)
+        run['reservation_ids'].append(uuid.uuid4().hex)
+        run['phase'] = 'IN_FLIGHT'
+        self.document['snapshot'] = capture(self.source, self.history_check)
+        self.commit()
+
+    def page_saved(self, state):
+        run = self.document['history']
+        require(run['phase'] == 'IN_FLIGHT', 'no history reservation')
+        self.document['snapshot'] = capture(self.source, self.history_check)
+        run['state'] = copy.deepcopy(state)
+        run['phase'], run['retry_not_before'] = 'IDLE', None
+        self.commit()
+
+    def failed(self, status):
+        run = self.document['history']
+        require(run['phase'] == 'IN_FLIGHT', 'no history error reservation')
+        if status not in {401,403,429,500,502,503,504}:
+            return
+        run['phase'] = 'BLOCKED' if status in {401,403} else 'PAUSED'
+        run['retry_not_before'] = (self.clock()+timedelta(seconds=120)).isoformat() if status == 429 else None
         self.commit()

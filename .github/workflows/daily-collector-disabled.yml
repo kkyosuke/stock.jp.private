@@ -1,5 +1,5 @@
 name: daily-collector-disabled
-# CODE-ONLY DRAFT. No schedule, credential injection, or executable collector.
+# CODE-ONLY DRAFT. Disabled job; no schedule or executable collector.
 # Proposed future schedule (requires separate reviewed activation): 0 12 * * *
 on:
   workflow_dispatch:
@@ -23,5 +23,5 @@ jobs:
             !/operations/private/
             !/stock.jp/data/jquants-archive/
             !/stock.jp/data/daily-prices/
-      - name: Offline protocol explanation only
-        run: python scripts/actions_daily_protocol.py
+      - name: Offline readiness report only
+        run: python stock.jp/scripts/actions_readiness.py
