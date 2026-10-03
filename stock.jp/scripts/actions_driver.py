@@ -151,7 +151,9 @@ class Driver:
                 return {'status':'PAUSED_GITHUB_BUDGET','mode':mode}
             if report['status'] not in {'COLLECTED','HOLIDAY','COMPLETE'}:return report
             run=checkpoint.document['history'] if mode=='history' else checkpoint.document['runs'][day]
-            if run['phase']=='RESTORED':return {'status':'ALREADY_RESTORED','mode':mode}
+            if run['phase']=='RESTORED':
+                if hasattr(self.request,'state'):checkpoint.commit()
+                return {'status':'ALREADY_RESTORED','mode':mode}
             checkpoint.day=day
             if mode=='history':
                 # History completes price/master/TOPIX only, never all Light datasets.
@@ -172,6 +174,9 @@ class Driver:
     def publish(self,checkpoint,main):
         try:return self._publish(checkpoint,main)
         except rate.BudgetPause:
+            if not checkpoint.poisoned:
+                checkpoint.document['github_pause']={'reason':'publication_headroom','at':self.clock().isoformat()}
+                checkpoint.commit()
             return {'status':'PAUSED_GITHUB_BUDGET','mode':checkpoint.document['transaction']['mode']}
 
     def _publish(self,checkpoint,main):
@@ -226,7 +231,9 @@ class Driver:
             proof={**candidate['proof'],'head_sha':t['head']}
             observed=pub.evidence(self.request,t['number'],proof,review_probe=self.request.review_decision)
             try:pub.publication.allow_auto_merge(proof,observed)
-            except ValueError:return {'status':'WAIT_CI','number':t['number'],'head':t['head']}
+            except ValueError:
+                if hasattr(self.request,'state'):checkpoint.commit()
+                return {'status':'WAIT_CI','number':t['number'],'head':t['head']}
             t['stage']='MERGE';checkpoint.commit()
             return self.adopt(checkpoint,transport,write)
 

@@ -212,3 +212,19 @@ class DriverTests(unittest.TestCase):
             result=run(client)
             if result['status']=='RESTORED':break
         self.assertEqual(result['status'],'RESTORED');self.assertEqual(len(self.fixture.calls),9)
+
+    def test_ci_wait_persists_read_budget_before_restart(self):
+        from scripts.actions_rate import BudgetedTransport
+        from scripts.actions_sharded import ShardedStore
+        import test_actions_daily_remote as authorization
+        now=[10000.]
+        def wait(seconds):now[0]+=seconds
+        self.remote.ci_ready=False
+        client=BudgetedTransport(self.remote,clock=lambda:now[0],sleep=wait,deadline=now[0]+20000)
+        result=d.Driver(self.root,client,self.fixture.transport,pin=self.remote.pin,writer='actions-v1',
+            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None).execute('daily')
+        self.assertEqual(result['status'],'WAIT_CI')
+        with tempfile.TemporaryDirectory() as tmp:
+            document=ShardedStore(self.remote,authorization=authorization.authorization(),cache=tmp).read()[1]
+        self.assertGreaterEqual(document['github_budget']['reads'],client.reads)
+        self.assertGreaterEqual(document['github_budget']['writes'],client.writes)

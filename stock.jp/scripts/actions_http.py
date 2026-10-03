@@ -66,7 +66,7 @@ class FixedHTTP:
                 return status, json.loads(raw, object_pairs_hook=unique,
                                           parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
         except HTTPError as error:
-            # Do not read the error response, headers, URL, or its exception text.
+            # Read only allowlisted rate headers; never read error body, URL or exception text.
             self.rate_headers={key:error.headers.get(key) for key in ('retry-after','x-ratelimit-remaining','x-ratelimit-reset')}
             return error.code, None
         except Exception:
