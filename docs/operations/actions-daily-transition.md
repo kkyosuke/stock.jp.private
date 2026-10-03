@@ -20,7 +20,7 @@ PAPER/HUMAN_ONLY、Light、価格 coverage 98%、active coverage 100% と既存�
 1. 未解決の履歴取得・公開拒否を解決する。拒否された既存 batch を Actions へ移して再公開することは禁止。新しい checkpoint 保存先も契約データの保存・公開先として別途確認が必要。
 2. 旧定期タスクを停止し、動作中 writer がいないことを確認する。永続 writer 識別も更新し、旧環境による再開を拒否する。旧タスクの停止操作は本変更では行っていない。
 3. 信頼する実装をレビューした後、対象 repository の認証情報をユーザーが登録する。想定名は `JQUANTS_API_KEY` と `STOCK_AUTOMATION_PAT`。キー値をログ・成果物へ出さない。EDINET はこの市場データ collector では必須にしない。
-4. PR 作成者の既存検証が `kkyosuke` を要求するため、現在の検証に整合する候補は同ユーザーの repository 限定 fine-grained PAT。必要な権限は Contents/Pull requests の read/write、検証用 Actions/Checks の read と Metadata read。実装時に使用する全 REST endpoint の権限を再照合する。Administration、workflow 書換え、Secrets 読取り権限は collector に与えない。
+4. PR 作成者の既存検証が `kkyosuke` を要求するため、現在の検証に整合する候補は同ユーザーの repository 限定 fine-grained PAT。必要な権限は Contents/Pull requests の read/write、検証用 Actions/Checks/Commit statuses の read と Metadata read。実装時に使用する全 REST endpoint の権限を再照合する。Administration、workflow 書換え、Secrets 読取り権限は collector に与えない。
 5. GitHub App は短寿命 token の候補だが、bot 作成者は既存 author 検証に通らない。採用には別途明示的な設計レビューが必要であり、本変更では author 検証を緩和しない。
 6. branch protection と必須 review を確認する。人の review が必須なら自動処理はそこで待つ。bypass や admin merge を使わない。実 adapter と統合障害テストを完成後、別途許可された公開・有効化の段階で schedule を追加する。
 
@@ -80,10 +80,10 @@ collector は schedule と信頼済み手動起動だけに限定し、push/PR �
 | 同じ private repo の checkpoint append | 将来 Contents write を明示承認すれば `GITHUB_TOKEN` で可能。PAT は保存そのものの必須条件ではない。 |
 | PR 作成 | Pull requests write が必要。repository 側の許可にも依存する。`GITHUB_TOKEN` なら CI の人による承認待ちを受け入れる。 |
 | PR CI を公式仕様どおり自動起動 | repository 限定 PAT または GitHub App token。現在の author gate と合う候補は `kkyosuke` の PAT。 |
-| checks/runs/status/reviews の照合 | Actions read、Checks read、Contents read、Pull requests read。成功 status を書く権限は不要。 |
+| checks/runs/status/reviews の照合 | Actions read、Checks read、Commit statuses read、Contents read、Pull requests read。成功 status を書く権限は不要。 |
 | 通常 merge | Contents write と保護条件の充足。bypass・Administration は不要かつ禁止。 |
 
-権限は REST endpoint と repository policy の両方で制限される。[reference 更新の権限](https://docs.github.com/en/rest/git/refs#update-a-reference)、[PR 作成の権限](https://docs.github.com/en/rest/pulls/pulls#create-a-pull-request)
+権限は REST endpoint と repository policy の両方で制限される。[reference 更新の権限](https://docs.github.com/en/rest/git/refs#update-a-reference)、[PR 作成の権限](https://docs.github.com/en/rest/pulls/pulls#create-a-pull-request)。combined status と paginated statuses の取得には、いずれも Commit statuses read が必要。[combined status の権限](https://docs.github.com/en/rest/commits/statuses#get-the-combined-status-for-a-specific-reference)、[statuses 一覧の権限](https://docs.github.com/en/rest/commits/statuses#list-commit-statuses-for-a-reference)
 
 必要 secret は `JQUANTS_API_KEY` と、無人 PR CI を選ぶ場合の `STOCK_AUTOMATION_PAT`。checkpoint 保存だけに PAT を要求しない。App を選ぶ場合は App ID/private key の登録と author 検証の別レビューが必要。token の値や一覧をログへ出さない。`workflow_dispatch` を追加送信して PR CI の承認待ちを迂回する方式は採用しない。
 
