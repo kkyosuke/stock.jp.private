@@ -1,0 +1,27 @@
+name: daily-collector-disabled
+# CODE-ONLY DRAFT. No schedule, credential injection, or executable collector.
+# Proposed future schedule (requires separate reviewed activation): 0 12 * * *
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: stock-private-market-writer
+  cancel-in-progress: false
+jobs:
+  disabled-design-check:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/operations/private/
+            !/stock.jp/data/jquants-archive/
+            !/stock.jp/data/daily-prices/
+      - name: Offline protocol explanation only
+        run: python scripts/actions_daily_protocol.py
