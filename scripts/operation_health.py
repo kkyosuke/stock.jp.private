@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
+import fcntl
+import hashlib
+import stat
 import csv
 from datetime import datetime, timedelta
 import importlib.util
@@ -55,14 +59,123 @@ def private_price_manifest() -> dict:
     return read_json(manifest)
 
 
+def _identity(info):
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+            info.st_mtime_ns, info.st_ctime_ns)
+
+
+def _open_directory(path):
+    # Pin every ancestor; O_NOFOLLOW on the leaf alone would not prevent a
+    # concurrent parent-directory symlink swap from escaping the archive.
+    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        for part in Path(path).absolute().parts[1:]:
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def inspect_archive(source, destination=None):
+    """Stream hashes through pinned no-follow descriptors; never retain raw rows."""
+    result = {}
+    def walk(fd, relative):
+        before = os.fstat(fd)
+        result[relative] = (_identity(before), None)
+        if destination is not None:
+            (destination / relative).mkdir(parents=True, exist_ok=False)
+        for name in sorted(os.listdir(fd)):
+            info = os.stat(name, dir_fd=fd, follow_symlinks=False)
+            rel = str(Path(relative) / name)
+            if stat.S_ISDIR(info.st_mode):
+                child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+                try:
+                    if _identity(os.fstat(child)) != _identity(info):
+                        raise ValueError('archive directory changed during inspection')
+                    walk(child, rel)
+                finally:
+                    os.close(child)
+            elif stat.S_ISREG(info.st_mode):
+                child = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
+                with os.fdopen(child, 'rb') as stream:
+                    if _identity(os.fstat(stream.fileno())) != _identity(info):
+                        raise ValueError('archive file changed before read')
+                    digest = hashlib.sha256()
+                    with contextlib.ExitStack() as stack:
+                        output = stack.enter_context((destination / rel).open('xb')) if destination is not None else None
+                        while data := stream.read(1024 * 1024):
+                            digest.update(data)
+                            if output is not None:
+                                output.write(data)
+                    if _identity(os.fstat(stream.fileno())) != _identity(info):
+                        raise ValueError('archive file changed during read')
+                result[rel] = (_identity(info), digest.hexdigest())
+            else:
+                raise ValueError('private market-data archive contains an unsafe entry')
+            if _identity(os.stat(name, dir_fd=fd, follow_symlinks=False)) != _identity(info):
+                raise ValueError('archive path changed during inspection')
+        if _identity(os.fstat(fd)) != _identity(before):
+            raise ValueError('archive directory changed during inspection')
+    fd = _open_directory(source)
+    try:
+        walk(fd, '.')
+        # Reopen via the path to detect ancestor/root replacement while the
+        # original descriptor remained safely pinned.
+        current = _open_directory(source)
+        try:
+            if _identity(os.fstat(current)) != result['.'][0]:
+                raise ValueError('archive root path changed during inspection')
+        finally:
+            os.close(current)
+    finally:
+        os.close(fd)
+    return result
+
+
 def copy_archive(source: Path, destination: Path) -> None:
-    # A symlink into canonical raw storage would allow a validator regression
-    # to write to the source. Keep the only raw copy in the auto-deleted private
-    # temporary workspace instead. Never follow links into unrelated data.
-    for path in source.rglob("*"):
-        if path.is_symlink() or not (path.is_file() or path.is_dir()):
-            raise ValueError("private market-data archive contains an unsafe entry")
-    shutil.copytree(source, destination)
+    before = inspect_archive(source)
+    copied = inspect_archive(source, destination)
+    if before != copied or before != inspect_archive(source):
+        raise ValueError('canonical archive changed during copy')
+    if {k:v[1] for k,v in before.items()} != {k:v[1] for k,v in inspect_archive(destination).items()}:
+        raise ValueError('isolated archive hashes differ')
+
+
+@contextlib.contextmanager
+def reader_guard(private):
+    """Honor existing writer locks without creating/chmod-ing canonical files."""
+    paths = [private/'market-data-staging/daily-runner.lock', private/'market-data/jquants/.ingestion.lock']
+    observed = {}
+    with contextlib.ExitStack() as stack:
+        for path in paths:
+            try:
+                before = path.lstat()
+            except FileNotFoundError:
+                observed[path] = None
+                continue
+            if not stat.S_ISREG(before.st_mode):
+                raise ValueError('unsafe writer lock')
+            # A regular file can be replaced with a FIFO after lstat. Never
+            # block while opening an untrusted lock, then check the descriptor.
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            stack.callback(os.close, fd)
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or (info.st_dev, info.st_ino) != (before.st_dev, before.st_ino):
+                raise ValueError('unsafe writer lock')
+            try:
+                fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise RuntimeError('active market-data writer; readonly inspection stopped') from None
+            observed[path] = (info.st_dev, info.st_ino)
+        yield
+        for path, identity in observed.items():
+            info = path.lstat() if path.exists() or path.is_symlink() else None
+            actual = (info.st_dev, info.st_ino) if info and stat.S_ISREG(info.st_mode) else None
+            if actual != identity or (info is not None and not stat.S_ISREG(info.st_mode)):
+                raise RuntimeError('writer lock identity changed during inspection')
 
 
 def local_report(state: dict, watchdog: dict, readiness: dict) -> dict:
@@ -107,6 +220,16 @@ def remote_alerts(private_repo: str, now: datetime) -> list[str]:
 
 
 def command_json(script: str, at: str, action: str = "check", *, include_market_data: bool = True) -> dict:
+    with reader_guard((ROOT / "operations/private").resolve()):
+        archive = configured_archive(ROOT / "stock.jp") if include_market_data else None
+        before = inspect_archive(archive) if archive is not None else None
+        result = _command_json(script, at, action, include_market_data=include_market_data)
+        if archive is not None and inspect_archive(archive) != before:
+            raise RuntimeError('canonical archive changed during readonly inspection')
+        return result
+
+
+def _command_json(script: str, at: str, action: str = "check", *, include_market_data: bool = True) -> dict:
     # bootstrap.check may migrate state. Validate a disposable copy, never the
     # canonical checkout, and reject any implicit migration instead of adopting it.
     source_private = (ROOT / "operations/private").resolve()
@@ -117,7 +240,11 @@ def command_json(script: str, at: str, action: str = "check", *, include_market_
         raise ValueError("market data may be omitted only for static state/policy validation or persisted watchdog")
     archive = configured_archive(ROOT / "stock.jp") if include_market_data else None
     relative_archive = archive.relative_to(source_private) if archive else None
-    with tempfile.TemporaryDirectory(prefix="stock-health-") as directory:
+    # The OS-controlled temporary base may legitimately be an alias (/tmp or
+    # /var on macOS). Resolve it before creating our private child directory;
+    # never canonicalize the untrusted archive passed to inspect_archive.
+    temporary_base = Path(tempfile.gettempdir()).resolve(strict=True)
+    with tempfile.TemporaryDirectory(prefix="stock-health-", dir=temporary_base) as directory:
         scratch = Path(directory)
         public = scratch / "stock.jp"
         shutil.copytree(ROOT / "stock.jp", public,
@@ -135,15 +262,20 @@ def command_json(script: str, at: str, action: str = "check", *, include_market_
             return {str(p.relative_to(private)): p.read_bytes()
                     for p in private.rglob("*")
                     if p.is_file() and "market-data" not in p.relative_to(private).parts}
+        # Normalize only the disposable copy, before taking the strict baseline.
+        for path in [private, *private.rglob('*')]:
+            if path.is_symlink():
+                raise ValueError('unsafe isolated private entry')
+            desired = 0o700 if path.is_dir() else 0o600
+            if stat.S_IMODE(path.stat().st_mode) != desired:
+                path.chmod(desired)
         def archive_snapshot():
-            # Detect accidental writes even in the isolated archive without
-            # reading raw prices into the report or the in-memory state copy.
             if relative_archive is None:
                 return {}
-            copied_archive = private / relative_archive
-            return {str(p.relative_to(copied_archive)):
-                    (p.stat().st_size, p.stat().st_mtime_ns, p.stat().st_ctime_ns)
-                    for p in copied_archive.rglob("*") if p.is_file()}
+            try:
+                return inspect_archive(private / relative_archive)
+            except (ValueError, OSError) as error:
+                raise RuntimeError(f'{script} changed isolated market data') from error
         before = snapshot()
         archive_before = archive_snapshot()
         command = [sys.executable, str(public / "scripts" / script), action]
