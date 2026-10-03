@@ -22,8 +22,8 @@ class DailyTests(unittest.TestCase):
         self.calls.append((endpoint,dict(params)))
         day=params.get('date',params.get('from',self.at.date().isoformat()))
         if endpoint=='/markets/calendar':rows=[{'Date':day,'HolDiv':'0' if date.fromisoformat(day).weekday()>=5 else '1'}]
-        elif endpoint=='/equities/master':rows=[{'Date':day,'Code':'12340','ProdCat':'011','CoName':'Fixture'}]
-        elif endpoint=='/equities/bars/daily':rows=[{'Date':day,'Code':'12340','O':100,'H':101,'L':99,'C':100,'Vo':100}]
+        elif endpoint=='/equities/master':rows=[{'Date':day,'Code':'12340','ProdCat':'011','Mkt':'0111','CoName':'Fixture'}]
+        elif endpoint=='/equities/bars/daily':rows=[{'Date':day,'Code':'12340','O':100,'H':101,'L':99,'C':100,'Vo':100,'Va':10000}]
         elif endpoint in ('/indices/bars/daily/topix','/equities/valuation'):rows=[{'Date':day}]
         elif endpoint=='/fins/summary':rows=[{'DiscDate':day}]
         else:rows=[]

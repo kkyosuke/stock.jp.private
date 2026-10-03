@@ -25,7 +25,7 @@ def master(code="12340", day=DAY, **extra):
 
 def bar(code="12340", day=DAY, **extra):
     return {"Date": day, "Code": code, "O": 100, "H": 110, "L": 90,
-            "C": 105, "Vo": 1200, "AdjO": 50, "AdjH": 55, "AdjL": 45,
+            "C": 105, "Vo": 1200, "Va": 126000, "AdjO": 50, "AdjH": 55, "AdjL": 45,
             "AdjC": 52.5, "AdjVo": 2400, "AdjFactor": 0.5, **extra}
 
 
@@ -92,6 +92,70 @@ class JQuantsSnapshotTest(unittest.TestCase):
         self.assertEqual(manifest["latest_session"]["quote_count"], 1)
         self.assertEqual(self.rows(manifest)[1]["取得状態"], "NO_QUOTE")
         self.assertIn("J-Quants full-universe coverage is below the daily minimum", self.readiness()[1])
+
+    def test_pro_market_excluded_even_with_valid_price(self):
+        manifest = self.export([master(), master("56780", Mkt="0105")], [bar(), bar("56780")])
+        self.assertEqual(manifest["universe"]["count"], 1)
+        self.assertEqual(manifest["universe"]["excluded_pro_market_count"], 1)
+        self.assertEqual(manifest["acquisition"]["bar_row_count"], 2)
+        self.assertEqual(manifest["acquisition"]["diagnostics"]["VALID_PRICE"], 2)
+        self.assertEqual([row["銘柄コード"] for row in self.rows(manifest)], ["1234"])
+        self.assertEqual(self.readiness()[1], [])
+        self.assertIsNone(self.readiness({"5678"})[0])
+
+    def test_missing_unknown_market_is_not_silently_excluded(self):
+        for market in (None, "", "9999", "0109"):
+            with self.subTest(market=market), self.assertRaisesRegex(JQuantsSnapshotError, "market"):
+                self.export([master(), master("56780", Mkt=market)], [bar()])
+
+    def test_dated_market_change_changes_membership_independently_of_prices(self):
+        first = self.export([master(), master("56780", Mkt="0105")], [bar(), bar("56780")])
+        old_day = "2021-08-31"
+        second = export_daily_snapshot(self.root, old_day,
+            [master(day=old_day), master("56780", day=old_day, Mkt="0101")],
+            [bar(day=old_day)], RETRIEVED)
+        self.assertEqual(first["universe"]["count"], 1)
+        self.assertEqual(second["universe"]["count"], 2)
+        self.assertEqual(second["latest_session"]["diagnostics"]["ROW_MISSING"], 1)
+
+    def test_acquisition_and_price_diagnostics_are_independent(self):
+        nulls = dict.fromkeys(("O", "H", "L", "C", "Vo", "Va"))
+        masters = [master(f"{n}0") for n in range(1234, 1238)]
+        manifest = self.export(masters, [bar(), bar("12350", **nulls), bar("12360", C=None)])
+        self.assertEqual(manifest["acquisition"]["row_coverage_ratio"], .75)
+        self.assertEqual(manifest["latest_session"]["diagnostics"], {
+            "VALID_PRICE": 1, "NO_EXECUTION": 1, "PARTIAL_NULL_OR_INVALID": 1, "ROW_MISSING": 1})
+        self.assertEqual(manifest["latest_session"]["quote_count"], 1)
+        self.assertEqual(manifest["universe"]["count"], 4)
+        for bad in ({"Va": None}, {"Va": 0}, {"Vo": 0}, {"Va": "NaN"}):
+            with self.subTest(bad=bad):
+                result = self.export(bars=[bar(**bad)])
+                self.assertEqual(result["latest_session"]["diagnostics"]["PARTIAL_NULL_OR_INVALID"], 1)
+        missing = bar()
+        del missing["Va"]
+        self.assertEqual(self.export(bars=[missing])["latest_session"]["quote_count"], 0)
+
+    def test_daily_population_regression_and_active_target_gate(self):
+        # Synthetic population sizes match the privately checked daily partition.
+        masters = [master(f"{n}0", Mkt="0105" if n >= 4689 else "0111")
+                   for n in range(1000, 4880)]
+        nulls = dict.fromkeys(("O", "H", "L", "C", "Vo", "Va"))
+        bars = [bar(item["Code"], **({} if n < 4659 or n == 4689 else nulls))
+                for n, item in zip(range(1000, 4880), masters)]
+        manifest = self.export(masters, bars)
+        self.assertEqual(manifest["universe"]["count"], 3689)
+        self.assertEqual(manifest["latest_session"]["quote_count"], 3659)
+        self.assertEqual(manifest["acquisition"]["row_coverage_ratio"], 1)
+        evidence, failures = self.readiness({"1000"})
+        self.assertEqual(failures, [])
+        self.assertAlmostEqual(evidence["coverage_ratio"], 3659 / 3689)
+        self.assertIn("J-Quants archive does not cover every active target", self.readiness({"4659"})[1])
+
+    def test_legacy_scope_requires_regeneration_not_relabeling(self):
+        manifest = self.export()
+        manifest["universe"]["scope"] = "point-in-time domestic stocks"
+        (self.archive / "latest.json").write_text(json.dumps(manifest))
+        self.assertIsNone(self.readiness()[0])
 
     def test_adjusted_prices_are_never_used_as_missing_raw_fallback(self):
         manifest = self.export(bars=[{"Date": DAY, "Code": "12340", "AdjO": 100, "AdjH": 110,
