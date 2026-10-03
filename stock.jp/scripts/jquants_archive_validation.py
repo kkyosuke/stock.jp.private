@@ -48,6 +48,43 @@ def validate_archive(names, read):
             require(marker in names)
         if marker in names:
             require(json.loads(read(marker)) == {"as_of": state["as_of"], "sessions": state["sessions"]})
+    shared_name = 'jquants/target-history/ranges.json'
+    if shared_name in names:
+        shared = json.loads(read(shared_name))
+        require(set(shared) == {'campaign', 'ranges', 'knowledge'}
+                and shared['knowledge'] == 'retrieved_now_not_point_in_time')
+        campaign = shared['campaign']
+        require(set(campaign) == {'start_date', 'as_of', 'sessions'})
+        start, end = date.fromisoformat(campaign['start_date']), date.fromisoformat(campaign['as_of'])
+        require(0 <= (end-start).days <= 550 and type(campaign['sessions']) is int
+                and 1 <= campaign['sessions'] <= 280)
+        require(set(shared['ranges']) <= {'trading_calendar', 'topix_daily'})
+        for value in shared['ranges'].values():
+            require(set(value) == {'query', 'pages', 'next_key', 'seen_keys', 'complete'}
+                    and type(value['complete']) is bool and isinstance(value['pages'], list)
+                    and isinstance(value['seen_keys'], list))
+            require(value['query'] == {'from':campaign['start_date'], 'to':campaign['as_of']})
+            seen = []
+            last = None
+            for index, page in enumerate(value['pages']):
+                require(set(page) == {'path', 'sha256', 'bytes', 'retrieved_at'}
+                        and isinstance(page['sha256'], str) and re.fullmatch('[0-9a-f]{64}', page['sha256'])
+                        and type(page['bytes']) is int and page['bytes'] >= 0)
+                member = 'jquants/' + page['path']
+                require(page['path'] == 'objects/' + page['sha256'][:2] + '/' + page['sha256'] + '.json'
+                        and member in names and sha(read(member)) == page['sha256']
+                        and len(read(member)) == page['bytes'])
+                timestamp(page['retrieved_at'])
+                payload = json.loads(read(member))
+                require(isinstance(payload.get('data'), list) and all(isinstance(v, dict) for v in payload['data']))
+                last = payload.get('pagination_key') or None
+                require(last is None or isinstance(last, str))
+                require(bool(last) or index == len(value['pages'])-1)
+                if last:
+                    require(last not in seen)
+                    seen.append(last)
+            require(value['seen_keys'] == seen and value['next_key'] == last
+                    and value['complete'] == (bool(value['pages']) and last is None))
     for name in sorted(names):
         if re.fullmatch(r'jquants/runs/[0-9]{8}T120000Z\.json', name):
             journal = json.loads(read(name))

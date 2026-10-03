@@ -40,9 +40,14 @@ class IntentTransport:
         self.checkpoint.commit()
         # Crash/lost ACK leaves PENDING. No error response text/body is stored.
         is_merge=bool(re.fullmatch(r'/repos/kkyosuke/stock\.jp\.private/pulls/[1-9][0-9]*/merge',path))
-        prepare_io=self.checkpoint.authorization.get('merge_io_prepare') if is_merge else None
+        merge_prepare=self.checkpoint.authorization.get('merge_io_prepare') if is_merge else None
+        owner_prepare=self.checkpoint.authorization.get('publication_io_prepare')
+        def prepare_all():
+            if owner_prepare:owner_prepare()
+            if merge_prepare:merge_prepare()
+        prepare_io=prepare_all if owner_prepare or merge_prepare else None
         merge_check=self.checkpoint.authorization.get('merge_io_check') if is_merge else None
-        remote.require(not is_merge or callable(prepare_io) and callable(merge_check),'merge send-boundary evidence unavailable')
+        remote.require(not is_merge or callable(merge_prepare) and callable(merge_check),'merge send-boundary evidence unavailable')
         def before_io():
             check=self.checkpoint.authorization.get('publication_io_check') or self.checkpoint.authorization.get('handover_check')
             if check:check()

@@ -5,6 +5,15 @@
 PAPER/HUMAN_ONLY、Light・addonsなし、価格 coverage 98%、active coverage 100%を維持する。
 実データ取得、既存拒否データの転送、dispatch、credential設定、権限変更、旧scheduler操作は行わない。
 
+## 日付指定Actionへの更新
+
+現在の作成対象は [日付指定Action](actions-target-date.md) である。
+日次workflowの入口は `actions_target_driver.py --target-date` に切り替え、
+真正な一度限りの退役証跡と、GitHub上の現在のrun/attempt所有権を分離した。
+以下はPR #52時点のlegacy実装の記録であり、そのlive controller probeを
+実在する外部APIとして扱わない。旧経路は回帰テスト用に残すが、履歴workflowを含め無効のままである。
+実行者の決定・退役確認・新scopeレビュー・有効化は今回のコード変更では実施しない。
+
 ## 実装した経路
 
 `stock.jp/scripts/actions_driver.py` は、信頼済みmainの照合、独立した承認・引継ぎ証拠の確認、

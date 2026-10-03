@@ -37,7 +37,7 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
     require(codec.digest(raw) == approved_manifest_sha256, 'approval manifest differs from reviewed pin')
     codec.scan(raw)
     scope = json.loads(raw)
-    require(scope.get('version') == 1 and scope.get('enabled') is True, 'scope disabled')
+    require(scope.get('version') in {1,2} and scope.get('enabled') is True, 'scope disabled')
     require(scope.get('repository') == REPO and scope.get('writer') == writer and mode in scope.get('modes', []),
             'writer or operation is outside approval scope')
     require(scope.get('publication_rejections') == [] and scope.get('unresolved_campaigns') == [],
@@ -58,6 +58,7 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
     baseline_tree=complete_tree(request,baseline_sha)
     current_tree=complete_tree(request,main)
     allowed_approval={MANIFEST,'.github/stock-automation-handover.json','.github/stock-automation-controller-evidence.json'}
+    if scope['version'] == 2: allowed_approval.add('.github/stock-automation-retirement.json')
     for name in baseline_tree.keys() | current_tree.keys():
         before,after=baseline_tree.get(name),current_tree.get(name)
         if before==after:continue
@@ -96,15 +97,21 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
                         or '/revisions/' in '/'+p.relative_to(baseline_source).as_posix())}
             fixed=AdoptedHistory(baseline_source,immutable)
             fixed.check(source)
-    observed = handover_probe(scope['old_scheduler_id'])
-    observed_at = datetime.fromisoformat(observed['observed_at'])
-    checked_at=clock() if clock else now
-    require(checked_at<expiry,'approval expired during verification')
-    require(observed_at.tzinfo is not None and 0 <= (checked_at-observed_at).total_seconds() <= 60,
-            'stale writer handover evidence')
-    require(observed['scheduler_id'] == scope['old_scheduler_id'] and observed['enabled'] is False
-            and observed['active_writers'] == 0 and observed['next_writer'] == writer,
-            'old writer has not handed over')
+    if scope['version'] == 2:
+        observed = handover_probe(None)
+        require(observed.get('retirement_verified') is True and observed.get('github_run_verified') is True,
+                'retirement or current GitHub run verification missing')
+        require((clock() if clock else now) < expiry, 'approval expired during verification')
+    else:
+        observed = handover_probe(scope['old_scheduler_id'])
+        observed_at = datetime.fromisoformat(observed['observed_at'])
+        checked_at=clock() if clock else now
+        require(checked_at<expiry,'approval expired during verification')
+        require(observed_at.tzinfo is not None and 0 <= (checked_at-observed_at).total_seconds() <= 60,
+                'stale writer handover evidence')
+        require(observed['scheduler_id'] == scope['old_scheduler_id'] and observed['enabled'] is False
+                and observed['active_writers'] == 0 and observed['next_writer'] == writer,
+                'old writer has not handed over')
     try:
         from scripts.actions_publication import pages
     except ModuleNotFoundError:

@@ -22,7 +22,13 @@ class GuardrailOwnershipTest(unittest.TestCase):
                     self.assertIn("if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}",content)
                     self.assertIn('AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}',content)
                     self.assertIn('STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}',content)
-                    self.assertIn('python stock.jp/scripts/actions_driver.py --mode',content)
+                    if path.name == 'daily-collector-disabled.yml':
+                        self.assertIn('python stock.jp/scripts/actions_target_driver.py --target-date "$STOCK_TARGET_DATE"',content)
+                        self.assertIn('STOCK_TARGET_DATE: ${{ inputs.target_date }}',content)
+                        self.assertIn('required: true',content)
+                        self.assertNotIn('--target-date ${{',content)
+                    else:
+                        self.assertIn('python stock.jp/scripts/actions_driver.py --mode',content)
                     self.assertNotIn('schedule:',content)
                 else:
                     self.assertNotIn("AUTOMATION_PAT", content)
