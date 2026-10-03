@@ -158,6 +158,7 @@ def market_semantics(root, head, scratch, entries):
                    or re.fullmatch(r'jquants/(latest|size-sample)\.json', name)
                    or re.fullmatch(r'jquants/objects/[0-9a-f]{2}/[0-9a-f]{64}\.json', name)
                    or re.fullmatch(r'jquants/runs/[0-9TZ]+\.json', name)
+                   or name in {'jquants/history/state.json', 'jquants/history-marker.json'}
                    or re.fullmatch(r'jquants/datasets/[a-z_]+/(state\.json|[0-9-]{10}/(latest\.json|checkpoint\.json|revisions/[0-9a-f]{64}\.json))', name)
                    or re.fullmatch(r'daily-prices/(latest\.json|[0-9]{4}/[0-9-]{10}\.csv|revisions/[0-9-]{10}/[0-9a-f]{64}/([0-9-]{10}\.csv|manifest-[0-9a-f]{64}\.json))', name))
         require(allowed, 'unexpected restored market member')
@@ -189,7 +190,10 @@ def market_semantics(root, head, scratch, entries):
                 {'complete', 'pending_resume', 'pending'} for n in required), 'dataset error or unclassified state')
     complete = all(rows[n]['collection_status'] == 'complete' for n in required)
     require(report.get('all_entitled_complete') is complete, 'inconsistent completeness claim')
-    return {'scope': 'complete_acquisition' if complete else 'partial_acquisition', 'operational_readiness': False}
+    history_path = scratch / 'restored/jquants/history/state.json'
+    history_status = json.loads(history_path.read_text())['status'] if history_path.exists() else None
+    return {'scope': 'complete_acquisition' if complete else 'partial_acquisition',
+            'operational_readiness': False, 'history_status': history_status}
 
 
 def validate_proposal_events(old_bytes, new_bytes, orders, run_id):
@@ -379,6 +383,8 @@ def allow_auto_merge(proof, evidence, now=None):
         elapsed = (now - datetime.fromisoformat(item[key])).total_seconds()
         require(0 <= elapsed <= age, 'stale validation or GitHub snapshot')
     kind = proof['kind']; pr = evidence['pr']
+    require(proof.get('history_status') in (None, 'COMPLETE', 'BATCH_EXHAUSTED'),
+            'unfinished or failed history needs review; no automatic merge')
     require(proof.get('validated') is True and proof['repository'] == REPOS[kind], 'invalid semantic proof')
     require(evidence['repository'] == REPOS[kind] and evidence['visibility'] == 'private', 'private destination required')
     require(evidence.get('auto_merge_allowed') is True, 'native auto-merge unavailable; do not alter settings')

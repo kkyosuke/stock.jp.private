@@ -612,7 +612,7 @@ class RepositoryRecoveryEvidenceTest(unittest.TestCase):
         _write(path, json.dumps(drill))
         return path
 
-    def test_recent_complete_recovery_is_eligible(self) -> None:
+    def test_legacy_boolean_only_recovery_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self._write_drill(root)
@@ -620,7 +620,8 @@ class RepositoryRecoveryEvidenceTest(unittest.TestCase):
                 root=root,
                 at=datetime.fromisoformat("2026-09-01T09:00:00+09:00"),
             )
-        self.assertTrue(result["eligible"], result["blockers"])
+        self.assertFalse(result["eligible"])
+        self.assertTrue(any("provenance" in item for item in result["blockers"]))
         self.assertEqual(result["metrics"]["passed_check_count"], 8)
 
     def test_public_template_tracks_the_current_layout_revision(self) -> None:
@@ -644,7 +645,8 @@ class RepositoryRecoveryEvidenceTest(unittest.TestCase):
                 root=root,
                 at=datetime.fromisoformat("2026-12-15T09:00:00+09:00"),
             )
-        self.assertTrue(result["eligible"], result["blockers"])
+        self.assertFalse(result["eligible"])
+        self.assertTrue(any("provenance" in item for item in result["blockers"]))
 
     def test_layout_revision_change_requires_a_new_clean_clone(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
