@@ -30,6 +30,8 @@ python stock.jp/scripts/jquants_history.py --root "$PWD" \
 次のbatchに進む前に成果物をpack／verifyし、データPR経由で保存・採用・復元を確認する。
 既存の未保存成果物へ古いmain世代をoverlayしない。環境喪失により未保存予約が不明なら停止。
 CLIは清潔な最新mainを要求するため、保存用branchのまま次batchを開始しない。
+正常なbatch予算消尽はBATCH_EXHAUSTEDとして保存可能。PAUSED/BLOCKED/EXHAUSTED/RUNNINGは
+保存PRを作れても自動採用gateで拒否し、通常reviewに戻す。
 1ページ／partitionなら280営業日で562送信・47 batchが目安。
 ページ追加・失敗により600で未完了になる場合は残範囲を報告し、上限を増やさない。
 

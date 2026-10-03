@@ -143,7 +143,7 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
             if state['status'] in {'COMPLETE','EXHAUSTED','BLOCKED'}:return result()
             if state['retry_not_before'] and datetime.now(daily.JST)<daily.aware(state['retry_not_before']):return result()
             if batch==len(state['batches'])+1:
-                require(state['status']=='BATCH_EXHAUSTED','previous batch is not exhausted')
+                require(state['status'] in {'BATCH_EXHAUSTED','PAUSED'} and len(state['batches'][-1])==state['batch_limit'],'previous batch is not exhausted')
                 require(sum(map(len,state['batches']))<600,'campaign exhausted')
                 state['batches'].append([])
             else:require(batch==len(state['batches']),'batch identity mismatch')
@@ -200,7 +200,7 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
             except ingest.ApiError as error:
                 state['status']='BLOCKED' if error.status in {401,403} else 'PAUSED'
                 if state['status']=='PAUSED' and len(state['batches'][-1])>=state['batch_limit']:
-                    state['status']='EXHAUSTED' if len(state['batches'])>=50 else 'BATCH_EXHAUSTED'
+                    state['status']='EXHAUSTED' if len(state['batches'])>=50 else 'PAUSED'
                 if error.status==429:state['retry_not_before']=(datetime.now(daily.JST)+timedelta(seconds=120)).isoformat()
             except (ValueError,KeyError,TypeError,OSError,ingest.IngestionError):
                 state['status']='BLOCKED'

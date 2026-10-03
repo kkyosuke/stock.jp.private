@@ -31,6 +31,14 @@ class DailyGateTest(unittest.TestCase):
     def test_validated_non_draft_daily_pr_allowed(self):
         self.assertEqual(p.allow_auto_merge(self.proof(),self.evidence())['action'],'enable_native_auto_merge')
 
+    def test_failed_history_requires_review(self):
+        for status in ('PAUSED','BLOCKED','EXHAUSTED','RUNNING'):
+            proof=self.proof();proof['history_status']=status
+            with self.subTest(status=status),self.assertRaises(p.Blocked):p.allow_auto_merge(proof,self.evidence())
+        for status in ('COMPLETE','BATCH_EXHAUSTED'):
+            proof=self.proof();proof['history_status']=status
+            self.assertTrue(p.allow_auto_merge(proof,self.evidence())['eligible'])
+
     def test_identity_visibility_reviews_and_head_base_races_block(self):
         for field,value in [('draft',True),('head_sha','c'*40),('base_sha','c'*40),('head_ref','dependabot/pkg'),('author_login','other'),('review_decision','CHANGES_REQUESTED'),('mergeable',False)]:
             e=self.evidence();e['pr'][field]=value

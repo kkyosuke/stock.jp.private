@@ -96,3 +96,14 @@ class HistoryTest(unittest.TestCase):
         for name in ('equities_master','equities_daily'):i.collect_partition(archive,h.BY_NAME[name],self.end,client)
         self.calls.clear();self.run_history();result=self.run_history(batch=2)
         self.assertEqual(result['status'],'COMPLETE');self.assertEqual(result['requests_used'],16)
+    def test_partial_history_is_publishable_with_explicit_status(self):
+        import subprocess
+        from scripts import daily_publication as publication
+        self.run_history()
+        source=self.private/'market-data';(source/'jquants/latest.json').write_text(json.dumps(i.planned_status('light',(),self.end)))
+        def git(*args):return subprocess.check_output(['git','-C',str(self.root),*args],stderr=subprocess.DEVNULL,text=True).strip()
+        git('init');git('config','user.email','synthetic@example.test');git('config','user.name','Synthetic')
+        git('commit','--allow-empty','-m','base');base=git('rev-parse','HEAD')
+        codec.pack(source,self.root/'stock.jp/data/jquants-archive');git('add','stock.jp/data');git('commit','-m','bounded history')
+        proof=publication.validate_local(self.root,'market','2026-10-02',base,git('rev-parse','HEAD'))
+        self.assertEqual(proof['history_status'],'BATCH_EXHAUSTED')
