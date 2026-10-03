@@ -126,7 +126,8 @@ def validate_tracked_price_snapshot(
                 raise ValueError("unexpected J-Quants source identity or units")
             if (
                 universe.get("provider") != "J-Quants API V2 equities/master"
-                or universe.get("scope") != "point-in-time domestic stocks"
+                or universe.get("scope") != "point-in-time domestic common stocks excluding PRO MARKET"
+                or universe.get("excluded_market_codes") != ["0105"]
             ):
                 raise ValueError("unexpected J-Quants universe identity")
         else:
@@ -251,6 +252,8 @@ def validate_tracked_price_snapshot(
         "session_sha256": str(session["sha256"]),
         "universe_count": universe_count,
         "quote_count": quote_count,
+        "acquisition": metadata.get("acquisition") if is_jquants else None,
+        "price_diagnostics": session.get("diagnostics") if is_jquants else None,
         "coverage_ratio": archive_coverage,
         "target_codes": sorted(active_targets),
         "target_count": len(active_targets),

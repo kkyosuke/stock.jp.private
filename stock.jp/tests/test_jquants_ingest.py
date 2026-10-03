@@ -194,9 +194,9 @@ class JQuantsArchiveTests(unittest.TestCase):
                 calls.append((endpoint, params))
                 day = params.get("date", params.get("from"))
                 if endpoint == "/equities/bars/daily":
-                    return {"data": [{"Code": "285A0", "Date": day, "O": 100, "H": 102, "L": 99, "C": 101, "Vo": 1000, "AdjC": 50.5}]}
+                    return {"data": [{"Code": "285A0", "Date": day, "O": 100, "H": 102, "L": 99, "C": 101, "Vo": 1000, "Va": 101000, "AdjC": 50.5}]}
                 if endpoint == "/equities/master":
-                    return {"data": [{"Code": "285A0", "Date": day, "ProdCat": "011", "CoName": "Synthetic"}]}
+                    return {"data": [{"Code": "285A0", "Date": day, "ProdCat": "011", "Mkt": "0111", "CoName": "Synthetic"}]}
                 return {"data": []}
             report = ingest(root=root, archive=archive, plan="light", addons=(), as_of=self.day,
                             client=Client(plan="light", max_requests=2, transport=transport, sleep=lambda _: None))
