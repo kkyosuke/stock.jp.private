@@ -340,3 +340,17 @@ class RemoteDailyTests(unittest.TestCase):
         document['runs'][self.at.date().isoformat()]['reservation_ids'][0] = 'e' * 32
         with self.assertRaisesRegex(r.RemoteStop, 'identity rewrite'):
             self.store.cas(revision, document)
+
+    def test_midnight_during_reservation_cas_never_sends_provider_request(self):
+        adapter=self.adapter();commit=adapter.commit
+        original_day=self.at.date().isoformat()
+        def crosses_midnight():
+            commit()
+            if adapter.day and adapter.document['runs'][adapter.day]['phase']=='IN_FLIGHT':
+                self.at+=timedelta(days=1)
+        with patch.object(adapter,'commit',side_effect=crosses_midnight):
+            with self.assertRaisesRegex(r.RemoteStop,'day changed after reservation'):
+                self.run_daily(remote=adapter)
+        self.assertFalse(self.calls)
+        run=self.store.read()[1]['runs'][original_day]
+        self.assertEqual(run['phase'],'IN_FLIGHT');self.assertEqual(len(run['state']['requests']),1)

@@ -1,6 +1,5 @@
 name: daily-collector-disabled
-# CODE-ONLY DRAFT. No schedule, credential injection, or executable collector.
-# Proposed future schedule (requires separate reviewed activation): 0 12 * * *
+# Remains unconditionally disabled until a separate reviewed activation.
 on:
   workflow_dispatch:
 permissions:
@@ -9,10 +8,10 @@ concurrency:
   group: stock-private-market-writer
   cancel-in-progress: false
 jobs:
-  disabled-design-check:
-    if: ${{ false }}
+  reviewed-execution:
+    if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -23,5 +22,17 @@ jobs:
             !/operations/private/
             !/stock.jp/data/jquants-archive/
             !/stock.jp/data/daily-prices/
-      - name: Offline protocol explanation only
-        run: python scripts/actions_daily_protocol.py
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+      - name: Install reviewed runtime dependencies
+        run: >-
+          python -m pip install "xlrd==2.0.2" "openpyxl==3.1.5"
+          "pypdf==6.16.1" "pdfplumber==0.11.8" "certifi==2026.7.22" PyYAML
+      - name: Execute approved daily transaction
+        env:
+          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+          STOCK_ACTIONS_ENABLED: ${{ vars.STOCK_ACTIONS_ENABLED }}
+          STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}
+        run: python stock.jp/scripts/actions_driver.py --mode daily --root "$GITHUB_WORKSPACE"

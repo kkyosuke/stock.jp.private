@@ -60,6 +60,8 @@ class HistoryTest(unittest.TestCase):
         self.assertEqual(result['status'],'COMPLETE');self.assertEqual(result['requests_used'],562)
         self.assertEqual(result['batch'],47)
         self.assertEqual(len(list((self.private/'market-data/daily-prices').glob('*/*.csv'))),280)
+        self.assertEqual(len(list((self.private/'market-data/daily-prices/revisions').rglob('manifest-*.json'))),280)
+        self.assertEqual(len(list((self.private/'market-data/jquants/datasets').glob('*/*/revisions/*.json'))),560)
     def test_all_600_failure_reservations_survive_batches(self):
         def failed(endpoint,query):raise i.ApiError(503,'api_error')
         for batch in range(1,51):
@@ -245,3 +247,23 @@ class HistoryTest(unittest.TestCase):
         path.write_text(json.dumps(checkpoint))
         with self.assertRaises(ValueError):self.run_history(sessions=1)
         self.assertTrue(path.exists());self.assertEqual(len(self.calls),count)
+
+    def test_completed_day_export_reuses_bound_input_and_survives_cold_process(self):
+        from unittest.mock import patch
+        from scripts import jquants_snapshot as snapshot
+        self.run_history()
+        day=date.fromisoformat(json.loads((self.private/'market-data/jquants/history/state.json').read_bytes())['days'][0])
+        archive=self.private/'market-data/jquants';normalized=self.private/'market-data/daily-prices'
+        before={p.relative_to(normalized).as_posix():(codec.digest(p.read_bytes()),p.stat().st_mtime_ns)
+                for p in normalized.rglob('*') if p.is_file()}
+        with patch.object(snapshot,'export_daily_snapshot',side_effect=AssertionError('unchanged input must reuse verified output')):
+            i.publish_snapshot(self.root,archive,day)
+        i._snapshot_exports.clear()  # fresh process: recompute exactly the same bytes
+        with patch.object(i,'utc_now',return_value='2026-10-09T21:00:00+09:00'):
+            i.publish_snapshot(self.root,archive,day)
+        after={p.relative_to(normalized).as_posix():(codec.digest(p.read_bytes()),p.stat().st_mtime_ns)
+               for p in normalized.rglob('*') if p.is_file()}
+        self.assertEqual(before,after)
+        canonical=normalized/str(day.year)/(str(day)+'.csv');canonical.write_text('corrupt')
+        with self.assertRaisesRegex(i.IngestionError,'normalized snapshot changed'):
+            i.publish_snapshot(self.root,archive,day)

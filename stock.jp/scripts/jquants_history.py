@@ -88,10 +88,12 @@ def validate_history(state, read):
 
 
 class HistoryClient(ingest.Client):
-    def __init__(self,state,save,check_resources,**kwargs):
+    def __init__(self,state,save,check_resources,remote=None,**kwargs):
         super().__init__(plan='light',retries=0,max_response_bytes=resources.MAX_RESPONSE,**kwargs)
         self.state,self.save,self.check_resources=state,save,check_resources
+        self.remote=remote
     def _request(self,endpoint,params):
+        if self.remote is not None:self.remote.before_reservation()
         s=self.state
         if len(s['batches'][-1])>=s['batch_limit'] or sum(map(len,s['batches']))>=600:
             raise ingest.RequestBudgetExhausted('bounded history budget')
@@ -104,13 +106,23 @@ class HistoryClient(ingest.Client):
         s['batches'][-1].append({'endpoint':endpoint,'query_sha256':ingest.digest(ingest.encoded(params)),
                               'reserved_at':datetime.now(daily.JST).isoformat()})
         self.save()  # Ambiguous crashes and failures remain charged.
-        result=super()._request(endpoint,params)
+        if self.remote is not None:
+            self.remote.reserve(s)
+            self.remote.before_provider_io()
+        try:
+            result=super()._request(endpoint,params)
+        except ingest.ApiError as error:
+            if self.remote is not None:self.remote.failed(error.status)
+            raise
         if len(ingest.encoded(result))>resources.MAX_RESPONSE:raise ingest.ApiError(200,'response_too_large')
         return result
 
 
-def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
+def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None, remote=None):
     root=Path(root).resolve();private=(root/'operations/private').resolve();source=private/'market-data'
+    activation=root/'.github/stock-automation-approval.json'
+    require(remote is not None or not activation.exists() or ingest.read_json(activation).get('enabled') is not True,
+            'Actions writer owns acquisition; legacy runner disabled')
     config_path=private/'source-config.json';config=ingest.read_json(config_path);c=config['jquants'];settings=c['ingestion']
     require(c['plan']=='light' and c.get('addons')==[] and c['enabled'] is True and
             c['base_url']==BASE_URL and c['api_key_env']=='JQUANTS_API_KEY' and settings['enabled'] is True,'history Light contract mismatch')
@@ -120,6 +132,7 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
     require(type(sessions) is int and 1<=sessions<=280 and type(batch) is int and 1<=batch<=50,'invalid history bounds')
     require(date.today()-timedelta(days=3*365)<=as_of<datetime.now(daily.JST).date(),'history outside bounded completed-date window')
     with daily.workspace_lock(private):
+        if remote is not None:remote.prepare(source)
         require(source.is_dir(),'restore adopted archive before history collection')
         codec.safe_tree(source);archive=source/'jquants'
         with ingest.archive_lock(archive):
@@ -147,8 +160,12 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
                 validate_history(state,lambda n:(source/n).read_bytes())
                 require((state['as_of'],state['sessions'],state['config_sha256'],state['batch_limit'])==
                         (as_of.isoformat(),sessions,cfg,settings['max_requests_per_run']),'history campaign changed')
-            def save():
+            if remote is not None:
                 validate_history(state,lambda n:(source/n).read_bytes());ingest.atomic_json(path,state)
+                remote.attach(state)
+            def save(*,local_only=False):
+                validate_history(state,lambda n:(source/n).read_bytes());ingest.atomic_json(path,state)
+                if remote is not None and not local_only:remote.sync(state)
             def result():
                 return {'status':state['status'],'batch':len(state['batches']),'requests_used':sum(map(len,state['batches'])),
                         'sessions_completed':len(state['tasks'])//2,'readiness':'NOT_EVALUATED','remote_saved':False}
@@ -176,7 +193,7 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
             def check_resources():
                 report=resources.inspect(source,private/'market-data-staging')
                 state['resource_checks'][str(len(state['batches']))]=report;save();resources.enforce(report)
-            client=HistoryClient(state,save,check_resources,**kwargs)
+            client=HistoryClient(state,lambda:save(local_only=True),check_resources,remote=remote,**kwargs)
             def range_rows(name,start):
                 r=state['ranges'].setdefault(name,{'query':{'from':start,'to':state['as_of']},'pages':[],
                                                   'next_key':None,'seen_keys':[],'complete':False})
@@ -191,6 +208,7 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
                     r['pages'].append(ingest.save_object(archive,payload));r['next_key']=token or None
                     if token:r['seen_keys'].append(token)
                     r['complete']=not bool(token);save()
+                    if remote is not None:remote.page_saved(state)
                 return [row for ref in r['pages'] for row in ingest.checked_payload(archive,ref)['data']]
             try:
                 state['status']='RUNNING';state['retry_not_before']=None;save()
@@ -212,7 +230,8 @@ def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None):
                         if key in state['tasks'] and not checkpoint.exists():continue
                         existing=daily.partition(archive,name,day)
                         if checkpoint.exists() or existing is None or not existing[1]:
-                            ingest.collect_partition(archive,BY_NAME[name],day,client)
+                            ingest.collect_partition(archive,BY_NAME[name],day,client,
+                                page_saved=(lambda:remote.page_saved(state)) if remote is not None else None)
                             existing=daily.partition(archive,name,day)
                         require(existing and existing[1] and all(r.get('Date')==day_text for r in existing[1]),'missing or invalid daily partition')
                         state['tasks'][key]=existing[2];save()

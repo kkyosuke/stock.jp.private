@@ -198,6 +198,7 @@ class DurableClient(ingest.Client):
         self.requests = len(state['requests'])
 
     def _request(self, endpoint, params):
+        if self.remote is not None:self.remote.before_reservation()
         # Charge before network I/O. An ambiguous crash consumes its reservation.
         require(len(self.state['requests']) < self.state['budget'], 'durable budget exhausted')
         self.state['requests'].append({'endpoint': endpoint, 'query_sha256': ingest.digest(ingest.encoded(params)),
@@ -205,6 +206,7 @@ class DurableClient(ingest.Client):
         self.save()
         if self.remote is not None:
             self.remote.reserve(self.state)
+            self.remote.before_provider_io()  # after all paced checkpoint writes, immediately before provider I/O
         try:
             return super()._request(endpoint, params)
         except ingest.ApiError as error:
@@ -215,6 +217,9 @@ class DurableClient(ingest.Client):
 
 def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None):
     root = Path(root).resolve()
+    activation=root/'.github/stock-automation-approval.json'
+    require(remote is not None or not activation.exists() or ingest.read_json(activation).get('enabled') is not True,
+            'Actions writer owns acquisition; legacy runner disabled')
     at = (at or datetime.now(JST))
     require(at.tzinfo is not None, 'aware execution time required')
     at = at.astimezone(JST)

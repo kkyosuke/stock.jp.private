@@ -114,10 +114,10 @@ def _safe_path(archive: Path, relative: Path) -> Path:
 
 def _atomic_bytes(archive: Path, relative: Path, content: bytes, *, immutable: bool = False) -> None:
     path = _safe_path(archive, relative)
-    if immutable and path.exists():
-        if path.read_bytes() != content:
-            raise JQuantsSnapshotError("immutable snapshot revision was modified")
-        return
+    if path.exists():
+        previous=path.read_bytes()
+        if previous==content:return
+        if immutable:raise JQuantsSnapshotError("immutable snapshot revision was modified")
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     for parent in (path.parent, *path.parent.parents):
         if not parent.is_relative_to(archive):

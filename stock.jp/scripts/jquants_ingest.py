@@ -307,6 +307,9 @@ def days_between(start: date, end: date):
         day += timedelta(days=1)
 
 
+_snapshot_exports = {}
+
+
 def publish_snapshot(root: Path, archive: Path, day: date) -> dict:
     try:
         from scripts.jquants_snapshot import export_daily_snapshot
@@ -316,16 +319,43 @@ def publish_snapshot(root: Path, archive: Path, day: date) -> dict:
     target = private_root(root, config.get("price_source", {}).get("archive_root", "operations/private/market-data/daily-prices"))
     if target == archive.resolve() or target.is_relative_to(archive.resolve()) or archive.resolve().is_relative_to(target):
         raise IngestionError("raw and normalized archives must be separate sibling directories")
+    inputs={name:confined(archive,'datasets',name,day.isoformat(),'latest.json').read_bytes()
+            for name in ('equities_master','equities_daily')}
+    provenance={"api_version":"v2","archive_root":config['jquants']['ingestion']['archive_root'],
+        "partitions":[{"dataset":name,"path":f"datasets/{name}/{day.isoformat()}/revisions/{digest(raw)}.json",
+                       "sha256":digest(raw)} for name,raw in inputs.items()]}
+    # Re-exporting an unchanged acquisition must not manufacture new retrieval
+    # times/revisions on every history batch. Corrections have a new input hash.
+    retrieved=max(datetime.fromisoformat(json.loads(raw)['completed_at'].replace('Z','+00:00')) for raw in inputs.values()).isoformat()
+    # A same-process history continuation may reuse an output we actually
+    # generated and semantically checked, only after rechecking every input page
+    # and output hash. Cold processes recompute once; stable input time keeps
+    # their immutable output identical as well.
+    module_root=Path(__file__).parent
+    binding=digest(b''.join((module_root/name).read_bytes() for name in
+                           ('jquants_snapshot.py','price_snapshot.py','collect_daily_prices.py'))+encoded(provenance))
+    cache_key=(str(root.resolve()),day.isoformat());cached=_snapshot_exports.get(cache_key)
+    if cached and cached['binding']==binding:
+        for raw in inputs.values():
+            for page in json.loads(raw)['pages']:
+                content=confined(archive,page['path']).read_bytes()
+                if digest(content)!=page['sha256'] or len(content)!=page['bytes']:
+                    raise IngestionError('raw page changed during snapshot reuse')
+        for name,checksum in cached['files'].items():
+            if digest(confined(target,name).read_bytes())!=checksum:
+                raise IngestionError('normalized snapshot changed during reuse')
+        return dict(cached['summary'])
     manifest = export_daily_snapshot(
         root, day.isoformat(), partition_rows(archive, "equities_master", day),
-        partition_rows(archive, "equities_daily", day), utc_now(),
-        raw_provenance={"api_version": "v2", "archive_root": config["jquants"]["ingestion"]["archive_root"], "partitions": [
-            {"dataset": name,
-             "path": f"datasets/{name}/{day.isoformat()}/revisions/{digest(confined(archive, 'datasets', name, day.isoformat(), 'latest.json').read_bytes())}.json",
-             "sha256": digest(confined(archive, "datasets", name, day.isoformat(), "latest.json").read_bytes())}
-            for name in ("equities_master", "equities_daily")]})
-    return {"status": "exported", "date": day.isoformat(), "quote_count": manifest["latest_session"]["quote_count"],
+        partition_rows(archive, "equities_daily", day), retrieved, raw_provenance=provenance)
+    summary={"status": "exported", "date": day.isoformat(), "quote_count": manifest["latest_session"]["quote_count"],
             "universe_count": manifest["universe"]["count"], "readiness": "independent_coverage_freshness_and_active_target_validation_required"}
+    metadata=(json.dumps(manifest,ensure_ascii=False,indent=2,allow_nan=False)+'\n').encode()
+    session=manifest['latest_session'];manifest_name=(Path(session['file']).parent/('manifest-'+digest(metadata)+'.json')).as_posix()
+    _snapshot_exports[cache_key]={'binding':binding,'summary':summary,'files':{
+        session['file']:session['sha256'],session['canonical_file']:session['sha256'],manifest_name:digest(metadata)}}
+    while len(_snapshot_exports)>280:_snapshot_exports.pop(next(iter(_snapshot_exports)))
+    return summary
 
 
 def initial_snapshot(root: Path, archive: Path, plan: str, as_of: date, client: Client) -> dict:
