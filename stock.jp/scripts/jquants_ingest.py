@@ -228,7 +228,7 @@ def checked_payload(root: Path, ref: dict) -> dict:
     return json.loads(data)
 
 
-def collect_partition(root: Path, dataset: Dataset, day: date, client: Client) -> dict:
+def collect_partition(root: Path, dataset: Dataset, day: date, client: Client, *, page_saved=None) -> dict:
     """Commit page then checkpoint. Publish a partition only when pagination ends."""
     folder = confined(root, "datasets", dataset.name, day.isoformat())
     checkpoint_path = confined(root, "datasets", dataset.name, day.isoformat(), "checkpoint.json")
@@ -262,6 +262,8 @@ def collect_partition(root: Path, dataset: Dataset, day: date, client: Client) -
             checkpoint["seen_keys"].append(next_key)
         checkpoint["complete"] = not bool(next_key)
         atomic_json(checkpoint_path, checkpoint)
+        if page_saved is not None:
+            page_saved()  # synchronous remote ACK before requesting another page
     partition = {"schema_version": 1, "provider": "J-Quants API V2", "api_version": "v2", "dataset": dataset.name,
                  "endpoint": BASE_URL + dataset.endpoint, "query": params, "period": {"from": day.isoformat(), "to": day.isoformat()},
                  "universe": "all returned issues; no configured watchlist filter", "units": dataset.units,

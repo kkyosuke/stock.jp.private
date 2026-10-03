@@ -191,8 +191,9 @@ def recover_published_checkpoint(archive, name, day):
 
 
 class DurableClient(ingest.Client):
-    def __init__(self, state, save, clock, **kwargs):
+    def __init__(self, state, save, clock, remote=None, **kwargs):
         self.state, self.save, self.clock = state, save, clock
+        self.remote = remote
         super().__init__(plan='light', max_requests=state['budget'], retries=0, **kwargs)
         self.requests = len(state['requests'])
 
@@ -202,10 +203,17 @@ class DurableClient(ingest.Client):
         self.state['requests'].append({'endpoint': endpoint, 'query_sha256': ingest.digest(ingest.encoded(params)),
                                        'reserved_at': self.clock().isoformat()})
         self.save()
-        return super()._request(endpoint, params)
+        if self.remote is not None:
+            self.remote.reserve(self.state)
+        try:
+            return super()._request(endpoint, params)
+        except ingest.ApiError as error:
+            if self.remote is not None:
+                self.remote.failed(error.status)
+            raise
 
 
-def run(root, *, at=None, run_date=None, transport=None, sleep=None):
+def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None):
     root = Path(root).resolve()
     at = (at or datetime.now(JST))
     require(at.tzinfo is not None, 'aware execution time required')
@@ -225,6 +233,8 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None):
     source = private / 'market-data'
     with workspace_lock(private):
         store = root / 'stock.jp/data/jquants-archive'
+        if remote is not None:
+            remote.prepare(source)
         if not source.exists() and (store / 'current.json').is_file():
             codec.restore(store, source)  # Never overlays local checkpoints.
         source.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -270,9 +280,15 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None):
                          'config_sha256': sha, 'budget': settings['max_requests_per_run'], 'requests': [],
                          'tasks': {}, 'status': 'RUNNING', 'data_date': None, 'error': None,
                          'http_status': None, 'retry_not_before': None}
-            def save():
+            if remote is not None:
                 validate_state(state)
                 ingest.atomic_json(path, state)
+                remote.attach(state)
+            def save(*, local_only=False):
+                validate_state(state)
+                ingest.atomic_json(path, state)
+                if remote is not None and not local_only:
+                    remote.sync(state)
             def result():
                 return {'status': state['status'], 'run_date': state['run_date'], 'data_date': state['data_date'],
                         'requests_used': len(state['requests']), 'budget': state['budget'], 'tasks_completed': len(state['tasks']),
@@ -311,13 +327,15 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None):
                         kwargs = {'transport': transport}
                         if sleep is not None:
                             kwargs['sleep'] = sleep
-                        client = DurableClient(state, save, lambda: datetime.now(JST), **kwargs)
+                        client = DurableClient(state, lambda: save(local_only=True),
+                                               lambda: datetime.now(JST), remote=remote, **kwargs)
                     validate_checkpoint(archive, name, task_day)
                     checkpoint = archive / 'datasets' / name / task_day.isoformat() / 'checkpoint.json'
                     if final and checkpoint.exists():
                         require(aware(ingest.read_json(checkpoint)['started_at']) >= final_after,
                                 'provisional checkpoint requires its original run; do not overwrite')
-                    ingest.collect_partition(archive, BY_NAME[name], task_day, client)
+                    ingest.collect_partition(archive, BY_NAME[name], task_day, client,
+                                             page_saved=(lambda: remote.page_saved(state)) if remote is not None else None)
                     existing = partition(archive, name, task_day)
                 m, rows, digest = existing
                 if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily'):
@@ -370,6 +388,8 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None):
                 report = ingest.planned_status('light', (), day)
                 report.update(scope='daily_bounded', daily_run=result(), all_entitled_complete=False)
                 ingest.atomic_json(archive / 'latest.json', report)
+                if remote is not None:
+                    remote.sync(state)
             return result()
 
 
