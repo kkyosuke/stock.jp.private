@@ -17,6 +17,7 @@ class IntentTransport:
         if method=='GET':
             return self.request(method,path,body)
         remote.gate(self.checkpoint.authorization)
+        if hasattr(self.request,'before_publication'):self.request.before_publication()
         pending=self.checkpoint.document.get('publication_intent')
         remote.require(not pending or pending['state']=='ACKED','publication write outcome unresolved')
         digest=codec.digest(codec.encoded([method,path,body]))
@@ -24,7 +25,11 @@ class IntentTransport:
         if path.endswith('/git/refs'):
             identifiers={'ref':body['ref'],'sha':body['sha']}
         elif path.endswith('/pulls'):
-            identifiers={'head':body['head'],'base':body['base']}
+            transaction=self.checkpoint.document.get('transaction') or {}
+            remote.require(all(k in transaction for k in ('head','tree','generation')),'PR intent identity missing')
+            identifiers={'head':body['head'],'base':body['base'],'sha':transaction['head'],
+                         'tree':transaction['tree'],'generation':transaction['generation'],
+                         'repository':remote.REPO,'author':'kkyosuke'}
         elif re.fullmatch(r'/repos/kkyosuke/stock\.jp\.private/pulls/[1-9][0-9]*/merge',path):
             identifiers={'sha':body['sha']}
         intent=dict(id=uuid.uuid4().hex,state='PENDING',method=method,path=path,
@@ -60,8 +65,25 @@ class IntentTransport:
                 from actions_publication import pages
             matches=[p for p in pages(self.request,'/pulls?state=all')
                      if p['head']['ref']==ids['head'] and p['base']['ref']==ids['base']
-                     and p['head']['repo']['full_name']==remote.REPO]
+                     and p['head']['repo']['full_name']==remote.REPO
+                     and p['base']['repo']['full_name']==ids['repository']
+                     and p['user']['login']==ids['author'] and p['base']['ref']=='main'
+                     and p['head']['sha']==ids['sha'] and p['state']=='open'
+                     and not p.get('draft',True) and not p.get('merged',False)]
             remote.require(len(matches)==1,'PR outcome not uniquely confirmed')
+            commit=self.request('GET',prefix+'/git/commits/'+ids['sha'],None)
+            remote.require(commit['tree']['sha']==ids['tree'],'PR recovered tree mismatch')
+            import tempfile
+            from pathlib import Path
+            try:
+                from scripts.actions_publication import download_archive
+            except ModuleNotFoundError:
+                from actions_publication import download_archive
+            with tempfile.TemporaryDirectory() as tmp:
+                target=Path(tmp)/'store'
+                download_archive(self.request,ids['sha'],target)
+                remote.require(json.loads((target/'current.json').read_bytes())['generation']==ids['generation'],
+                               'PR recovered generation mismatch')
             response={'number':matches[0]['number']}
         elif path.endswith('/merge'):
             pr=self.request('GET',path.removesuffix('/merge'),None)

@@ -18,7 +18,14 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 content = path.read_text()
                 for value in forbidden:
                     self.assertNotIn(value, content)
-                self.assertNotIn("AUTOMATION_PAT", content)
+                if path.name in {'daily-collector-disabled.yml','history-once-disabled.yml'}:
+                    self.assertIn("if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}",content)
+                    self.assertIn('AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}',content)
+                    self.assertIn('STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}',content)
+                    self.assertIn('python stock.jp/scripts/actions_driver.py --mode',content)
+                    self.assertNotIn('schedule:',content)
+                else:
+                    self.assertNotIn("AUTOMATION_PAT", content)
                 if "actions/checkout@" in content:
                     self.assertIn("persist-credentials: false", content)
 

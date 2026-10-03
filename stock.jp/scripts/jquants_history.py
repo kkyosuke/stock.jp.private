@@ -93,6 +93,7 @@ class HistoryClient(ingest.Client):
         self.state,self.save,self.check_resources=state,save,check_resources
         self.remote=remote
     def _request(self,endpoint,params):
+        if self.remote is not None:self.remote.before_reservation()
         s=self.state
         if len(s['batches'][-1])>=s['batch_limit'] or sum(map(len,s['batches']))>=600:
             raise ingest.RequestBudgetExhausted('bounded history budget')
@@ -117,6 +118,9 @@ class HistoryClient(ingest.Client):
 
 def run(root, *, as_of, sessions=280, batch=1, transport=None, sleep=None, remote=None):
     root=Path(root).resolve();private=(root/'operations/private').resolve();source=private/'market-data'
+    activation=root/'.github/stock-automation-approval.json'
+    require(remote is not None or not activation.exists() or ingest.read_json(activation).get('enabled') is not True,
+            'Actions writer owns acquisition; legacy runner disabled')
     config_path=private/'source-config.json';config=ingest.read_json(config_path);c=config['jquants'];settings=c['ingestion']
     require(c['plan']=='light' and c.get('addons')==[] and c['enabled'] is True and
             c['base_url']==BASE_URL and c['api_key_env']=='JQUANTS_API_KEY' and settings['enabled'] is True,'history Light contract mismatch')

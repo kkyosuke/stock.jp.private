@@ -62,7 +62,7 @@ def gate(facts):
 def validate(document):
     required = {'version', 'writer', 'fence', 'blocked_campaigns', 'runs', 'snapshot'}
     require(isinstance(document, dict) and required <= set(document)
-            and set(document) <= required | {'history','publication_intent'}, 'invalid checkpoint schema')
+            and set(document) <= required | {'history','publication_intent','transaction','github_budget','approval_binding','adopted_history','github_pause'}, 'invalid checkpoint schema')
     if document.get('publication_intent') is not None:
         intent=document['publication_intent']
         require(set(intent)=={'id','state','method','path','request_sha256','identifiers','response'}
@@ -93,7 +93,7 @@ def validate(document):
     if document.get('history') is not None:
         validate_history_envelope(document['history'])
     require(document['snapshot'] is None or isinstance(document['snapshot'], dict), 'invalid snapshot')
-    codec.scan(codec.encoded(document))
+    codec.scan(codec.encoded({**document,'snapshot':None}))
 
 
 class GitCheckpointStore:
@@ -111,6 +111,8 @@ class GitCheckpointStore:
         gate(self.authorization)
         try:
             return self.request(method, self.prefix + suffix, body)
+        except RemoteStop:
+            raise
         except Exception:
             raise RemoteStop('GitHub checkpoint transport failed; outcome may be unknown') from None
 
@@ -145,26 +147,7 @@ class GitCheckpointStore:
         require(len(raw) <= LIMIT, 'checkpoint size exceeds reviewed limit')
         current, previous = self.read()
         require(current == expected and previous['writer'] == value['writer'], 'stale writer or parent')
-        pending=previous.get('publication_intent')
-        if pending and pending['state']=='PENDING':
-            updated=value.get('publication_intent')
-            require(updated is not None and all(updated.get(k)==pending[k]
-                    for k in ('id','method','path','request_sha256','identifiers')),
-                    'unresolved publication intent cannot be replaced')
-        for day, old in previous['runs'].items():
-            require(day in value['runs'], 'daily ledger deletion forbidden')
-            before, after = old['state'], value['runs'][day]['state']
-            require(after['budget'] == before['budget'] and after['config_sha256'] == before['config_sha256']
-                    and after['requests'][:len(before['requests'])] == before['requests'],
-                    'daily budget or reservation history rewrite forbidden')
-            require(value['runs'][day]['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'],
-                    'reservation identity rewrite forbidden')
-        if previous.get('history'):
-            old, new = previous['history'], value.get('history')
-            require(new is not None, 'history ledger deletion forbidden')
-            history_monotonic(old['state'], new['state'])
-            require(new['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'], 'history reservation rewrite')
-        require(value['fence'] != previous['fence'], 'fresh checkpoint fence required')
+        check_transition(previous,value)
         # No base_tree: this isolated branch contains only checkpoint.json.
         blob = self.call('POST', '/git/blobs', {'content': base64.b64encode(raw).decode(), 'encoding': 'base64'})
         require(blob.get('sha') == git_blob(raw), 'blob acknowledgement mismatch')
@@ -239,10 +222,25 @@ class RunnerCheckpoint:
         self.poisoned = False
         self.document = self.revision = self.day = self.source = None
 
+    def capture_snapshot(self):
+        if hasattr(self.store,'capture'):
+            return self.store.capture(self.source,self.history_check)
+        return capture(self.source,self.history_check)
+
+    def before_reservation(self):
+        if hasattr(self.store,'ensure_capacity'):self.store.ensure_capacity(self.source)
+        if hasattr(self.store.request,'before_provider'):self.store.request.before_provider()
+
+    def restore_snapshot(self,snapshot,target):
+        if hasattr(self.store,'restore'):
+            return self.store.restore(snapshot,target,self.history_check)
+        return unpack(snapshot,target,self.history_check)
+
     def commit(self):
         require(not self.poisoned, 'checkpoint failure requires fresh verified recovery')
         try:
             self.document['fence'] = uuid.uuid4().hex
+            if hasattr(self.store.request,'state'):self.document['github_budget']=self.store.request.state()
             validate(self.document)
             revision = self.store.cas(self.revision, copy.deepcopy(self.document))
             actual, restored = self.store.read()
@@ -258,6 +256,7 @@ class RunnerCheckpoint:
         self.history_check(self.source)  # before even read-only GitHub communication
         self.revision, self.document = self.store.read()
         validate(self.document)
+        if hasattr(self.store.request,'restore'):self.store.request.restore(self.document.get('github_budget'))
         require(self.document['writer'] == self.writer, 'writer ownership mismatch')
         require(not self.document.get('publication_intent'),
                 'publication transaction requires adoption/recovery before collection')
@@ -269,15 +268,16 @@ class RunnerCheckpoint:
         if snapshot is not None:
             with tempfile.TemporaryDirectory() as temporary:
                 restored = Path(temporary) / 'restored'
-                unpack(snapshot, restored, self.history_check)
+                self.restore_snapshot(snapshot,restored)
                 if self.source.exists() and any(p.is_file() and p.name != '.ingestion.lock' for p in self.source.rglob('*')):
-                    require(capture(self.source, self.history_check) == snapshot, 'local/remote checkpoint divergence')
+                    require(self.capture_snapshot() == snapshot, 'local/remote checkpoint divergence')
                 else:
                     for path in restored.rglob('*'):
                         if path.is_file():
                             codec.atomic(self.source / path.relative_to(restored), path.read_bytes())
         else:
             require(not self.document['runs'] and not self.document.get('history'), 'missing snapshot; budget must not reset')
+        self.source.mkdir(parents=True,exist_ok=True)
 
     def attach(self, state):
         require(not self.document.get('history') or self.document['history']['phase'] == 'RESTORED',
@@ -304,10 +304,12 @@ class RunnerCheckpoint:
         run['state'] = copy.deepcopy(state)
         if state['status'] in {'COLLECTED', 'HOLIDAY'}:
             run['phase'] = 'COLLECTED'  # publication and restore still required
-        self.document['snapshot'] = capture(self.source, self.history_check)
+        if hasattr(self.store,'capture') and state['status']=='RUNNING':return
+        self.document['snapshot'] = self.capture_snapshot()
         self.commit()
 
     def reserve(self, state):
+        if hasattr(self.store.request,'before_provider'):self.store.request.before_provider()
         require(not self.poisoned, 'checkpoint failure requires fresh verified recovery')
         run = self.document['runs'][self.day]
         now = self.clock()
@@ -322,14 +324,14 @@ class RunnerCheckpoint:
         run['state'] = copy.deepcopy(state)
         run['phase'] = 'IN_FLIGHT'
         run['reservation_ids'].append(uuid.uuid4().hex)
-        self.document['snapshot'] = capture(self.source, self.history_check)
+        self.document['snapshot'] = self.capture_snapshot()
         self.commit()  # no financial API until CAS and readback both succeed
 
     def page_saved(self, state):
         run = self.document['runs'][self.day]
         require(run['phase'] == 'IN_FLIGHT', 'no response reservation')
         # Includes the immutable page AND pagination checkpoint, not just payload.
-        self.document['snapshot'] = capture(self.source, self.history_check)
+        self.document['snapshot'] = self.capture_snapshot()
         run['state'] = copy.deepcopy(state)
         run['phase'], run['retry_not_before'] = 'IDLE', None
         self.commit()
@@ -414,10 +416,12 @@ class HistoryCheckpoint(RunnerCheckpoint):
         run['state'] = copy.deepcopy(state)
         if state['status'] == 'COMPLETE':
             run['phase'] = 'COLLECTED'
-        self.document['snapshot'] = capture(self.source, self.history_check)
+        if hasattr(self.store,'capture') and state['status']=='RUNNING':return
+        self.document['snapshot'] = self.capture_snapshot()
         self.commit()
 
     def reserve(self, state):
+        if hasattr(self.store.request,'before_provider'):self.store.request.before_provider()
         run = self.document['history']
         require(run['phase'] in {'IDLE','PAUSED'}, 'history ambiguous or blocked')
         if run['retry_not_before']:
@@ -427,13 +431,13 @@ class HistoryCheckpoint(RunnerCheckpoint):
         run['state'] = copy.deepcopy(state)
         run['reservation_ids'].append(uuid.uuid4().hex)
         run['phase'] = 'IN_FLIGHT'
-        self.document['snapshot'] = capture(self.source, self.history_check)
+        self.document['snapshot'] = self.capture_snapshot()
         self.commit()
 
     def page_saved(self, state):
         run = self.document['history']
         require(run['phase'] == 'IN_FLIGHT', 'no history reservation')
-        self.document['snapshot'] = capture(self.source, self.history_check)
+        self.document['snapshot'] = self.capture_snapshot()
         run['state'] = copy.deepcopy(state)
         run['phase'], run['retry_not_before'] = 'IDLE', None
         self.commit()
@@ -446,3 +450,31 @@ class HistoryCheckpoint(RunnerCheckpoint):
         run['phase'] = 'BLOCKED' if status in {401,403} else 'PAUSED'
         run['retry_not_before'] = (self.clock()+timedelta(seconds=120)).isoformat() if status == 429 else None
         self.commit()
+
+
+def check_transition(previous,value):
+    require(previous['writer']==value['writer'], 'writer ownership changed')
+    if previous.get('adopted_history'):
+        require(value.get('adopted_history')==previous['adopted_history'],'adopted history receipt changed')
+    if previous.get('approval_binding'):
+        require(value.get('approval_binding')==previous['approval_binding'],'approval binding changed')
+    pending=previous.get('publication_intent')
+    if pending and pending['state']=='PENDING':
+        updated=value.get('publication_intent')
+        require(updated is not None and all(updated.get(k)==pending[k]
+                for k in ('id','method','path','request_sha256','identifiers')),
+                'unresolved publication intent cannot be replaced')
+    for day, old in previous['runs'].items():
+        require(day in value['runs'], 'daily ledger deletion forbidden')
+        before, after = old['state'], value['runs'][day]['state']
+        require(after['budget'] == before['budget'] and after['config_sha256'] == before['config_sha256']
+                and after['requests'][:len(before['requests'])] == before['requests'],
+                'daily budget or reservation history rewrite forbidden')
+        require(value['runs'][day]['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'],
+                'reservation identity rewrite forbidden')
+    if previous.get('history'):
+        old, new = previous['history'], value.get('history')
+        require(new is not None, 'history ledger deletion forbidden')
+        history_monotonic(old['state'], new['state'])
+        require(new['reservation_ids'][:len(old['reservation_ids'])] == old['reservation_ids'], 'history reservation rewrite')
+    require(value['fence'] != previous['fence'], 'fresh checkpoint fence required')

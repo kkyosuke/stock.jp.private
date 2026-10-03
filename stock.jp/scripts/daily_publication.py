@@ -40,7 +40,11 @@ def require(value, reason):
 
 
 def git(root, *args):
-    return subprocess.check_output(['git', '-C', str(root), *args], stderr=subprocess.DEVNULL)
+    try:
+        from scripts.git_sandbox import git as safe_git
+    except ModuleNotFoundError:
+        from git_sandbox import git as safe_git
+    return safe_git(root,*args)
 
 
 def changes(root, base, head):

@@ -73,6 +73,11 @@ def evidence(request, number, proof, *, review_probe, now=None):
     statuses=pages(request,'/commits/'+head+'/statuses')
     runs=pages(request,'/actions/runs?head_sha='+head+'&event=pull_request','workflow_runs')
     reviews=pages(request,'/pulls/'+str(number)+'/reviews')
+    try:
+        from scripts.actions_http import reject_negative_reviews
+    except ModuleNotFoundError:
+        from actions_http import reject_negative_reviews
+    reject_negative_reviews(reviews)
     files=pages(request,'/pulls/'+str(number)+'/files')
     decision=review_probe(number,head,reviews)
     require(decision in {None,'APPROVED'}, 'required review or requested changes remains')
@@ -90,7 +95,20 @@ def evidence(request, number, proof, *, review_probe, now=None):
                         base_sha=main,mergeable=latest['mergeable'],review_decision=decision),
                 checks=[dict(name=c['name'],head_sha=c['head_sha'],status=c['status'],conclusion=c['conclusion'],
                              app_slug=c['app']['slug']) for c in checks],
-                statuses=[dict(sha=head,state=s['state']) for s in statuses],workflow_runs=runs)
+                statuses=latest_statuses(statuses,head),workflow_runs=runs)
+
+
+def latest_statuses(statuses,head):
+    latest={}
+    for item in statuses:
+        context=item.get('context')
+        require(isinstance(context,str) and bool(context),'status context missing')
+        stamp=datetime.fromisoformat(item['created_at'].replace('Z','+00:00'))
+        require(stamp.tzinfo is not None and type(item['id']) is int,'invalid status order')
+        require(item['state'] in {'pending','success','failure','error'},'unknown status state')
+        order=(stamp,item['id'])
+        if context not in latest or order>latest[context][0]:latest[context]=(order,item)
+    return [dict(sha=head,context=context,state=item['state']) for context,(_,item) in sorted(latest.items())]
 
 
 def merge_and_restore(request, proof, number, *, review_probe, expected_generation, authorization=None):
@@ -163,9 +181,12 @@ def bootstrap_checkpoint(store, source, writer, *, history_check=remote.reject_h
     """Explicit first creation only; ref conflicts/unknown ACKs never reset state."""
     remote.gate(store.authorization)
     source=Path(source);history_check(source)
-    snapshot=remote.capture(source,history_check)
+    snapshot=store.capture(source,history_check) if hasattr(store,'capture') else remote.capture(source,history_check)
     document=dict(version=2,writer=writer,fence=uuid.uuid4().hex,blocked_campaigns=[],runs={},snapshot=snapshot)
-    from scripts import jquants_daily as daily
+    try:
+        from scripts import jquants_daily as daily
+    except ModuleNotFoundError:
+        import jquants_daily as daily
     for path in (source/'jquants/runs').glob('*T120000Z.json'):
         state=daily.read_state(path)
         require(state['status'] in {'COLLECTED','HOLIDAY'},'unresolved adopted daily journal')
@@ -179,6 +200,8 @@ def bootstrap_checkpoint(store, source, writer, *, history_check=remote.reject_h
             reservation_ids=[codec.digest(codec.encoded([state['as_of'],index,receipt]))[:32]
                              for index,receipt in enumerate(remote.history_receipts(state))])
     remote.validate(document)
+    if hasattr(store,'create'):
+        return store.create(document)
     raw=codec.encoded(document);require(len(raw)<=remote.LIMIT,'initial checkpoint too large')
     blob=store.call('POST','/git/blobs',{'content':base64.b64encode(raw).decode(),'encoding':'base64'})
     require(blob['sha']==remote.git_blob(raw),'bootstrap blob differs')
@@ -208,16 +231,24 @@ def mark_adopted(checkpoint, *, verified_main, verified_generation, actual_gener
 
 from contextlib import contextmanager
 import subprocess
+import os
+
+
+try:
+    from scripts.git_sandbox import git as isolated_git
+except ModuleNotFoundError:
+    from git_sandbox import git as isolated_git
+
 
 @contextmanager
 def prepare_candidate(root, source, run_id, base):
     """Offline isolated Git candidate; never changes caller checkout or settings."""
     remote.sha(base)
-    require(publication.git(root,'rev-parse',base+'^{commit}').decode().strip()==base,'base commit unavailable locally')
+    require(isolated_git(root,'rev-parse',base+'^{commit}').decode().strip()==base,'base commit unavailable locally')
     with tempfile.TemporaryDirectory(prefix='actions-candidate-') as tmp:
         checkout=Path(tmp)/'checkout';checkout.mkdir()
         def git(*args):
-            return subprocess.check_output(['git','-C',str(checkout),*args],stderr=subprocess.DEVNULL)
+            return isolated_git(checkout,*args)
         git('init','--quiet')
         git('fetch','--quiet','--no-tags',str(Path(root).resolve()),base)
         git('checkout','--quiet','--detach',base)

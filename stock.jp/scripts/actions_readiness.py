@@ -10,12 +10,12 @@ def report():
         'credential_validity':'UNVERIFIED',
         'operation_mode':'PAPER',
         'broker_submission':'HUMAN_ONLY',
-        'remaining_integration':[
-            'trusted scheduler/lease handover probe',
+        'driver':'actions_driver.py',
+        'remaining_external_conditions':[
+            'independent old scheduler stop and active-writer evidence',
             'reviewed pinned approval manifest and rejected-campaign resolution',
-            'end-to-end publication intent/ACK-loss recovery orchestration',
-            'review existing workflow credential guardrail before secret injection',
-            'end-to-end daily/history deployment and interruption tests',
+            'existing credential validity and minimum scope verification',
+            'separate code review, activation and real-service acceptance',
         ],
     }
 

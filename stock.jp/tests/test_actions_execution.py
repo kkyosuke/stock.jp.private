@@ -158,7 +158,7 @@ class MergeTests(unittest.TestCase):
         if suffix=='/pulls/1':return dict(state='open',draft=False,merged=False,mergeable=True,user={'login':'kkyosuke'},
             head=dict(sha=self.head,ref='daily/market/2026-10-03',repo={'full_name':r.REPO}),base=dict(sha=self.base,ref='main'))
         if '/check-runs?' in suffix:return {'total_count':3,'check_runs':[dict(id=i,name=n,head_sha=self.head,status='completed',conclusion='success',app={'slug':'github-actions'}) for i,n in enumerate(('format','test','guardrail'))]}
-        if '/statuses?' in suffix:return [dict(id=1,state='failure' if self.bad_status else 'success')]
+        if '/statuses?' in suffix:return [dict(id=1,context='synthetic-ci',created_at='2026-10-03T00:00:00Z',state='failure' if self.bad_status else 'success')]
         if suffix.startswith('/actions/runs?'):return {'total_count':3,'workflow_runs':[dict(id=i,head_sha=self.head,status='completed',conclusion='success',event='pull_request',path=p) for i,p in enumerate(pub.publication.WORKFLOWS['market'])]}
         if '/reviews?' in suffix:return []
         if '/files?' in suffix:return [dict(filename=self.proof['paths'][0])]
@@ -210,6 +210,7 @@ class ScopeIntegrationTests(MergeTests):
             if '/compare/' in path:return dict(status='ahead',total_commits=1,files=[{'filename':auth.MANIFEST,'status':'added'}])
             if '/contents/stock.jp/data/' in path:return dict(content=base64.b64encode((self.store/'current.json').read_bytes()).decode())
             if '/pulls?state=open' in path:return []
+            if '/git/commits/' in path:return dict(sha=path.rsplit('/',1)[1],tree={'sha':'d'*40})
             return self.request(method,path,body)
         observed=dict(scheduler_id='synthetic-old',enabled=False,active_writers=0,next_writer='actions-v1',observed_at=now.isoformat())
         kwargs=dict(approved_manifest_sha256=r.codec.digest(raw),mode='daily',writer='actions-v1',source=source,now=now)

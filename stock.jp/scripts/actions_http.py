@@ -1,6 +1,7 @@
 """Fixed-origin transports. No retries, redirects, body/error logging or env lookup."""
 import json
 import re
+import time
 from urllib.error import HTTPError
 from urllib.parse import urlsplit, urlencode
 from urllib.request import Request, HTTPRedirectHandler, build_opener
@@ -27,6 +28,7 @@ class FixedHTTP:
         if origin not in {'https://api.github.com', BASE_URL}:
             raise RemoteStop('unreviewed HTTP origin')
         self.origin, self.headers = origin, dict(headers)
+        self.rate_headers = {}
         self.opener, self.limit, self.timeout = opener or build_opener(NoRedirect()), limit, timeout
 
     def json(self, method, path, body=None):
@@ -46,6 +48,7 @@ class FixedHTTP:
         try:
             with self.opener.open(request, timeout=self.timeout) as response:
                 status = response.status
+                self.rate_headers={key:response.headers.get(key) for key in ('retry-after','x-ratelimit-remaining','x-ratelimit-reset')} if hasattr(response,'headers') else {}
                 if response.geturl() != request.full_url:
                     raise RemoteStop('redirect rejected')
                 if not 200 <= status < 300:
@@ -64,9 +67,16 @@ class FixedHTTP:
                                           parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
         except HTTPError as error:
             # Do not read the error response, headers, URL, or its exception text.
+            self.rate_headers={key:error.headers.get(key) for key in ('retry-after','x-ratelimit-remaining','x-ratelimit-reset')}
             return error.code, None
         except Exception:
             raise RemoteStop('HTTP outcome unknown or invalid; no automatic retry') from None
+
+
+class Rejected(RemoteStop):
+    def __init__(self,status):
+        self.status=status
+        super().__init__('GitHub request rejected; status='+str(status))
 
 
 class GitHubTransport:
@@ -97,22 +107,48 @@ class GitHubTransport:
                                    or not re.fullmatch('[0-9a-f]{40}',(body or {}).get('sha',''))):
                 raise RemoteStop('exact-head squash required')
         status, payload = self.http.json(method, path, body)
+        if status in {403,429}:
+            headers=self.http.rate_headers
+            if headers.get('retry-after') or headers.get('x-ratelimit-remaining')=='0':
+                try:
+                    from scripts.actions_rate import RateLimited
+                except ModuleNotFoundError:
+                    from actions_rate import RateLimited
+                until=max(time.time()+float(headers.get('retry-after') or 60),float(headers.get('x-ratelimit-reset') or 0))
+                raise RateLimited(until)
         if not 200 <= status < 300:
-            raise RemoteStop('GitHub request rejected; status=' + str(status))
+            raise Rejected(status)
         return payload
 
     def review_decision(self, number, head, reviews):
+        reject_negative_reviews(reviews)
         if type(number) is not int or number < 1:
             raise RemoteStop('invalid PR number')
         query = '''query($number:Int!) { repository(owner:"kkyosuke",name:"stock.jp.private") {
           pullRequest(number:$number) { headRefOid reviewDecision } } }'''
         status,payload = self.http.json('POST','/graphql',{'query':query,'variables':{'number':number}})
+        if status in {403,429}:
+            headers=self.http.rate_headers
+            if headers.get('retry-after') or headers.get('x-ratelimit-remaining')=='0':
+                try:
+                    from scripts.actions_rate import RateLimited
+                except ModuleNotFoundError:
+                    from actions_rate import RateLimited
+                until=max(time.time()+float(headers.get('retry-after') or 60),float(headers.get('x-ratelimit-reset') or 0))
+                raise RateLimited(until)
         if status != 200 or payload.get('errors'):
             raise RemoteStop('review evidence unavailable')
         pr = payload['data']['repository']['pullRequest']
         if pr['headRefOid'] != head or pr['reviewDecision'] not in {None,'APPROVED'}:
             raise RemoteStop('review or exact head not satisfied')
         return pr['reviewDecision']
+
+
+def reject_negative_reviews(reviews):
+    # DISMISSED is the only explicit dismissal evidence. A nullable branch
+    # policy summary must never erase a retained CHANGES_REQUESTED review.
+    if any(r.get('state') == 'CHANGES_REQUESTED' for r in reviews):
+        raise RemoteStop('undismissed negative review')
 
 
 class ProviderTransport:

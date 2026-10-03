@@ -17,7 +17,7 @@ MANIFEST = '.github/stock-automation-approval.json'
 
 
 def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, handover_probe,
-                 now=None):
+                 now=None, allow_pending_publication=False):
     """Pin comes from reviewed deployment, not workflow_dispatch/PR input.
 
     handover_probe must independently read the previous scheduler and writer
@@ -57,7 +57,7 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
     require(comparison.get('status') in {'ahead','identical'}
             and comparison.get('total_commits', 1000) < 250
             and len(comparison.get('files', [])) < 300
-            and all(f['filename'] == MANIFEST or
+            and all(f['filename'] in {MANIFEST,'.github/stock-automation-handover.json','.github/stock-automation-controller-evidence.json'} or
                     (re.fullmatch(r'stock\.jp/data/jquants-archive/(current\.json|(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz)',f['filename'])
                      and (f['status']=='added' or f['filename'].endswith('/current.json') and f['status']=='modified'))
                     for f in comparison.get('files', [])),
@@ -81,6 +81,17 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
         codec.restore(store,restored)
         expected={p.relative_to(restored).as_posix():codec.digest(p.read_bytes()) for p in restored.rglob('*') if p.is_file()}
         require(files==expected,'restored main file hashes differ')
+        baseline_store,baseline_source=Path(tmp)/'baseline-store',Path(tmp)/'baseline-source'
+        download_archive(request,baseline_sha,baseline_store)
+        codec.restore(baseline_store,baseline_source)
+        if (baseline_source/'jquants/history/state.json').exists():
+            immutable={p.relative_to(baseline_source).as_posix():codec.digest(p.read_bytes())
+                       for p in baseline_source.rglob('*') if p.is_file() and
+                       ('/history/' in '/'+p.relative_to(baseline_source).as_posix()
+                        or p.name=='history-marker.json' or '/objects/' in '/'+p.relative_to(baseline_source).as_posix()
+                        or '/revisions/' in '/'+p.relative_to(baseline_source).as_posix())}
+            fixed=AdoptedHistory(baseline_source,immutable)
+            fixed.check(source)
     observed = handover_probe(scope['old_scheduler_id'])
     observed_at = datetime.fromisoformat(observed['observed_at'])
     require(observed_at.tzinfo is not None and 0 <= (now-observed_at).total_seconds() <= 60,
@@ -92,7 +103,7 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
         from scripts.actions_publication import pages
     except ModuleNotFoundError:
         from actions_publication import pages
-    require(not any(p['head']['ref'].startswith('daily/market/') for p in pages(request,'/pulls?state=open')),
+    require(allow_pending_publication or not any(p['head']['ref'].startswith('daily/market/') for p in pages(request,'/pulls?state=open')),
             'existing daily PR requires adoption/recovery first')
     require(request('GET',prefix+'/git/ref/heads/main',None)['object']['sha']==main,
             'main moved during authorization verification')
