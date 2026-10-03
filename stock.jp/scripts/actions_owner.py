@@ -14,6 +14,14 @@ except ModuleNotFoundError:
 
 RETIREMENT = '.github/stock-automation-retirement.json'
 WORKFLOW = '.github/workflows/daily-collector-disabled.yml'
+MANUAL_ACTOR = 'kkyosuke'
+
+
+def manual_context(context):
+    r.require(context.get('event') == 'workflow_dispatch'
+              and context.get('actor') == MANUAL_ACTOR
+              and context.get('triggering_actor') == MANUAL_ACTOR,
+              'manual dispatch requires repository owner as actor and triggering actor')
 
 
 def identity(context, scope):
@@ -58,7 +66,9 @@ def run(request, owner, *, active):
     r.require(value.get('id') == owner['run_id'] and value.get('run_attempt') == owner['run_attempt']
               and value.get('head_sha') == owner['head_sha'] and value.get('head_branch') == 'main'
               and value.get('path') == WORKFLOW and value.get('event') == 'workflow_dispatch'
-              and value.get('repository', {}).get('full_name') == r.REPO,
+              and value.get('repository', {}).get('full_name') == r.REPO
+              and value.get('actor', {}).get('login') == MANUAL_ACTOR
+              and value.get('triggering_actor', {}).get('login') == MANUAL_ACTOR,
               'GitHub run attempt identity mismatch')
     r.require(value.get('status') == ('in_progress' if active else 'completed'),
               'current owner not running' if active else 'previous owner termination unconfirmed; TTL is insufficient')

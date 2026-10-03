@@ -1,5 +1,5 @@
-name: daily-collector-disabled
-# Remains unconditionally disabled until a separate reviewed activation.
+name: Manual target-date acquisition
+# Manual entry only. Runtime approval, retirement and ledger gates remain mandatory.
 on:
   workflow_dispatch:
     inputs:
@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   reviewed-execution:
-    if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:

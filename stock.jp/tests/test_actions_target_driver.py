@@ -58,7 +58,7 @@ class TargetDriverTests(unittest.TestCase):
             history_campaign=dict(start_date='2026-09-23', as_of='2026-10-02', sessions=8))
         for key in ('old_scheduler_id','old_writer','old_lease_id','handover_sha256','handover_epoch'):
             self.scope.pop(key, None)
-        self.context = dict(self.old.context, run_id=100, run_attempt=1)
+        self.context = dict(self.old.context, run_id=100, run_attempt=1, actor='kkyosuke', triggering_actor='kkyosuke')
         self.save_scope()
         self.provider = history_fixture.HistoryTest()
         self.provider.setUp()
@@ -79,7 +79,8 @@ class TargetDriverTests(unittest.TestCase):
         c = self.context
         self.remote.runs[(c['run_id'], c['run_attempt'])] = dict(id=c['run_id'], run_attempt=c['run_attempt'],
             head_sha=c['sha'], head_branch='main', path=owner.WORKFLOW, event='workflow_dispatch',
-            repository=dict(full_name=r.REPO), status='in_progress')
+            repository=dict(full_name=r.REPO), actor=dict(login='kkyosuke'),
+            triggering_actor=dict(login='kkyosuke'), status='in_progress')
 
     def next_run(self, *, ended=True):
         if ended: self.remote.runs[(self.context['run_id'], self.context['run_attempt'])]['status'] = 'completed'
@@ -286,6 +287,37 @@ class TargetDriverTests(unittest.TestCase):
             self.assertEqual(metadata['ranges'], document['targets']['ranges'])
             self.assertTrue(all(p['retrieved_at'] == self.now.isoformat()
                 for value in metadata['ranges'].values() for p in value['pages']))
+
+    def test_manual_context_rejects_nonowner_schedule_and_branch_before_provider(self):
+        original = dict(self.context)
+        for key, value in (('actor','other-user'), ('triggering_actor','other-user'),
+                           ('event','schedule'), ('event','pull_request'), ('ref','refs/heads/untrusted')):
+            with self.subTest(key=key):
+                self.context = {**original, key:value}
+                with self.assertRaises(r.RemoteStop): self.execute()
+        self.context = original
+        self.assertEqual(self.calls, [])
+        self.assertEqual(self.remote.merge_writes, 0)
+
+    def test_server_actor_cannot_be_spoofed_by_environment(self):
+        for field in ('actor','triggering_actor'):
+            with self.subTest(field=field):
+                self.remote.runs[(100,1)][field] = dict(login='other-user')
+                with self.assertRaisesRegex(r.RemoteStop, 'identity mismatch'): self.execute()
+                self.remote.runs[(100,1)][field] = dict(login='kkyosuke')
+        self.assertEqual(self.calls, [])
+
+    def test_owner_rerun_uses_real_attempt_and_preserves_date_budget(self):
+        self.remote.ci_ready = False
+        self.assertEqual(self.execute()['status'], 'WAIT_CI')
+        count = len(self.calls)
+        self.remote.runs[(100,1)]['status'] = 'completed'
+        self.context['run_attempt'] = 2
+        self.running()
+        self.remote.ci_ready = True
+        self.assertEqual(self.execute()['status'], 'RESTORED')
+        self.assertEqual(len(self.calls), count)
+        self.assertEqual(self.document()['run_owner']['run_attempt'], 2)
 
     def test_future_or_noncanonical_date_has_zero_calls(self):
         for day in ('2026-10-04', '20261002', '2026-1-2'):
