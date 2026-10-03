@@ -14,7 +14,7 @@ import test_jquants_history as hf
 class LocalGitHub:
     def __init__(self,root,main):
         self.root=root;self.refs={'heads/main':main};self.calls=[];self.prs={};self.loss=None
-        self.reviews=[];self.ci_ready=True;self.merge_writes=0
+        self.reviews=[];self.ci_ready=True;self.merge_writes=0;self.store_bodies=True
     def obj(self,kind,raw):
         data=kind.encode()+b' '+str(len(raw)).encode()+b'\0'+raw
         sha=hashlib.sha1(data).hexdigest();p=self.root/'.git/objects'/sha[:2]/sha[2:]
@@ -51,7 +51,7 @@ class LocalGitHub:
         if self.loss and self.loss(method,path):self.loss=None;raise r.RemoteStop('synthetic lost ACK')
         return result
     def handle(self,method,path,body):
-        self.calls.append((method,path,copy.deepcopy(body)))
+        self.calls.append((method,path,copy.deepcopy(body) if self.store_bodies else None))
         parsed=urlsplit(path.removeprefix(pub.PREFIX));route=parsed.path;q=parse_qs(parsed.query)
         if route=='':return dict(full_name=r.REPO,private=True,allow_auto_merge=True)
         if route.startswith('/git/ref/'):
@@ -101,7 +101,10 @@ class LocalGitHub:
             parts=route.split('/');pr=self.prs[int(parts[2])]
             if len(parts)==3:return copy.deepcopy(pr)
             if parts[3]=='reviews':return self.reviews
-            if parts[3]=='files':return [dict(filename=n) for n in git(self.root,'diff','--name-only',pr['base']['sha'],pr['head']['sha']).decode().splitlines()]
+            if parts[3]=='files':
+                rows=[dict(filename=n) for n in git(self.root,'diff','--name-only',pr['base']['sha'],pr['head']['sha']).decode().splitlines()]
+                size=int(q.get('per_page',['100'])[0]);start=(int(q.get('page',['1'])[0])-1)*size
+                return rows[start:start+size]
             if parts[3]=='merge':
                 assert body==dict(sha=pr['head']['sha'],merge_method='squash')
                 assert self.refs['heads/main']==pr['base']['sha']
@@ -130,14 +133,16 @@ class DriverTests(unittest.TestCase):
         self.base=self.commit('Synthetic baseline');self.now=datetime.now(timezone.utc)
         self.fixture.at=datetime(2026,10,2,21,1,tzinfo=d.ZoneInfo('Asia/Tokyo'))
         receipt=dict(controller='chatgpt-automations',scheduler_id='synthetic-old',enabled=False,active_run_ids=[],
-            next_writer='actions-v1',epoch='synthetic-epoch',observed_by='kkyosuke',observed_at=self.fixture.at.isoformat())
+            next_writer='actions-v1',epoch='synthetic-epoch',observed_by='kkyosuke',observed_at=self.fixture.at.isoformat(),
+            owner='synthetic-old-writer',lease_id='synthetic-lease-1',lease_state='released',lease_owner=None)
+        self.controller_observation=copy.deepcopy(receipt)
         evidence=codec.encoded(receipt);receipt['source_evidence_sha256']=codec.digest(evidence);handover=codec.encoded(receipt)
         pointer=json.loads((self.root/'stock.jp/data/jquants-archive/current.json').read_bytes())
         self.scope=dict(version=1,enabled=True,repository=r.REPO,writer='actions-v1',modes=['daily','history'],
             publication_rejections=[],unresolved_campaigns=[],mode='PAPER',submission='HUMAN_ONLY',plan='light',addons=[],
             daily_limit=12,history_limits=[280,600,50,12],price_coverage_min=.98,active_coverage_min=1.,
             expires_at=(self.now+timedelta(days=1)).isoformat(),data_publication_authorized=True,checkpoint_authorized=True,
-            old_scheduler_id='synthetic-old',baseline=dict(main_sha=self.base,generation=pointer['generation']),
+            old_scheduler_id='synthetic-old',old_writer='synthetic-old-writer',old_lease_id='synthetic-lease-1',baseline=dict(main_sha=self.base,generation=pointer['generation']),
             approval_pr=900,handover_sha256=codec.digest(handover),handover_epoch='synthetic-epoch',history_campaign={'as_of':'2026-10-02','sessions':8})
         codec.atomic(self.root/attest.HANDOVER,handover);codec.atomic(self.root/'.github/stock-automation-controller-evidence.json',evidence)
         codec.atomic(self.root/auth.MANIFEST,codec.encoded(self.scope));git(self.root,'add','.github')
@@ -152,7 +157,8 @@ class DriverTests(unittest.TestCase):
     def run_driver(self,mode='daily',provider=None):
         with patch.object(d.daily.ingest,'utc_now',return_value=self.fixture.at.isoformat()):
             return d.Driver(self.root,self.remote,provider or self.fixture.transport,pin=self.remote.pin,writer='actions-v1',
-                            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None).execute(mode)
+                            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None,
+                            live_handover_probe=lambda _:copy.deepcopy(self.controller_observation)).execute(mode)
     def sync_main(self):
         main=self.remote.refs['heads/main'];git(self.root,'reset','--hard',main);self.context['sha']=main
     def test_daily_end_to_end_and_same_day_dedup(self):
@@ -185,12 +191,14 @@ class DriverTests(unittest.TestCase):
         with self.assertRaisesRegex(r.RemoteStop,'negative review'):self.run_driver()
         self.assertEqual(self.remote.merge_writes,0)
 
-    def test_holiday_financial_repair_and_dedup(self):
+    def test_next_day_rejects_stale_handover_before_financial_repair(self):
         self.assertEqual(self.run_driver()['status'],'RESTORED');self.sync_main()
         self.fixture.at+=timedelta(days=1)
-        self.assertEqual(self.run_driver()['status'],'RESTORED')
-        self.assertEqual(len(self.fixture.calls),11);self.sync_main()
-        self.assertEqual(self.run_driver()['status'],'ALREADY_RESTORED');self.assertEqual(len(self.fixture.calls),11)
+        with self.assertRaisesRegex(r.RemoteStop,'stale independent'):self.run_driver()
+        # Existing runner tests cover the financial repair itself. A fixed receipt
+        # cannot authorize a new day; this integration must stop before provider.
+        self.assertEqual(len(self.fixture.calls),9)
+
 
     def test_github_budget_pause_is_durable_and_resumes(self):
         from scripts.actions_rate import BudgetedTransport
@@ -198,10 +206,11 @@ class DriverTests(unittest.TestCase):
         import test_actions_daily_remote as authorization
         now=[10000.]
         def wait(seconds):now[0]+=seconds
-        budget=BudgetedTransport(self.remote,clock=lambda:now[0],sleep=wait,deadline=now[0]+20000)
+        budget=BudgetedTransport(self.remote,clock=lambda:now[0],sleep=wait,deadline=now[0]+1200)
         budget.writes=budget.WRITE_LIMIT-63
         def run(client):return d.Driver(self.root,client,self.fixture.transport,pin=self.remote.pin,writer='actions-v1',
-            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None).execute('daily')
+            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None,
+                            live_handover_probe=lambda _:copy.deepcopy(self.controller_observation)).execute('daily')
         self.assertEqual(run(budget)['status'],'PAUSED_GITHUB_BUDGET');self.assertFalse(self.fixture.calls)
         with tempfile.TemporaryDirectory() as tmp:
             document=ShardedStore(self.remote,authorization=authorization.authorization(),cache=tmp).read()[1]
@@ -222,9 +231,27 @@ class DriverTests(unittest.TestCase):
         self.remote.ci_ready=False
         client=BudgetedTransport(self.remote,clock=lambda:now[0],sleep=wait,deadline=now[0]+20000)
         result=d.Driver(self.root,client,self.fixture.transport,pin=self.remote.pin,writer='actions-v1',
-            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None).execute('daily')
+            context=self.context,clock=lambda:self.fixture.at,sleep=lambda _:None,
+                            live_handover_probe=lambda _:copy.deepcopy(self.controller_observation)).execute('daily')
         self.assertEqual(result['status'],'WAIT_CI')
         with tempfile.TemporaryDirectory() as tmp:
             document=ShardedStore(self.remote,authorization=authorization.authorization(),cache=tmp).read()[1]
         self.assertGreaterEqual(document['github_budget']['reads'],client.reads)
         self.assertGreaterEqual(document['github_budget']['writes'],client.writes)
+
+
+class HistoryResumeTests(unittest.TestCase):
+    def test_pause_after_last_known_response_advances_same_campaign_batch(self):
+        fixture=DriverTests();fixture.setUp();self.addCleanup(fixture.doCleanups)
+        provider=hf.HistoryTest();provider.setUp();self.addCleanup(provider.doCleanups)
+        from scripts.actions_rate import BudgetPause
+        original=d.history.ingest.publish_snapshot
+        def pause(root,archive,day):
+            if len(provider.calls)==12:raise BudgetPause('synthetic job deadline after known full batch')
+            return original(root,archive,day)
+        with patch.object(d.history.ingest,'publish_snapshot',side_effect=pause):
+            self.assertEqual(fixture.run_driver('history',provider.transport)['status'],'PAUSED_GITHUB_BUDGET')
+        self.assertEqual(len(provider.calls),12)
+        self.assertEqual(fixture.run_driver('history',provider.transport)['status'],'RESTORED')
+        self.assertEqual(len(provider.calls),18)
+        self.assertEqual(fixture.remote.merge_writes,1)

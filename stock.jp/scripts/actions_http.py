@@ -2,6 +2,7 @@
 import json
 import re
 import time
+from datetime import datetime
 from urllib.error import HTTPError
 from urllib.parse import urlsplit, urlencode
 from urllib.request import Request, HTTPRedirectHandler, build_opener
@@ -121,7 +122,7 @@ class GitHubTransport:
         return payload
 
     def review_decision(self, number, head, reviews):
-        reject_negative_reviews(reviews)
+        reject_negative_reviews(reviews,head)
         if type(number) is not int or number < 1:
             raise RemoteStop('invalid PR number')
         query = '''query($number:Int!) { repository(owner:"kkyosuke",name:"stock.jp.private") {
@@ -144,10 +145,25 @@ class GitHubTransport:
         return pr['reviewDecision']
 
 
-def reject_negative_reviews(reviews):
-    # DISMISSED is the only explicit dismissal evidence. A nullable branch
-    # policy summary must never erase a retained CHANGES_REQUESTED review.
-    if any(r.get('state') == 'CHANGES_REQUESTED' for r in reviews):
+def reject_negative_reviews(reviews,head=None):
+    # Later same-head approval supersedes this reviewer's earlier request.
+    # Comments never erase a decision and another reviewer's negative survives.
+    latest={}
+    for review in reviews:
+        state=review.get('state')
+        if state in {'COMMENTED','PENDING'}:continue
+        if state not in {'APPROVED','CHANGES_REQUESTED','DISMISSED'}:
+            raise RemoteStop('unknown review state')
+        if state=='APPROVED' and review.get('commit_id')!=head:continue
+        try:
+            owner=review['user']['id'];ident=review['id']
+            stamp=datetime.fromisoformat(review['submitted_at'].replace('Z','+00:00'))
+            if type(owner) is not int or type(ident) is not int or stamp.tzinfo is None:raise ValueError()
+        except (KeyError,TypeError,ValueError):
+            raise RemoteStop('negative review or approval identity/order incomplete') from None
+        order=(stamp,ident)
+        if owner not in latest or order>latest[owner][0]:latest[owner]=(order,state)
+    if any(state=='CHANGES_REQUESTED' for _,state in latest.values()):
         raise RemoteStop('undismissed negative review')
 
 

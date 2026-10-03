@@ -77,7 +77,7 @@ def evidence(request, number, proof, *, review_probe, now=None):
         from scripts.actions_http import reject_negative_reviews
     except ModuleNotFoundError:
         from actions_http import reject_negative_reviews
-    reject_negative_reviews(reviews)
+    reject_negative_reviews(reviews,head)
     files=pages(request,'/pulls/'+str(number)+'/files')
     decision=review_probe(number,head,reviews)
     require(decision in {None,'APPROVED'}, 'required review or requested changes remains')

@@ -228,8 +228,17 @@ class RunnerCheckpoint:
         return capture(self.source,self.history_check)
 
     def before_reservation(self):
+        if self.authorization.get('handover_check'):self.authorization['handover_check']()
         if hasattr(self.store,'ensure_capacity'):self.store.ensure_capacity(self.source)
         if hasattr(self.store.request,'before_provider'):self.store.request.before_provider()
+
+    def before_provider_io(self):
+        if self.authorization.get('handover_check'):self.authorization['handover_check']()
+        run=self.document['runs'][self.day]
+        require(run['phase']=='IN_FLIGHT','provider requires verified reservation')
+        now=self.clock()
+        require(now.tzinfo is not None and now.astimezone(ZoneInfo('Asia/Tokyo')).date().isoformat()==self.day,
+                'JST day changed after reservation; charged request not sent')
 
     def restore_snapshot(self,snapshot,target):
         if hasattr(self.store,'restore'):
@@ -380,6 +389,11 @@ class HistoryCheckpoint(RunnerCheckpoint):
     def __init__(self, store, *, campaign, **kwargs):
         self.campaign = dict(campaign)
         super().__init__(store, history_check=self.check_history, **kwargs)
+
+    def before_provider_io(self):
+        if self.authorization.get('handover_check'):self.authorization['handover_check']()
+        require(self.document['history']['phase']=='IN_FLIGHT','history provider requires verified reservation')
+        # Historical as_of is fixed; do not apply the daily JST run-date boundary.
 
     def check_history(self, source):
         path = Path(source)/'jquants/history/state.json'

@@ -19,6 +19,7 @@ try:
     from scripts import actions_attestation as attest, actions_http as http, actions_rate as rate
     from scripts import jquants_daily as daily, jquants_history as history, market_data_git as codec
     from scripts.actions_sharded import ShardedStore
+    from scripts.actions_cache import ImmutableCache
     from scripts.actions_intent import IntentTransport
     from scripts.git_sandbox import git
 except ModuleNotFoundError:
@@ -26,6 +27,7 @@ except ModuleNotFoundError:
     import actions_attestation as attest, actions_http as http, actions_rate as rate
     import jquants_daily as daily, jquants_history as history, market_data_git as codec
     from actions_sharded import ShardedStore
+    from actions_cache import ImmutableCache
     from actions_intent import IntentTransport
     from git_sandbox import git
 
@@ -54,14 +56,16 @@ def immutable_history(source):
 
 
 class Driver:
-    def __init__(self,root,request,provider,*,pin,writer,context,clock=None,sleep=None):
+    def __init__(self,root,request,provider,*,pin,writer,context,clock=None,sleep=None,live_handover_probe=None):
         self.root=Path(root);self.request=request;self.provider=provider
         self.pin,self.writer,self.context=pin,writer,context
         self.clock=clock or (lambda:datetime.now(ZoneInfo('Asia/Tokyo')))
         self.sleep=sleep
+        self.live_handover_probe=live_handover_probe
 
     def execute(self,mode):
         r.require(mode in {'daily','history'},'invalid mode')
+        r.require(callable(self.live_handover_probe),'live independent scheduler/lease transport unavailable; activation blocked')
         r.require(isinstance(self.pin,str) and len(self.pin)==64,'reviewed approval pin missing')
         main=self.request('GET',pub.PREFIX+'/git/ref/heads/main',None)['object']['sha']
         trusted_context(self.root,self.context,main)
@@ -75,101 +79,114 @@ class Driver:
             initialized=False
         with tempfile.TemporaryDirectory(prefix='stock-actions-') as tmp:
             work=Path(tmp);adopted=work/'adopted';archive=work/'archive'
-            pub.download_archive(self.request,main,archive);codec.restore(archive,adopted)
-            scope,facts=auth.verify_scope(self.request,approved_manifest_sha256=self.pin,mode=mode,
-                writer=self.writer,source=adopted,now=self.clock(),allow_pending_publication=initialized,
-                handover_probe=lambda _:attest.verify(self.request,scope,self.pin,main=main,
-                                                      initialized=initialized,now=self.clock()))
-            store=ShardedStore(self.request,authorization=facts,cache=work/'cache')
-            if (adopted/'jquants/history/state.json').exists():
-                # verify_scope already compared this against the pinned baseline.
-                history_check=auth.AdoptedHistory(adopted,immutable_history(adopted)).check
-            else:history_check=r.reject_history
-            binding={'manifest_sha256':self.pin,'baseline':scope['baseline'],'handover_epoch':scope['handover_epoch']}
-            if not initialized:
-                r.require(not pub.pages(self.request,'/pulls?state=open'),'bootstrap has pending PRs')
-                store.ensure_capacity(adopted)
-                pub.bootstrap_checkpoint(store,adopted,self.writer,history_check=history_check)
-            revision,document=store.read()
-            if hasattr(self.request,'restore'):self.request.restore(document.get('github_budget'))
-            if document.get('adopted_history'):
-                history_check=auth.AdoptedHistory(adopted,document['adopted_history']).check
-            r.require(document['writer']==self.writer,'another writer owns checkpoint')
-            if document.get('approval_binding'):
-                r.require(document['approval_binding']==binding,'checkpoint approval differs; no reset')
-            else:
-                r.require(not initialized,'existing unbound checkpoint cannot be adopted automatically')
-            runtime=work/'runtime';private=runtime/'operations/private';private.mkdir(parents=True)
-            codec.atomic(private/'source-config.json',content(self.request,'operations/private/source-config.json',main))
-            codec.atomic(private/'operation-policy.json',content(self.request,'operations/private/operation-policy.json',main))
-            policy=json.loads((private/'operation-policy.json').read_bytes())
-            r.require(policy['operation_mode']=='PAPER' and policy['broker_submission']=='HUMAN_ONLY','runtime policy changed')
-            codec.atomic(runtime/auth.MANIFEST,raw)
-            campaign=scope.get('history_campaign')
-            if mode=='history':
-                r.require(isinstance(campaign,dict) and type(campaign.get('sessions')) is int and 1<=campaign['sessions']<=280,'approved history campaign missing')
-                identity=dict(as_of=campaign['as_of'],sessions=campaign['sessions'],batch_limit=12,
-                    config_sha256=codec.digest((private/'source-config.json').read_bytes()))
-                checkpoint=r.HistoryCheckpoint(store,writer=self.writer,authorization=facts,campaign=identity,clock=self.clock)
-            else:checkpoint=r.RunnerCheckpoint(store,writer=self.writer,authorization=facts,history_check=history_check,clock=self.clock)
-            checkpoint.revision,checkpoint.document=revision,document
-            checkpoint.source=private/'market-data'
-            if not initialized:
-                checkpoint.document['approval_binding']=binding;checkpoint.commit()
-            transaction=document.get('transaction')
-            if transaction:
-                r.require(transaction['mode']==mode,'pending publication belongs to another mode')
-                pending=pub.pages(self.request,'/pulls?state=open')
-                r.require(all(not p['head']['ref'].startswith('daily/market/') or
-                              p['head']['sha']==transaction['head'] and
-                              (transaction['number'] is None or p['number']==transaction['number'])
-                              for p in pending),'another daily publication is unresolved')
-                checkpoint.day=transaction['day']
-                store.restore(document['snapshot'],checkpoint.source,checkpoint.history_check)
-                return self.publish(checkpoint,main)
-            r.require(not document.get('publication_intent'),'unbound publication intent requires review')
-            r.require(not any(p['head']['ref'].startswith('daily/market/') for p in pub.pages(self.request,'/pulls?state=open')),
-                      'unowned daily PR requires review')
+            original_request=self.request
+            self.request=ImmutableCache(original_request,work/'http-cache')
             try:
-                if mode=='daily':
-                    report=daily.run(runtime,at=self.clock(),transport=self.provider,sleep=self.sleep,remote=checkpoint)
-                    day=report['run_date']
+                pub.download_archive(self.request,main,archive);codec.restore(archive,adopted)
+                scope,facts=auth.verify_scope(self.request,approved_manifest_sha256=self.pin,mode=mode,
+                    writer=self.writer,source=adopted,now=self.clock(),clock=self.clock,allow_pending_publication=initialized,
+                    handover_probe=lambda _:attest.verify(self.request,scope,self.pin,main=main,
+                                                          initialized=initialized,now=self.clock(),live_probe=self.live_handover_probe,clock=self.clock))
+                def revalidate_handover():
+                    return attest.verify(self.request,scope,self.pin,main=main,initialized=initialized,now=self.clock(),live_probe=self.live_handover_probe,clock=self.clock)
+                facts['handover_check']=revalidate_handover
+                store=ShardedStore(self.request,authorization=facts,cache=work/'cache')
+                if (adopted/'jquants/history/state.json').exists():
+                    # verify_scope already compared this against the pinned baseline.
+                    history_check=auth.AdoptedHistory(adopted,immutable_history(adopted)).check
+                else:history_check=r.reject_history
+                binding={'manifest_sha256':self.pin,'baseline':scope['baseline'],'handover_epoch':scope['handover_epoch']}
+                if not initialized:
+                    r.require(not pub.pages(self.request,'/pulls?state=open'),'bootstrap has pending PRs')
+                    store.ensure_capacity(adopted)
+                    pub.bootstrap_checkpoint(store,adopted,self.writer,history_check=history_check)
+                revision,document=store.read()
+                if hasattr(self.request,'restore'):self.request.restore(document.get('github_budget'))
+                if document.get('adopted_history'):
+                    history_check=auth.AdoptedHistory(adopted,document['adopted_history']).check
+                r.require(document['writer']==self.writer,'another writer owns checkpoint')
+                if document.get('approval_binding'):
+                    r.require(document['approval_binding']==binding,'checkpoint approval differs; no reset')
                 else:
-                    batch=len(document['history']['state']['batches']) if document.get('history') else 1
-                    for _ in range(50):
-                        report=history.run(runtime,as_of=date.fromisoformat(campaign['as_of']),sessions=campaign['sessions'],
-                            batch=batch,transport=self.provider,sleep=self.sleep,remote=checkpoint)
-                        if report['status']!='BATCH_EXHAUSTED':break
-                        batch=report['batch']+1
-                    day=campaign['as_of']
-            except rate.BudgetPause:
-                # Runner's finally/save hooks have already preserved all known
-                # reservations. Never clear IN_FLIGHT or start a replacement run.
-                checkpoint.document['github_pause']={'reason':'checkpoint_headroom','at':self.clock().isoformat()}
-                if not checkpoint.poisoned:
+                    r.require(not initialized,'existing unbound checkpoint cannot be adopted automatically')
+                runtime=work/'runtime';private=runtime/'operations/private';private.mkdir(parents=True)
+                codec.atomic(private/'source-config.json',content(self.request,'operations/private/source-config.json',main))
+                codec.atomic(private/'operation-policy.json',content(self.request,'operations/private/operation-policy.json',main))
+                policy=json.loads((private/'operation-policy.json').read_bytes())
+                r.require(policy['operation_mode']=='PAPER' and policy['broker_submission']=='HUMAN_ONLY','runtime policy changed')
+                codec.atomic(runtime/auth.MANIFEST,raw)
+                campaign=scope.get('history_campaign')
+                if mode=='history':
+                    r.require(isinstance(campaign,dict) and type(campaign.get('sessions')) is int and 1<=campaign['sessions']<=280,'approved history campaign missing')
+                    identity=dict(as_of=campaign['as_of'],sessions=campaign['sessions'],batch_limit=12,
+                        config_sha256=codec.digest((private/'source-config.json').read_bytes()))
+                    checkpoint=r.HistoryCheckpoint(store,writer=self.writer,authorization=facts,campaign=identity,clock=self.clock)
+                else:checkpoint=r.RunnerCheckpoint(store,writer=self.writer,authorization=facts,history_check=history_check,clock=self.clock)
+                checkpoint.revision,checkpoint.document=revision,document
+                checkpoint.source=private/'market-data'
+                if not initialized:
+                    checkpoint.document['approval_binding']=binding;checkpoint.commit()
+                transaction=document.get('transaction')
+                if transaction:
+                    r.require(transaction['mode']==mode,'pending publication belongs to another mode')
+                    pending=pub.pages(self.request,'/pulls?state=open')
+                    r.require(all(not p['head']['ref'].startswith('daily/market/') or
+                                  p['head']['sha']==transaction['head'] and
+                                  (transaction['number'] is None or p['number']==transaction['number'])
+                                  for p in pending),'another daily publication is unresolved')
+                    checkpoint.day=transaction['day']
+                    store.restore(document['snapshot'],checkpoint.source,checkpoint.history_check)
+                    return self.publish(checkpoint,main)
+                r.require(not document.get('publication_intent'),'unbound publication intent requires review')
+                r.require(not any(p['head']['ref'].startswith('daily/market/') for p in pub.pages(self.request,'/pulls?state=open')),
+                          'unowned daily PR requires review')
+                try:
+                    if mode=='daily':
+                        report=daily.run(runtime,at=self.clock(),transport=self.provider,sleep=self.sleep,remote=checkpoint)
+                        day=report['run_date']
+                    else:
+                        batch=len(document['history']['state']['batches']) if document.get('history') else 1
+                        previous=document.get('history')
+                        if previous and previous['phase'] in {'IDLE','PAUSED'} and batch<50:
+                            previous_state=previous['state']
+                            if len(previous_state['batches'][-1])==previous_state['batch_limit'] and previous_state['status'] in {'RUNNING','PAUSED','BATCH_EXHAUSTED'}:
+                                batch+=1  # all reservations have known durable outcomes; never advance IN_FLIGHT
+                        for _ in range(50):
+                            report=history.run(runtime,as_of=date.fromisoformat(campaign['as_of']),sessions=campaign['sessions'],
+                                batch=batch,transport=self.provider,sleep=self.sleep,remote=checkpoint)
+                            if report['status']!='BATCH_EXHAUSTED':break
+                            batch=report['batch']+1
+                        day=campaign['as_of']
+                except rate.BudgetPause:
+                    # Runner's finally/save hooks have already preserved all known
+                    # reservations. Never clear IN_FLIGHT or start a replacement run.
+                    checkpoint.document['github_pause']={'reason':'checkpoint_headroom','at':self.clock().isoformat()}
+                    if not checkpoint.poisoned:
+                        checkpoint.document['snapshot']=checkpoint.capture_snapshot();checkpoint.commit()
+                    return {'status':'PAUSED_GITHUB_BUDGET','mode':mode}
+                if report['status'] not in {'COLLECTED','HOLIDAY','COMPLETE'}:return report
+                run=checkpoint.document['history'] if mode=='history' else checkpoint.document['runs'][day]
+                if run['phase']=='RESTORED':
+                    if hasattr(self.request,'state'):checkpoint.commit()
+                    return {'status':'ALREADY_RESTORED','mode':mode}
+                checkpoint.day=day
+                if mode=='history':
+                    # History completes price/master/TOPIX only, never all Light datasets.
+                    status=daily.ingest.planned_status('light',(),date.fromisoformat(day))
+                    status.update(scope='history_bounded',all_entitled_complete=False)
+                    codec.atomic(checkpoint.source/'jquants/latest.json',codec.encoded(status))
                     checkpoint.document['snapshot']=checkpoint.capture_snapshot();checkpoint.commit()
-                return {'status':'PAUSED_GITHUB_BUDGET','mode':mode}
-            if report['status'] not in {'COLLECTED','HOLIDAY','COMPLETE'}:return report
-            run=checkpoint.document['history'] if mode=='history' else checkpoint.document['runs'][day]
-            if run['phase']=='RESTORED':
-                if hasattr(self.request,'state'):checkpoint.commit()
-                return {'status':'ALREADY_RESTORED','mode':mode}
-            checkpoint.day=day
-            if mode=='history':
-                # History completes price/master/TOPIX only, never all Light datasets.
-                status=daily.ingest.planned_status('light',(),date.fromisoformat(day))
-                status.update(scope='history_bounded',all_entitled_complete=False)
-                codec.atomic(checkpoint.source/'jquants/latest.json',codec.encoded(status))
-                checkpoint.document['snapshot']=checkpoint.capture_snapshot();checkpoint.commit()
-            with pub.prepare_candidate(self.root,checkpoint.source,day,main) as candidate:
-                if candidate['status']=='NOOP':
-                    pub.mark_adopted(checkpoint,verified_main=main,verified_generation=candidate['generation'],
-                                     actual_generation=candidate['generation'])
-                    return {'status':'RESTORED','generation':candidate['generation'],'main_sha':main}
-                checkpoint.document['transaction']=dict(mode=mode,day=day,base=main,tree=candidate['tree_sha'],
-                    generation=candidate['generation'],stage='BLOBS',index=0,head=None,number=None)
-                checkpoint.commit()
-            return self.publish(checkpoint,main)
+                with pub.prepare_candidate(self.root,checkpoint.source,day,main) as candidate:
+                    if candidate['status']=='NOOP':
+                        pub.mark_adopted(checkpoint,verified_main=main,verified_generation=candidate['generation'],
+                                         actual_generation=candidate['generation'])
+                        return {'status':'RESTORED','generation':candidate['generation'],'main_sha':main}
+                    checkpoint.document['transaction']=dict(mode=mode,day=day,base=main,tree=candidate['tree_sha'],
+                        generation=candidate['generation'],stage='BLOBS',index=0,head=None,number=None)
+                    checkpoint.commit()
+                return self.publish(checkpoint,main)
+            finally:
+                self.request=original_request
 
     def publish(self,checkpoint,main):
         try:return self._publish(checkpoint,main)
@@ -202,11 +219,20 @@ class Driver:
             names=sorted(candidate['blobs'])
             while t['stage']=='BLOBS' and t['index']<len(names):
                 name=names[t['index']];data=candidate['blobs'][name]
+                snapshot=checkpoint.document['snapshot']
+                member=snapshot.get('files',{}).get(name.removeprefix('stock.jp/data/jquants-archive/'))
+                if member and member['sha256']==codec.digest(data) and member['bytes']==len(data) and member['chunks']==[r.git_blob(data)]:
+                    # The verified checkpoint tree already makes this exact Git
+                    # blob reachable in this repository. No upload/intent replay.
+                    t['index']+=1
+                    if t['index']==len(names):t['stage']='TREE'
+                    continue
                 def ack(result):
                     r.require(result['sha']==r.git_blob(data),'publication blob differs');t['index']+=1
                     if t['index']==len(names):t['stage']='TREE'
                 write('POST',pub.PREFIX+'/git/blobs',{'encoding':'base64','content':base64.b64encode(data).decode()},ack)
             if t['stage']=='TREE':
+                checkpoint.commit()  # coalesce all immutable-blob reuse progress
                 base=self.request('GET',pub.PREFIX+'/git/commits/'+t['base'],None)
                 members=[dict(path=n,mode='100644',type='blob',sha=r.git_blob(candidate['blobs'][n])) for n in names]
                 def ack(result):

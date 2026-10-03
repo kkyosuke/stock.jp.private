@@ -17,7 +17,7 @@ MANIFEST = '.github/stock-automation-approval.json'
 
 
 def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, handover_probe,
-                 now=None, allow_pending_publication=False):
+                 now=None, allow_pending_publication=False, clock=None):
     """Pin comes from reviewed deployment, not workflow_dispatch/PR input.
 
     handover_probe must independently read the previous scheduler and writer
@@ -54,14 +54,18 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
     baseline = scope['baseline']
     baseline_sha = sha(baseline['main_sha'])
     comparison = request('GET', prefix+'/compare/'+baseline_sha+'...'+main, None)
-    require(comparison.get('status') in {'ahead','identical'}
-            and comparison.get('total_commits', 1000) < 250
-            and len(comparison.get('files', [])) < 300
-            and all(f['filename'] in {MANIFEST,'.github/stock-automation-handover.json','.github/stock-automation-controller-evidence.json'} or
-                    (re.fullmatch(r'stock\.jp/data/jquants-archive/(current\.json|(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz)',f['filename'])
-                     and (f['status']=='added' or f['filename'].endswith('/current.json') and f['status']=='modified'))
-                    for f in comparison.get('files', [])),
-            'main changed beyond approved data-only scope; rebind required')
+    require(comparison.get('status') in {'ahead','identical'},'approved baseline is not an ancestor')
+    baseline_tree=complete_tree(request,baseline_sha)
+    current_tree=complete_tree(request,main)
+    allowed_approval={MANIFEST,'.github/stock-automation-handover.json','.github/stock-automation-controller-evidence.json'}
+    for name in baseline_tree.keys() | current_tree.keys():
+        before,after=baseline_tree.get(name),current_tree.get(name)
+        if before==after:continue
+        require(after is not None and after[0:2]==('100644','blob'),'deletion or unsafe mode beyond approved scope')
+        if name in allowed_approval:continue
+        require(re.fullmatch(r'stock\.jp/data/jquants-archive/(current\.json|(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz)',name)
+                and (before is None or name.endswith('/current.json')),
+                'main changed beyond approved data-only scope; rebind required')
     pointer = request('GET', prefix+'/contents/stock.jp/data/jquants-archive/current.json?ref='+main, None)
     pointer_value = json.loads(base64.b64decode(''.join(pointer['content'].split()), validate=True))
     original = request('GET', prefix+'/contents/stock.jp/data/jquants-archive/current.json?ref='+baseline_sha, None)
@@ -94,7 +98,9 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
             fixed.check(source)
     observed = handover_probe(scope['old_scheduler_id'])
     observed_at = datetime.fromisoformat(observed['observed_at'])
-    require(observed_at.tzinfo is not None and 0 <= (now-observed_at).total_seconds() <= 60,
+    checked_at=clock() if clock else now
+    require(checked_at<expiry,'approval expired during verification')
+    require(observed_at.tzinfo is not None and 0 <= (checked_at-observed_at).total_seconds() <= 60,
             'stale writer handover evidence')
     require(observed['scheduler_id'] == scope['old_scheduler_id'] and observed['enabled'] is False
             and observed['active_writers'] == 0 and observed['next_writer'] == writer,
@@ -112,6 +118,26 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
                       publication_rejected=False, unresolved_history=False, open_daily_pr=False,
                       repository=REPO, visibility='private', mode='PAPER', submission='HUMAN_ONLY', plan='light',
                       expires_at=scope['expires_at'])
+
+
+def complete_tree(request,commit):
+    """Full immutable tree comparison, independent of compare API's 300-file cap."""
+    prefix='/repos/'+REPO
+    item=request('GET',prefix+'/git/commits/'+sha(commit),None)
+    require(item.get('sha')==commit,'commit identity mismatch')
+    tree=request('GET',prefix+'/git/trees/'+sha(item['tree']['sha'])+'?recursive=1',None)
+    require(tree.get('truncated') is False and isinstance(tree.get('tree'),list),'scope tree truncated or unavailable')
+    result={};seen=set()
+    for member in tree['tree']:
+        name=member['path']
+        require(isinstance(name,str) and name and name not in seen and not name.startswith('/')
+                and '\\' not in name and all(p not in {'','.','..'} for p in name.split('/')),'invalid scope tree path')
+        seen.add(name)
+        if member['type']=='tree':
+            require(member['mode']=='040000','invalid directory mode');sha(member['sha']);continue
+        require(member['type'] in {'blob','commit'},'invalid scope tree type')
+        result[name]=(member['mode'],member['type'],sha(member['sha']))
+    return result
 
 
 class AdoptedHistory:

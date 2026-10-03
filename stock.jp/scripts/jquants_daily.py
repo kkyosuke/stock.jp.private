@@ -206,6 +206,7 @@ class DurableClient(ingest.Client):
         self.save()
         if self.remote is not None:
             self.remote.reserve(self.state)
+            self.remote.before_provider_io()  # after all paced checkpoint writes, immediately before provider I/O
         try:
             return super()._request(endpoint, params)
         except ingest.ApiError as error:

@@ -106,7 +106,9 @@ class HistoryClient(ingest.Client):
         s['batches'][-1].append({'endpoint':endpoint,'query_sha256':ingest.digest(ingest.encoded(params)),
                               'reserved_at':datetime.now(daily.JST).isoformat()})
         self.save()  # Ambiguous crashes and failures remain charged.
-        if self.remote is not None:self.remote.reserve(s)
+        if self.remote is not None:
+            self.remote.reserve(s)
+            self.remote.before_provider_io()
         try:
             result=super()._request(endpoint,params)
         except ingest.ApiError as error:

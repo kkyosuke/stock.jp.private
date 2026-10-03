@@ -29,14 +29,19 @@ class BudgetedTransport:
             self.blocked=max(self.blocked,value['blocked'])
     def _roll(self):
         if int(self.clock()//3600)!=self.window:self.window=int(self.clock()//3600);self.reads=self.writes=0
-    def before_publication(self):
+    def _headroom(self,reads,writes,slack):
         self._roll()
-        if self.reads+80>self.READ_LIMIT or self.writes+24>self.WRITE_LIMIT or self.clock()+600>self.deadline or self.clock()<self.blocked:
-            raise BudgetPause('GitHub publication checkpoint headroom unavailable')
-    def before_provider(self):
-        self._roll()
-        if self.reads+160>self.READ_LIMIT or self.writes+64>self.WRITE_LIMIT or self.clock()+900>self.deadline or self.clock()<self.blocked:
-            raise BudgetPause('GitHub checkpoint headroom unavailable before provider reservation')
+        earliest=max(self.clock(),self.blocked)
+        if self.reads+reads>self.READ_LIMIT or self.writes+writes>self.WRITE_LIMIT:
+            earliest=max(earliest,(self.window+1)*3600)
+        if earliest+slack>self.deadline:
+            raise BudgetPause('GitHub checkpoint headroom unavailable before new work')
+        # Existing reservations/pages are already durable. Waiting at this point
+        # consumes no provider reservation, retains the live object cache, and
+        # does not reset the persisted acquisition budget.
+        self.sleep(max(0,earliest-self.clock()));self._roll()
+    def before_publication(self):self._headroom(80,24,600)
+    def before_provider(self):self._headroom(160,64,900)
     def review_decision(self,number,head,reviews):
         return self._paced('GET',lambda:self.request.review_decision(number,head,reviews))
     def __call__(self,method,path,body=None):

@@ -17,6 +17,7 @@ class IntentTransport:
         if method=='GET':
             return self.request(method,path,body)
         remote.gate(self.checkpoint.authorization)
+        if self.checkpoint.authorization.get('handover_check'):self.checkpoint.authorization['handover_check']()
         if hasattr(self.request,'before_publication'):self.request.before_publication()
         pending=self.checkpoint.document.get('publication_intent')
         remote.require(not pending or pending['state']=='ACKED','publication write outcome unresolved')

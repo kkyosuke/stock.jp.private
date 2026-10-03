@@ -50,8 +50,11 @@ class RateTests(unittest.TestCase):
         saved=client.state();new=self.make();new.restore(saved);new.restore(saved)
         self.assertEqual(new.writes,saved['writes'])
         new.writes=new.WRITE_LIMIT-63
+        new.deadline=self.now+500
         with self.assertRaises(rate.BudgetPause):new.before_provider()
         self.assertEqual(self.calls,[])
+        new.deadline=self.now+20000;new.before_provider()
+        self.assertEqual(new.writes,0);self.assertEqual(self.calls,[])
     def test_retry_after_headers_cover_rest_and_graphql(self):
         from urllib.error import HTTPError
         error=HTTPError('unused',429,'synthetic',{'retry-after':'120'},None)
@@ -128,3 +131,109 @@ class ApprovedHistoryTests(unittest.TestCase):
             auth.verify_scope(fixture.remote,approved_manifest_sha256=r.codec.digest(r.codec.encoded(scope)),
                 mode='daily',writer='actions-v1',source=sources[1],now=fixture.fixture.at,
                 handover_probe=lambda _:self.fail('must reject history before handover'))
+
+class LiveHandoverTests(integration.DriverTests):
+    def test_no_live_transport_cannot_activate_even_with_pinned_receipt(self):
+        driver=integration.d.Driver(self.root,self.remote,self.fixture.transport,pin=self.remote.pin,writer='actions-v1',context=self.context)
+        with self.assertRaisesRegex(r.RemoteStop,'live independent'):driver.execute('daily')
+        self.assertEqual(self.remote.calls,[]);self.assertFalse(self.fixture.calls)
+    def test_initialized_stale_observation_is_not_relabelled(self):
+        self.assertEqual(self.run_driver()['status'],'RESTORED');self.sync_main()
+        self.fixture.at+=timedelta(seconds=61)
+        with self.assertRaisesRegex(r.RemoteStop,'stale independent'):self.run_driver()
+        self.assertEqual(len(self.fixture.calls),9)
+    def test_observation_time_is_preserved_exactly(self):
+        original=self.controller_observation['observed_at']
+        observed=attest.verify(self.remote,self.scope,self.remote.pin,main=self.context['sha'],initialized=True,
+            now=self.fixture.at+timedelta(seconds=20),live_probe=lambda _:dict(self.controller_observation))
+        self.assertEqual(observed['observed_at'],original)
+    def test_revived_lease_stops_initialized_runner(self):
+        self.assertEqual(self.run_driver()['status'],'RESTORED');self.sync_main()
+        self.controller_observation.update(lease_state='active',lease_owner='synthetic-old-writer',active_run_ids=['revived'])
+        with self.assertRaisesRegex(r.RemoteStop,'lease is active'):self.run_driver()
+        self.assertEqual(len(self.fixture.calls),9)
+    def test_old_checkout_is_rejected_before_writes(self):
+        self.context['sha']=self.base
+        before=len(self.remote.calls)
+        with self.assertRaisesRegex(r.RemoteStop,'untrusted workflow'):self.run_driver()
+        self.assertFalse(self.fixture.calls);self.assertTrue(all(m=='GET' for m,_,_ in self.remote.calls[before:]))
+    def test_wrong_handover_identity_rejected(self):
+        self.controller_observation['lease_id']='other-lease'
+        with self.assertRaisesRegex(r.RemoteStop,'identity mismatch'):self.run_driver()
+        self.assertFalse(self.fixture.calls)
+
+for name in dir(integration.DriverTests):
+    if name.startswith('test_'):setattr(LiveHandoverTests,name,None)
+
+class FullTreeScopeTests(unittest.TestCase):
+    def test_real_complete_280_history_over_300_files_is_authorized(self):
+        fixture=integration.DriverTests();fixture.setUp();self.addCleanup(fixture.doCleanups)
+        from test_jquants_history import HistoryTest
+        history=HistoryTest();history.setUp();self.addCleanup(history.doCleanups)
+        for batch in range(1,48):report=history.run_history(sessions=280,batch=batch)
+        self.assertEqual(report['status'],'COMPLETE');self.assertEqual(report['requests_used'],562)
+        source=history.private/'market-data';store=fixture.root/'stock.jp/data/jquants-archive'
+        fixture.scope['expires_at']=(fixture.now+timedelta(days=7)).isoformat()
+        r.codec.atomic(fixture.root/auth.MANIFEST,r.codec.encoded(fixture.scope))
+        fixture.remote.pin=r.codec.digest(r.codec.encoded(fixture.scope))
+        r.codec.pack(source,store);git(fixture.root,'add','stock.jp/data','.github')
+        head=fixture.commit('Synthetic adopted COMPLETE 280 history')
+        fixture.remote.refs['heads/main']=head
+        before=auth.complete_tree(fixture.remote,fixture.base);after=auth.complete_tree(fixture.remote,head)
+        self.assertGreater(sum(before.get(k)!=v for k,v in after.items()),300)
+        kwargs=dict(approved_manifest_sha256=fixture.remote.pin,mode='daily',writer='actions-v1',source=source,
+            now=fixture.fixture.at,handover_probe=lambda _:attest.verify(fixture.remote,fixture.scope,fixture.remote.pin,
+                main=head,initialized=True,now=fixture.fixture.at,live_probe=lambda _:dict(fixture.controller_observation)))
+        _,facts=auth.verify_scope(fixture.remote,**kwargs);self.assertTrue(facts['main_restored_and_verified'])
+        # Same full tree traversal must reject hidden code changes beyond API page 300.
+        original=fixture.remote.handle
+        def changed(method,path,body):
+            result=original(method,path,body)
+            if '/git/trees/' in path and method=='GET':
+                commit_tree=git(fixture.root,'rev-parse',head+'^{tree}').decode().strip()
+                if commit_tree in path:result['tree'].append(dict(path='scripts/unapproved.py',mode='100644',type='blob',sha='f'*40))
+            return result
+        fixture.remote.handle=changed
+        with self.assertRaisesRegex(r.RemoteStop,'beyond approved'):auth.verify_scope(fixture.remote,**kwargs)
+        fixture.remote.handle=original;fixture.sync_main();fixture.remote.store_bodies=False
+        fixture.fixture.at+=timedelta(days=3)  # Monday after the adopted Friday history
+        clock=[fixture.fixture.at.timestamp()];started=clock[0];calls=len(fixture.remote.calls)
+        def now():return datetime.fromtimestamp(clock[0],fixture.fixture.at.tzinfo)
+        def wait(seconds):clock[0]+=seconds
+        budget=rate.BudgetedTransport(fixture.remote,clock=lambda:clock[0],sleep=wait)
+        with patch.object(integration.d.daily.ingest,'utc_now',side_effect=lambda:now().isoformat()):
+            result=integration.d.Driver(fixture.root,budget,fixture.fixture.transport,pin=fixture.remote.pin,
+                writer='actions-v1',context=fixture.context,clock=now,sleep=lambda _:None,
+                live_handover_probe=lambda _:{**fixture.controller_observation,'observed_at':now().isoformat()}).execute('daily')
+        self.assertEqual(result['status'],'RESTORED');self.assertEqual(len(fixture.fixture.calls),9)
+        self.assertLess(clock[0]-started,5*3600)
+        print(json.dumps(dict(cold_business_daily_280=True,provider_calls=len(fixture.fixture.calls),
+            github_calls=len(fixture.remote.calls)-calls,simulated_elapsed_seconds=round(clock[0]-started,1))),flush=True)
+    def test_truncated_tree_never_accepted(self):
+        fixture=integration.DriverTests();fixture.setUp();self.addCleanup(fixture.doCleanups)
+        original=fixture.remote.handle
+        def truncated(method,path,body):
+            result=original(method,path,body)
+            if '/git/trees/' in path:result['truncated']=True
+            return result
+        fixture.remote.handle=truncated
+        with self.assertRaisesRegex(r.RemoteStop,'truncated'):auth.complete_tree(fixture.remote,fixture.base)
+
+class ReviewFoldingTests(unittest.TestCase):
+    def row(self,ident,owner,state,head='a'*40):
+        return dict(id=ident,user={'id':owner,'login':'synthetic'},state=state,commit_id=head,
+                    submitted_at='2026-10-03T00:00:00Z')
+    def test_later_same_head_approval_clears_only_its_reviewers_negative(self):
+        rows=[self.row(1,11,'CHANGES_REQUESTED'),self.row(2,11,'APPROVED')]
+        http.reject_negative_reviews(list(reversed(rows)),'a'*40)
+        rows.append(self.row(3,22,'CHANGES_REQUESTED'))
+        with self.assertRaisesRegex(r.RemoteStop,'negative review'):http.reject_negative_reviews(rows,'a'*40)
+    def test_comment_or_other_head_approval_does_not_clear_negative(self):
+        negative=self.row(1,11,'CHANGES_REQUESTED')
+        for later in [self.row(2,11,'COMMENTED'),self.row(2,11,'APPROVED','b'*40)]:
+            with self.assertRaisesRegex(r.RemoteStop,'negative review'):
+                http.reject_negative_reviews([negative,later],'a'*40)
+    def test_later_negative_and_explicit_dismissal(self):
+        with self.assertRaisesRegex(r.RemoteStop,'negative review'):
+            http.reject_negative_reviews([self.row(1,11,'APPROVED'),self.row(2,11,'CHANGES_REQUESTED')],'a'*40)
+        http.reject_negative_reviews([self.row(1,11,'CHANGES_REQUESTED'),self.row(2,11,'DISMISSED')],'a'*40)

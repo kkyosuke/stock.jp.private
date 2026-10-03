@@ -83,3 +83,22 @@ class ShardedTests(unittest.TestCase):
             restored=self.root/'restored'/path.relative_to(self.source)
             self.assertEqual(s.codec.digest(path.read_bytes()),s.codec.digest(restored.read_bytes()))
         print(json.dumps(dict(capacity_fixture='280x4000',raw_bytes=raw_bytes,compressed_bytes=compressed,ledger_snapshot_bytes=metadata)))
+
+    def test_restored_snapshot_counts_toward_first_reservation_headroom(self):
+        import random
+        rng=random.Random(59)
+        # Valid retained object with high-entropy rows: the restored wire store
+        # exceeds 8 MiB, leaving less than the reserved 16 MiB at a 24 MiB cap.
+        for _ in range(3):
+            payload=s.codec.encoded({'data':[{'synthetic':rng.randbytes(64).hex()} for _ in range(48000)]})
+            self.assertLess(len(payload),8*1024**2)
+            digest=s.codec.digest(payload)
+            s.codec.atomic(self.source/'jquants/objects'/digest[:2]/(digest+'.json'),payload)
+        snapshot=self.store.capture(self.source,r.reject_history)
+        total=sum(e['bytes'] for e in snapshot['files'].values())
+        self.assertGreater(total,8*1024**2);self.assertLess(total,24*1024**2)
+        cold=s.ShardedStore(self.git,authorization=f.authorization(),cache=self.root/'cold'/'cache')
+        cold.restore(snapshot,self.root/'restored',r.reject_history)
+        self.assertEqual(sum(p.stat().st_size for p in cold.codec_cache.rglob('*') if p.is_file()),0)
+        with patch.object(s.codec,'MAX_STORE',24*1024**2):
+            with self.assertRaisesRegex(r.RemoteStop,'headroom'):cold.ensure_capacity(self.root/'restored')

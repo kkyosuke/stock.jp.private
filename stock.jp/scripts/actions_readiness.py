@@ -11,6 +11,7 @@ def report():
         'operation_mode':'PAPER',
         'broker_submission':'HUMAN_ONLY',
         'driver':'actions_driver.py',
+        'remaining_integration':['authenticated live controller/lease read transport; no receipt fallback'],
         'remaining_external_conditions':[
             'independent old scheduler stop and active-writer evidence',
             'reviewed pinned approval manifest and rejected-campaign resolution',

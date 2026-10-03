@@ -30,7 +30,8 @@ secret名の難読化や代替注入はしない。default tokenの権限は Con
 外部でレビューされたSHA256と一致すること、期限、writer、PAPER/HUMAN_ONLY、契約、
 固定上限、publication/checkpoint許可、空の拒否・未解決campaign一覧を検証する。
 基点からmainまでの変更は承認関連3ファイルとarchiveの追加・current更新だけに制限する。
-比較APIの上限に達する場合も停止し、独立した再承認を要する。
+compare APIは基点のancestor関係だけに使い、差分は両commitの完全なGit treeから列挙する。
+300ファイル上限に依存せず、truncated tree、コード変更、既存object削除・置換は拒否する。
 
 `actions_attestation.py` は次の独立した証拠を全て要求する。
 
@@ -40,14 +41,23 @@ secret名の難読化や代替注入はしない。default tokenの権限は Con
 3. `.github/stock-automation-handover.json` のhashがscopeの `handover_sha256` と一致。
 4. receiptがcontroller=`chatgpt-automations`、指定scheduler ID、enabled=false、
    active_run_ids空、next_writer一致、handover_epoch一致、observed_by=`kkyosuke`を示す。
+   old writerのowner・lease IDもscopeと一致し、leaseはreleased・ownerなしである。
 5. `.github/stock-automation-controller-evidence.json` の実内容を読み、receipt内の
-   `source_evidence_sha256` と観測項目が一致。初期化時の観測は15分以内である。
+   `source_evidence_sha256` と観測項目が一致。これは過去の引継ぎを束縛する証拠である。
+6. 別途認証されたcontroller/lease読取りの `live_handover_probe` が、同じidentityについて
+   現在もscheduler disabled、active runなし、lease released、ownerなしと確認する。
+   実観測時刻が60秒以内であることを検証し、観測時刻を現在時刻へ書き換えない。
 
 この証拠は、親・所有者が認可済みschedulerの読取りで停止と稼働中run不在を確認した後に作る。
 collector自身にはその証拠の生成・scheduler停止・承認コメント投稿機能がない。
-初期化後は同じ承認hash/epoch/writerをledgerに固定する。継続的なChatGPT API監視とは主張しない。
+初期化済みでも鮮度を免除しない。取得予約前、provider送信直前、公開write前にも再照合する。
+同じ承認hash/epoch/writerをledgerに固定するが、これを現在の旧writer不在の証拠とは扱わない。
+**実controller/leaseの認証済み読取りtransportはまだ提供されていない。**
+CLIはこのprobeがないため有効化不可である。保存receipt、環境変数のboolean、ローカルguardで代用しない。
+テストでは独立した合成controllerを注入するが、これを実環境の接続完了とは主張しない。
 承認済みコードのlegacyローカルrunnerも、enabled manifest存在時にはremote hookなしの取得を拒否する。
-古いコードを保有する旧環境まで技術的に無効化できるわけではなく、旧writerを再開しない運用が必要である。
+このguardは古いcheckoutや旧schedulerの実状態を証明しない。古いcheckout、期限切れ観測、
+lease復活、異なるowner/lease/epochは独立した検証で拒否する。
 
 ## 永続予算、容量、GitHub側の待機
 
@@ -55,6 +65,9 @@ collector自身にはその証拠の生成・scheduler停止・承認コメン�
 非force更新と読み戻しが一致してから送信する。各CASのcommit messageには一意なnonceを付ける。
 同じ親・bodyを競合送信しても同じcommitにならず、sibling更新の片方だけが採用される。
 結果不明の予約はIN_FLIGHTのまま停止し、返金・自動再送・新runへの付替えをしない。
+
+日次は、paced CAS完了後の実送信直前にもJST運用日を再確認する。日跨ぎなら予約を保持して送信しない。
+履歴の固定as_ofにはこの日次境界を適用しない。
 
 日次は最大12回。履歴は最大280営業日・600回・50batch×12回を維持する。
 ページ追加、既知失敗、明示再試行も消費する。429は120秒以上待ち、401/403は停止する。
@@ -64,7 +77,9 @@ collector自身にはその証拠の生成・scheduler停止・承認コメン�
 小さいcheckpoint JSONにはhash/サイズ/chunk参照だけを入れ、同じtreeで全blobを到達可能にする。
 既存20 MiB ledger、750 MiB codec store、2 GiB raw/staging、6 GiB空き容量等の上限は変更しない。
 毎回raw hashを確認し、変更のないcompressed objectの再圧縮・再アップロードを省略する。
-変更のないRUNNING状態の同期もまとめる。未知の書込み失敗は再送せず停止する。
+変更のないRUNNING状態の同期もまとめる。再起動直後もsnapshotに記録された圧縮bytesを
+容量使用量に含め、空のlocal cacheを空のremote storeと誤認しない。
+未知の書込み失敗は再送せず停止する。
 
 合成280日×4,000銘柄試験では、raw 135,816,459 bytes、圧縮41,268,636 bytes、
 snapshot索引64,267 bytesとなり、全ファイルhashが一致して復元できた。
@@ -74,7 +89,8 @@ snapshot索引64,267 bytesとなり、全ファイルhashが一致して復元�
 request間1.6秒、write間10.1秒以上を空ける。GraphQL review照会も同じ計数を通す。
 429/403の既知rate応答ではRetry-After/resetを尊重する。結果不明のwriteは再試行しない。
 予算にはcheckpoint保存の余力を残し、provider予約前・公開intent保存前に余力不足なら停止する。
-計数をledgerへ保存し、同じ時間枠での再起動にも継承する。
+計数をledgerへ保存し、CI待ち・同日重複での終了と同じ時間枠の再起動にも継承する。
+時間枠の更新がjob期限内なら、既存の永続予約を保持して次の時間枠を待つ。
 [GitHub rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
 
 1回の実行は5時間を目安に新規予約を止め、workflowの6時間上限に余力を残す。
@@ -100,7 +116,10 @@ request間1.6秒、write間10.1秒以上を空ける。GraphQL review照会も�
 
 CI証跡はchecks/runs/statuses/reviews/filesの全ページを取得する。
 commit statusはcontextごとにcreated_at/idの最新値へ集約し、未知stateは拒否する。
-残存するCHANGES_REQUESTEDはreviewDecisionがnullでも停止する。
+reviewerごとの最新の実質的なreviewを集約する。同じheadへの後続APPROVEDは、そのreviewerの
+CHANGES_REQUESTEDを解消する。COMMENTや別headへの承認は解消とせず、他reviewerの否定を保持する。
+未解決のCHANGES_REQUESTEDはreviewDecisionがnullでも停止する。
+[Review仕様](https://docs.github.com/en/pull-requests/how-tos/review-pull-requests/reviewing-proposed-changes-in-a-pull-request)
 required reviewや保護条件はサーバーでも維持し、SHA指定の通常squashだけを行う。
 [Statuses](https://docs.github.com/en/rest/commits/statuses)、
 [Merge API](https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request)
@@ -108,6 +127,21 @@ required reviewや保護条件はサーバーでも維持し、SHA指定の通�
 merge後のmainからgenerationと全raw hashの一致を確認してRESTOREDにする。
 同日のRESTOREDは再取得・再PRをしない。休日と翌日の財務補完は既存runnerに従い同じ境界で採用する。
 無差分候補はPRを作らず、確認済みmain世代を採用する。
+
+## 履歴の正規化と不変objectの再利用
+
+正規化のretrieved_atはexport時刻ではなく、参照するmaster/bars入力revisionの取得完了時刻に束縛する。
+同じ入力とnormalizerの意味が同じなら、同一processでは入力page・出力hashを再確認して再利用する。
+新processでも一度の再計算で同一bytesとなり、新しいmanifest/revisionを増殖させない。
+既存の不変ファイルを削除して件数を減らす方式ではない。
+
+Git commit/tree/blobおよびSHA指定contentsだけを、実行中の容量制限付きcacheで再利用する。
+branch/ref、PR、reviews、CI、controller/lease観測はcacheしない。
+mainの検証を複数段階で行っても同じ不変blobを繰り返しダウンロードしない。
+checkpointで既に検証・保存された同一Git blobはpublication treeからそのSHAで参照する。
+新規checkpointでも、直前のmain復元で取得しGit blobのSHA・bytesが一致するblobは再アップロードしない。
+未取得・cacheから退避されたblobを、hash名だけで存在すると仮定しない。
+main採用の検証では最新のmain treeとgenerationを照合し、hashが一致する不変objectから全rawを復元する。
 
 ## 完了履歴の継承
 
@@ -121,10 +155,21 @@ checkpointの `adopted_history` に保存する。後続CASで変更・削除を
 
 ## 検証と残る外部条件
 
+ローカルのstock.jp全537テスト、root全53テスト、文書lintが合格した。
 テストは実runner、codec、実Git object identityを使い、GitHub/providerの全通信を合成transportにする。
-日次、複数履歴batch、CI待ち、PR/merge ACK喪失、再起動、休日財務補完、予算pause、容量、
+日次、複数履歴batch、CI待ち、PR/merge ACK喪失、再起動、翌日の古い停止証拠拒否、予算pause、容量、
 否定review、status集約、Git環境汚染、履歴基点差替え、独立停止証拠欠落を検証する。
 実サービス上のtoken有効性やCI起動・merge成功を、このmock結果から保証しない。
+
+280session・47batchを実runnerで作ったmainから、cacheなし・checkpointなしで月曜の日次を開始する
+回帰試験は、provider 9回、GitHub 2,353回、pacing込みの模擬経過5,428.9秒でRESTOREDとなった。
+正規化manifestは280件、master/barsのraw partition revisionは560件で、batchごとに増殖しない。
+API回数と模擬時刻は合成1銘柄fixtureの測定値であり、実通信やCPU処理時間の上限保証ではない。
+4,000銘柄の容量試験は上記の独立した試験である。
+
+全期間のremote checkpoint→publication→adoption→fresh dailyを通すopt-in smokeは、
+`stock.jp` から `PYTHONPATH=.:tests python tests/actions_fullperiod_smoke.py` で実行できる。
+全通信は合成であり、rate待機は注入clockを進める。全raw hashの反復検証を含むため数十分かかる。
 
 既存secret名はユーザー提供画面で確認されたものを使う。値と実scopeは未確認。
 以前のmetadata照会は403 `Resource not accessible by integration`で、別経路による回避をしていない。
@@ -133,5 +178,6 @@ Contents/Pull requests read/write、Actions/Checks/Commit statuses readとMetada
 EDINET_API_KEYとCLOUDFLARE_API_TOKENは使用しない。
 
 将来の日次予定は21:00 JST（12:00 UTC）だがscheduleは未追加。
-旧scheduler停止・未解決campaign解消・承認証拠の実配備後、別レビューで無効条件の解除とscheduleを決める。
+認証済みlive controller/lease transportの実接続、旧scheduler停止、未解決campaign解消、
+承認証拠の実配備後、別レビューで無効条件の解除とscheduleを決める。
 PR #52のmerge、有効化、実データ取得は別途承認する。
