@@ -19,7 +19,12 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 for value in forbidden:
                     self.assertNotIn(value, content)
                 if path.name in {'daily-collector-disabled.yml','history-once-disabled.yml'}:
-                    self.assertIn("if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}",content)
+                    if path.name == 'history-once-disabled.yml':
+                        self.assertIn("if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}",content)
+                    else:
+                        self.assertIn("if: ${{ github.event_name == 'workflow_dispatch' && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' }}",content)
+                        self.assertIn('STOCK_ACTIONS_ENABLED: ${{ vars.STOCK_ACTIONS_ENABLED }}',content)
+                        self.assertIn('contents: read',content)
                     self.assertIn('AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}',content)
                     self.assertIn('STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}',content)
                     if path.name == 'daily-collector-disabled.yml':

@@ -1,4 +1,4 @@
-"""Disabled-by-default, one target_date per invocation; no external controller API."""
+"""Owner-initiated manual acquisition; approval gates remain default-off."""
 import argparse
 import json
 import os
@@ -20,6 +20,7 @@ except ModuleNotFoundError:
 
 class Driver(legacy.Driver):
     def execute(self, target_date):
+        owner.manual_context(self.context)
         target = targets.day(target_date)
         r.require(target <= self.clock().astimezone(daily.JST).date(), 'future target_date forbidden')
         r.require(isinstance(self.pin, str) and len(self.pin) == 64, 'reviewed approval pin missing')
@@ -178,6 +179,7 @@ def main():
         provider = http.ProviderTransport(os.environ.get('JQUANTS_API_KEY'))
         context = dict(repository=os.environ.get('GITHUB_REPOSITORY'), ref=os.environ.get('GITHUB_REF'),
             sha=os.environ.get('GITHUB_SHA'), event=os.environ.get('GITHUB_EVENT_NAME'),
+            actor=os.environ.get('GITHUB_ACTOR'), triggering_actor=os.environ.get('GITHUB_TRIGGERING_ACTOR'),
             run_id=int(os.environ.get('GITHUB_RUN_ID', '0')), run_attempt=int(os.environ.get('GITHUB_RUN_ATTEMPT', '0')))
         result = Driver(args.root, request, provider, pin=os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256'),
                         writer='actions-v1', context=context).execute(args.target_date)

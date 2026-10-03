@@ -1,9 +1,14 @@
-# Date-specific acquisition Action (disabled)
+# Date-specific acquisition Action (manual entry, guarded acquisition)
 
 The `daily-collector-disabled.yml` Action accepts one required `target_date` in
-`YYYY-MM-DD` format. Its job remains guarded by unconditional `false`, with no
-schedule. This code change neither selects an operator nor enables acquisition.
-The legacy history workflow also remains disabled. No controller service is added.
+`YYYY-MM-DD` format. Its job accepts only owner-initiated `workflow_dispatch` on
+this private repository's `main`, with no schedule. The Actions UI name is
+**Manual target-date acquisition**; the existing filename is retained for the
+approved workflow-path identity. Runtime acquisition remains default-off behind
+`STOCK_ACTIONS_ENABLED`, the pinned approval, genuine retirement and existing
+checkpoint gates. Making the manual entry available does not satisfy these gates.
+The legacy history workflow remains unconditionally disabled. No controller
+service is added. See [manual readiness and starting date](actions-manual-readiness.md).
 
 ## Interface and date semantics
 
@@ -76,8 +81,9 @@ remain in force. Approval renewal/rebinding requires a separately reviewed trans
 
 ## Activation prerequisites (not performed by this change)
 
-Before activation, choose the operator and review credentials/permissions through
-the existing repository mechanism. The runtime uses only the existing GitHub and
+The manual operator is restricted to repository owner `kkyosuke`, both for the
+initial actor and the triggering actor of a rerun. Before acquisition activation,
+review credentials/permissions through the existing repository mechanism. The runtime uses only the existing GitHub and
 J-Quants transports. This change creates no credentials or secret settings.
 
 A separately reviewed version-2 approval must retain the existing policy, baseline,
