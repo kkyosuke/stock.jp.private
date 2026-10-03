@@ -55,6 +55,28 @@ def immutable_history(source):
             or '/revisions/' in '/'+p.relative_to(source).as_posix())}
 
 
+def restore_read_budget(request,revision,writer,binding):
+    """Read only bounded ledger metadata before any large archive download.
+
+    This does not authorize writes/acquisition; verify_scope still gates them.
+    Startup reads consume the transport's current counters and the saved safety
+    allowance. Never defer restoring the previous budget until after cold main I/O.
+    """
+    commit=request('GET',pub.PREFIX+'/git/commits/'+r.sha(revision),None)
+    r.require(commit.get('sha')==revision,'checkpoint commit identity mismatch')
+    tree=request('GET',pub.PREFIX+'/git/trees/'+r.sha(commit['tree']['sha'])+'?recursive=1',None)
+    r.require(tree.get('truncated') is False,'checkpoint tree truncated')
+    entries=[e for e in tree['tree'] if e['path']=='checkpoint.json']
+    r.require(len(entries)==1 and entries[0]['mode']=='100644' and entries[0]['type']=='blob','checkpoint metadata missing')
+    digest=r.sha(entries[0]['sha']);blob=request('GET',pub.PREFIX+'/git/blobs/'+digest,None)
+    r.require(blob.get('encoding')=='base64' and type(blob.get('size')) is int and 0<=blob['size']<=r.LIMIT,'checkpoint metadata limit')
+    raw=base64.b64decode(''.join(blob['content'].split()),validate=True)
+    r.require(len(raw)==blob['size'] and r.git_blob(raw)==digest,'checkpoint metadata identity mismatch')
+    document=json.loads(raw);r.validate(document)
+    r.require(document['writer']==writer and document.get('approval_binding')==binding,'checkpoint approval differs; no reset')
+    request.restore(document.get('github_budget'))
+
+
 class Driver:
     def __init__(self,root,request,provider,*,pin,writer,context,clock=None,sleep=None,live_handover_probe=None):
         self.root=Path(root);self.request=request;self.provider=provider
@@ -73,7 +95,7 @@ class Driver:
         r.require(codec.digest(raw)==self.pin,'approval hash differs')
         scope=json.loads(raw)
         try:
-            self.request('GET',pub.PREFIX+'/git/ref/'+r.REF,None);initialized=True
+            checkpoint_head=self.request('GET',pub.PREFIX+'/git/ref/'+r.REF,None)['object']['sha'];initialized=True
         except http.Rejected as error:
             if error.status!=404:raise
             initialized=False
@@ -82,6 +104,9 @@ class Driver:
             original_request=self.request
             self.request=ImmutableCache(original_request,work/'http-cache')
             try:
+                binding={'manifest_sha256':self.pin,'baseline':scope['baseline'],'handover_epoch':scope['handover_epoch']}
+                if initialized and hasattr(self.request,'restore'):
+                    restore_read_budget(self.request,checkpoint_head,self.writer,binding)
                 pub.download_archive(self.request,main,archive);codec.restore(archive,adopted)
                 scope,facts=auth.verify_scope(self.request,approved_manifest_sha256=self.pin,mode=mode,
                     writer=self.writer,source=adopted,now=self.clock(),clock=self.clock,allow_pending_publication=initialized,
@@ -95,7 +120,6 @@ class Driver:
                     # verify_scope already compared this against the pinned baseline.
                     history_check=auth.AdoptedHistory(adopted,immutable_history(adopted)).check
                 else:history_check=r.reject_history
-                binding={'manifest_sha256':self.pin,'baseline':scope['baseline'],'handover_epoch':scope['handover_epoch']}
                 if not initialized:
                     r.require(not pub.pages(self.request,'/pulls?state=open'),'bootstrap has pending PRs')
                     store.ensure_capacity(adopted)

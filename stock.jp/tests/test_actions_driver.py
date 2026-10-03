@@ -255,3 +255,29 @@ class HistoryResumeTests(unittest.TestCase):
         self.assertEqual(fixture.run_driver('history',provider.transport)['status'],'RESTORED')
         self.assertEqual(len(provider.calls),18)
         self.assertEqual(fixture.remote.merge_writes,1)
+
+
+class EarlyBudgetRestoreTests(unittest.TestCase):
+    def test_restart_restores_budget_before_any_archive_download(self):
+        fixture=DriverTests();fixture.setUp();self.addCleanup(fixture.doCleanups)
+        from scripts.actions_rate import BudgetedTransport
+        clock=[10000.]
+        def wait(seconds):clock[0]+=seconds
+        def execute(client):
+            return d.Driver(fixture.root,client,fixture.fixture.transport,pin=fixture.remote.pin,writer='actions-v1',
+                context=fixture.context,clock=lambda:fixture.fixture.at,sleep=lambda _:None,
+                live_handover_probe=lambda _:dict(fixture.controller_observation)).execute('daily')
+        fixture.remote.ci_ready=False
+        client=BudgetedTransport(fixture.remote,clock=lambda:clock[0],sleep=wait)
+        self.assertEqual(execute(client)['status'],'WAIT_CI')
+        fresh=BudgetedTransport(fixture.remote,clock=lambda:clock[0],sleep=wait)
+        original=pub.download_archive;observed=[]
+        def download(*args,**kwargs):
+            self.assertTrue(fresh.restored);self.assertGreater(fresh.reads,0);observed.append(True)
+            return original(*args,**kwargs)
+        with patch.object(pub,'download_archive',side_effect=download):
+            self.assertEqual(execute(fresh)['status'],'WAIT_CI')
+        self.assertTrue(observed);self.assertEqual(len(fixture.fixture.calls),9)
+        invalid=BudgetedTransport(fixture.remote,clock=lambda:clock[0],sleep=wait)
+        value=client.state();value['reads']=-1
+        with self.assertRaisesRegex(r.RemoteStop,'invalid saved'):invalid.restore(value)

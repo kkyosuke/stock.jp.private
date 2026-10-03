@@ -1,5 +1,6 @@
 """Conservative independent GitHub pacing and per-hour budgets."""
 import time
+import math
 try:
     from scripts.actions_daily_remote import RemoteStop
 except ModuleNotFoundError:
@@ -22,6 +23,13 @@ class BudgetedTransport:
                     last_read=self.last_read,last_write=self.last_write,blocked=self.blocked)
     def restore(self,value):
         if self.restored:return
+        if value is not None:
+            if not isinstance(value,dict) or set(value)!={'window','reads','writes','last_read','last_write','blocked'}:
+                raise RemoteStop('invalid saved GitHub budget')
+            if any(type(value[key]) is not int or value[key]<0 for key in ('window','reads','writes')) or any(
+                type(value[key]) not in (int,float) or not math.isfinite(value[key]) or value[key]<0
+                for key in ('last_read','last_write','blocked')):
+                raise RemoteStop('invalid saved GitHub budget')
         self.restored=True
         if value and value['window']==self.window:
             self.reads+=value['reads'];self.writes+=value['writes']

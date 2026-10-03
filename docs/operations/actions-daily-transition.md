@@ -90,6 +90,8 @@ request間1.6秒、write間10.1秒以上を空ける。GraphQL review照会も�
 429/403の既知rate応答ではRetry-After/resetを尊重する。結果不明のwriteは再試行しない。
 予算にはcheckpoint保存の余力を残し、provider予約前・公開intent保存前に余力不足なら停止する。
 計数をledgerへ保存し、CI待ち・同日重複での終了と同じ時間枠の再起動にも継承する。
+再開では小さいledger metadataを先に読み、保存予算を復元してからmain archiveを取得する。
+この先行読取りは取得・公開を認可せず、承認hash・writerの一致と予算型・非負値も検証する。
 時間枠の更新がjob期限内なら、既存の永続予約を保持して次の時間枠を待つ。
 [GitHub rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
 
@@ -156,6 +158,7 @@ checkpointの `adopted_history` に保存する。後続CASで変更・削除を
 ## 検証と残る外部条件
 
 ローカルのstock.jp全537テスト、root全53テスト、文書lintが合格した。
+その後、予算復元順序の追加回帰を含むdriver/rateの15テストも合格した。
 テストは実runner、codec、実Git object identityを使い、GitHub/providerの全通信を合成transportにする。
 日次、複数履歴batch、CI待ち、PR/merge ACK喪失、再起動、翌日の古い停止証拠拒否、予算pause、容量、
 否定review、status集約、Git環境汚染、履歴基点差替え、独立停止証拠欠落を検証する。
