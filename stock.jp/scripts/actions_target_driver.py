@@ -86,6 +86,10 @@ class Driver(legacy.Driver):
                                  if (adopted/'jquants/history/state.json').exists() else r.reject_history)
                 if document.get('adopted_history'):
                     history_check = auth.AdoptedHistory(adopted, document['adopted_history']).check
+                if any(v['phase'] == 'RESTORED' for v in document['runs'].values()):
+                    expected = work/'checkpoint-evidence'
+                    store.restore(document['snapshot'], expected, history_check)
+                    targets.verify_adopted_targets(document, expected, adopted)
                 runtime = work/'runtime'
                 private = runtime/'operations/private'
                 private.mkdir(parents=True)
@@ -99,6 +103,18 @@ class Driver(legacy.Driver):
                     history_check=history_check, clock=self.clock, target_date=target_date, profile=profile)
                 checkpoint.revision, checkpoint.document = revision, document
                 checkpoint.source = private/'market-data'
+                transaction = checkpoint.document.get('transaction')
+                if transaction:
+                    r.require(transaction['mode'] == 'target' and transaction['day'] == target_date,
+                              'resume existing target publication first')
+                    pending = pub.pages(self.request, '/pulls?state=open')
+                    r.require(all(not p['head']['ref'].startswith('daily/market/') or
+                        p['head']['ref'] == 'daily/market/'+target_date
+                        and p['head']['sha'] == transaction['head']
+                        and transaction['number'] is not None and p['number'] == transaction['number']
+                        and p['head']['repo']['full_name'] == r.REPO
+                        and p['base']['repo']['full_name'] == r.REPO and p['base']['ref'] == 'main'
+                        for p in pending), 'another market publication is unresolved')
                 current = owner.claim(checkpoint, scope, self.context)
                 observation = {}
                 def observe():
@@ -108,10 +124,7 @@ class Driver(legacy.Driver):
                               'GitHub owner observation expired at send boundary')
                     r.gate(facts, now=self.clock())
                 facts.update(handover_check=observe, publication_io_prepare=observe, publication_io_check=fresh)
-                transaction = checkpoint.document.get('transaction')
                 if transaction:
-                    r.require(transaction['mode'] == 'target' and transaction['day'] == target_date,
-                              'resume existing target publication first')
                     checkpoint.day = target_date
                     store.restore(document['snapshot'], checkpoint.source, history_check)
                     return self.publish(checkpoint, main)
@@ -169,7 +182,7 @@ def main():
         result = Driver(args.root, request, provider, pin=os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256'),
                         writer='actions-v1', context=context).execute(args.target_date)
         print(json.dumps(result, sort_keys=True))
-        return 0 if result['status'] in {'RESTORED','ALREADY_RESTORED','WAIT_CI','PAUSED_GITHUB_BUDGET'} else 2
+        return 0 if result['status'] in {'RESTORED','ALREADY_RESTORED','WAIT_CI','PAUSED_GITHUB_BUDGET','WAIT_TARGET_ORDER'} else 2
     except r.RemoteStop as error:
         # RemoteStop messages are fixed, sanitized precondition/status strings.
         print(json.dumps({'status':'BLOCKED', 'reason':str(error)}))

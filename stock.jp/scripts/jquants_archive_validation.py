@@ -5,8 +5,10 @@ import json
 import re
 
 try:
+    from scripts import jquants_calendar as calendar_validation
     from scripts.jquants_catalog import BASE_URL, BY_NAME, query_for
 except ModuleNotFoundError:
+    import jquants_calendar as calendar_validation
     from jquants_catalog import BASE_URL, BY_NAME, query_for
 
 
@@ -59,12 +61,13 @@ def validate_archive(names, read):
         require(0 <= (end-start).days <= 550 and type(campaign['sessions']) is int
                 and 1 <= campaign['sessions'] <= 280)
         require(set(shared['ranges']) <= {'trading_calendar', 'topix_daily'})
-        for value in shared['ranges'].values():
+        for dataset, value in shared['ranges'].items():
             require(set(value) == {'query', 'pages', 'next_key', 'seen_keys', 'complete'}
                     and type(value['complete']) is bool and isinstance(value['pages'], list)
                     and isinstance(value['seen_keys'], list))
             require(value['query'] == {'from':campaign['start_date'], 'to':campaign['as_of']})
             seen = []
+            collected_rows = []
             last = None
             for index, page in enumerate(value['pages']):
                 require(set(page) == {'path', 'sha256', 'bytes', 'retrieved_at'}
@@ -77,6 +80,7 @@ def validate_archive(names, read):
                 timestamp(page['retrieved_at'])
                 payload = json.loads(read(member))
                 require(isinstance(payload.get('data'), list) and all(isinstance(v, dict) for v in payload['data']))
+                collected_rows.extend(payload['data'])
                 last = payload.get('pagination_key') or None
                 require(last is None or isinstance(last, str))
                 require(bool(last) or index == len(value['pages'])-1)
@@ -85,6 +89,9 @@ def validate_archive(names, read):
                     seen.append(last)
             require(value['seen_keys'] == seen and value['next_key'] == last
                     and value['complete'] == (bool(value['pages']) and last is None))
+            if dataset == 'trading_calendar':
+                calendar_validation.validate(collected_rows, campaign['start_date'], campaign['as_of'],
+                    complete=value['complete'], sessions=campaign['sessions'])
     for name in sorted(names):
         if re.fullmatch(r'jquants/runs/[0-9]{8}T120000Z\.json', name):
             journal = json.loads(read(name))

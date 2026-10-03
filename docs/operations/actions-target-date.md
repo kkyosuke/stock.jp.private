@@ -23,9 +23,18 @@ Light datasets are complete. No arbitrary dataset/profile override is exposed.
 
 The approved history plan contains `start_date`, `as_of` and `sessions`. The range
 is at most 550 elapsed calendar days and 280 business sessions. Calendar coverage
-must be complete and its session count must match the plan. Missing business dates
-are processed oldest first, one date per invocation; a date must finish publication
-and restore before another starts. A verified holiday needs no price fetch. Empty
+must be the exact inclusive set of canonical ISO dates, without duplicates or
+missing dates, and its session count must match the plan. The collector and archive
+validator share this check. Missing business dates
+are processed oldest first, one date per invocation; dated acquisition must finish
+publication and restore before another starts. If a later business date is selected
+before the calendar is known, its successful shared-calendar requests remain charged
+to that date and the campaign. The Action returns `WAIT_TARGET_ORDER` with the correct
+`next_target_date`. Dispatching that date reuses the calendar without refunding,
+deleting or marking the waiting journal complete. The same recognition recovers the
+older RUNNING/IDLE calendar-only journal produced before this ordering fix.
+Only a matching, known-success calendar-only journal can wait this way; failed,
+unknown, exhausted or dated-work journals and publication intents remain blockers. A verified holiday needs no price fetch. Empty
 required business-day prices pause instead of becoming a successful holiday.
 
 `target_date` is the market/disclosure date, not an execution clock. Journal start,
@@ -48,8 +57,14 @@ unchanged; past-date history does not add financial or recent-only datasets.
   and actual retrieval timestamps in the data archive as well.
 - One data PR/publication transaction per date, followed by verified restoration.
   The existing codec, data-only scope, CI/review gates and SHA-guarded merge remain.
-- Same-date completion is a verified no-op. Closed/rejected old PRs on the same ref
-  cannot be mistaken for a fresh publication. An unresolved intent stops for review.
+- Same-date completion is a verified no-op only after checking every RESTORED
+  target's journal, immutable raw receipts, normalized revisions/canonical prices
+  and required shared provenance against the currently selected main generation.
+  A pointer rollback or missing evidence blocks both no-op and further acquisition;
+  retaining older Git objects does not prove current adoption. Closed/rejected old PRs on the same ref
+  cannot be mistaken for a fresh publication. Publication resume also rejects any
+  other open market PR before owner transfer or publication writes. An unresolved
+  intent stops for review.
 
 A 280-session history with one page per request needs 562 requests and 47 batches:
 560 dated master/bars requests plus two shared range requests. Extra pages/retries

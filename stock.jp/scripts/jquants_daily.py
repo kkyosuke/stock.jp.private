@@ -270,7 +270,8 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                     require(revision.is_file() and ingest.digest(revision.read_bytes()) == receipt['manifest_sha256'],
                             'historical run receipt is missing or corrupt')
                 require(p == run_path(archive, date.fromisoformat(old['run_date'])), 'run filename mismatch')
-                require(p == path or old['status'] in {'COLLECTED', 'HOLIDAY'},
+                require(p == path or old['status'] in {'COLLECTED', 'HOLIDAY'}
+                        or target is not None and remote.can_defer(old),
                         'resume prior unfinished run first; blocked or exhausted runs need operator review')
                 require(target is not None or date.fromisoformat(old['run_date']) <= day, 'cannot start a run before an existing later run')
             previous_report = ingest.read_json(archive / 'latest.json', {})
@@ -296,7 +297,9 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                 if remote is not None and not local_only:
                     remote.sync(state)
             def result():
-                return {'status': state['status'], 'run_date': state['run_date'], 'data_date': state['data_date'],
+                return {'status': ('WAIT_TARGET_ORDER' if getattr(remote, 'wait_for_target', None) else state['status']),
+                        **({'next_target_date': remote.wait_for_target} if getattr(remote, 'wait_for_target', None) else {}),
+                        'run_date': state['run_date'], 'data_date': state['data_date'],
                         'requests_used': len(state['requests']), 'budget': state['budget'], 'tasks_completed': len(state['tasks']),
                         'readiness': 'NOT_EVALUATED', 'remote_saved': False, 'error': state['error'],
                         'http_status': state['http_status'], 'retry_not_before': state['retry_not_before'],

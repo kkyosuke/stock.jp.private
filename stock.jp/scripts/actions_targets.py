@@ -5,11 +5,11 @@ import math
 import uuid
 try:
     from scripts import actions_daily_remote as r, jquants_daily as daily, jquants_ingest as ingest
-    from scripts import market_data_git as codec
+    from scripts import market_data_git as codec, jquants_calendar as calendar_validation
     from scripts.jquants_catalog import BY_NAME
 except ModuleNotFoundError:
     import actions_daily_remote as r, jquants_daily as daily, jquants_ingest as ingest
-    import market_data_git as codec
+    import market_data_git as codec, jquants_calendar as calendar_validation
     from jquants_catalog import BY_NAME
 
 
@@ -82,10 +82,63 @@ class TargetCheckpoint(r.RunnerCheckpoint):
         super().__init__(*args, **kwargs)
         self.target_day, self.profile = day(target_date), profile
 
+    def can_defer(self, state):
+        """Only a known-success, calendar-only out-of-order journal may wait.
+
+        Preserve its requests, reservation IDs and snapshot. No failure, unknown
+        response, dated dataset work or publication is reclassified as complete.
+        This also recognizes the pre-fix RUNNING/IDLE journal on cold restore.
+        """
+        target = state['run_date']
+        run = self.document['runs'].get(target)
+        shared = self.document['targets']
+        calendar = shared['ranges'].get('trading_calendar')
+        if (not run or run['state'] != state or run['phase'] != 'IDLE'
+                or shared['profiles'].get(target) != 'history' or state['status'] != 'RUNNING'
+                or state['tasks'] or state['data_date'] is not None or state['error'] is not None
+                or state['http_status'] is not None or state['retry_not_before'] is not None
+                or run['retry_not_before'] is not None or not calendar or not calendar['complete']):
+            return False
+        archive = self.source/'jquants'
+        rows = [row for ref in calendar['pages'] for row in ingest.checked_payload(archive, ref)['data']]
+        try:
+            by_day = calendar_validation.validate(rows, shared['campaign']['start_date'],
+                shared['campaign']['as_of'], complete=True, sessions=shared['campaign']['sessions'])
+        except (ValueError, TypeError, KeyError):
+            return False
+        sessions = sorted(d for d, h in by_day.items() if h in {'1','2'})
+        if target not in sessions: return False
+        missing = [d for d in sessions if self.document['runs'].get(d, {}).get('phase') != 'RESTORED']
+        if not missing or target <= missing[0]:
+            return False
+        receipts = state['requests']
+        if receipts:
+            queries = []
+            token = None
+            for ref in calendar['pages']:
+                query = dict(calendar['query'])
+                if token: query['pagination_key'] = token
+                queries.append(ingest.digest(ingest.encoded(query)))
+                token = ingest.checked_payload(archive, ref).get('pagination_key')
+            index = 0
+            for receipt in receipts:
+                if receipt['endpoint'] != BY_NAME['trading_calendar'].endpoint: return False
+                if receipt['query_sha256'] == queries[index]: continue
+                if index+1 < len(queries) and receipt['query_sha256'] == queries[index+1]:
+                    index += 1
+                else:
+                    return False
+            # IDLE plus all durable response pages proves recovery from any known
+            # failed attempts. Repeated query reservations stay charged; unknown
+            # outcomes cannot reach IDLE and are never eligible here.
+            if index != len(queries)-1: return False
+        return True
+
     def attach(self, state):
         self.day = self.target_day.isoformat()
         r.require(state['run_date'] == self.day, 'target date differs from journal')
-        r.require(all(k == self.day or v['phase'] == 'RESTORED' for k, v in self.document['runs'].items()),
+        r.require(all(k == self.day or v['phase'] == 'RESTORED' or self.can_defer(v['state'])
+                      for k, v in self.document['runs'].items()),
                   'prior target not restored')
         runs = self.document['runs']
         profiles = self.document['targets']['profiles']
@@ -195,17 +248,16 @@ class TargetCheckpoint(r.RunnerCheckpoint):
                       'shared response date outside approved range')
             return result
         calendar = rows('trading_calendar')
-        by_day = {v['Date']: str(v.get('HolDiv')) for v in calendar}
-        start, end = day(shared['campaign']['start_date']), day(shared['campaign']['as_of'])
-        r.require(len(by_day) == len(calendar) == (end-start).days+1
-                  and set(by_day.values()) <= {'0','1','2','3'}, 'incomplete or invalid calendar')
+        by_day = calendar_validation.validate(calendar, shared['campaign']['start_date'],
+            shared['campaign']['as_of'], complete=True, sessions=shared['campaign']['sessions'])
         sessions = sorted(k for k, v in by_day.items() if v in {'1','2'})
-        r.require(len(sessions) == shared['campaign']['sessions'], 'calendar session count differs from approval')
         if by_day[self.day] in {'0','3'}:
             state['status'] = 'HOLIDAY'
             return
         missing = [d for d in sessions if d not in self.document['runs'] or self.document['runs'][d]['phase'] != 'RESTORED']
-        r.require(not missing or missing[0] == self.day, 'process missing history dates in order')
+        if missing and missing[0] != self.day:
+            self.wait_for_target = missing[0]
+            return  # retain RUNNING/IDLE and every charged calendar receipt
         topix = rows('topix_daily')
         r.require(len({v['Date'] for v in topix}) == len(topix) and set(sessions) <= {v['Date'] for v in topix},
                   'TOPIX session missing or duplicated')
@@ -214,3 +266,50 @@ class TargetCheckpoint(r.RunnerCheckpoint):
         state['data_date'] = self.day
         for name in ('equities_master', 'equities_daily'): fetch(name, self.target_day)
         state['status'] = 'COLLECTED'
+
+
+def verify_adopted_targets(document, expected, adopted):
+    """Check restored dates against the CURRENT main, not just checkpoint flags.
+
+    Later generations may append dates. Every adopted target's immutable evidence
+    and canonical price bytes must still exist unchanged in the selected generation.
+    Unpublished waiting/partial journals are deliberately not claimed as adopted.
+    """
+    required = set()
+    shared_needed = set()
+    for text, run in document['runs'].items():
+        if run['phase'] != 'RESTORED': continue
+        state = run['state']
+        journal = daily.run_path(expected/'jquants', day(text))
+        r.require(journal.is_file() and daily.read_state(journal) == state, 'restored target journal differs from ledger')
+        required.add(journal.relative_to(expected).as_posix())
+        for task, receipt in state['tasks'].items():
+            dataset, target = task.split(':')
+            path = f"jquants/datasets/{dataset}/{target}/revisions/{receipt['manifest_sha256']}.json"
+            required.add(path)
+            manifest = ingest.read_json(expected/path)
+            required.update('jquants/'+p['path'] for p in manifest['pages'])
+        if state['status'] == 'COLLECTED':
+            revisions = expected/'daily-prices/revisions'/text
+            files = [p for p in revisions.rglob('*') if p.is_file()]
+            r.require(any(p.name.startswith('manifest-') for p in files)
+                      and any(p.suffix == '.csv' for p in files), 'restored target normalized evidence missing')
+            required.update(p.relative_to(expected).as_posix() for p in files)
+            required.add(f'daily-prices/{text[:4]}/{text}.csv')
+        if document['targets']['profiles'][text] == 'history':
+            shared_needed.add('trading_calendar')
+            if state['status'] == 'COLLECTED': shared_needed.add('topix_daily')
+    if shared_needed:
+        path = adopted/'jquants/target-history/ranges.json'
+        r.require(path.is_file(), 'current main lost adopted shared provenance')
+        actual = ingest.read_json(path)
+        r.require(actual['campaign'] == document['targets']['campaign'], 'current main shared campaign differs')
+        for name in shared_needed:
+            value = document['targets']['ranges'][name]
+            r.require(value['complete'] and actual['ranges'].get(name) == value,
+                      'current main lost adopted shared dataset')
+            required.update('jquants/'+p['path'] for p in value['pages'])
+    for name in sorted(required):
+        wanted, actual = expected/name, adopted/name
+        r.require(wanted.is_file() and actual.is_file() and codec.digest(wanted.read_bytes()) == codec.digest(actual.read_bytes()),
+                  'current main lost or changed restored target evidence; review required')

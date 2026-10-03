@@ -114,6 +114,130 @@ class TargetDriverTests(unittest.TestCase):
         self.assertEqual(document['runs'][days[0]]['state']['started_at'], self.now.isoformat())
         self.assertFalse(any('/history/' in c[1] for c in self.remote.calls))
 
+    def test_out_of_order_calendar_charge_survives_correct_date_recovery(self):
+        result = self.execute('2026-09-24')
+        self.assertEqual(result['status'], 'WAIT_TARGET_ORDER')
+        self.assertEqual(result['next_target_date'], '2026-09-23')
+        self.assertEqual(len(self.calls), 1)
+        before = self.document()
+        waiting = copy.deepcopy(before['runs']['2026-09-24'])
+        self.assertEqual(waiting['phase'], 'IDLE')
+        self.assertEqual(waiting['state']['status'], 'RUNNING')
+        self.assertEqual(len(waiting['state']['requests']), 1)
+        self.assertEqual(self.remote.merge_writes, 0)
+        self.next_run()
+        self.assertEqual(self.execute('2026-09-24')['status'], 'WAIT_TARGET_ORDER')
+        self.assertEqual(len(self.calls), 1)
+        self.next_run()
+        self.assertEqual(self.execute('2026-09-23')['status'], 'RESTORED')
+        recovered = self.document()
+        self.assertEqual(recovered['runs']['2026-09-24'], waiting)
+        self.assertEqual(recovered['targets']['batches'][0][:1], before['targets']['batches'][0])
+        self.assertEqual(len(self.calls), 4)
+        self.next_run()
+        self.assertEqual(self.execute('2026-09-24')['status'], 'RESTORED')
+        after = self.document()
+        self.assertEqual(len(self.calls), 6)
+        self.assertEqual(len(after['runs']['2026-09-24']['state']['requests']), 3)
+        self.assertEqual(sum(map(len, after['targets']['batches'])), 6)
+        self.assertEqual(after['runs']['2026-09-24']['reservation_ids'][:1], waiting['reservation_ids'])
+
+    def test_pre_fix_out_of_order_journal_can_resume_earliest(self):
+        original = targets.TargetCheckpoint.collect_history
+        def old_order_failure(checkpoint, *args):
+            original(checkpoint, *args)
+            if getattr(checkpoint, 'wait_for_target', None):
+                raise r.RemoteStop('process missing history dates in order')
+        with patch.object(targets.TargetCheckpoint, 'collect_history', old_order_failure):
+            with self.assertRaisesRegex(r.RemoteStop, 'missing history dates'): self.execute('2026-09-24')
+        before = self.document()['runs']['2026-09-24']
+        self.next_run()
+        self.assertEqual(self.execute('2026-09-23')['status'], 'RESTORED')
+        self.assertEqual(self.document()['runs']['2026-09-24'], before)
+        self.assertEqual(len(self.calls), 4)
+
+    def test_out_of_order_failed_calendar_cannot_be_deferred(self):
+        def failed(*args): raise ingest.ApiError(503, 'known')
+        self.assertEqual(self.execute('2026-09-24', failed)['status'], 'PAUSED')
+        before = self.document()['runs']['2026-09-24']
+        self.next_run()
+        with self.assertRaisesRegex(ingest.IngestionError, 'unfinished run'): self.execute('2026-09-23')
+        self.assertEqual(self.document()['runs']['2026-09-24'], before)
+        self.assertEqual(self.calls, [])
+        self.next_run()
+        self.assertEqual(self.execute('2026-09-24')['status'], 'WAIT_TARGET_ORDER')
+        self.assertEqual(len(self.document()['runs']['2026-09-24']['state']['requests']), 2)
+        self.next_run()
+        self.assertEqual(self.execute('2026-09-23')['status'], 'RESTORED')
+        self.assertEqual(sum(map(len, self.document()['targets']['batches'])), 5)
+        self.assertEqual(len(self.calls), 4)
+
+    def rewrite_main_pointer(self, pointer):
+        path = self.root/'stock.jp/data/jquants-archive/current.json'
+        path.write_bytes(pointer)
+        git(self.root, 'add', 'stock.jp/data/jquants-archive')
+        self.remote.refs['heads/main'] = self.old.commit('Synthetic data-only pointer rollback')
+        self.next_run()
+
+    def test_current_main_rollback_blocks_noop_and_next_date(self):
+        self.assertEqual(self.execute()['status'], 'RESTORED')
+        self.next_run()
+        pointer = git(self.root, 'show', self.old.base+':stock.jp/data/jquants-archive/current.json')
+        self.rewrite_main_pointer(pointer)
+        before = self.document()
+        count = len(self.calls)
+        for selected in ('2026-09-23','2026-09-24'):
+            with self.assertRaisesRegex(r.RemoteStop, 'current main lost'): self.execute(selected)
+        self.assertEqual(len(self.calls), count)
+        self.assertEqual(self.document(), before)
+        self.assertEqual(self.remote.merge_writes, 1)
+
+    def test_current_main_missing_normalized_price_blocks_noop(self):
+        self.assertEqual(self.execute()['status'], 'RESTORED')
+        self.next_run()
+        archive = self.root/'stock.jp/data/jquants-archive'
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp)/'source'
+            codec.restore(archive, source)
+            (source/'daily-prices/2026/2026-09-23.csv').unlink()
+            codec.pack(source, archive)
+        self.rewrite_main_pointer((archive/'current.json').read_bytes())
+        with self.assertRaisesRegex(r.RemoteStop, 'current main lost'): self.execute()
+        self.assertEqual(len(self.calls), 4)
+
+    def test_publication_resume_rejects_another_open_market_pr(self):
+        self.remote.ci_ready = False
+        self.assertEqual(self.execute()['status'], 'WAIT_CI')
+        previous = self.document()
+        other = copy.deepcopy(next(iter(self.remote.prs.values())))
+        other.update(id=77, number=77)
+        other['head']['ref'] = 'daily/market/2026-09-24'
+        self.remote.prs[77] = other
+        self.remote.ci_ready = True
+        count = len(self.calls)
+        writes = sum(c[0] != 'GET' for c in self.remote.calls)
+        self.next_run()
+        with self.assertRaisesRegex(r.RemoteStop, 'another market'): self.execute()
+        self.assertEqual(len(self.calls), count)
+        self.assertEqual(self.remote.merge_writes, 0)
+        self.assertEqual(self.document()['transaction'], previous['transaction'])
+        self.assertEqual(sum(c[0] != 'GET' for c in self.remote.calls), writes)
+
+    def test_calendar_invalid_or_missing_dates_never_publish(self):
+        def invalid(endpoint, query):
+            result = self.provider.transport(endpoint, query)
+            if endpoint == '/markets/calendar':
+                next(row for row in result['data'] if row['Date'] == '2026-09-26')['Date'] += 'invalid'
+            return result
+        try:
+            result = self.execute(provider=invalid)
+        except (ValueError, r.RemoteStop):
+            pass
+        else:
+            self.assertEqual(result['status'], 'BLOCKED')
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(self.remote.merge_writes, 0)
+
     def test_latest_daily_uses_existing_plan_and_holiday(self):
         self.now = self.old.fixture.at
         self.receipt['observed_at'] = (self.now-timedelta(days=1)).isoformat()
@@ -305,6 +429,29 @@ class TargetDriverTests(unittest.TestCase):
             self.next_run()
         self.assertEqual(self.execute(provider=failed)['status'], 'BUDGET_EXHAUSTED')
         self.assertEqual(len(self.document()['targets']['batches']), 1)
+
+
+class CalendarValidationTests(unittest.TestCase):
+    def test_archive_rejects_noncanonical_duplicate_and_missing_calendar_days(self):
+        from scripts import jquants_archive_validation as validation
+        for dates in (['2026-09-25','2026-09-26'], ['2026-09-25','2026-09-26invalid'],
+                      ['2026-09-25','2026-09-25'], ['2026-09-25'],
+                      ['2026-09-25','20260926']):
+            with self.subTest(dates=dates):
+                payload = codec.encoded({'data':[{'Date':d, 'HolDiv':'1' if d == '2026-09-25' else '0'} for d in dates]})
+                digest = codec.digest(payload)
+                name = 'jquants/objects/'+digest[:2]+'/'+digest+'.json'
+                page = dict(path=name.removeprefix('jquants/'), sha256=digest, bytes=len(payload),
+                            retrieved_at='2026-10-03T12:00:00+00:00')
+                metadata = dict(campaign=dict(start_date='2026-09-25', as_of='2026-09-26', sessions=1),
+                    knowledge='retrieved_now_not_point_in_time', ranges=dict(trading_calendar=dict(
+                        query={'from':'2026-09-25','to':'2026-09-26'}, pages=[page],
+                        next_key=None, seen_keys=[], complete=True)))
+                files = {name:payload, 'jquants/target-history/ranges.json':codec.encoded(metadata)}
+                if dates == ['2026-09-25','2026-09-26']:
+                    self.assertTrue(validation.validate_archive(files, files.__getitem__))
+                else:
+                    with self.assertRaises(ValueError): validation.validate_archive(files, files.__getitem__)
 
 
 class BudgetTests(unittest.TestCase):
