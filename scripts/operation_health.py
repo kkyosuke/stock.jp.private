@@ -151,13 +151,19 @@ def reader_guard(private):
     observed = {}
     with contextlib.ExitStack() as stack:
         for path in paths:
-            if not path.exists() and not path.is_symlink():
+            try:
+                before = path.lstat()
+            except FileNotFoundError:
                 observed[path] = None
                 continue
-            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+            if not stat.S_ISREG(before.st_mode):
+                raise ValueError('unsafe writer lock')
+            # A regular file can be replaced with a FIFO after lstat. Never
+            # block while opening an untrusted lock, then check the descriptor.
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
             stack.callback(os.close, fd)
             info = os.fstat(fd)
-            if not stat.S_ISREG(info.st_mode):
+            if not stat.S_ISREG(info.st_mode) or (info.st_dev, info.st_ino) != (before.st_dev, before.st_ino):
                 raise ValueError('unsafe writer lock')
             try:
                 fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
@@ -234,7 +240,11 @@ def _command_json(script: str, at: str, action: str = "check", *, include_market
         raise ValueError("market data may be omitted only for static state/policy validation or persisted watchdog")
     archive = configured_archive(ROOT / "stock.jp") if include_market_data else None
     relative_archive = archive.relative_to(source_private) if archive else None
-    with tempfile.TemporaryDirectory(prefix="stock-health-") as directory:
+    # The OS-controlled temporary base may legitimately be an alias (/tmp or
+    # /var on macOS). Resolve it before creating our private child directory;
+    # never canonicalize the untrusted archive passed to inspect_archive.
+    temporary_base = Path(tempfile.gettempdir()).resolve(strict=True)
+    with tempfile.TemporaryDirectory(prefix="stock-health-", dir=temporary_base) as directory:
         scratch = Path(directory)
         public = scratch / "stock.jp"
         shutil.copytree(ROOT / "stock.jp", public,

@@ -294,6 +294,78 @@ class OperationHealthTest(unittest.TestCase):
                 with health.reader_guard(private):
                     (private/'market-data-staging').mkdir();(private/'market-data-staging/daily-runner.lock').touch()
 
+    def test_trusted_temporary_base_alias_is_resolved_before_child_creation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();self.validator_fixture(root,'pass')
+            base=root/'temp-base';base.mkdir();alias=root/'temp-alias';alias.symlink_to(base,target_is_directory=True)
+            with patch.object(health,'ROOT',root),patch.object(health.tempfile,'gettempdir',return_value=str(alias)):
+                self.assertTrue(health.command_json('check.py','2026-10-03T21:00:00+09:00')['paper_go'])
+            self.assertEqual(list(base.iterdir()),[])
+            # Resolving the trusted temp base must not weaken archive ancestry.
+            untrusted=alias/'untrusted';untrusted.mkdir()
+            with self.assertRaises(OSError):health.inspect_archive(untrusted)
+
+    def test_special_writer_locks_are_rejected_without_hanging(self):
+        import socket
+        import textwrap
+        with tempfile.TemporaryDirectory() as directory:
+            private=Path(directory).resolve();lock=private/'market-data-staging/daily-runner.lock';lock.parent.mkdir()
+            command=textwrap.dedent("""
+                import importlib.util,sys
+                from pathlib import Path
+                spec=importlib.util.spec_from_file_location('health',sys.argv[1])
+                health=importlib.util.module_from_spec(spec);spec.loader.exec_module(health)
+                try:
+                    with health.reader_guard(Path(sys.argv[2])):pass
+                except (ValueError,OSError):print('rejected')
+                else:raise AssertionError('special lock accepted')
+            """)
+            for kind in ('fifo','socket','device_symlink'):
+                with self.subTest(kind=kind):
+                    sock=None
+                    if kind=='fifo':os.mkfifo(lock)
+                    elif kind=='socket':
+                        sock=socket.socket(socket.AF_UNIX);sock.bind(str(lock))
+                    else:lock.symlink_to('/dev/null')
+                    try:
+                        result=subprocess.run([health.sys.executable,'-c',command,str(ROOT/'scripts/operation_health.py'),str(private)],capture_output=True,text=True,timeout=3,check=True)
+                        self.assertEqual(result.stdout.strip(),'rejected')
+                    finally:
+                        if sock is not None:sock.close()
+                        lock.unlink()
+            # Direct device metadata is rejected before open, without requiring
+            # privileged mknod in the test environment.
+            with patch.object(Path,'lstat',return_value=os.stat('/dev/null')),patch.object(health.os,'open') as opened:
+                with self.assertRaisesRegex(ValueError,'unsafe writer lock'):
+                    with health.reader_guard(private):pass
+                opened.assert_not_called()
+
+    def test_regular_lock_replaced_with_fifo_before_open_does_not_block(self):
+        import textwrap
+        with tempfile.TemporaryDirectory() as directory:
+            private=Path(directory).resolve();lock=private/'market-data-staging/daily-runner.lock';lock.parent.mkdir();lock.touch()
+            command=textwrap.dedent("""
+                import importlib.util,sys,os
+                from pathlib import Path
+                from unittest.mock import patch
+                spec=importlib.util.spec_from_file_location('health',sys.argv[1])
+                health=importlib.util.module_from_spec(spec);spec.loader.exec_module(health)
+                private=Path(sys.argv[2]);lock=private/'market-data-staging/daily-runner.lock'
+                original=os.open
+                def race(path,flags,*args,**kwargs):
+                    if path==lock:
+                        assert flags & os.O_NONBLOCK
+                        lock.unlink();os.mkfifo(lock)
+                    return original(path,flags,*args,**kwargs)
+                with patch.object(health.os,'open',side_effect=race):
+                    try:
+                        with health.reader_guard(private):pass
+                    except ValueError:print('rejected')
+                    else:raise AssertionError('FIFO replacement accepted')
+            """)
+            result=subprocess.run([health.sys.executable,'-c',command,str(ROOT/'scripts/operation_health.py'),str(private)],capture_output=True,text=True,timeout=3,check=True)
+            self.assertEqual(result.stdout.strip(),'rejected')
+
 
 if __name__ == "__main__":
     unittest.main()
