@@ -91,7 +91,7 @@ class ShardedStore(r.GitCheckpointStore):
                 name=path.relative_to(source).as_posix();codec.safe_name(name)
                 # Retained response files are independently bounded by the
                 # provider/resource limits; codec scan must cover token boundaries.
-                r.require(path.stat().st_size<=codec.MAX_SHARD,'plain file exceeds 25 MiB')
+                r.require(path.stat().st_size<=codec.MAX_SHARD,'plain file exceeds 22 MiB')
                 data=path.read_bytes();codec.scan(data)
                 cached=self.file_index.get(name)
                 if cached and cached[0]==before[path] and cached[1]['sha256']==codec.digest(data):

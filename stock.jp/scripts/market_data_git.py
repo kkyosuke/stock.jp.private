@@ -16,7 +16,7 @@ import shutil
 import tempfile
 
 CHUNK = 1024 * 1024
-MAX_SHARD = 25 * 1024 * 1024
+MAX_SHARD = 22 * 1024 * 1024  # base64 + wrapped JSON stays below the 32 MiB HTTP cap
 MAX_STORE = 750 * 1024 * 1024
 MAX_INDEX = 64 * 1024 * 1024
 MAX_RESTORE = 8 * 1024 * 1024 * 1024
@@ -108,7 +108,7 @@ def object_path(store, sha, kind='objects'):
 def put(store, data, kind='objects'):
     compressed = gzip.compress(data, mtime=0)
     if len(compressed) > MAX_SHARD:
-        raise ArchiveError('compressed shard exceeds 25 MiB')
+        raise ArchiveError('compressed shard exceeds 22 MiB')
     sha = digest(compressed)
     path = object_path(store, sha, kind)
     if path.exists():
@@ -148,7 +148,7 @@ def put_plain(store, data, suffix, kind='objects'):
     if suffix not in {'.json', '.csv', '.bin'} or kind not in {'objects', 'generations'}:
         raise ArchiveError('invalid plain object type')
     if len(data) > MAX_SHARD:
-        raise ArchiveError('plain file exceeds 25 MiB; no implicit lossy splitting')
+        raise ArchiveError('plain file exceeds 22 MiB; no implicit lossy splitting')
     sha = digest(data)
     name = f'{kind}/{sha[:2]}/{sha}{suffix}'
     path = Path(store)/name
@@ -241,7 +241,7 @@ def pack(source, store):
             if path.name.startswith('.pending-'):
                 raise ArchiveError('unfinished atomic write')
             if path.stat().st_size > MAX_SHARD:
-                raise ArchiveError('plain file exceeds 25 MiB')
+                raise ArchiveError('plain file exceeds 22 MiB')
             data = path.read_bytes()
             scan(data)
             suffix = path.suffix if path.suffix in {'.json', '.csv'} else '.bin'

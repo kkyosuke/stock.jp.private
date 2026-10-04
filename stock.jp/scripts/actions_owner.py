@@ -88,6 +88,11 @@ def retirement(request, scope, pin, main, now):
     r.require(any(c['user']['login'] == 'kkyosuke' and c['body'] == statement
                   for c in pub.pages(request, '/issues/' + str(number) + '/comments')),
               'independent owner approval statement missing')
+    return retirement_receipt(request, scope, main, now)
+
+
+def retirement_receipt(request, scope, main, now):
+    """Shared receipt validation; each caller must verify its own pinned owner approval."""
     item = request('GET', pub.PREFIX + '/contents/' + RETIREMENT + '?ref=' + main, None)
     r.require(item.get('type') == 'file' and item.get('encoding') == 'base64', 'retirement receipt missing')
     raw = base64.b64decode(''.join(item['content'].split()), validate=True)

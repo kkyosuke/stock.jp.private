@@ -42,6 +42,24 @@ class TransportTests(unittest.TestCase):
         for raw in (b'x'*20,b'{"x":1,"x":2}'):
             client=http.FixedHTTP('https://api.github.com',{},opener=Opener(Response(raw,'https://api.github.com/x')),limit=15)
             with self.assertRaises(r.RemoteStop):client.json('GET','/x')
+    def test_archive_limit_fits_base64_http_upload_and_download(self):
+        import base64
+        from scripts import market_data_git as codec
+        raw = b'x' * codec.MAX_SHARD
+        encoded = base64.b64encode(raw).decode()
+        # Include escaped CRLF wrapping and a conservative REST metadata envelope.
+        download = dict(content='\r\n'.join(encoded[i:i+60] for i in range(0,len(encoded),60)), encoding='base64',
+                        size=len(raw), sha='a'*40, url='x'*4096)
+        upload = dict(content=encoded, encoding='base64')
+        self.assertLess(len(json.dumps(download).encode()), 32*1024*1024)
+        opener = Opener(Response(json.dumps(download).encode(), 'https://api.github.com/x'))
+        client = http.FixedHTTP('https://api.github.com', {}, opener=opener)
+        self.assertEqual(client.json('POST', '/x', upload)[0], 200)
+        with tempfile.TemporaryDirectory() as tmp:
+            codec.put_plain(Path(tmp), raw, '.bin')
+            with self.assertRaises(codec.ArchiveError):
+                codec.put_plain(Path(tmp), raw+b'x', '.bin')
+
     def test_provider_errors(self):
         opener=Opener(error=HTTPError('unused',429,'secret',{},io.BytesIO()))
         with self.assertRaises(ingest.ApiError) as caught:http.ProviderTransport('synthetic',opener=opener)('/markets/calendar',{})

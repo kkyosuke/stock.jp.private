@@ -26,7 +26,7 @@ JSONをCSVへ変換せず、元の形式と数値・null・文字列を保持し
 `object` の参照先が読みやすいJSONまたはCSVの実体となる。圧縮・分割はしない。
 コンテンツのhashによる命名と重複排除は維持する。
 
-25MiB/file・750MiB/storeの既存保守的上限を維持する。上限超過時は停止し、
+後続修正でbase64 HTTPサイズとの整合のため22MiB/fileへ揃え、750MiB/storeを維持する。上限超過時は停止し、
 不完全なJSONへの分割、情報を落とす変換、LFS購入を自動実行しない。
 [GitHubの通常Gitの上限](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github)
 である100MiB/fileを下回る。Git履歴に残る旧objectは今回書き換えない。

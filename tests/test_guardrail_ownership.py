@@ -18,7 +18,7 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 content = path.read_text()
                 for value in forbidden:
                     self.assertNotIn(value, content)
-                if path.name in {'daily-collector-disabled.yml','history-once-disabled.yml'}:
+                if path.name in {'daily-collector-disabled.yml','history-once-disabled.yml','manual-date-acquisition.yml'}:
                     if path.name == 'history-once-disabled.yml':
                         self.assertIn("if: ${{ false && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}",content)
                     else:
@@ -27,8 +27,9 @@ class GuardrailOwnershipTest(unittest.TestCase):
                         self.assertIn('contents: read',content)
                     self.assertIn('AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}',content)
                     self.assertIn('STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}',content)
-                    if path.name == 'daily-collector-disabled.yml':
-                        self.assertIn('python stock.jp/scripts/actions_target_driver.py --target-date "$STOCK_TARGET_DATE"',content)
+                    if path.name in {'daily-collector-disabled.yml','manual-date-acquisition.yml'}:
+                        driver = 'actions_date_driver.py' if path.name == 'manual-date-acquisition.yml' else 'actions_target_driver.py'
+                        self.assertIn(f'python stock.jp/scripts/{driver} --target-date "$STOCK_TARGET_DATE"',content)
                         self.assertIn('STOCK_TARGET_DATE: ${{ inputs.target_date }}',content)
                         self.assertIn('required: true',content)
                         self.assertNotIn('--target-date ${{',content)
@@ -46,11 +47,11 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 self.assertNotIn("  schedule:", path.read_text())
         self.assertIn("  schedule:", (ROOT / ".github/workflows/operation-health.yml").read_text())
 
-    def test_retired_worker_has_no_cron_or_dispatch(self):
-        self.assertIn("crons = []", (ROOT / "cloudflare/operations-scheduler/wrangler.toml").read_text())
-        content = (ROOT / "cloudflare/operations-scheduler/worker.mjs").read_text()
-        self.assertNotIn("/dispatches", content)
-        self.assertNotIn("AUTOMATION_PAT", content)
+    def test_retired_scheduler_is_removed(self):
+        self.assertFalse((ROOT / 'cloudflare/operations-scheduler').exists())
+        self.assertFalse((ROOT / '.github/workflows/deploy-operations-scheduler.yml').exists())
+        for path in (ROOT / '.github/workflows').glob('*.yml'):
+            self.assertNotIn('cloudflare/operations-scheduler', path.read_text())
 
     def test_contract_preserves_fail_closed_boundaries(self):
         content = (ROOT / "docs/operations/assistant-daily-operation.md").read_text()
