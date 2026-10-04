@@ -15,6 +15,7 @@ from stock_jp.workspace import project_root
 from stock_jp.automation import http, rate, publication
 from stock_jp.automation.daily_remote import REPO, RemoteStop, git_blob, require, sha
 from stock_jp.market_data import storage
+from stock_jp.market_data import observations
 from stock_jp.market_data.jquants import daily, ingest
 
 PREFIX = "/repos/" + REPO
@@ -22,8 +23,12 @@ CHECKPOINT = "automation/nightly-market-data"
 JOURNAL = "operations/acquisition/nightly-checkpoint.json"
 RAW_PREFIX = "nightly-checkpoint/"
 WORKFLOW = ".github/workflows/market-data-manual.yml"
+CI_WORKFLOW = ".github/workflows/ci.yml"
 RECORDS = "operations/acquisition/nightly/"
 CHECKS = {"format", "test", "guardrail"}
+FINANCIAL_CHECKPOINT = "automation/financial-history"
+FINANCIAL_JOURNAL = "operations/acquisition/financial-history-checkpoint.json"
+FINANCIAL_RAW_PREFIX = "financial-history-checkpoint/"
 
 
 class Incomplete(RemoteStop):
@@ -32,24 +37,12 @@ class Incomplete(RemoteStop):
         super().__init__("nightly collection incomplete: " + result["status"])
 
 
-class GitHubRequests:
-    """Use the Actions token for Checks reads and the PAT for repository writes."""
-    def __init__(self, writer, checks):
-        self.writer, self.checks = writer, checks
-
-    def __call__(self, method, path, body=None):
-        client = self.checks if method == "GET" and "/check-runs" in path else self.writer
-        return client(method, path, body)
-
-    def review_decision(self, number, head, reviews):
-        return self.writer.review_decision(number, head, reviews)
-
-
 class Git:
     def __init__(self, request):
         self.request = request
         self.blobs = set()
         self.modes = {}
+        self.write_permission_verified = False
 
     def api(self, method, path, body=None):
         return self.request(method, PREFIX + path, body)
@@ -80,21 +73,23 @@ class Git:
         return raw
 
     def write(self, branch, parent, files, *, exists):
-        require(branch == CHECKPOINT or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
+        require(branch in {CHECKPOINT, FINANCIAL_CHECKPOINT} or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
                 "unexpected publication branch")
         if exists:
             require(self.ref(branch) == parent, "checkpoint or data branch moved")
         tree = self.api("GET", "/git/commits/" + parent)["tree"]["sha"]
         entries = []
         for path, raw in sorted(files.items()):
-            if branch == CHECKPOINT:
-                require(path == JOURNAL or path.startswith(RAW_PREFIX), "unexpected checkpoint path")
-                if path != JOURNAL:
-                    storage.safe_name(path.removeprefix(RAW_PREFIX))
+            if branch in {CHECKPOINT, FINANCIAL_CHECKPOINT}:
+                journal, prefix = (JOURNAL, RAW_PREFIX) if branch == CHECKPOINT else (FINANCIAL_JOURNAL, FINANCIAL_RAW_PREFIX)
+                require(path == journal or path.startswith(prefix), "unexpected checkpoint path")
+                if path != journal:
+                    storage.safe_name(path.removeprefix(prefix))
             else:
                 require(path == "data/market/jquants/current.json" or re.fullmatch(
                     r"data/market/jquants/(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.(?:json|csv|bin|chunk)", path)
-                    or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path),
+                    or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path)
+                    or observations.publication_path(path),
                     "unexpected data publication path")
             storage.scan(raw)
             blob = git_blob(raw)
@@ -118,12 +113,29 @@ class Git:
 
     def private_metadata(self):
         value = self.api("GET", "")
-        require(value.get("private") is True and value["owner"]["login"].lower() == "kkyosuke"
-                and value.get("permissions", {}).get("push") is True,
-                "private owner repository with push access required")
+        require(value.get("private") is True and value["owner"]["login"].lower() == "kkyosuke",
+                "private owner repository required")
+        # Installation tokens (including GITHUB_TOKEN) omit user permissions.
+        # Exercise Contents write before provider I/O instead of inventing a flag.
+        if value.get("permissions", {}).get("push") is not True and not self.write_permission_verified:
+            raw = ingest.encoded({"version": 1, "purpose": "market-data contents-write preflight"})
+            blob = self.api("POST", "/git/blobs", {
+                "encoding": "base64", "content": base64.b64encode(raw).decode(),
+            })
+            require(blob.get("sha") == git_blob(raw), "Contents write permission unverified")
+            self.blobs.add(blob["sha"])
+            self.write_permission_verified = True
         return {"repository_full_name": REPO, "visibility": "private",
                 "owner": {"login": "kkyosuke"}, "permissions": {"push": True},
                 "checked_at": datetime.now(timezone.utc).isoformat()}
+
+    def dispatch_ci(self, branch, head):
+        require(self.ref(branch) == head, "nightly candidate branch moved before CI dispatch")
+        response = self.api("POST", "/actions/workflows/ci.yml/dispatches",
+                            {"ref": branch, "return_run_details": True})
+        run_id = response.get("workflow_run_id") if isinstance(response, dict) else None
+        require(type(run_id) is int and run_id > 0, "CI dispatch run identity unavailable")
+        return run_id
 
 
 def scheduled_day(at):
@@ -338,8 +350,10 @@ def trusted_context(root, context, preview):
 
 def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
+    observation_report = observations.rebuild(root)
     candidate = storage.stage(root, checkpoint.git.private_metadata())
     report = {**result, "generation": candidate["generation"], "store_bytes": candidate["store_bytes"],
+              "observations": observation_report,
               "analysis_readiness": "NOT_EVALUATED", "preview": checkpoint.preview}
     git = checkpoint.git
     base = git.tree(checkpoint.main)
@@ -361,6 +375,12 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
         name = RECORDS + day + ".json"
         if base.get(name) != git_blob(raw):
             files[name] = raw
+    for member in observations.publication_files(root):
+        path = member.relative_to(root).as_posix()
+        raw = member.read_bytes()
+        require(len(raw) <= storage.MAX_SHARD, "observation table exceeds the Git shard limit")
+        if base.get(path) != git_blob(raw):
+            files[path] = raw
     if not files:
         return {**report, "status": "ALREADY_ADOPTED"}
     branch = "daily/market/" + result["run_date"] + ("-preview" if checkpoint.preview else "")
@@ -385,12 +405,28 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
                  "データ以外の変更を含まないことと、このheadの全CI成功を確認してから採用します。"),
     })
     report["pull_request"] = pr["html_url"]
+    require(pr["head"]["sha"] == head and pr["state"] == "open"
+            and pr["draft"] == checkpoint.preview, "nightly PR changed before CI dispatch")
+    checkpoint.observe()
+    run_id = git.dispatch_ci(branch, head)
+    report["ci_run_id"] = run_id
     deadline = monotonic() + timeout
     while monotonic() < deadline:
-        checks = publication.pages(git.request, "/commits/" + head + "/check-runs", "check_runs")
+        run = git.api("GET", "/actions/runs/" + str(run_id))
+        require(run.get("id") == run_id and run.get("path") == CI_WORKFLOW
+                and run.get("event") == "workflow_dispatch" and run.get("head_sha") == head
+                and run.get("head_branch") == branch, "nightly CI run identity or head changed")
+        if run.get("status") != "completed":
+            sleep(30)
+            continue
+        require(run.get("conclusion") == "success", "nightly data PR CI failed; data and budget remain saved")
+        suite_id = run.get("check_suite_id")
+        require(type(suite_id) is int and suite_id > 0, "nightly CI check suite unavailable")
+        checks = publication.pages(git.request, "/check-suites/" + str(suite_id) + "/check-runs", "check_runs")
         latest = {}
         for check in checks:
-            if check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions":
+            if (check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions"
+                    and check.get("head_sha") == head and check.get("check_suite", {}).get("id") == suite_id):
                 if check["id"] > latest.get(check["name"], {}).get("id", 0):
                     latest[check["name"]] = check
         if set(latest) == CHECKS and all(c["status"] == "completed" for c in latest.values()):
@@ -436,6 +472,8 @@ def execute(root, context, request, *, target=None, preview=False, at=None, tran
     git.api("GET", "/commits/" + context["sha"] + "/check-runs?per_page=1")
     main = git.ref("main")
     require(preview or main == context["sha"], "workflow does not use current main")
+    if preview and main != context["sha"]:
+        git.tree(context["sha"])  # Reuse verified blobs already present in the preview commit.
     checkpoint = Checkpoint(root, git, main, day, context, preview=preview)
     if context["event"] == "schedule" and target is None:
         checkpoint.bind_schedule(now)
@@ -461,9 +499,7 @@ def main():
     }.items()}
     try:
         context["run_id"] = int(os.environ.get("GITHUB_RUN_ID", "0"))
-        request = rate.BudgetedTransport(GitHubRequests(
-            http.GitHubTransport(os.environ.get("AUTOMATION_PAT")),
-            http.GitHubTransport(os.environ.get("GITHUB_TOKEN"))))
+        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get("GITHUB_TOKEN")))
         result = execute(project_root(), context, request, target=args.target_date, preview=args.preview)
         code = 0
     except Incomplete as error:

@@ -15,7 +15,7 @@ import stock_jp.automation.target as driver
 class ReadinessTests(unittest.TestCase):
     def test_reports_all_omissions_without_disclosing_values(self):
         with tempfile.TemporaryDirectory() as tmp:
-            result = readiness.report(tmp, {'AUTOMATION_PAT': 'private-test-sentinel',
+            result = readiness.report(tmp, {'GITHUB_TOKEN': 'private-test-sentinel',
                                           'JQUANTS_API_KEY': 'provider-test-sentinel'})
         self.assertEqual(result['blockers'], ['execution_disabled',
             'reviewed_approval_pin_missing_or_invalid', 'approval_manifest_missing',
@@ -30,7 +30,7 @@ class ReadinessTests(unittest.TestCase):
             prepare_write(directory / 'acquisition.json').write_text('{}')
             prepare_write(Path(tmp) / 'operations/evidence/automation-retirement.json').write_text('{}')
             result = readiness.report(tmp, dict(STOCK_ACTIONS_ENABLED='true',
-                STOCK_ACTIONS_APPROVAL_SHA256='a'*64, AUTOMATION_PAT='synthetic',
+                STOCK_ACTIONS_APPROVAL_SHA256='a'*64, GITHUB_TOKEN='synthetic',
                 JQUANTS_API_KEY='synthetic'))
         self.assertEqual(result['blockers'], [])
         self.assertEqual(result['status'], 'LOCAL_CONFIGURATION_PRESENT')

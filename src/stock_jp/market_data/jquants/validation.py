@@ -29,6 +29,10 @@ def validate_archive(names, read):
     provider page hashes embedded in historical manifests still match.
     """
     names = set(names)
+    from stock_jp.market_data.jquants.financial_history import PREFIX, validate_state
+    for name in names:
+        if re.fullmatch(PREFIX + r"\d{4}-\d{2}-\d{2}\.json", name):
+            validate_state(json.loads(read(name)), read)
     history = "jquants/history/state.json"
     if "jquants/history-marker.json" in names or any(name.startswith("jquants/history/") for name in names):
         require(history in names)

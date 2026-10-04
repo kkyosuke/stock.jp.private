@@ -8,7 +8,9 @@ class RateLimited(RemoteStop):
     def __init__(self,until):self.until=until;super().__init__('GitHub rate limit; known rejection')
 
 class BudgetedTransport:
-    READ_LIMIT=2400
+    # GITHUB_TOKEN allows 1,000 REST requests/hour/repository. Count writes too
+    # and leave room for Actions requests outside this transport.
+    READ_LIMIT=800
     WRITE_LIMIT=360
     def __init__(self,request,*,clock=time.time,sleep=time.sleep,deadline=None):
         self.request=request;self.clock=clock;self.sleep=sleep;self.deadline=deadline or clock()+5*3600

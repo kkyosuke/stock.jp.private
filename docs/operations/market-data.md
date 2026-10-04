@@ -9,7 +9,7 @@ J-Quantsの採用済みデータは `data/market/jquants/` に置く。
 `current.json` が世代manifestを指し、manifestが各JSON/CSVのオブジェクトとSHA-256を指す。
 保存形式、manifest、価格・時刻・出典の検証はコードが定義する。
 保存上限は `market_data/storage.py` が定義する。1ファイル22MiB、store全体2GiB。
-履歴補完後の約740MiBに日次追加の余地を確保する。上限超過時は停止し、自動で引き上げない。
+日足・財務履歴の補完後は約751MiB。上限超過時は停止し、自動で引き上げない。
 
 ```bash
 python -m stock_jp data verify
@@ -24,7 +24,7 @@ python -m stock_jp data restore
 | `data/market/jquants/` | 検証して採用した世代・オブジェクト | 追跡 |
 | `data/market/manual-dates/` | 手動承認して採用した対象日ごとの生応答・結果 | 追跡 |
 | `data/market/legacy-prices/` | 過去の日足・manifest | 追跡 |
-| `data/market/observations/` | 出典付きの企業行動・株数・予想・決算日 | 追跡 |
+| `data/market/observations/` | 出典付きの財務・株数・予想・決算日・価格調整 | 追跡 |
 | `.work/market-data/` | 復元済み入力、取得途中のキャッシュ・チェックポイント | 除外 |
 | `.work/staging/` | PR用の保存世代、ロック、途中状態 | 除外 |
 | `operations/acquisition/` | 取得取引、消費予算、完了記録 | 追跡 |
@@ -57,6 +57,35 @@ python -m stock_jp data backfill --as-of 2026-10-02
 `history-backfill-<日付>.json` は元の台帳と履歴journalへの対応を記録する。
 同じコマンドで再開でき、完了済み履歴では通信しない。認証失敗・不正応答・429では
 停止し、データのpack・検証・PR作成は取得後に行う。
+
+## 財務・株数・予想・決算予定の保存
+
+初回の5年分の補完は[財務履歴の手動実行](automation.md#財務履歴の初回補完)を使う。
+取得した生CSVと消費記録もJ-Quants世代に含める。
+生応答が正本で、観測CSVは次のコマンドで通信せず再生成できる。
+
+```bash
+python -m stock_jp data observations
+```
+
+| ディレクトリ（`data/market/observations/` 内） | 内容 |
+| --- | --- |
+| `financial-history/` | 財務サマリーの実績・対象期間・開示番号 |
+| `share-count-history/` | 決算期間で報告された発行済み・自己・平均株数 |
+| `forecast-history/` | 当期・翌期の業績予想と変更開示 |
+| `earnings-calendar-history/` | 公表日付きの決算予定とその変更 |
+| `corporate-actions/` | 日足の公式調整係数から検出したイベント候補 |
+
+各ディレクトリの `YYYY.csv` が全観測履歴、`latest.csv` が銘柄ごとの最新の観測。
+企業行動だけは再現計算で全イベントが必要なため `latest.csv` に全件を置く。
+CSVの項目定義と変換・保存は `market_data/observations.py` が管理する。
+金額・株数は報告値の文字列を保存し、空欄をゼロや前回値で補完しない。
+各行に実際の取得時刻と、生応答を参照する `evidence_path` を保存する。
+
+過去の開示日と今回の取得時刻は別に記録する。今取得した訂正済みデータを、
+当時取得できていた証拠として扱わない。最新の1行だけで四半期推移を判断せず、年別履歴を参照する。
+価格調整は企業行動の検出結果で、種別・比率・IR根拠・適用確認は別途必要。
+確認前の `applied_at_jst` は空欄のまま保存する。
 
 取得が完了しても運用準備完了とは限らない。日足の網羅性、鮮度、銘柄数、財務・開示の
 根拠を検証してから日次runに使う。必要な入力が不足していれば停止する。

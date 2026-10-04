@@ -48,6 +48,8 @@ class FixedHTTP:
                     raise RemoteStop('redirect rejected')
                 if not 200 <= status < 300:
                     return status, None
+                if status == 204 and self.origin == 'https://api.github.com':
+                    return status, None
                 raw = response.read(self.limit + 1)
                 if len(raw) > self.limit:
                     raise RemoteStop('HTTP response exceeds limit')
@@ -87,18 +89,28 @@ class GitHubTransport:
             raise RemoteStop('unexpected GitHub repository')
         if method != 'GET':
             suffix = urlsplit(path).path[len(prefix):]
-            if not (method == 'POST' and suffix in {'/git/blobs','/git/trees','/git/commits','/git/refs','/pulls'}
+            if not (method == 'POST' and suffix in {'/git/blobs','/git/trees','/git/commits','/git/refs','/pulls',
+                                                   '/actions/workflows/ci.yml/dispatches'}
                     or method == 'PATCH' and suffix in {
                         '/git/refs/heads/automation/daily-checkpoint-v1',
                         '/git/refs/heads/automation/nightly-market-data',
+                        '/git/refs/heads/automation/financial-history',
                     }
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
+            if suffix == '/actions/workflows/ci.yml/dispatches':
+                if (path != prefix + suffix or not isinstance(body, dict)
+                        or set(body) != {'ref', 'return_run_details'}
+                        or body['return_run_details'] is not True
+                        or not isinstance(body['ref'], str)
+                        or not re.fullmatch(r'daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?', body['ref'])):
+                    raise RemoteStop('unreviewed CI dispatch')
             if suffix == '/git/refs':
                 ref = (body or {}).get('ref','')
                 if not (ref in {
                         'refs/heads/automation/daily-checkpoint-v1',
                         'refs/heads/automation/nightly-market-data',
+                        'refs/heads/automation/financial-history',
                         }
                         or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?',ref)):
                     raise RemoteStop('unreviewed writable ref')

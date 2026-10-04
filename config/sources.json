@@ -45,7 +45,9 @@
       "overlap_days": 30,
       "reconcile_every_days": 30,
       "max_requests_per_run": 12,
-      "download_hosts": []
+      "download_hosts": [
+        "450d912298d9da685fb5742a5ec56b76.r2.cloudflarestorage.com"
+      ]
     }
   },
   "market_regime": {
