@@ -16,6 +16,10 @@ NOW = datetime(2026,10,4,12,tzinfo=timezone.utc)
 TARGET = '2025-08-07'
 
 
+def row(code='12340'):
+    return dict(Date=TARGET, Code=code, ProdCat='011', Mkt='0111', O=100, H=110, L=90, C=105, Vo=1000, Va=105000)
+
+
 class Server:
     def __init__(self):
         self.objects, self.refs, self.prs, self.calls = {}, {}, [], []
@@ -71,7 +75,7 @@ class Server:
 
     def provider(self, endpoint, query):
         self.provider_calls.append((endpoint,copy.deepcopy(query)))
-        return dict(data=[dict(Date=TARGET,HolDiv='1')] if endpoint == '/markets/calendar' else [dict(Date=TARGET,Code='12340',C=123.45)])
+        return dict(data=[dict(Date=TARGET,HolDiv='1')] if endpoint == '/markets/calendar' else [row()])
 
     def __call__(self, method, path, body=None):
         self.calls.append((method,path,copy.deepcopy(body))); suffix=path.removeprefix(remote.PREFIX)
@@ -258,8 +262,8 @@ class DateTests(unittest.TestCase):
         def paged(endpoint,query):
             self.s.provider_calls.append((endpoint,copy.deepcopy(query)))
             if endpoint=='/markets/calendar':return dict(data=[dict(Date=TARGET,HolDiv='1')])
-            if 'pagination_key' not in query:return dict(data=[dict(Date=TARGET,Code='12340')],pagination_key='page2')
-            return dict(data=[dict(Date=TARGET,Code='56780')])
+            if 'pagination_key' not in query:return dict(data=[row()],pagination_key='page2')
+            return dict(data=[row('56780')])
         self.s.provider=paged
         self.assertEqual(self.s.execute()['provider_requests'],5)
         self.s.adopt('date-acquisition/result/'+TARGET)
@@ -285,6 +289,74 @@ class DateTests(unittest.TestCase):
         with self.assertRaises(r.RemoteStop):g.extends(ledger,changed)
         changed=copy.deepcopy(ledger);changed['grants'][0]['allowance']=9
         with self.assertRaises(r.RemoteStop):g.validate(changed)
+
+    def test_empty_business_day_payloads_are_preserved_but_never_complete(self):
+        for empty in ({'equities_master'}, {'equities_daily'}, {'equities_master','equities_daily'}):
+            with self.subTest(empty=empty):
+                s=Server();s.reserve();original=s.provider
+                def provider(endpoint,query):
+                    payload=original(endpoint,query)
+                    if endpoint in {g.BY_NAME[n].endpoint for n in empty}:payload['data']=[]
+                    return payload
+                s.provider=provider
+                report=s.execute()
+                self.assertEqual(report['status'],'INCOMPLETE')
+                self.assertEqual(report['analysis_readiness'],'NOT_EVALUATED')
+                self.assertEqual(report['provider_requests'],3)
+                branch='date-acquisition/result/'+TARGET
+                state=json.loads(s.read(branch,g.ROOT+TARGET+'/result.json'))
+                self.assertEqual(state['status'],'INCOMPLETE')
+                self.assertEqual(state['raw_quality']['reason'],'EMPTY_REQUIRED_DATASET')
+                self.assertTrue(all(x['outcome']=='SAVED' for x in state['requests']))
+                for name in empty:
+                    self.assertEqual(json.loads(s.read(branch,g.ROOT+TARGET+'/'+name+'/001.json'))['data'],[])
+                self.assertEqual(len(s.prs),1)  # No success result PR.
+                s.context['run_attempt']=3
+                with self.assertRaises(r.RemoteStop):s.execute()
+                self.assertEqual(len(s.provider_calls),3)
+                self.assertEqual(json.loads(s.read('main',g.LEDGER))['grants'][0]['allowance'],8)
+                # Even a manually adopted incomplete result must not become NOOP success.
+                s.adopt(branch)
+                with self.assertRaises(r.RemoteStop):s.execute()
+                self.assertEqual(len(s.provider_calls),3)
+
+    def test_missing_required_row_and_bar_fields_are_incomplete(self):
+        for defect in ('missing_row','missing_fields'):
+            s=Server();s.reserve();original=s.provider
+            def provider(endpoint,query):
+                payload=original(endpoint,query)
+                if defect=='missing_row' and endpoint=='/equities/master':payload['data'].append(row('56780'))
+                if defect=='missing_fields' and endpoint=='/equities/bars/daily':del payload['data'][0]['C']
+                return payload
+            s.provider=provider
+            result=s.execute()
+            self.assertEqual(result['status'],'INCOMPLETE')
+            self.assertEqual(result['raw_quality']['reason'],
+                'MISSING_REQUIRED_BAR_ROWS' if defect=='missing_row' else 'INSUFFICIENT_BAR_FIELDS')
+            branch='date-acquisition/result/'+TARGET
+            state=json.loads(s.read(branch,g.ROOT+TARGET+'/result.json'))
+            state['status']='RAW_COLLECTED';state['raw_quality']['status']='COMPLETE'
+            grant=json.loads(s.read('main',g.LEDGER))['grants'][0]
+            with self.assertRaisesRegex(r.RemoteStop,'insufficient'):
+                g.verify_result(state,grant,lambda p:s.read(branch,p))
+
+    def test_explicit_no_execution_rows_are_raw_only_not_price_readiness(self):
+        self.s.reserve();original=self.s.provider
+        def provider(endpoint,query):
+            payload=original(endpoint,query)
+            if endpoint=='/equities/bars/daily':
+                for key in g.snapshot.BAR_KEYS:payload['data'][0][key]=None
+            return payload
+        self.s.provider=provider
+        report=self.s.execute()
+        self.assertEqual(report['collection_status'],'RAW_COLLECTED')
+        self.assertEqual(report['analysis_readiness'],'NOT_EVALUATED')
+        self.s.adopt('date-acquisition/result/'+TARGET)
+        self.assertEqual(self.s.execute()['analysis_readiness'],'NOT_EVALUATED')
+
+    def test_empty_or_invalid_dated_universe_is_incomplete(self):
+        for master in ([{**row(),'ProdCat':'999'}], [{**row(),'Mkt':'unknown'}], [row(),row()]):
+            self.assertEqual(g.raw_quality(dict(equities_master=master,equities_daily=[row()]))['status'],'INCOMPLETE')
 
     def test_light_history_window_and_future_dates(self):
         from datetime import date

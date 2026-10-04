@@ -9,10 +9,10 @@ from datetime import date
 import re
 try:
     from scripts import actions_daily_remote as r, market_data_git as codec
-    from scripts import actions_legacy_debit as debit
+    from scripts import actions_legacy_debit as debit, jquants_snapshot as snapshot
     from scripts.jquants_catalog import BY_NAME, query_for, period
 except ModuleNotFoundError:
-    import actions_daily_remote as r, market_data_git as codec, actions_legacy_debit as debit
+    import actions_daily_remote as r, market_data_git as codec, actions_legacy_debit as debit, jquants_snapshot as snapshot
     from jquants_catalog import BY_NAME, query_for, period
 
 ROOT = 'stock.jp/data/date-acquisition/'
@@ -78,6 +78,53 @@ def result_prefix(grant):
     return ROOT + grant['date'] + '/'
 
 
+def raw_quality(rows):
+    """Check raw response sufficiency, never financial/readiness coverage.
+
+    Use the existing dated domestic-common-stock universe. Every expected issue
+    needs an explicit structurally usable bar (including explicit no-execution
+    nulls). This does not certify the pinned 98% valid-price or active-target gates.
+    """
+    master, daily = rows.get('equities_master', []), rows.get('equities_daily', [])
+    result = dict(status='INCOMPLETE', reason=None, master_rows=len(master), daily_rows=len(daily),
+                  analysis_readiness='NOT_EVALUATED')
+    if not master or not daily:
+        result['reason'] = 'EMPTY_REQUIRED_DATASET'; return result
+    codes, expected, bars = set(), set(), {}
+    for row in master:
+        raw = str(row.get('Code') or '').strip().upper()
+        if not re.fullmatch(r'[0-9A-Z]{4,5}', raw) or not row.get('ProdCat'):
+            result['reason'] = 'INVALID_MASTER_ROW'; return result
+        code = snapshot.normalize_code(raw)
+        if code in codes:
+            result['reason'] = 'DUPLICATE_MASTER_CODE'; return result
+        codes.add(code)
+        if str(row['ProdCat']) != '011' or len(raw) == 5 and not raw.endswith('0'): continue
+        market = str(row.get('Mkt') or '')
+        if market in snapshot.EXCLUDED_MARKETS: continue
+        if market not in snapshot.ELIGIBLE_MARKETS:
+            result['reason'] = 'INVALID_DATED_MARKET'; return result
+        expected.add(code)
+    if not expected:
+        result['reason'] = 'EMPTY_DATED_UNIVERSE'; return result
+    for row in daily:
+        raw = str(row.get('Code') or '').strip().upper()
+        if not re.fullmatch(r'[0-9A-Z]{4,5}', raw):
+            result['reason'] = 'INVALID_BAR_CODE'; return result
+        code = snapshot.normalize_code(raw)
+        if code in bars or code not in codes:
+            result['reason'] = 'DUPLICATE_OR_UNKNOWN_BAR_CODE'; return result
+        bars[code] = row
+    result['expected_common_stocks'] = len(expected)
+    result['missing_bar_rows'] = len(expected-bars.keys())
+    if result['missing_bar_rows']:
+        result['reason'] = 'MISSING_REQUIRED_BAR_ROWS'; return result
+    if any(snapshot.bar_diagnostic(bars[c]) == 'PARTIAL_NULL_OR_INVALID' for c in expected):
+        result['reason'] = 'INSUFFICIENT_BAR_FIELDS'; return result
+    result.update(status='COMPLETE', reason=None)
+    return result
+
+
 def execute(grant, context, provider, save, observe, clock, sleep):
     """save must durably acknowledge all files before returning; failure stops.
 
@@ -87,11 +134,12 @@ def execute(grant, context, provider, save, observe, clock, sleep):
     """
     r.require((grant['run_id'], grant['attempt'], grant['head_sha']) ==
               (context['run_id'], context['run_attempt'], context['sha']), 'grant belongs to another run attempt')
-    state = dict(version=1, grant=copy.deepcopy(grant), status='COLLECTING', requests=[], datasets={})
+    state = dict(version=1, grant=copy.deepcopy(grant), status='COLLECTING', requests=[], datasets={}, analysis_readiness='NOT_EVALUATED')
     prefix = result_prefix(grant)
     def persist(extra=None):
         save({prefix+'result.json': codec.encoded(state), **(extra or {})})
     persist()
+    collected_rows = {}
     for name in DATASETS:
         query = query_for(BY_NAME[name], date.fromisoformat(grant['date']))
         tokens, rows, references = set(), [], []
@@ -123,17 +171,21 @@ def execute(grant, context, provider, save, observe, clock, sleep):
             persist({path:raw})
             if token is None: break
             tokens.add(token); query['pagination_key'] = token
+        collected_rows[name] = rows
         if name == 'trading_calendar':
             r.require(len(rows) == 1 and str(rows[0].get('HolDiv')) in {'0','1','2','3'}, 'invalid trading day evidence')
             if str(rows[0]['HolDiv']) in {'0','3'}:
                 state['status'] = 'HOLIDAY'; persist(); return state
-    state['status'] = 'COLLECTED'; persist()
+    state['raw_quality'] = raw_quality(collected_rows)
+    state['status'] = 'RAW_COLLECTED' if state['raw_quality']['status'] == 'COMPLETE' else 'INCOMPLETE'
+    persist()
     return state
 
 
 def verify_result(state, grant, read):
     r.require(state.get('version') == 1 and state.get('grant') == grant
-              and state.get('status') in {'COLLECTED','HOLIDAY'}, 'result not complete')
+              and state.get('status') in {'RAW_COLLECTED','HOLIDAY'}
+              and state.get('analysis_readiness') == 'NOT_EVALUATED', 'result not complete')
     requests = state.get('requests')
     r.require(isinstance(requests, list) and 0 < len(requests) <= grant['allowance'], 'result receipts invalid')
     expected_names = DATASETS[:1] if state['status'] == 'HOLIDAY' else DATASETS
@@ -161,4 +213,8 @@ def verify_result(state, grant, read):
     calendar = rows['trading_calendar']
     r.require(len(calendar) == 1 and str(calendar[0].get('HolDiv')) in
               ({'0','3'} if state['status'] == 'HOLIDAY' else {'1','2'}), 'holiday status mismatch')
+    if state['status'] == 'RAW_COLLECTED':
+        quality = raw_quality(rows)
+        r.require(quality['status'] == 'COMPLETE' and state.get('raw_quality') == quality,
+                  'raw result is insufficient; analysis readiness remains unevaluated')
     return state

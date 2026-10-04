@@ -41,7 +41,7 @@ class Driver:
             if path in tree:
                 state = json.loads(remote.read(self.request, tree, path))
                 grants.verify_result(state, grant, lambda p:remote.read(self.request, tree, p))
-                if grant == selected: return dict(status='ALREADY_ADOPTED', target_date=target, provider_requests=0)
+                if grant == selected: return dict(status='ALREADY_ADOPTED', target_date=target, provider_requests=0, collection_status=state['status'], analysis_readiness='NOT_EVALUATED')
             else:
                 r.require(grant == selected, 'previous grant needs adopted result or explicit reconciliation')
         prs = pub.pages(self.request, '/pulls?state=all')
@@ -60,14 +60,14 @@ class Driver:
                 r.require(not any(p['head']['ref'] == branch.branch for p in prs), 'prior reservation PR remains in history; no replacement')
                 branch.save({grants.LEDGER:codec.encoded(proposed)})
             return dict(status='WAIT_RESERVATION_MERGE', target_date=target, next_attempt=grant['attempt'],
-                        charged_allowance=grant['allowance'], provider_requests=0, pull_request=branch.publish())
+                        charged_allowance=grant['allowance'], provider_requests=0, collection_status='NOT_STARTED', analysis_readiness='NOT_EVALUATED', pull_request=branch.publish())
         branch = remote.Branch(self.request, main, target, 'result')
         if branch.created:
             candidate = auth.complete_tree(self.request, branch.revision)
             # No resume of sends. Only a fully saved result can resume PR creation.
             state = json.loads(remote.read(self.request, candidate, grants.result_prefix(selected)+'result.json'))
             grants.verify_result(state, selected, lambda p:remote.read(self.request, candidate, p))
-            return dict(status='WAIT_RESULT_MERGE', target_date=target, provider_requests=0, pull_request=branch.publish())
+            return dict(status='WAIT_RESULT_MERGE', target_date=target, provider_requests=0, collection_status=state['status'], analysis_readiness='NOT_EVALUATED', pull_request=branch.publish())
         r.require(not any(p['head']['ref'] == branch.branch for p in prs), 'result branch missing; grant remains charged')
         r.require((selected['run_id'],selected['attempt'],selected['head_sha']) ==
                   (self.context['run_id'],self.context['run_attempt'],self.context['sha']), 'one-use attempt grant mismatch; no replacement')
@@ -80,10 +80,15 @@ class Driver:
                       and 0 <= (self.clock()-start).total_seconds() <= 60, 'approval or live observation expired')
         observe()
         state = grants.execute(selected, self.context, self.provider, branch.save, observe, self.clock, self.sleep)
+        if state['status'] == 'INCOMPLETE':
+            return dict(status='INCOMPLETE', target_date=target, provider_requests=len(state['requests']),
+                        charged_allowance=selected['allowance'], raw_quality=state['raw_quality'],
+                        analysis_readiness='NOT_EVALUATED')
         restored = auth.complete_tree(self.request, branch.revision)
         grants.verify_result(state, selected, lambda p:remote.read(self.request, restored, p))
         return dict(status='WAIT_RESULT_MERGE', target_date=target, provider_requests=len(state['requests']),
-                    charged_allowance=selected['allowance'], pull_request=branch.publish())
+                    charged_allowance=selected['allowance'], collection_status=state['status'],
+                    analysis_readiness='NOT_EVALUATED', pull_request=branch.publish())
 
 
 def main():
@@ -101,7 +106,8 @@ def main():
         result = Driver(args.root, rate.BudgetedTransport(remote.Transport(os.environ.get('AUTOMATION_PAT'))),
             http.ProviderTransport(os.environ.get('JQUANTS_API_KEY')), context,
             os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256')).execute(args.target_date)
-        print(json.dumps(result, sort_keys=True)); return 0
+        print(json.dumps(result, sort_keys=True))
+        return 0 if result['status'] in {'WAIT_RESERVATION_MERGE','WAIT_RESULT_MERGE','ALREADY_ADOPTED'} else 2
     except r.RemoteStop as error:
         print(json.dumps(dict(status='BLOCKED', reason=str(error)))); return 2
     except Exception:
