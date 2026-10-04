@@ -7,6 +7,7 @@ import json
 import shutil
 import unittest
 from unittest.mock import patch
+from urllib.parse import parse_qs
 
 from stock_jp.automation import nightly as n
 from stock_jp.market_data.jquants import daily, ingest
@@ -69,7 +70,10 @@ class Repository:
             if route.endswith("/reviews"):
                 return copy.deepcopy(self.reviews)
             if route == "/pulls":
-                return [copy.deepcopy(p) for p in self.pulls if p["state"] == "open"]
+                query = parse_qs(path.partition("?")[2])
+                branch = query.get("head", [""])[0].partition(":")[2]
+                return [copy.deepcopy(p) for p in self.pulls if p["state"] == "open"
+                        and (not branch or p["head"]["ref"] == branch)]
             if route.startswith("/pulls/"):
                 return copy.deepcopy(self.pulls[int(route.rsplit("/", 1)[-1]) - 1])
         if method == "POST":
@@ -89,6 +93,7 @@ class Repository:
                 return {}
             if route == "/pulls":
                 pr = {"number": len(self.pulls) + 1, "state": "open", "html_url": "synthetic-pr",
+                      "draft": body["draft"],
                       "head": {"sha": self.refs[body["head"]], "ref": body["head"]}}
                 self.pulls.append(pr)
                 return copy.deepcopy(pr)
@@ -135,8 +140,10 @@ class NightlyMarketDataTest(unittest.TestCase):
                              sleep=lambda _: None)
 
     def checkpoint(self):
-        return n.Checkpoint(self.root, n.Git(self.repo), self.repo.refs["main"],
-                            self.fixture.at.date(), self.context)
+        checkpoint = n.Checkpoint(self.root, n.Git(self.repo), self.repo.refs["main"],
+                                  self.fixture.at.date(), self.context)
+        checkpoint.prepare(self.fixture.archive.parent)
+        return checkpoint
 
     def test_collect_verify_duplicate_without_more_provider_requests(self):
         result = self.run_preview()
@@ -145,7 +152,9 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(self.repo.journal()["runs"]["2026-10-02"]["status"], "COLLECTED")
         self.assertEqual(self.run_preview()["generation"], result["generation"])
         self.assertEqual(len(self.fixture.calls), 9)
-        self.assertFalse(self.repo.pulls)
+        self.assertEqual(len(self.repo.pulls), 1)
+        self.assertTrue(self.repo.pulls[0]["draft"])
+        self.assertEqual(self.repo.refs["main"], self.context["sha"])
 
     def test_crash_reservation_is_durable_and_resume_retains_cost(self):
         def crash(*_):
@@ -263,10 +272,10 @@ class NightlyMarketDataTest(unittest.TestCase):
         with self.assertRaisesRegex(n.RemoteStop, "CI failed"):
             n.publish(self.root, self.checkpoint(), result)
         self.assertEqual(self.repo.refs["main"], old)
-        self.assertEqual(len(self.repo.pulls), 1)
+        self.assertEqual(len(self.repo.pulls), 2)
         self.repo.checks[0]["conclusion"] = "success"
         self.assertEqual(n.publish(self.root, self.checkpoint(), result)["status"], "ADOPTED")
-        self.assertEqual(len(self.repo.pulls), 1)
+        self.assertEqual(len(self.repo.pulls), 2)
 
     def test_missing_ci_never_adopts(self):
         result = self.run_preview()
@@ -284,7 +293,19 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.repo.refs["daily/market/2026-10-02"] = self.repo.commit(files, {"src/unexpected.py": "100755"})
         with self.assertRaisesRegex(n.RemoteStop, "unexpected changes"):
             n.publish(self.root, self.checkpoint(), result)
-        self.assertFalse(self.repo.pulls)
+        self.assertEqual(len(self.repo.pulls), 1)
+
+    def test_checks_use_actions_token_and_writes_use_pat(self):
+        calls = []
+        def writer(method, path, body=None):
+            calls.append(("PAT", method))
+        def checks(method, path, body=None):
+            calls.append(("ACTIONS", method))
+        request = n.GitHubRequests(writer, checks)
+        request("GET", n.PREFIX + "/commits/" + self.context["sha"] + "/check-runs")
+        request("GET", n.PREFIX + "/pulls")
+        request("POST", n.PREFIX + "/pulls", {})
+        self.assertEqual(calls, [("ACTIONS", "GET"), ("PAT", "GET"), ("PAT", "POST")])
 
     def test_deleted_checkpoint_after_adoption_cannot_reset_budget(self):
         result = self.run_preview()

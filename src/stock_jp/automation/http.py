@@ -100,7 +100,7 @@ class GitHubTransport:
                         'refs/heads/automation/daily-checkpoint-v1',
                         'refs/heads/automation/nightly-market-data',
                         }
-                        or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}',ref)):
+                        or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?',ref)):
                     raise RemoteStop('unreviewed writable ref')
             if method == 'PATCH' and (body or {}).get('force') is not False:
                 raise RemoteStop('force update forbidden')

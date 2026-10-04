@@ -32,6 +32,19 @@ class Incomplete(RemoteStop):
         super().__init__("nightly collection incomplete: " + result["status"])
 
 
+class GitHubRequests:
+    """Use the Actions token for Checks reads and the PAT for repository writes."""
+    def __init__(self, writer, checks):
+        self.writer, self.checks = writer, checks
+
+    def __call__(self, method, path, body=None):
+        client = self.checks if method == "GET" and "/check-runs" in path else self.writer
+        return client(method, path, body)
+
+    def review_decision(self, number, head, reviews):
+        return self.writer.review_decision(number, head, reviews)
+
+
 class Git:
     def __init__(self, request):
         self.request = request
@@ -67,7 +80,7 @@ class Git:
         return raw
 
     def write(self, branch, parent, files, *, exists):
-        require(branch == CHECKPOINT or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}", branch),
+        require(branch == CHECKPOINT or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
                 "unexpected publication branch")
         if exists:
             require(self.ref(branch) == parent, "checkpoint or data branch moved")
@@ -216,7 +229,7 @@ class Checkpoint:
     def page_saved(self, state):
         self.sync(state)
 
-    def sync(self, state):
+    def sync(self, state, *, force=False):
         daily.validate_state(state)
         previous = self.document["runs"].get(state["run_date"])
         if previous:
@@ -246,7 +259,7 @@ class Checkpoint:
         for name in self.document["files"].keys() - seen:
             del self.document["files"][name]
         encoded = ingest.encoded({k: v for k, v in self.document.items() if k != "github_budget"})
-        if encoded == self.saved:
+        if encoded == self.saved and not force:
             return
         self.observe()
         self.git.private_metadata()
@@ -281,8 +294,6 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
     candidate = storage.stage(root, checkpoint.git.private_metadata())
     report = {**result, "generation": candidate["generation"], "store_bytes": candidate["store_bytes"],
               "analysis_readiness": "NOT_EVALUATED", "preview": checkpoint.preview}
-    if checkpoint.preview:
-        return {**report, "status": "PREVIEW_COMPLETE", "checkpoint_saved": True}
     git = checkpoint.git
     base = git.tree(checkpoint.main)
     files = {}
@@ -305,7 +316,7 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
             files[name] = raw
     if not files:
         return {**report, "status": "ALREADY_ADOPTED"}
-    branch = "daily/market/" + result["run_date"]
+    branch = "daily/market/" + result["run_date"] + ("-preview" if checkpoint.preview else "")
     existing = git.ref(branch, optional=True)
     checkpoint.observe()
     head = existing or git.write(branch, checkpoint.main, files, exists=False)
@@ -319,8 +330,8 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
     opened = git.api("GET", "/pulls?state=open&base=main&head=kkyosuke:" + branch + "&per_page=100")
     require(len(opened) <= 1, "duplicate nightly data PRs")
     pr = opened[0] if opened else git.api("POST", "/pulls", {
-        "base": "main", "head": branch, "draft": False,
-        "title": "市場データ更新 " + result["run_date"],
+        "base": "main", "head": branch, "draft": checkpoint.preview,
+        "title": "市場データ更新 " + result["run_date"] + (" (preview)" if checkpoint.preview else ""),
         "body": ("公式市場データを取得・検証し、復元可能な世代に保存しました。\n\n"
                  f"状態: {result['status']}、通信: {result['requests_used']}/{result['budget']}。\n"
                  "取得の完了はPAPER運用の完了を意味しません。analysis_readiness=NOT_EVALUATED。\n"
@@ -344,13 +355,21 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
         raise RemoteStop("nightly data PR CI pending; data and budget remain saved")
     checkpoint.observe()
     current = git.api("GET", "/pulls/" + str(pr["number"]))
-    require(current["head"]["sha"] == head and current["state"] == "open",
+    require(current["head"]["sha"] == head and current["state"] == "open"
+            and current["draft"] == checkpoint.preview,
             "nightly PR changed before adoption")
     reviews = publication.pages(git.request, "/pulls/" + str(pr["number"]) + "/reviews")
     http.reject_negative_reviews(reviews, head)
     if hasattr(git.request, "review_decision"):
         git.request.review_decision(pr["number"], head, reviews)
     git.private_metadata()
+    checkpoint.sync(checkpoint.document["runs"][result["run_date"]], force=True)
+    if checkpoint.preview:
+        return {**report, "status": "PREVIEW_COMPLETE", "checkpoint_saved": True}
+    checkpoint.observe()
+    current = git.api("GET", "/pulls/" + str(pr["number"]))
+    require(current["head"]["sha"] == head and current["state"] == "open" and not current["draft"],
+            "nightly PR changed before merge")
     merged = git.api("PUT", "/pulls/" + str(pr["number"]) + "/merge",
                      {"sha": head, "merge_method": "squash"})
     require(merged.get("merged") is True, "nightly data PR was not adopted")
@@ -393,7 +412,9 @@ def main():
     }.items()}
     try:
         context["run_id"] = int(os.environ.get("GITHUB_RUN_ID", "0"))
-        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get("AUTOMATION_PAT")))
+        request = rate.BudgetedTransport(GitHubRequests(
+            http.GitHubTransport(os.environ.get("AUTOMATION_PAT")),
+            http.GitHubTransport(os.environ.get("GITHUB_TOKEN"))))
         result = execute(project_root(), context, request, target=args.target_date, preview=args.preview)
         code = 0
     except Incomplete as error:

@@ -17,7 +17,8 @@ checkoutする。CIと監視は市場データをcheckoutせず、実データ�
 
 privateリポジトリのownerが管理するmainで動かす。既存のGitHub Secrets
 `AUTOMATION_PAT` と `JQUANTS_API_KEY` を使う。PATにはこのprivateリポジトリの
-ContentsとPull requestsの書き込み、ActionsとChecksの読み取り権限が必要。
+ContentsとPull requestsの書き込み、Actionsの読み取り権限が必要。
+CI結果の読み取りには、`checks: read` を付与したActionsの一時トークンを使う。
 取得の有効化は `config/sources.json` の `market_data_git.automatic_upload` で管理する。
 
 1. 採用済み世代を復元・検証し、通信前に消費記録をcheckpoint branchへ保存する。
@@ -40,8 +41,10 @@ Actionsの「Nightly market data」で対象日を指定する。未指定なら
 未完了の対象日がある場合は先にその日を再開する。認証失敗はSecretを修正してから
 対象日を指定して手動実行する。消費記録を消して再試行しない。
 
-`preview=true` は取得・checkpoint保存・世代の検証まで実行し、データPRを作らない。
-修正branchでもownerが手動実行できる。previewでも実際の通信は消費として残る。
+`preview=true` は取得・checkpoint保存・世代の検証後に、検証用draftデータPRを作って
+CIを確認する。mainへ採用しない。修正branchでもownerが手動実行できる。
+検証用branchは `daily/market/<日付>-preview`。確認後、draft PRを閉じる。
+previewでも実際の通信は消費として残り、本番の再実行で完了済み取得を再利用する。
 
 この入口は市場データの取得を担当する。調査・売買判断・PAPER runの完了は別工程で、
 取得結果の `analysis_readiness` は `NOT_EVALUATED`。

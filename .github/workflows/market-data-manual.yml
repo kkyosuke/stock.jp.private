@@ -11,7 +11,7 @@ on:
         required: false
         type: string
       preview:
-        description: 'Collect and verify without creating or adopting a data PR'
+        description: 'Verify a draft data PR and CI without adopting it to main'
         required: false
         default: false
         type: boolean
@@ -19,6 +19,7 @@ on:
 permissions:
   contents: read
   actions: read
+  checks: read
 
 concurrency:
   group: stock-private-market-writer
@@ -48,6 +49,7 @@ jobs:
           STOCK_TARGET_DATE: ${{ inputs.target_date }}
           STOCK_PREVIEW: ${{ inputs.preview }}
           AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: |
           args=()
