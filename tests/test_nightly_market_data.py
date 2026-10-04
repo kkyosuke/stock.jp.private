@@ -256,10 +256,28 @@ class NightlyMarketDataTest(unittest.TestCase):
         before, after = self.repo.tree(old), self.repo.tree(self.repo.refs["main"])
         changed = {p for p in before.keys() | after.keys() if before.get(p) != after.get(p)}
         self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) or
-                            p in {"data/market/observations/" + name for name in n.observations.TABLES}
+                            n.observations.publication_path(p)
                             for p in changed))
         operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1] or c[1].endswith("/merge")]
         self.assertEqual(operations, ["GET", "PUT"])
+        dispatch = next(index for index, call in enumerate(self.repo.calls) if call[1].endswith('/ci.yml/dispatches'))
+        checked = next(index for index, call in enumerate(self.repo.calls) if '/check-runs' in call[1])
+        self.assertLess(dispatch, checked)
+        self.assertEqual(self.repo.calls[dispatch][2], {'ref': 'daily/market/2026-10-02'})
+
+    def test_installation_token_proves_write_permission_once_before_collection(self):
+        def request(method, path, body=None):
+            result = self.repo(method, path, body)
+            if method == 'GET' and path == n.PREFIX:
+                result.pop('permissions')
+            return result
+        git = n.Git(request)
+        self.assertTrue(git.private_metadata()['permissions']['push'])
+        self.assertTrue(git.private_metadata()['permissions']['push'])
+        probes = [call for call in self.repo.calls if call[0] == 'POST']
+        self.assertEqual(len(probes), 1)
+        self.assertTrue(probes[0][1].endswith('/git/blobs'))
+        self.assertFalse(self.fixture.calls)
 
     def test_adopted_checkpoint_bytes_are_not_downloaded_each_night(self):
         result = self.run_preview()
@@ -300,18 +318,6 @@ class NightlyMarketDataTest(unittest.TestCase):
         with self.assertRaisesRegex(n.RemoteStop, "unexpected changes"):
             n.publish(self.root, self.checkpoint(), result)
         self.assertEqual(len(self.repo.pulls), 1)
-
-    def test_checks_use_actions_token_and_writes_use_pat(self):
-        calls = []
-        def writer(method, path, body=None):
-            calls.append(("PAT", method))
-        def checks(method, path, body=None):
-            calls.append(("ACTIONS", method))
-        request = n.GitHubRequests(writer, checks)
-        request("GET", n.PREFIX + "/commits/" + self.context["sha"] + "/check-runs")
-        request("GET", n.PREFIX + "/pulls")
-        request("POST", n.PREFIX + "/pulls", {})
-        self.assertEqual(calls, [("ACTIONS", "GET"), ("PAT", "GET"), ("PAT", "POST")])
 
     def test_deleted_checkpoint_after_adoption_cannot_reset_budget(self):
         result = self.run_preview()

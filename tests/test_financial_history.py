@@ -1,9 +1,11 @@
 """Financial bulk coverage, crash accounting and host inspection without network."""
 from datetime import date
+import gzip
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from stock_jp.market_data.jquants import financial_history as h, ingest
 
@@ -90,3 +92,48 @@ class FinancialHistoryTests(unittest.TestCase):
         again = h.collect(self.root, self.day, transport=self.provider, sleep=lambda _: None)
         self.assertEqual(len(again["requests"]), 4)
         self.assertEqual([endpoint for endpoint, _ in self.calls], ["/bulk/get"])
+
+    def test_verified_download_survives_parse_crash_and_resumes_without_redownload(self):
+        ingest.atomic_json(self.root / "config/sources.json", {"jquants": {
+            "plan": "light", "enabled": True, "ingestion": {"download_hosts": ["reviewed.invalid"]}}})
+        blobs = {"/fins/summary": gzip.compress(b"DiscDate,DiscTime,Code,DiscNo\n2026-10-02,17:30:00,12340,123\n"),
+                 "/fins/earnings-date": gzip.compress(b"PubDate,SchDate,Code\n2026-10-02,2026-10-30,12340\n")}
+        keys = {endpoint: endpoint.lstrip("/") + "/historical/2026/data_202610.csv.gz" for endpoint in blobs}
+        downloads = []
+
+        def provider(endpoint, params):
+            self.calls.append((endpoint, dict(params)))
+            if endpoint == "/bulk/list":
+                dataset = params["endpoint"]
+                return {"data": [{"Key": keys[dataset], "Size": float(len(blobs[dataset])),
+                                   "LastModified": "2026-10-03T01:00:00Z"}]}
+            return {"url": "https://reviewed.invalid/" + params["key"]}
+
+        def download(folder, url, *_args, **_kwargs):
+            endpoint = next(endpoint for endpoint, key in keys.items() if url.endswith(key))
+            downloads.append(endpoint)
+            raw = blobs[endpoint]
+            sha = ingest.digest(raw)
+            relative = f"blobs/{sha[:2]}/{sha}.csv.gz"
+            ingest.atomic_bytes(folder / relative, raw)
+            return {"path": relative, "sha256": sha, "bytes": len(raw), "gzip_validated": True}
+
+        with patch.object(h, "period", return_value=(date(2026, 10, 1), self.day)), \
+             patch.object(h.delivery, "_fetch", side_effect=download):
+            with patch.object(h, "csv_rows", side_effect=KeyboardInterrupt):
+                with self.assertRaises(KeyboardInterrupt):
+                    h.collect(self.root, self.day, transport=provider, sleep=lambda _: None)
+            self.assertEqual(len(self.state()["files"]), 1)
+            self.assertIsNone(next(iter(self.state()["files"].values()))["rows"])
+            self.assertEqual(len(self.state()["requests"]), 3)
+            complete = h.collect(self.root, self.day, transport=provider, sleep=lambda _: None)
+            self.assertEqual(complete["status"], "COMPLETE")
+            self.assertEqual(len(complete["requests"]), 4)
+            self.assertEqual(downloads, list(blobs))
+            self.assertEqual(sum(item["rows"] for item in complete["files"].values()), 2)
+            self.calls.clear()
+            h.collect(self.root, self.day, transport=lambda *_: self.fail("unexpected provider call"))
+            item = next(iter(complete["files"].values()))
+            ingest.atomic_bytes(self.root / ".work/market-data" / h.PREFIX / item["path"], b"corrupt")
+            with self.assertRaisesRegex(ingest.IngestionError, "checksum"):
+                h.collect(self.root, self.day, transport=lambda *_: self.fail("unexpected provider call"))

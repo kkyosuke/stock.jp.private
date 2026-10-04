@@ -36,19 +36,6 @@ class Incomplete(RemoteStop):
         super().__init__("nightly collection incomplete: " + result["status"])
 
 
-class GitHubRequests:
-    """Use the Actions token for Checks reads and the PAT for repository writes."""
-    def __init__(self, writer, checks):
-        self.writer, self.checks = writer, checks
-
-    def __call__(self, method, path, body=None):
-        client = self.checks if method == "GET" and "/check-runs" in path else self.writer
-        return client(method, path, body)
-
-    def review_decision(self, number, head, reviews):
-        return self.writer.review_decision(number, head, reviews)
-
-
 class Git:
     def __init__(self, request):
         self.request = request
@@ -101,7 +88,7 @@ class Git:
                 require(path == "data/market/jquants/current.json" or re.fullmatch(
                     r"data/market/jquants/(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.(?:json|csv|bin|chunk)", path)
                     or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path)
-                    or path in {"data/market/observations/" + name for name in observations.TABLES},
+                    or observations.publication_path(path),
                     "unexpected data publication path")
             storage.scan(raw)
             blob = git_blob(raw)
@@ -332,9 +319,9 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
         name = RECORDS + day + ".json"
         if base.get(name) != git_blob(raw):
             files[name] = raw
-    for name in observations.TABLES:
-        path = "data/market/observations/" + name
-        raw = (root / path).read_bytes()
+    for member in observations.publication_files(root):
+        path = member.relative_to(root).as_posix()
+        raw = member.read_bytes()
         require(len(raw) <= storage.MAX_SHARD, "observation table exceeds the Git shard limit")
         if base.get(path) != git_blob(raw):
             files[path] = raw
@@ -439,9 +426,7 @@ def main():
     }.items()}
     try:
         context["run_id"] = int(os.environ.get("GITHUB_RUN_ID", "0"))
-        request = rate.BudgetedTransport(GitHubRequests(
-            http.GitHubTransport(os.environ.get("GITHUB_TOKEN")),
-            http.GitHubTransport(os.environ.get("GITHUB_TOKEN"))))
+        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get("GITHUB_TOKEN")))
         result = execute(project_root(), context, request, target=args.target_date, preview=args.preview)
         code = 0
     except Incomplete as error:

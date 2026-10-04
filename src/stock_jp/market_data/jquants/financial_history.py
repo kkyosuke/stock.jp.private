@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import csv
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 import gzip
 import io
 import json
@@ -165,7 +165,7 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
     config = ingest.read_json(root / "config/sources.json")["jquants"]
     require(config["plan"] == "light" and config["enabled"] is True)
     end = as_of
-    require(end < datetime.now().astimezone().date(), "financial history must use a completed date")
+    require(end < datetime.now(timezone(timedelta(hours=9))).date(), "financial history must use a completed date")
     start = period(BY_NAME["financial_summary"], "light", end)[0]
     folder.mkdir(parents=True, exist_ok=True)
     state = ingest.read_json(state_path) or {"version": 1, "as_of": end.isoformat(), "from": start.isoformat(),

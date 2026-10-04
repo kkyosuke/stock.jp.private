@@ -3,15 +3,16 @@ from __future__ import annotations
 
 import argparse
 import csv
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 import io
 import json
 from pathlib import Path
+import re
 
 from stock_jp.market_data import jpx, storage
 from stock_jp.market_data.jquants import ingest, financial_history
-from stock_jp.workspace import project_root
+from stock_jp.workspace import project_root, record_path
 
 FINANCIAL_MAP = {
     "current_period_type": "CurPerType", "period_start": "CurPerSt", "period_end": "CurPerEn",
@@ -38,11 +39,109 @@ TABLES = {"financial-history.csv": (FINANCIAL_FIELDS, "source_id"),
           "corporate-actions.csv": (CORPORATE_FIELDS, "action_id")}
 
 
+def publication_path(path):
+    return bool(re.fullmatch(r"data/market/observations/(?:" + "|".join(
+        re.escape(Path(name).stem) for name in TABLES
+    ) + r")/(?:[0-9]{4}|latest)\.csv", path))
+
+
+def publication_files(root):
+    directory = Path(root) / "data/market/observations"
+    storage.safe_tree(directory)
+    for path in sorted(directory.rglob("*.csv")):
+        if not publication_path(path.relative_to(root).as_posix()):
+            raise ValueError("unexpected observation table path")
+        yield path
+
+
+def row_date(row):
+    value = row.get("disclosed_at_jst") or row.get("published_date") or row.get("effective_date", "")
+    date.fromisoformat(value[:10])
+    return value
+
+
+def row_order(row, identity):
+    return row_date(row), row["code"], row[identity]
+
+
+def merge_row(rows, row, identity):
+    key = row.get(identity)
+    if not key or not row.get("code"):
+        raise ValueError("missing observation identity or issue code")
+    row_date(row)
+    previous = rows.get(key)
+    if previous and row.get("retrieved_at_jst") and previous.get("retrieved_at_jst"):
+        if datetime.fromisoformat(retrieved_jst(row["retrieved_at_jst"])) < datetime.fromisoformat(
+                retrieved_jst(previous["retrieved_at_jst"])):
+            return
+    rows[key] = row
+
+
+def load_history(root, name):
+    fields, identity = TABLES[name]
+    directory = record_path(root, name).parent
+    storage.safe_tree(directory)
+    rows = {}
+    years = sorted(directory.glob("[0-9][0-9][0-9][0-9].csv"))
+    paths = years or ([directory / "latest.csv"] if (directory / "latest.csv").is_file() else [])
+    for path in paths:
+        with path.open(newline="", encoding="utf-8") as stream:
+            reader = csv.DictReader(stream)
+            if tuple(reader.fieldnames or ()) != tuple(fields):
+                raise ValueError("observation CSV schema differs from the canonical fields")
+            for row in reader:
+                if None in row or None in row.values() or row.get(identity) in rows:
+                    raise ValueError("duplicate or malformed observation record")
+                if path.stem != "latest" and row_date(row)[:4] != path.stem:
+                    raise ValueError("observation stored in the wrong year")
+                merge_row(rows, row, identity)
+    return rows
+
+
+def save_rows(root, name, new_rows):
+    fields, identity = TABLES[name]
+    rows = load_history(root, name)
+    for row in new_rows:
+        merge_row(rows, row, identity)
+    ordered = sorted(rows.values(), key=lambda row: row_order(row, identity))
+    partitions, latest = {}, {}
+    for row in ordered:
+        partitions.setdefault(row_date(row)[:4], []).append(row)
+        latest[row["code"]] = row
+    directory = record_path(root, name).parent
+    views = {year + ".csv": members for year, members in partitions.items()}
+    # Replay needs every adjustment event, rather than the newest event per issue.
+    views["latest.csv"] = ordered if name == "corporate-actions.csv" else sorted(
+        latest.values(), key=lambda row: row_order(row, identity))
+    for filename, members in views.items():
+        stream = io.StringIO(newline="")
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(members)
+        raw = stream.getvalue().encode()
+        if len(raw) > storage.MAX_SHARD:
+            raise ValueError("observation year exceeds the Git shard limit")
+        storage.scan(raw)
+        storage.atomic(directory / filename, raw)
+    return {"history_rows": len(ordered), "latest_rows": len(views["latest.csv"]),
+            "years": sorted(partitions)}
+
+
+def retrieved_jst(value):
+    stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if stamp.tzinfo is None:
+        raise ValueError("observation retrieval timestamp must include a timezone")
+    return stamp.astimezone(jpx.JST).isoformat(timespec="seconds")
+
+
 def financial_records(row, retrieved, evidence):
     code = jpx._normalize_code(row.get("Code"))
     if not code:
         raise ValueError("financial record has no issue code")
+    if not jpx._text(row.get("DiscTime")):
+        raise ValueError("financial disclosure time is missing")
     disclosed = jpx._disclosed_at(row)
+    retrieved = retrieved_jst(retrieved)
     number = jpx._text(row.get("DiscNo"))
     source_id = "jq-fin-" + (number or jpx._stable_id(disclosed, code, json.dumps(row, sort_keys=True)))
     common = {"source_id": source_id, "disclosed_at_jst": disclosed, "code": code,
@@ -61,6 +160,7 @@ def financial_records(row, retrieved, evidence):
 
 
 def earnings_record(row, retrieved, evidence):
+    retrieved = retrieved_jst(retrieved)
     code = jpx._normalize_code(row.get("Code"))
     published = jpx._date_text(row.get("PubDate"))
     scheduled = jpx._date_text(row.get("SchDate"))
@@ -71,6 +171,34 @@ def earnings_record(row, retrieved, evidence):
             "fiscal_quarter": jpx._text(row.get("FQName")), "fiscal_year_end_mmdd": jpx._text(row.get("FYE")),
             "code": code, "company_name": jpx._text(row.get("CoName")), "company_name_en": jpx._text(row.get("CoNameEn")),
             "retrieved_at_jst": retrieved, "evidence_path": evidence}
+
+
+def adjustment_record(row, evidence, history):
+    text = jpx._text(row.get("AdjFactor"))
+    if not text:
+        return None
+    try:
+        factor = Decimal(text)
+    except InvalidOperation:
+        raise ValueError("invalid official adjustment factor") from None
+    if not factor.is_finite() or factor <= 0:
+        raise ValueError("invalid official adjustment factor")
+    if factor == 1:
+        return None
+    code, day = jpx._normalize_code(row.get("Code")), jpx._date_text(row.get("Date"))
+    if not code or not day:
+        raise ValueError("adjustment signal lacks its issue code or effective date")
+    action_id = f"jq-adjustment-{code}-{day}-{jpx._stable_id(text)}"
+    previous = history.get(action_id, {})
+    action = {field: previous.get(field, "") for field in CORPORATE_FIELDS}
+    action.update(action_id=action_id, effective_date=day, code=code,
+                  normalization_factor=text, source_url=ingest.BASE_URL + "/equities/bars/daily",
+                  evidence_path=evidence)
+    if not action["action_type"]:
+        action["action_type"] = "JQUANTS_ADJUSTMENT_FACTOR"
+    if not action["notes"]:
+        action["notes"] = "Official adjustment signal; company IR must confirm event type, ratio and effective date before application."
+    return action
 
 
 def evidence_path(raw, suffix):
@@ -98,26 +226,13 @@ def rebuild(root, *, source=None):
     archive = source / "jquants"
     storage.safe_tree(archive)
     output = {name: {} for name in TABLES}
-    directory = root / "data/market/observations"
 
     def add(name, row):
-        key = row[TABLES[name][1]]
-        prior = output[name].get(key)
-        if prior is None or row.get("retrieved_at_jst", "") >= prior.get("retrieved_at_jst", ""):
-            output[name][key] = row
+        merge_row(output[name], row, TABLES[name][1])
 
     # Retain manually confirmed evidence and events outside the restored source.
-    for name, (fields, key) in TABLES.items():
-        path = directory / name
-        if path.exists():
-            with path.open(newline="", encoding="utf-8") as stream:
-                reader = csv.DictReader(stream)
-                if tuple(reader.fieldnames or ()) != tuple(fields):
-                    raise ValueError("observation CSV schema differs from the canonical fields")
-                for row in reader:
-                    if not row.get(key) or row[key] in output[name]:
-                        raise ValueError("duplicate or missing observation identity")
-                    output[name][row[key]] = row
+    for name in TABLES:
+        output[name] = load_history(root, name)
 
     def financial(rows, retrieved, evidence, start=None, end=None):
         for row in rows:
@@ -155,39 +270,16 @@ def rebuild(root, *, source=None):
         earnings(rows, retrieved, evidence)
     for rows, retrieved, evidence in partition_pages(archive, "equities_daily"):
         for row in rows:
-            text = jpx._text(row.get("AdjFactor"))
-            if not text:
-                continue
-            try:
-                factor = Decimal(text)
-            except InvalidOperation:
-                raise ValueError("invalid official adjustment factor") from None
-            if not factor.is_finite() or factor <= 0:
-                raise ValueError("invalid official adjustment factor")
-            if factor == 1:
-                continue
-            code, day = jpx._normalize_code(row.get("Code")), jpx._date_text(row.get("Date"))
-            action_id = f"jq-adjustment-{code}-{day}-{jpx._stable_id(text)}"
-            previous = output["corporate-actions.csv"].get(action_id, {})
-            action = {field: previous.get(field, "") for field in CORPORATE_FIELDS}
-            action.update(action_id=action_id, effective_date=day, code=code,
-                          action_type="JQUANTS_ADJUSTMENT_FACTOR", normalization_factor=text,
-                          source_url=ingest.BASE_URL + "/equities/bars/daily", evidence_path=evidence)
-            if not action["notes"]:
-                action["notes"] = "Official adjustment signal; company IR must confirm event type, ratio and effective date before application."
-            add("corporate-actions.csv", action)
+            action = adjustment_record(row, evidence, output["corporate-actions.csv"])
+            if action:
+                add("corporate-actions.csv", action)
     counts = {}
-    for name, (fields, key) in TABLES.items():
-        rows = sorted(output[name].values(), key=lambda row: (row.get("disclosed_at_jst") or row.get("published_date") or row.get("effective_date", ""), row["code"], row[key]))
-        stream = io.StringIO(newline="")
-        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
-        raw = stream.getvalue().encode()
-        storage.scan(raw)
-        storage.atomic(directory / name, raw)
-        counts[name] = len(rows)
+    views = {}
+    for name in TABLES:
+        views[name] = save_rows(root, name, output[name].values())
+        counts[name] = views[name]["history_rows"]
     return {"status": "GENERATED", "rows": counts, "analysis_readiness": "NOT_EVALUATED",
+            "views": views,
             "corporate_action_confirmation": "REQUIRED", "financial_history_knowledge": "RETRIEVED_NOW_NOT_POINT_IN_TIME"}
 
 

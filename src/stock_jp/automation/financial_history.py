@@ -39,7 +39,7 @@ class Checkpoint:
         self._git("config", "user.name", "github-actions[bot]")
         self._git("config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
         self._git("config", "core.hooksPath", "/dev/null")
-        self._git("remote", "add", "origin", "https://github.com/" + REPO + ".git")
+        self._git("config", "remote.origin.url", "https://github.com/" + REPO + ".git")
         self._git("config", "remote.origin.promisor", "true")
         self._git("config", "remote.origin.partialclonefilter", "blob:none")
         self._git("fetch", "--filter=blob:none", "--depth=1", "--no-tags", "origin", self.parent)

@@ -76,7 +76,7 @@ class SingleRepositoryTest(unittest.TestCase):
             self.assertEqual(records, {str(p.relative_to(root)): p.read_bytes() for p in root.rglob('*') if p.is_file()})
             self.assertTrue((root / 'config/sources.json').is_file())
             self.assertTrue((root / 'operations/ledgers/capital-ledger.csv').is_file())
-            self.assertTrue((root / 'data/market/observations/corporate-actions.csv').is_file())
+            self.assertTrue((root / 'data/market/observations/corporate-actions/latest.csv').is_file())
             self.assertFalse((root / 'stock.jp').exists())
             result = self.command(root, 'operation', 'state', 'validate')
             self.assertEqual(result.returncode, 0, result.stderr)

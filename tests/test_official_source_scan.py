@@ -122,15 +122,15 @@ class OfficialSourceScanTest(unittest.TestCase):
         self.assertTrue((run_dir / "reference-data/liquidity-20d.csv").is_file())
         self.assertTrue((run_dir / "trading-calendar.json").is_file())
         self.assertGreater(
-            (self.root / 'data/market/observations/forecast-history.csv').stat().st_size,
+            (self.root / 'data/market/observations/forecast-history/latest.csv').stat().st_size,
             len("source_id\n"),
         )
         self.assertGreater(
-            (self.root / 'data/market/observations/share-count-history.csv').stat().st_size,
+            (self.root / 'data/market/observations/share-count-history/latest.csv').stat().st_size,
             len("source_id\n"),
         )
         self.assertGreater(
-            (self.root / 'data/market/observations/earnings-calendar-history.csv').stat().st_size,
+            (self.root / 'data/market/observations/earnings-calendar-history/latest.csv').stat().st_size,
             len("source_id\n"),
         )
 

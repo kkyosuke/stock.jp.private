@@ -169,28 +169,6 @@ def _atomic_csv_gzip(
     temporary_path.replace(path)
 
 
-def _append_csv_unique(
-    path: Path,
-    fields: tuple[str, ...],
-    rows: list[dict[str, str]],
-    key: str,
-) -> int:
-    with path.open(encoding="utf-8", newline="") as source:
-        existing = list(csv.DictReader(source))
-    known = {row.get(key, "") for row in existing}
-    added: list[dict[str, str]] = []
-    for row in rows:
-        value = row.get(key, "")
-        if not value or value in known:
-            continue
-        known.add(value)
-        added.append(row)
-    if not added:
-        return 0
-    _atomic_csv(path, fields, existing + added)
-    return len(added)
-
-
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as source:
@@ -741,16 +719,19 @@ def collect_non_edinet_sources(
                     provider('jquants_market_data', 'OK', bar_requests, len(all_bars))
                     successful_gap_sources.add('official_market_data')
                 action_rows: list[dict[str, str]] = []
+                from stock_jp.market_data.observations import adjustment_record, load_history, save_rows
+                prior_actions = load_history(private.parent, 'corporate-actions.csv')
                 for row in normalized_bars:
-                    factor = _number(row['adjustment_factor'])
-                    if factor is None or math.isclose(factor, 1.0):
+                    action = adjustment_record({'Code': row['code'], 'Date': row['date'], 'AdjFactor': row['adjustment_factor']},
+                        bars_path.relative_to(private.parent).as_posix(), prior_actions)
+                    if action is None:
                         continue
-                    action_id = f"jq-adjustment-{row['code']}-{row['date']}-{_stable_id(row['adjustment_factor'])}"
+                    action_id = action['action_id']
                     action_source_id = f"jquants-adjustment-{row['date']}-{row['code']}"
                     sources.append(_source_row(source_id=action_source_id, category='market_data', code=row['code'], title=f"Official adjustment factor {row['adjustment_factor']} for {row['code']}", published_at=f"{row['date']}T15:30:00+09:00", retrieved_at=retrieved, url=endpoint, notes='factor is official; corporate-action type and ratio remain subject to company-IR confirmation'))
-                    action_rows.append({'action_id': action_id, 'announced_at_jst': '', 'effective_date': row['date'], 'code': row['code'], 'action_type': 'JQUANTS_ADJUSTMENT_FACTOR', 'ratio_numerator': '', 'ratio_denominator': '', 'old_code': '', 'new_code': '', 'normalization_factor': row['adjustment_factor'], 'source_url': endpoint, 'applied_at_jst': '', 'applied_by': '', 'evidence_path': bars_path.relative_to(run_dir).as_posix(), 'notes': 'Official adjustment factor detected; action type and ratio require company-IR confirmation before application.'})
+                    action_rows.append(action)
                     tasks.append(_task(task_id=f'review-{action_id}', task_type='CORPORATE_ACTION_REVIEW', priority='URGENT', code=row['code'], reason='Official adjustment factor changed; confirm split/consolidation details with company IR', source_ids=[action_source_id]))
-                _append_csv_unique(record_path(private.parent, 'corporate-actions.csv'), tuple(action_rows[0].keys()) if action_rows else ('action_id', 'announced_at_jst', 'effective_date', 'code', 'action_type', 'ratio_numerator', 'ratio_denominator', 'old_code', 'new_code', 'normalization_factor', 'source_url', 'applied_at_jst', 'applied_by', 'evidence_path', 'notes'), action_rows, 'action_id')
+                save_rows(private.parent, 'corporate-actions.csv', action_rows)
             except (KeyError, NonEdinetSourceError, ValueError, OSError) as error:
                 bar_error = str(error)
                 provider('jquants_market_data', 'ERROR', bar_requests, len(all_bars), bar_error)
@@ -778,15 +759,20 @@ def collect_non_edinet_sources(
                     disclosed = _disclosed_at(row)
                     if datetime.fromisoformat(disclosed) <= cutoff_at:
                         accepted.append((row, disclosed))
+                actual_rows: list[dict[str, str]] = []
                 forecast_rows: list[dict[str, str]] = []
                 share_rows: list[dict[str, str]] = []
                 for row, disclosed in accepted:
                     code = _normalize_code(row.get('Code'))
                     disclosure_number = _text(row.get('DiscNo'))
                     source_id = f'jq-fin-{disclosure_number or _stable_id(disclosed, code, json.dumps(row, sort_keys=True))}'
-                    forecast_rows.append({'source_id': source_id, 'disclosed_at_jst': disclosed, 'code': code, 'disclosure_number': disclosure_number, 'document_type': _text(row.get('DocType')), 'current_period_type': _text(row.get('CurPerType')), 'current_fiscal_year_end': _date_text(row.get('CurFYEn')), 'forecast_sales': _text(row.get('FSales')), 'forecast_operating_profit': _text(row.get('FOP')), 'forecast_ordinary_profit': _text(row.get('FOdP')), 'forecast_net_profit': _text(row.get('FNP')), 'forecast_eps': _text(row.get('FEPS')), 'next_forecast_sales': _text(row.get('NxFSales')), 'next_forecast_operating_profit': _text(row.get('NxFOP')), 'next_forecast_ordinary_profit': _text(row.get('NxFOdP')), 'next_forecast_net_profit': _text(row.get('NxFNp')), 'next_forecast_eps': _text(row.get('NxFEPS')), 'material_change_submitted': _text(row.get('MatChgSub')), 'retrieved_at_jst': retrieved, 'evidence_path': f"raw-sources/jquants-financials-{_date_text(row.get('DiscDate'))}.json"})
-                    if any((_text(row.get(field)) for field in ('ShOutFY', 'TrShFY', 'AvgSh'))):
-                        share_rows.append({'source_id': source_id, 'disclosed_at_jst': disclosed, 'fiscal_year_end': _date_text(row.get('CurFYEn')), 'code': code, 'issued_shares_fy': _text(row.get('ShOutFY')), 'treasury_shares_fy': _text(row.get('TrShFY')), 'average_shares': _text(row.get('AvgSh')), 'retrieved_at_jst': retrieved, 'evidence_path': f"raw-sources/jquants-financials-{_date_text(row.get('DiscDate'))}.json", 'notes': 'Fiscal-year disclosure values; not a real-time issued-share count.'})
+                    from stock_jp.market_data.observations import financial_records
+                    actual, forecast, shares = financial_records(row, retrieved,
+                        (raw_dir / f"jquants-financials-{_date_text(row.get('DiscDate'))}.json").relative_to(private.parent).as_posix())
+                    actual_rows.append(actual)
+                    forecast_rows.append(forecast)
+                    if shares:
+                        share_rows.append(shares)
                     if code in targets:
                         sources.append(_source_row(source_id=source_id, category='jquants_financials', code=code, title=f"J-Quants financial summary {_text(row.get('DocType'))}", published_at=disclosed, retrieved_at=retrieved, url=endpoint, notes='official financial summary; forecast and reported share-count history saved privately'))
                         tasks.append(_task(task_id=f'review-{source_id}', task_type='FINANCIAL_REVISION_REVIEW', priority='HIGH', code=code, reason='New official financial summary for an active target', source_ids=[source_id]))
@@ -796,8 +782,10 @@ def collect_non_edinet_sources(
                 _atomic_csv(share_path, SHARE_FIELDS, share_rows)
                 manifest['datasets']['forecast_revisions'] = _manifest_entry(forecast_path, run_dir, len(forecast_rows), endpoint)
                 manifest['datasets']['share_counts'] = {**_manifest_entry(share_path, run_dir, len(share_rows), endpoint), 'limitation': 'reported fiscal-year values; current dilution securities still require company-IR review'}
-                _append_csv_unique(record_path(private.parent, 'forecast-history.csv'), FORECAST_FIELDS, forecast_rows, 'source_id')
-                _append_csv_unique(record_path(private.parent, 'share-count-history.csv'), SHARE_FIELDS, share_rows, 'source_id')
+                from stock_jp.market_data.observations import save_rows
+                save_rows(private.parent, 'financial-history.csv', actual_rows)
+                save_rows(private.parent, 'forecast-history.csv', forecast_rows)
+                save_rows(private.parent, 'share-count-history.csv', share_rows)
                 provider('jquants_financials', 'OK', financial_requests, len(financial_rows))
             except (KeyError, NonEdinetSourceError, ValueError, OSError) as error:
                 provider('jquants_financials', 'ERROR', financial_requests, len(financial_rows), str(error))
@@ -823,14 +811,17 @@ def collect_non_edinet_sources(
                     code = _normalize_code(row.get('Code'))
                     published = _date_text(row.get('PubDate'))
                     source_id = f"jq-earnings-{_stable_id(published, code, _text(row.get('FQName')), _date_text(row.get('SchDate')))}"
-                    normalized_earnings.append({'source_id': source_id, 'published_date': published, 'scheduled_date': _date_text(row.get('SchDate')), 'fiscal_quarter': _text(row.get('FQName')), 'fiscal_year_end_mmdd': _text(row.get('FYE')), 'code': code, 'company_name': _text(row.get('CoName')), 'company_name_en': _text(row.get('CoNameEn')), 'retrieved_at_jst': retrieved, 'evidence_path': f'raw-sources/jquants-earnings-{published}.json'})
+                    from stock_jp.market_data.observations import earnings_record
+                    normalized_earnings.append(earnings_record(row, retrieved,
+                        (raw_dir / f'jquants-earnings-{published}.json').relative_to(private.parent).as_posix()))
                     if code in targets:
                         sources.append(_source_row(source_id=source_id, category='earnings_calendar', code=code, title=f"Earnings schedule {_text(row.get('FQName'))}: {_date_text(row.get('SchDate')) or 'undecided'}", published_at=f'{published}T00:00:00+09:00', retrieved_at=retrieved, url=endpoint, notes='official schedule history; prior records are retained after a change'))
                         tasks.append(_task(task_id=f'review-{source_id}', task_type='EARNINGS_SCHEDULE_REVIEW', priority='HIGH', code=code, reason='Earnings announcement schedule was published or changed', source_ids=[source_id]))
                 path = normalized_dir / 'earnings-calendar-changes.csv'
                 _atomic_csv(path, EARNINGS_FIELDS, normalized_earnings)
                 manifest['datasets']['earnings_calendar_changes'] = _manifest_entry(path, run_dir, len(normalized_earnings), endpoint)
-                _append_csv_unique(record_path(private.parent, 'earnings-calendar-history.csv'), EARNINGS_FIELDS, normalized_earnings, 'source_id')
+                from stock_jp.market_data.observations import save_rows
+                save_rows(private.parent, 'earnings-calendar-history.csv', normalized_earnings)
                 provider('jquants_earnings_calendar', 'OK', earnings_requests, len(earnings_rows))
             except (KeyError, NonEdinetSourceError, ValueError, OSError) as error:
                 provider('jquants_earnings_calendar', 'ERROR', earnings_requests, len(earnings_rows), str(error))

@@ -26,6 +26,17 @@ class Opener:
         return self.response or Response(b'{}',request.full_url)
 
 class TransportTests(unittest.TestCase):
+    def test_ci_dispatch_handles_empty_204_and_only_market_data_refs(self):
+        path = '/repos/' + r.REPO + '/actions/workflows/ci.yml/dispatches'
+        opener = Opener(Response(b'', 'https://api.github.com' + path, status=204))
+        transport = http.GitHubTransport('synthetic', opener=opener)
+        for body in ({'ref': 'main'}, {'ref': 'arbitrary'}, {'ref': 'daily/market/2026-10-02', 'inputs': {}}, {}):
+            with self.assertRaises(r.RemoteStop):
+                transport('POST', path, body)
+        self.assertFalse(opener.calls)
+        self.assertIsNone(transport('POST', path, {'ref': 'daily/market/2026-10-02-preview'}))
+        self.assertEqual(len(opener.calls), 1)
+
     def test_origin_and_redirect(self):
         opener=Opener();transport=http.GitHubTransport('synthetic-secret',opener=opener)
         for path in ('https://evil.invalid/','//evil.invalid/x','/repos/other/private',

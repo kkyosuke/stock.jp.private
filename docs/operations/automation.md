@@ -15,16 +15,17 @@ checkoutする。CIと監視は市場データをcheckoutせず、実データ�
 
 ## 夜間取得
 
-privateリポジトリのownerが管理するmainで動かす。既存のGitHub Secrets
-`AUTOMATION_PAT` と `JQUANTS_API_KEY` を使う。PATにはこのprivateリポジトリの
-ContentsとPull requestsの書き込み、Actionsの読み取り権限が必要。
-CI結果の読み取りには、`checks: read` を付与したActionsの一時トークンを使う。
+privateリポジトリのownerが管理するmainで動かす。GitHub Secretの
+`JQUANTS_API_KEY` と、実行時だけ発行される `GITHUB_TOKEN` を使う。
+WorkflowがContents・Pull requests・Actionsの書き込み、Checksの読み取り権限を指定する。
+取得前にprivate・owner・書き込み権限を確認する。
 取得の有効化は `config/sources.json` の `market_data_git.automatic_upload` で管理する。
 
 1. 採用済み世代を復元・検証し、通信前に消費記録をcheckpoint branchへ保存する。
 2. Light契約の公開時刻に従って日足・master・財務・カレンダーなどを取得する。
-3. 完了したデータをpack・検証し、データと取得完了記録だけのPRを作る。
-4. そのPRのheadで `format`、`test`、`guardrail` が全て成功した後、同じheadをsquash mergeする。
+3. 財務・株数・予想・決算予定・価格調整の観測CSVを更新し、検証した保存世代と取得完了記録のPRを作る。
+4. 一時トークンで作ったPRはCIを自動起動しないため、同じbranchのCIを明示的に起動する。
+5. PRのheadで `format`、`test`、`guardrail` が全て成功した後、同じheadをsquash mergeする。
 
 J-Quantsは直列・最低1.05秒間隔、日付別に最大12回。失敗・不明応答も消費に含め、
 再実行で予算をリセットしない。過去の `date-grants.json` の日付別消費も引き継ぐ。
@@ -45,6 +46,25 @@ Actionsの「Nightly market data」で対象日を指定する。未指定なら
 CIを確認する。mainへ採用しない。修正branchでもownerが手動実行できる。
 検証用branchは `daily/market/<日付>-preview`。確認後、draft PRを閉じる。
 previewでも実際の通信は消費として残り、本番の再実行で完了済み取得を再利用する。
+
+## 財務履歴の初回補完
+
+同じ「Nightly market data」を手動実行し、`target_date=2026-10-02`、
+`financial_history=true` を指定する。修正branchで確認する場合は `preview=true` も指定する。
+Light契約で取得できる2021-10-02〜2026-10-02の財務サマリーと決算予定をbulkで補完する。
+株数と業績予想は財務サマリーから同じ変換処理で抽出する。
+
+要求は直列・最低1.05秒間隔、最大256回。失敗も消費に含め、再開でリセットしない。
+既存の日足履歴の600回予算は変更しない。nightlyと同じconcurrency groupで同時取得を防ぐ。
+生CSVのgzip・サイズ・ハッシュを検証し、解析前に保存する。
+同じ対象日で再実行すると保存済みファイルを再利用する。
+
+中間保存先は `automation/financial-history` branch、結果と入力は
+`financial-history-<run ID>` artifact。branchは消費記録を含むため削除しない。
+初回補完はmainへ自動採用せず、artifactの `market-data/jquants/financial-history/` を
+`.work/market-data/jquants/financial-history/` に取り込み、
+`data observations`、`data stage`、`data verify` を通してprivateのPRで採用する。
+採用後の日次追加は通常の夜間処理が行う。
 
 この入口は市場データの取得を担当する。調査・売買判断・PAPER runの完了は別工程で、
 取得結果の `analysis_readiness` は `NOT_EVALUATED`。
