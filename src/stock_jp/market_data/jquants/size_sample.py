@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from stock_jp.market_data.storage import MAX_STORE
+
 from stock_jp.market_data.jquants.catalog import CATALOG, entitlement, period
 from stock_jp.market_data.jquants.ingest import ApiError, Client, IngestionError, RequestBudgetExhausted, archive_lock, atomic_json, collect_partition, private_root
 
@@ -52,7 +54,7 @@ def main():
         estimates = [x.get('linear_estimate_bytes') for x in result['datasets'].values()]
         result['known_component_estimate_bytes'] = sum(x for x in estimates if x is not None)
         result['all_datasets_have_nonempty_samples'] = all(x is not None for x in estimates)
-        result['conservative_store_budget_bytes'] = 750 * 1024 * 1024
+        result['conservative_store_budget_bytes'] = MAX_STORE
         result['pause_full_backfill_for_sizing'] = (not result['all_datasets_have_nonempty_samples']
             or result['known_component_estimate_bytes'] > result['conservative_store_budget_bytes'])
         atomic_json(archive / 'size-sample.json', result)

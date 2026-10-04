@@ -18,7 +18,7 @@ import tempfile
 
 CHUNK = 1024 * 1024
 MAX_SHARD = 22 * 1024 * 1024  # base64 JSON stays within the 32 MiB HTTP cap
-MAX_STORE = 750 * 1024 * 1024
+MAX_STORE = 2 * 1024 * 1024 * 1024
 MAX_INDEX = 64 * 1024 * 1024
 MAX_RESTORE = 8 * 1024 * 1024 * 1024
 DESTINATION = 'kkyosuke/stock.jp.private'

@@ -24,8 +24,10 @@ class SingleRepositoryTest(unittest.TestCase):
                 self.assertNotIn(forbidden, text)
             if file.name != 'market-data-manual.yml':
                 self.assertNotIn('AUTOMATION_PAT', text)
+                self.assertIn('!/data/market/jquants/', text)
+            else:
+                self.assertNotIn('!/data/market/jquants/', text)
             self.assertIn('persist-credentials: false', text)
-            self.assertIn('!/data/market/jquants/', text)
             self.assertIn('!/data/market/legacy-prices/', text)
             self.assertIn('pip install -e', text)
         for retired in ('stock.jp', 'scripts', 'cloudflare', 'operations/private', '.gitmodules'):

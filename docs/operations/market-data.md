@@ -8,6 +8,8 @@
 J-Quantsの採用済みデータは `data/market/jquants/` に置く。
 `current.json` が世代manifestを指し、manifestが各JSON/CSVのオブジェクトとSHA-256を指す。
 保存形式、manifest、価格・時刻・出典の検証はコードが定義する。
+保存上限は `market_data/storage.py` が定義する。1ファイル22MiB、store全体2GiB。
+履歴補完後の約740MiBに日次追加の余地を確保する。上限超過時は停止し、自動で引き上げない。
 
 ```bash
 python -m stock_jp data verify
@@ -38,6 +40,7 @@ python -m stock_jp data collect --help
 
 カタログ参照は通信を行わない。取得には設定と `JQUANTS_API_KEY` が必要。
 GitHubからの取得は[自動化](automation.md)の承認・予算管理を通す。
+毎日21:00 JSTに同じ夜間入口で取得し、採用済み世代と通信前に保存したcheckpointを使う。
 日次価格、財務、カレンダーの公開時刻を区別し、対象日と実際の取得時刻をそれぞれ記録する。
 ページの再開、予算消費、HTTP失敗の扱いは取得モジュールが管理する。
 

@@ -22,21 +22,21 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 if path.name == 'market-data-manual.yml':
                     self.assertIn("github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke'", content)
                     self.assertIn("github.ref == 'refs/heads/main'", content)
-                    self.assertIn('STOCK_ACTIONS_ENABLED: ${{ vars.STOCK_ACTIONS_ENABLED }}', content)
                     self.assertIn('AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}', content)
-                    self.assertIn('STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}', content)
-                    self.assertIn('python -m stock_jp automation acquire --target-date "$STOCK_TARGET_DATE"', content)
+                    self.assertNotIn('STOCK_ACTIONS_', content)
+                    self.assertIn('python -m stock_jp automation nightly', content)
                     self.assertIn('STOCK_TARGET_DATE: ${{ inputs.target_date }}', content)
                     self.assertNotIn('--target-date ${{', content)
-                    self.assertNotIn('schedule:', content)
+                    self.assertIn("cron: '0 21 * * *'", content)
+                    self.assertIn('timezone: Asia/Tokyo', content)
                 else:
                     self.assertNotIn("AUTOMATION_PAT", content)
                 if "actions/checkout@" in content:
                     self.assertIn("persist-credentials: false", content)
 
-    def test_only_health_has_a_schedule(self):
+    def test_only_health_and_market_data_have_schedules(self):
         for path in (ROOT / ".github/workflows").glob("*.yml"):
-            if path.name != "operation-health.yml":
+            if path.name not in {"operation-health.yml", "market-data-manual.yml"}:
                 self.assertNotIn("  schedule:", path.read_text())
         self.assertIn("  schedule:", (ROOT / ".github/workflows/operation-health.yml").read_text())
 

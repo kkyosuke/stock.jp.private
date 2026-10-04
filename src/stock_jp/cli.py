@@ -53,6 +53,7 @@ COMMANDS = {
         "price-exit": "research.price_exit",
     },
     "automation": {
+        "nightly": "automation.nightly",
         "acquire": "automation.date_driver",
         "readiness": "automation.readiness",
         "health": "automation.health",

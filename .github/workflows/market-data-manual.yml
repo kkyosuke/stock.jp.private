@@ -1,43 +1,64 @@
-name: Manual market-data acquisition
-# Manual entry only. Runtime approval, retirement and ledger gates remain mandatory.
+name: Nightly market data
+
 on:
+  schedule:
+    - cron: '0 21 * * *'
+      timezone: Asia/Tokyo
   workflow_dispatch:
     inputs:
       target_date:
-        description: 'Target date (YYYY-MM-DD); actual retrieval occurs at execution time'
-        required: true
+        description: 'Target date (YYYY-MM-DD); empty uses today in JST'
+        required: false
         type: string
+      preview:
+        description: 'Collect and verify without creating or adopting a data PR'
+        required: false
+        default: false
+        type: boolean
+
 permissions:
   contents: read
+  actions: read
+
 concurrency:
   group: stock-private-market-writer
   cancel-in-progress: false
+
 jobs:
-  reviewed-execution:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' }}
+  nightly-market-data:
+    if: ${{ github.repository == 'kkyosuke/stock.jp.private' && github.event.repository.private == true && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && (github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.preview)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: main
+          ref: ${{ github.sha }}
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /*
-            !/operations/
-            !/data/market/jquants/
             !/data/market/legacy-prices/
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.13"
-      - name: Install reviewed runtime dependencies
+      - name: Install runtime dependencies
         run: python -m pip install -e .
-      - name: Prepare reservation or execute approved attempt
+      - name: Collect, verify and save market data
         env:
           STOCK_TARGET_DATE: ${{ inputs.target_date }}
+          STOCK_PREVIEW: ${{ inputs.preview }}
           AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
-          STOCK_ACTIONS_ENABLED: ${{ vars.STOCK_ACTIONS_ENABLED }}
-          STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}
-        run: python -m stock_jp automation acquire --target-date "$STOCK_TARGET_DATE" --root "$GITHUB_WORKSPACE"
+        run: |
+          args=()
+          if [ -n "$STOCK_TARGET_DATE" ]; then args+=(--target-date "$STOCK_TARGET_DATE"); fi
+          if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--preview); fi
+          python -m stock_jp automation nightly "${args[@]}"
+      - name: Save execution summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nightly-market-data-${{ github.run_id }}
+          path: .work/nightly-market-data.json
+          if-no-files-found: warn
+          retention-days: 30

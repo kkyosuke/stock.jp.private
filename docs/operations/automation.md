@@ -1,50 +1,54 @@
-# 自動化と取得承認
+# 自動化
 
-GitHub Actionsの定義は `.github/workflows/`、手動取得の承認記録は
-[`config/acquisition.json`](../../config/acquisition.json)、既存取得の承認は
-[`config/automation.json`](../../config/automation.json)、引退の証跡は
-[`operations/evidence/automation-retirement.json`](../../operations/evidence/automation-retirement.json) にある。
+GitHub Actionsの入口は `.github/workflows/`、取得設定は
+[`config/sources.json`](../../config/sources.json)、取得・保存処理は
+[`automation/nightly.py`](../../src/stock_jp/automation/nightly.py) が正本。
 
 | Workflow | 責務 |
 | --- | --- |
 | `ci.yml` | `format`、`test`、`guardrail`。静的検証と合成データのテスト |
-| `market-data-manual.yml` | ownerが対象日の予約と、承認されたattemptの取得を実行 |
-| `operation-health.yml` | 保存済みrunメタデータを読み、監視結果をartifactへ保存 |
+| `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。手動再実行も同じ入口 |
+| `operation-health.yml` | 保存済みPAPER runメタデータの監視結果をartifactへ保存 |
 
-依存関係は `pyproject.toml` を参照する。CIと監視は採用済み市場データをcheckoutせず、
-実データの準備完了を判定しない。submodule更新、Cloudflare scheduler、旧取得workflowは廃止した。
+依存関係は `pyproject.toml` を参照する。夜間取得は実行commitと採用済み市場データを
+checkoutする。CIと監視は市場データをcheckoutせず、実データの準備完了を判定しない。
 
-## 手動取得
+## 夜間取得
 
-```bash
-python -m stock_jp automation readiness --help
-python -m stock_jp automation acquire --target-date <YYYY-MM-DD>
-```
+privateリポジトリのownerが管理するmainで動かす。既存のGitHub Secrets
+`AUTOMATION_PAT` と `JQUANTS_API_KEY` を使う。PATにはこのprivateリポジトリの
+ContentsとPull requestsの書き込み、ActionsとChecksの読み取り権限が必要。
+取得の有効化は `config/sources.json` の `market_data_git.automatic_upload` で管理する。
 
-手動取得は次の順で行う。
+1. 採用済み世代を復元・検証し、通信前に消費記録をcheckpoint branchへ保存する。
+2. Light契約の公開時刻に従って日足・master・財務・カレンダーなどを取得する。
+3. 完了したデータをpack・検証し、データと取得完了記録だけのPRを作る。
+4. そのPRのheadで `format`、`test`、`guardrail` が全て成功した後、同じheadをsquash mergeする。
 
-1. ownerが対象日を指定して起動し、予約専用draft PRを作る。この段階のprovider呼び出しは0件。
-2. 予約内容とCIを確認してmainへ採用する。予約はrun ID、次のattempt、対象日、消費枠に固定される。
-3. 同じrunの「Re-run all jobs」で予約されたattemptを実行する。
-4. 各送信前にPENDING記録を保存し、応答を検証して結果専用draft PRを作る。
-5. 結果を採用する。同日再実行は採用済み応答のhashを確認して取得を省略する。
+J-Quantsは直列・最低1.05秒間隔、日付別に最大12回。失敗・不明応答も消費に含め、
+再実行で予算をリセットしない。過去の `date-grants.json` の日付別消費も引き継ぐ。
+取引がない日にはカレンダー等を確認し、架空の日足を作らない。
 
-正本は `operations/acquisition/date-grants.json`。実際の送信数と保守的な予約枠を区別する。
-失敗、不明応答、branchの削除、別attemptへの変更でも枠を返却・再発行しない。
-不完全な日足は生応答を保持するが、成功結果PRを作らない。状態は `RAW_COLLECTED` または
-`INCOMPLETE`、分析readinessは常に `NOT_EVALUATED`。日次判断・注文には直接使わない。
+消費記録と取得途中の応答は `automation/nightly-market-data` branchに保存する。
+削除すると予算の根拠が失われるため、削除しない。途中でmainが更新された場合、
+認証失敗、429、不正な応答、予算不足、CI失敗の場合は処理を停止し、保存済み状態を残す。
+実行結果は `nightly-market-data-<run ID>` artifactのJSONで確認する。
 
-承認のschemaは `automation/date_authorization.py` が定義する。新経路には、統合後のmain・
-初期台帳・workflowに固定した `config/acquisition.json` と独立したowner承認が必要。
-保存済みの `config/acquisition.json` は移行前のmainとworkflowに固定されているため、
-取得の再開には新構成のscopeとdeployment pinを本人が承認する。
-既存の `config/automation.json` と引退記録は過去の承認・消費の根拠として保持する。
-このリファクタリングはscope、承認comment、secret、実行設定を生成・更新しない。
+## 手動実行・再開
 
-認証は既存の `AUTOMATION_PAT` と `JQUANTS_API_KEY`、実行設定は
-`STOCK_ACTIONS_ENABLED` と `STOCK_ACTIONS_APPROVAL_SHA256` を使う。
-公開前検証はbase/head、変更ファイル、検証結果、重複、mainの費用履歴を照合する。
-旧checkpoint経路は手動workflowの入口から呼ばない。
+Actionsの「Nightly market data」で対象日を指定する。未指定なら実行時のJST日付。
+未完了の対象日がある場合は先にその日を再開する。認証失敗はSecretを修正してから
+対象日を指定して手動実行する。消費記録を消して再試行しない。
+
+`preview=true` は取得・checkpoint保存・世代の検証まで実行し、データPRを作らない。
+修正branchでもownerが手動実行できる。previewでも実際の通信は消費として残る。
+
+この入口は市場データの取得を担当する。調査・売買判断・PAPER runの完了は別工程で、
+取得結果の `analysis_readiness` は `NOT_EVALUATED`。
+運用は `PAPER` / `HUMAN_ONLY` を維持する。
+
+旧 `config/acquisition.json`、`config/automation.json` と引退記録は過去の承認・消費の
+証跡として保持する。夜間入口は旧deployment pinや `STOCK_ACTIONS_*` 変数を使わない。
 
 ## 監視
 
@@ -53,5 +57,5 @@ python -m stock_jp automation validate
 python -m stock_jp automation health --persisted-only --output .work/operation-health.json
 ```
 
-検査は一時領域で行い、設定・台帳・観測記録を変更しない。
-監視の成功はLIVE許可にならない。
+監視は保存済み運用記録を読み、日次runの未完了を報告する。
+市場データの取得成功だけで未完了の運用記録を成功扱いに変更しない。
