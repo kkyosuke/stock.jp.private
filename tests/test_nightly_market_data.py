@@ -245,6 +245,16 @@ class NightlyMarketDataTest(unittest.TestCase):
         operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1] or c[1].endswith("/merge")]
         self.assertEqual(operations, ["GET", "PUT"])
 
+    def test_adopted_checkpoint_bytes_are_not_downloaded_each_night(self):
+        result = self.run_preview()
+        n.publish(self.root, self.checkpoint(), result)
+        shutil.rmtree(self.fixture.archive.parent)
+        n.storage.restore(self.root / "data/market/jquants", self.fixture.archive.parent)
+        checkpoint = self.checkpoint()
+        self.repo.calls.clear()
+        checkpoint.prepare(self.fixture.archive.parent)
+        self.assertFalse(any("/git/blobs/" in c[1] for c in self.repo.calls))
+
     def test_failed_ci_preserves_pr_and_retry_reuses_it(self):
         result = self.run_preview()
         old = self.repo.refs["main"]

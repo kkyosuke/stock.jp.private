@@ -164,9 +164,14 @@ class Checkpoint:
             member = RAW_PREFIX + name
             require(member in self.tree and self.tree[member] == entry["blob"],
                     "checkpoint member missing")
+            local = ingest.confined(source, name)
+            if local.is_file():
+                raw = local.read_bytes()
+                if storage.digest(raw) == entry["sha256"] and git_blob(raw) == entry["blob"]:
+                    continue  # Adopted bytes need no GitHub download on each later night.
             raw = self.git.read(entry["blob"])
             require(storage.digest(raw) == entry["sha256"], "checkpoint member checksum mismatch")
-            ingest.atomic_bytes(ingest.confined(source, name), raw)
+            ingest.atomic_bytes(local, raw)
         # Only an explicit owner retry may reopen an authentication failure.
         if path.exists() and self.context["event"] == "workflow_dispatch":
             state = daily.read_state(path)
