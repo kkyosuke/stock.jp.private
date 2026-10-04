@@ -53,6 +53,7 @@ class Git:
         self.request = request
         self.blobs = set()
         self.modes = {}
+        self.write_permission_verified = False
 
     def api(self, method, path, body=None):
         return self.request(method, PREFIX + path, body)
@@ -122,9 +123,18 @@ class Git:
 
     def private_metadata(self):
         value = self.api("GET", "")
-        require(value.get("private") is True and value["owner"]["login"].lower() == "kkyosuke"
-                and value.get("permissions", {}).get("push") is True,
-                "private owner repository with push access required")
+        require(value.get("private") is True and value["owner"]["login"].lower() == "kkyosuke",
+                "private owner repository required")
+        # Installation tokens (including GITHUB_TOKEN) omit user permissions.
+        # Exercise Contents write before provider I/O instead of inventing a flag.
+        if value.get("permissions", {}).get("push") is not True and not self.write_permission_verified:
+            raw = ingest.encoded({"version": 1, "purpose": "market-data contents-write preflight"})
+            blob = self.api("POST", "/git/blobs", {
+                "encoding": "base64", "content": base64.b64encode(raw).decode(),
+            })
+            require(blob.get("sha") == git_blob(raw), "Contents write permission unverified")
+            self.blobs.add(blob["sha"])
+            self.write_permission_verified = True
         return {"repository_full_name": REPO, "visibility": "private",
                 "owner": {"login": "kkyosuke"}, "permissions": {"push": True},
                 "checked_at": datetime.now(timezone.utc).isoformat()}
