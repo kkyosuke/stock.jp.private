@@ -50,7 +50,7 @@ Pythonの依存関係とCLIのインストール定義は [`pyproject.toml`](../
 | 保存先・ルート | `src/stock_jp/workspace.py` | コード変更 |
 | 有効な取得設定 | `config/sources.json` | 設定変更 |
 | 運用モード・上限・LIVE条件 | `config/policy.json` | 設定変更 |
-| 手動取得の承認範囲 | `config/acquisition.json`（承認後に追加） | 人が確認した承認 |
+| 手動取得の承認範囲 | `config/acquisition.json` | 人が確認した承認 |
 | 既存取得の承認・予算根拠 | `config/automation.json` | 当時の承認を保持 |
 | 対象日別の予約・消費枠 | `operations/acquisition/date-grants.json` | mainへ採用した予約。返金しない |
 | 運用の現在値・日次履歴 | `operations/state.json`、`source-watermarks.json`、`run-history.csv` | 運用コマンド |

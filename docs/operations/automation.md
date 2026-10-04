@@ -1,6 +1,7 @@
 # 自動化と取得承認
 
-GitHub Actionsの定義は `.github/workflows/`、新経路の取得許可は `config/acquisition.json`（承認後に追加）、既存承認は
+GitHub Actionsの定義は `.github/workflows/`、手動取得の承認記録は
+[`config/acquisition.json`](../../config/acquisition.json)、既存取得の承認は
 [`config/automation.json`](../../config/automation.json)、引退の証跡は
 [`operations/evidence/automation-retirement.json`](../../operations/evidence/automation-retirement.json) にある。
 
@@ -35,6 +36,8 @@ python -m stock_jp automation acquire --target-date <YYYY-MM-DD>
 
 承認のschemaは `automation/date_authorization.py` が定義する。新経路には、統合後のmain・
 初期台帳・workflowに固定した `config/acquisition.json` と独立したowner承認が必要。
+保存済みの `config/acquisition.json` は移行前のmainとworkflowに固定されているため、
+取得の再開には新構成のscopeとdeployment pinを本人が承認する。
 既存の `config/automation.json` と引退記録は過去の承認・消費の根拠として保持する。
 このリファクタリングはscope、承認comment、secret、実行設定を生成・更新しない。
 
