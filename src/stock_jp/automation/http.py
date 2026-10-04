@@ -88,13 +88,19 @@ class GitHubTransport:
         if method != 'GET':
             suffix = urlsplit(path).path[len(prefix):]
             if not (method == 'POST' and suffix in {'/git/blobs','/git/trees','/git/commits','/git/refs','/pulls'}
-                    or method == 'PATCH' and suffix == '/git/refs/heads/automation/daily-checkpoint-v1'
+                    or method == 'PATCH' and suffix in {
+                        '/git/refs/heads/automation/daily-checkpoint-v1',
+                        '/git/refs/heads/automation/nightly-market-data',
+                    }
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
             if suffix == '/git/refs':
                 ref = (body or {}).get('ref','')
-                if not (ref == 'refs/heads/automation/daily-checkpoint-v1'
-                        or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}',ref)):
+                if not (ref in {
+                        'refs/heads/automation/daily-checkpoint-v1',
+                        'refs/heads/automation/nightly-market-data',
+                        }
+                        or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?',ref)):
                     raise RemoteStop('unreviewed writable ref')
             if method == 'PATCH' and (body or {}).get('force') is not False:
                 raise RemoteStop('force update forbidden')

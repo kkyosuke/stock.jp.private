@@ -76,9 +76,9 @@
     "store_root": "data/market/jquants",
     "chunk_bytes": 1048576,
     "max_shard_bytes": 26214400,
-    "max_store_bytes": 786432000,
+    "max_store_bytes": 2147483648,
     "owner_only_access_confirmed": true,
     "access_confirmation_basis": "owner statement in conversation 2026-10-02 JST; collaborator ACL not independently enumerated",
-    "automatic_upload": false
+    "automatic_upload": true
   }
 }
