@@ -17,11 +17,12 @@ MANIFEST = '.github/stock-automation-approval.json'
 
 
 def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, handover_probe,
-                 now=None, allow_pending_publication=False, clock=None):
+                 now=None, allow_pending_publication=False, clock=None, allow_legacy_debit=False):
     """Pin comes from reviewed deployment, not workflow_dispatch/PR input.
 
-    handover_probe must independently read the previous scheduler and writer
-    lease. No default implementation or self-attestation fallback is provided.
+    Version 1 requires the independent scheduler/lease probe. Version 2 requires
+    the caller's verified retirement receipt and current GitHub run. Neither has
+    a default success implementation.
     """
     now = now or datetime.now(timezone.utc)
     require(mode in {'daily','history'}, 'invalid acquisition scope')
@@ -40,8 +41,22 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
     require(scope.get('version') in {1,2} and scope.get('enabled') is True, 'scope disabled')
     require(scope.get('repository') == REPO and scope.get('writer') == writer and mode in scope.get('modes', []),
             'writer or operation is outside approval scope')
-    require(scope.get('publication_rejections') == [] and scope.get('unresolved_campaigns') == [],
-            'publication rejection or unresolved campaign remains')
+    rejections = scope.get('publication_rejections')
+    if scope.get('legacy_debit') is not None:
+        require(scope['version'] == 2 and allow_legacy_debit,
+                'legacy debit requires the target-date budget adapter')
+        try:
+            from scripts import actions_legacy_debit as debit
+        except ModuleNotFoundError:
+            import actions_legacy_debit as debit
+        debit.validate(scope['legacy_debit'], scope['history_campaign'])
+        retained = dict(source_commit=scope['legacy_debit']['source_commit'],
+                        journal_sha256=scope['legacy_debit']['journal_sha256'],
+                        disposition='PAYLOAD_EXCLUDED_BUDGET_RETAINED')
+        require(rejections == [retained], 'legacy rejection must remain explicitly recorded in pinned scope')
+    else:
+        require(rejections == [], 'publication rejection or unresolved campaign remains')
+    require(scope.get('unresolved_campaigns') == [], 'publication rejection or unresolved campaign remains')
     require(scope.get('mode') == 'PAPER' and scope.get('submission') == 'HUMAN_ONLY'
             and scope.get('plan') == 'light' and scope.get('addons') == [], 'policy mismatch')
     require(scope.get('daily_limit') == 12 and scope.get('history_limits') == [280,600,50,12]

@@ -59,7 +59,7 @@ class Driver(legacy.Driver):
                 r.require(set(scope.get('modes', [])) == {'daily', 'history'}, 'common Action scopes missing')
                 scope, facts = auth.verify_scope(self.request, approved_manifest_sha256=self.pin, mode='daily',
                     writer=self.writer, source=adopted, now=self.clock(), clock=self.clock,
-                    allow_pending_publication=True,
+                    allow_pending_publication=True, allow_legacy_debit=True,
                     handover_probe=lambda _:dict(retirement_verified=True, github_run_verified=True))
                 store = ShardedStore(self.request, authorization=facts, cache=work/'cache')
                 revision, document = store.read()
@@ -75,6 +75,12 @@ class Driver(legacy.Driver):
                     document['approval_binding'] = binding
                     document['targets'] = dict(campaign=approved_campaign,
                         profiles={day:'daily' for day in document['runs']}, batches=[[]], ranges={})
+                    if 'legacy_debit' in scope:
+                        targets.legacy_debit.validate(scope['legacy_debit'], approved_campaign)
+                        r.require(not document.get('history'), 'legacy debit cannot double count adopted history')
+                        document['targets']['legacy_debit'] = scope['legacy_debit']
+                r.require(document['targets'].get('legacy_debit') == scope.get('legacy_debit'),
+                          'legacy debit differs from pinned scope')
                 r.require(document['targets']['campaign'] == approved_campaign, 'campaign change cannot reset budget')
                 profile = document['targets']['profiles'].get(target_date)
                 if profile is None:

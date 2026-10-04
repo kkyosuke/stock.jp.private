@@ -104,6 +104,41 @@ campaign may be preserved for daily use, but starting target-history work from i
 requires separately reviewed budget mapping; the driver will not grant a fresh
 600-request allowance automatically.
 
+### Rejected legacy payload and retained budget
+
+The target adapter can carry a `legacy_debit` in the existing pinned version-2
+scope. Prepare its metadata without network access or writes:
+
+```sh
+python stock.jp/scripts/actions_legacy_debit.py --source PATH_TO_MARKET_DATA --source-commit REVIEWED_COMMIT
+```
+
+Preparation verifies the legacy journal and response hashes and requires an exact
+one-to-one match between reserved requests and saved response pages. Unknown
+outcomes, retries without one-to-one response evidence, incomplete checkpoints
+and non-exhausted legacy runs require reconciliation; this tool never refunds them.
+The commit identity and final writer inventory must also be checked by the operator.
+The output is metadata for review, not an approval or a checkpoint creation command.
+
+The debit contains the unchanged request receipts, their source journal hash and
+commit, campaign identity and `REJECTED_NOT_ADOPTED` disposition. It contains no
+payload, completed task, shared response cache or publication transaction. The
+runtime restores only adopted main data and performs new requests for target work.
+Shared old requests are conservatively charged to the first campaign date.
+
+Both the 600-request and 50-batch limits include the retained debit, as does the
+12-request date limit. Partly used legacy batches remain consumed batches; unused
+slots are not recycled. The debit is bound into the checkpoint before provider I/O,
+must equal the pinned scope on every run, and cannot be removed or changed on CAS.
+Legacy runners that do not account for the debit cannot use this scope.
+
+Keep the rejection in `publication_rejections` as exactly one object containing
+the debit's `source_commit` and `journal_sha256`, with
+`disposition: PAYLOAD_EXCLUDED_BUDGET_RETAINED`. This narrowly records that the
+payload remains rejected while future requests retain its cost. It does not adopt
+the old branch or clear an unrelated rejection. `unresolved_campaigns`, active
+writers, unknown outcomes, checkpoint blockers and open market PRs still block.
+
 The parent must first stop the old schedule and confirm all prior cloud writers
 have terminated without queued resumes. Store the real observation in
 `.github/stock-automation-retirement.json` using this schema (placeholders below
@@ -141,10 +176,11 @@ pacing. Same-repository workflow concurrency coordinates cooperating writers.
 These controls cannot technically prevent an arbitrary external writer retaining
 valid credentials from restarting; that is outside this assurance model.
 
-Existing `publication_rejections`, `unresolved_campaigns`, blocked ledgers, unknown
-reservations and pending publication intents continue to block activation/resume.
-They are not deleted, transferred, relabeled as approved or silently quarantined.
-An operator must separately review their disposition; this PR does not resolve them.
+Existing `publication_rejections` continue to block unless they match the exact
+retained-debit disposition above in the pinned scope. `unresolved_campaigns`,
+blocked ledgers, unknown reservations and pending publication intents continue to
+block activation/resume. Rejected payload is never relabeled as adopted, and no
+runtime path silently clears these records.
 
 ## Offline verification
 

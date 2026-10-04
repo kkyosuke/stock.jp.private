@@ -99,6 +99,54 @@ class TargetDriverTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as cache:
             return ShardedStore(self.remote, authorization=remote_fixture.authorization(), cache=cache).read()[1]
 
+    def legacy_scope(self):
+        self.provider.run_history()
+        debit = targets.legacy_debit.prepare(self.provider.private/'market-data', 'a'*40)
+        self.scope['legacy_debit'] = debit
+        self.scope['publication_rejections'] = [dict(source_commit=debit['source_commit'],
+            journal_sha256=debit['journal_sha256'], disposition='PAYLOAD_EXCLUDED_BUDGET_RETAINED')]
+        self.save_scope()
+        self.calls.clear()
+        return debit
+
+    def test_legacy_budget_is_carried_without_adopting_rejected_payload(self):
+        debit = self.legacy_scope()
+        self.assertEqual(self.execute()['status'], 'RESTORED')
+        # Four NEW calls: old calendar/TOPIX and dated tasks are not reused.
+        self.assertEqual(len(self.calls), 4)
+        document = self.document()
+        self.assertEqual(document['targets']['legacy_debit'], debit)
+        self.assertNotIn('history', document)
+        self.assertEqual(targets.legacy_debit.charges(debit), 12)
+        self.assertEqual(sum(map(len, document['targets']['batches'])), 4)
+        self.next_run()
+        self.assertEqual(self.execute()['status'], 'ALREADY_RESTORED')
+        self.assertEqual(len(self.calls), 4)
+        self.assertEqual(self.document()['targets']['legacy_debit'], debit)
+        with tempfile.TemporaryDirectory() as tmp:
+            store = ShardedStore(self.remote, authorization=remote_fixture.authorization(), cache=Path(tmp)/'cache')
+            store.restore(document['snapshot'], Path(tmp)/'restored', r.reject_history)
+            self.assertFalse((Path(tmp)/'restored/jquants/history/state.json').exists())
+
+    def test_legacy_rejection_cannot_be_deleted_or_unrelated_rejection_bypassed(self):
+        self.legacy_scope()
+        for rejected in ([], ['another-rejected-publication']):
+            self.scope['publication_rejections'] = rejected
+            self.save_scope()
+            with self.assertRaises(r.RemoteStop): self.execute()
+            self.assertEqual(self.calls, [])
+
+    def test_legacy_debit_cannot_reset_after_first_run(self):
+        self.legacy_scope()
+        self.assertEqual(self.execute()['status'], 'RESTORED')
+        value = self.document()['targets']
+        changed = copy.deepcopy(value)
+        changed.pop('legacy_debit')
+        with self.assertRaises(r.RemoteStop): targets.transition(value, changed)
+        changed = copy.deepcopy(value)
+        changed['legacy_debit']['batches'][0].pop()
+        with self.assertRaises(r.RemoteStop): targets.transition(value, changed)
+
     def test_history_dates_share_batches_and_repeat_is_noop(self):
         days = ['2026-09-23','2026-09-24','2026-09-25','2026-09-28','2026-09-29','2026-09-30','2026-10-01','2026-10-02']
         for day in days:
