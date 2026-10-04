@@ -45,6 +45,11 @@ class SingleRepositoryTest(unittest.TestCase):
             entries[path.decode()] = (mode, sha)
         self.assertEqual(len(report['market_files']), 544)
         for file in report['market_files']:
+            if file['path'] == 'data/market/jquants/current.json':
+                # The migration preserves historical objects. Acquisition moves
+                # this pointer; the codec validates it. CI excludes data blobs.
+                self.assertEqual(entries[file['path']][0], '100644')
+                continue
             self.assertEqual(entries[file['path']], ('100644', file['git_blob']))
         self.assertFalse(any(p.startswith(('.work/', '.cache/', 'stock.jp/')) for p in entries))
         import hashlib

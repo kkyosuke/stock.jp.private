@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "source": {
+    "provider": "J-Quants API V2",
+    "official": true,
+    "api_version": "v2",
+    "price_basis": "unadjusted",
+    "volume_unit": "shares"
+  },
+  "universe": {
+    "provider": "J-Quants API V2 equities/master",
+    "scope": "point-in-time domestic common stocks excluding PRO MARKET",
+    "count": 3725,
+    "master_date": "2026-06-08",
+    "product_category": "011",
+    "common_share_reserve_code": "0",
+    "excluded_market_codes": [
+      "0105"
+    ],
+    "excluded_pro_market_count": 181
+  },
+  "acquisition": {
+    "master_row_count": 4449,
+    "bar_row_count": 4449,
+    "missing_bar_row_count": 0,
+    "row_coverage_ratio": 1.0,
+    "diagnostics": {
+      "ROW_MISSING": 0,
+      "NO_EXECUTION": 219,
+      "PARTIAL_NULL_OR_INVALID": 0,
+      "VALID_PRICE": 4230
+    }
+  },
+  "retrieved_at": "2026-10-04T07:34:14.438313+00:00",
+  "latest_trading_date": "2026-06-08",
+  "fetch": {
+    "success_count": 3725,
+    "error_count": 0,
+    "error_codes": []
+  },
+  "latest_session": {
+    "date": "2026-06-08",
+    "file": "revisions/2026-06-08/a5cd6852877a2fc1114874a96ece4ca3ca2a4543f02c980b515d7e54b32930ed/2026-06-08.csv",
+    "canonical_file": "2026/2026-06-08.csv",
+    "sha256": "a5cd6852877a2fc1114874a96ece4ca3ca2a4543f02c980b515d7e54b32930ed",
+    "quote_count": 3706,
+    "diagnostics": {
+      "ROW_MISSING": 0,
+      "NO_EXECUTION": 19,
+      "PARTIAL_NULL_OR_INVALID": 0,
+      "VALID_PRICE": 3706
+    },
+    "no_quote_count": 19,
+    "fetch_error_count": 0
+  },
+  "raw_provenance": {
+    "api_version": "v2",
+    "archive_root": ".work/market-data/jquants",
+    "partitions": [
+      {
+        "dataset": "equities_master",
+        "path": "datasets/equities_master/2026-06-08/revisions/9b7e7abada30209e95c6325706f626d93e81ca41cb423fb6782714ccd691999b.json",
+        "sha256": "9b7e7abada30209e95c6325706f626d93e81ca41cb423fb6782714ccd691999b"
+      },
+      {
+        "dataset": "equities_daily",
+        "path": "datasets/equities_daily/2026-06-08/revisions/4f38524f99b47a7e8ef73b589df6ef5d94d11c200c5666e16049852a48b5413a.json",
+        "sha256": "4f38524f99b47a7e8ef73b589df6ef5d94d11c200c5666e16049852a48b5413a"
+      }
+    ]
+  }
+}
