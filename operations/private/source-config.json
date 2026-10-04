@@ -71,7 +71,7 @@
   },
   "market_data_git": {
     "repository": "kkyosuke/stock.jp.private",
-    "storage": "private_git_compressed",
+    "storage": "private_git_plain",
     "staging_root": "operations/private/market-data",
     "store_root": "stock.jp/data/jquants-archive",
     "chunk_bytes": 1048576,

@@ -71,7 +71,7 @@
   },
   "market_data_git": {
     "repository": null,
-    "storage": "private_git_compressed",
+    "storage": "private_git_plain",
     "store_root": "stock.jp/data/jquants-archive",
     "owner_only_access_confirmed": false,
     "automatic_upload": false

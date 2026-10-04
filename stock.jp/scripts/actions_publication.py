@@ -52,7 +52,7 @@ def download_archive(request, commit, target):
             continue
         name=member['path'][len(root):]
         require(member['mode']=='100644' and member['type']=='blob' and
-                (name=='current.json' or re.fullmatch(r'(objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz',name)),
+                codec.store_member(name),
                 'unsafe archive tree member')
         blob=request('GET', PREFIX+'/git/blobs/'+remote.sha(member['sha']),None)
         require(blob['encoding']=='base64', 'unsupported archive blob')

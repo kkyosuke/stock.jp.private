@@ -14,7 +14,7 @@ except ModuleNotFoundError:
 
 
 def member(name):
-    return name=='current.json' or bool(re.fullmatch(r'(objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz',name))
+    return codec.store_member(name)
 
 
 def validate_snapshot(snapshot):
@@ -79,7 +79,8 @@ class ShardedStore(r.GitCheckpointStore):
         """Caller owns daily workspace/archive lock. Read bounded individual files.
 
         Unlike the old inline format, no full archive copy or base64 payload map
-        is built. Canonical codec output is produced with <=CHUNK buffers.
+        is built. Complete plain files stay below MAX_SHARD; Git transport alone
+        splits them into CHUNK-sized blobs. Old gzip snapshots remain readable.
         """
         source=Path(source);history_check(source);codec.safe_tree(source)
         with tempfile.TemporaryDirectory(dir=self.cache.parent) as tmp:
@@ -90,24 +91,25 @@ class ShardedStore(r.GitCheckpointStore):
                 name=path.relative_to(source).as_posix();codec.safe_name(name)
                 # Retained response files are independently bounded by the
                 # provider/resource limits; codec scan must cover token boundaries.
+                r.require(path.stat().st_size<=codec.MAX_SHARD,'plain file exceeds 25 MiB')
                 data=path.read_bytes();codec.scan(data)
                 cached=self.file_index.get(name)
                 if cached and cached[0]==before[path] and cached[1]['sha256']==codec.digest(data):
                     entry=copy.deepcopy(cached[1])
                 else:
+                    suffix=path.suffix if path.suffix in {'.json','.csv'} else '.bin'
                     entry={'sha256':codec.digest(data),'bytes':len(data),
-                        'chunks':[codec.put(self.codec_cache,data[i:i+codec.CHUNK]) for i in range(0,len(data),codec.CHUNK)]}
+                        'object':codec.put_plain(self.codec_cache,data,suffix)}
                     self.file_index[name]=(before[path],copy.deepcopy(entry))
                 entries[name]=entry
-                for digest in entry['chunks']:
-                    relative=Path('objects')/digest[:2]/(digest+'.gz')
-                    target=store/relative
-                    if not target.exists():
-                        target.parent.mkdir(parents=True,exist_ok=True);os.link(self.codec_cache/relative,target)
-            index=codec.encoded({'version':1,'files':entries})
+                relative=Path(entry['object'])
+                target=store/relative
+                if not target.exists():
+                    target.parent.mkdir(parents=True,exist_ok=True);os.link(self.codec_cache/relative,target)
+            index=codec.encoded({'version':2,'files':entries})
             r.require(len(index)<=codec.MAX_INDEX,'generation index limit')
-            generation=codec.put(store,index,'generations')
-            pointer=dict(version=1,generation=generation,file_count=len(entries),raw_bytes=sum(x['bytes'] for x in entries.values()))
+            generation=Path(codec.put_plain(store,index,'.json','generations')).stem
+            pointer=dict(version=2,generation=generation,file_count=len(entries),raw_bytes=sum(x['bytes'] for x in entries.values()))
             codec.atomic(store/'current.json',codec.encoded(pointer));codec.verify(store)
             r.require(before=={p:(p.stat().st_ino,p.stat().st_size,p.stat().st_mtime_ns) for p in paths}
                       and paths==sorted(p for p in source.rglob('*') if p.is_file() and p.name!='.ingestion.lock'),
@@ -119,9 +121,9 @@ class ShardedStore(r.GitCheckpointStore):
                     'chunks':[self.put_blob(data[i:i+codec.CHUNK]) for i in range(0,len(data),codec.CHUNK)]}
             validate_snapshot(snapshot)
             self.snapshot_bytes=sum(e['bytes'] for e in snapshot['files'].values())
-            referenced={digest for entry in entries.values() for digest in entry['chunks']}
-            for path in self.codec_cache.rglob('*.gz'):
-                if path.stem not in referenced:path.unlink()
+            referenced={entry['object'] for entry in entries.values()}
+            for path in (self.codec_cache/'objects').rglob('*'):
+                if path.is_file() and path.relative_to(self.codec_cache).as_posix() not in referenced:path.unlink()
             self.file_index={name:self.file_index[name] for name in entries}
             return snapshot
 

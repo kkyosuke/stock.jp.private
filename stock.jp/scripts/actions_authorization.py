@@ -79,7 +79,7 @@ def verify_scope(request, *, approved_manifest_sha256, mode, writer, source, han
         if before==after:continue
         require(after is not None and after[0:2]==('100644','blob'),'deletion or unsafe mode beyond approved scope')
         if name in allowed_approval:continue
-        require(re.fullmatch(r'stock\.jp/data/jquants-archive/(current\.json|(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz)',name)
+        require(name.startswith('stock.jp/data/jquants-archive/') and codec.store_member(name.removeprefix('stock.jp/data/jquants-archive/'))
                 and (before is None or name.endswith('/current.json')),
                 'main changed beyond approved data-only scope; rebind required')
     pointer = request('GET', prefix+'/contents/stock.jp/data/jquants-archive/current.json?ref='+main, None)

@@ -210,8 +210,7 @@ def unpack(snapshot, destination, history_check=reject_history):
         store = Path(temporary) / 'store'
         store.mkdir()
         for name, value in snapshot.items():
-            require(isinstance(name, str) and (name == 'current.json' or re.fullmatch(
-                r'(objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz', name)), 'unsafe codec member')
+            require(isinstance(name, str) and codec.store_member(name), 'unsafe codec member')
             try:
                 raw = base64.b64decode(value, validate=True)
             except (ValueError, TypeError):
