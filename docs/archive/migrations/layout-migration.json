@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "368547275a94f9b991c4df36471e8a88d8fec408",
+  "baseline_commit": "9820d234acbec792d4f7346161d5c139fd04e539",
   "budget": "PRESERVED_WITH_APPROVAL_SCOPE",
   "layout_revision": 5,
   "ledger_rows": [
@@ -3867,6 +3867,10 @@
     {
       "path": "operations/evidence/automation-retirement.json",
       "sha256": "db61c3eced5f6dd18c02895e1f71d062c2a95f8cd653b7373edaacc195e48201"
+    },
+    {
+      "path": "config/acquisition.json",
+      "sha256": "d60653f00f30cdb47eb4b7afb6b3d816e63184586db6da7414623ab50adeb9cb"
     }
   ],
   "version": 1

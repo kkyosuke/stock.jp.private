@@ -46,7 +46,7 @@ CSV binary cache members, if encountered, remain lossless `.bin` objects; this
 migration contains only JSON and CSV. Indexes are readable JSON under
 `generations/<prefix>/<sha256>.json`; `current.json` selects a fully validated index.
 
-Whole files are limited to 25 MiB and the store to 750 MiB. Oversized files stop
+Whole files are limited to 22 MiB and the store to 750 MiB. Oversized files stop
 before pointer publication; they are not silently truncated, split into invalid
 JSON, or converted to a lossy format. Identical objects are reused. Existing
 objects and indexes are immutable during ordinary daily publication. The explicit
