@@ -76,6 +76,36 @@ class TransportTests(unittest.TestCase):
             with self.assertRaises(r.RemoteStop):transport(method,'/repos/'+r.REPO+path,body)
         self.assertFalse(opener.calls)
 
+    def test_ci_dispatch_only_allows_daily_data_branch_and_returns_run_id(self):
+        path = '/repos/' + r.REPO + '/actions/workflows/ci.yml/dispatches'
+        opener = Opener(Response(b'{"workflow_run_id":123}', 'https://api.github.com' + path))
+        client = http.GitHubTransport('synthetic', opener=opener)
+        body = {'ref': 'daily/market/2026-10-02-preview', 'return_run_details': True}
+        self.assertEqual(client('POST', path, body), {'workflow_run_id': 123})
+        self.assertEqual(json.loads(opener.calls[0].data), body)
+        opener.calls.clear()
+        invalid = [
+            (path, {'ref': 'main', 'return_run_details': True}),
+            (path, {'ref': 'daily/market/2026-10-02/extra', 'return_run_details': True}),
+            (path, {'ref': None, 'return_run_details': True}),
+            (path, {'ref': 'daily/market/2026-10-02'}),
+            (path, {**body, 'return_run_details': False}),
+            (path, {**body, 'inputs': {'unreviewed': 'value'}}),
+            (path.replace('ci.yml', 'market-data-manual.yml'), body),
+            (path + '?unreviewed=true', body),
+        ]
+        for target, payload in invalid:
+            with self.subTest(target=target, payload=payload), self.assertRaises(r.RemoteStop):
+                client('POST', target, payload)
+        self.assertFalse(opener.calls)
+
+    def test_github_no_content_acknowledgement_is_not_invalid_json(self):
+        path = '/repos/' + r.REPO + '/actions/workflows/ci.yml/dispatches'
+        opener = Opener(Response(b'', 'https://api.github.com' + path, status=204))
+        client = http.GitHubTransport('synthetic', opener=opener)
+        self.assertIsNone(client('POST', path, {'ref': 'daily/market/2026-10-02', 'return_run_details': True}))
+        self.assertEqual(len(opener.calls), 1)
+
 class HistoryRemoteTests(unittest.TestCase):
     transport=hf.HistoryTest.transport
     run_history=hf.HistoryTest.run_history

@@ -22,6 +22,7 @@ CHECKPOINT = "automation/nightly-market-data"
 JOURNAL = "operations/acquisition/nightly-checkpoint.json"
 RAW_PREFIX = "nightly-checkpoint/"
 WORKFLOW = ".github/workflows/market-data-manual.yml"
+CI_WORKFLOW = ".github/workflows/ci.yml"
 RECORDS = "operations/acquisition/nightly/"
 CHECKS = {"format", "test", "guardrail"}
 
@@ -30,19 +31,6 @@ class Incomplete(RemoteStop):
     def __init__(self, result):
         self.result = {**result, "analysis_readiness": "NOT_EVALUATED", "checkpoint_saved": True}
         super().__init__("nightly collection incomplete: " + result["status"])
-
-
-class GitHubRequests:
-    """Use the Actions token for Checks reads and the PAT for repository writes."""
-    def __init__(self, writer, checks):
-        self.writer, self.checks = writer, checks
-
-    def __call__(self, method, path, body=None):
-        client = self.checks if method == "GET" and "/check-runs" in path else self.writer
-        return client(method, path, body)
-
-    def review_decision(self, number, head, reviews):
-        return self.writer.review_decision(number, head, reviews)
 
 
 class Git:
@@ -124,6 +112,14 @@ class Git:
         return {"repository_full_name": REPO, "visibility": "private",
                 "owner": {"login": "kkyosuke"}, "permissions": {"push": True},
                 "checked_at": datetime.now(timezone.utc).isoformat()}
+
+    def dispatch_ci(self, branch, head):
+        require(self.ref(branch) == head, "nightly candidate branch moved before CI dispatch")
+        response = self.api("POST", "/actions/workflows/ci.yml/dispatches",
+                            {"ref": branch, "return_run_details": True})
+        run_id = response.get("workflow_run_id") if isinstance(response, dict) else None
+        require(type(run_id) is int and run_id > 0, "CI dispatch run identity unavailable")
+        return run_id
 
 
 class Checkpoint:
@@ -338,12 +334,28 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
                  "データ以外の変更を含まないことと、このheadの全CI成功を確認してから採用します。"),
     })
     report["pull_request"] = pr["html_url"]
+    require(pr["head"]["sha"] == head and pr["state"] == "open"
+            and pr["draft"] == checkpoint.preview, "nightly PR changed before CI dispatch")
+    checkpoint.observe()
+    run_id = git.dispatch_ci(branch, head)
+    report["ci_run_id"] = run_id
     deadline = monotonic() + timeout
     while monotonic() < deadline:
-        checks = publication.pages(git.request, "/commits/" + head + "/check-runs", "check_runs")
+        run = git.api("GET", "/actions/runs/" + str(run_id))
+        require(run.get("id") == run_id and run.get("path") == CI_WORKFLOW
+                and run.get("event") == "workflow_dispatch" and run.get("head_sha") == head
+                and run.get("head_branch") == branch, "nightly CI run identity or head changed")
+        if run.get("status") != "completed":
+            sleep(30)
+            continue
+        require(run.get("conclusion") == "success", "nightly data PR CI failed; data and budget remain saved")
+        suite_id = run.get("check_suite_id")
+        require(type(suite_id) is int and suite_id > 0, "nightly CI check suite unavailable")
+        checks = publication.pages(git.request, "/check-suites/" + str(suite_id) + "/check-runs", "check_runs")
         latest = {}
         for check in checks:
-            if check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions":
+            if (check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions"
+                    and check.get("head_sha") == head and check.get("check_suite", {}).get("id") == suite_id):
                 if check["id"] > latest.get(check["name"], {}).get("id", 0):
                     latest[check["name"]] = check
         if set(latest) == CHECKS and all(c["status"] == "completed" for c in latest.values()):
@@ -412,9 +424,7 @@ def main():
     }.items()}
     try:
         context["run_id"] = int(os.environ.get("GITHUB_RUN_ID", "0"))
-        request = rate.BudgetedTransport(GitHubRequests(
-            http.GitHubTransport(os.environ.get("AUTOMATION_PAT")),
-            http.GitHubTransport(os.environ.get("GITHUB_TOKEN"))))
+        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get("GITHUB_TOKEN")))
         result = execute(project_root(), context, request, target=args.target_date, preview=args.preview)
         code = 0
     except Incomplete as error:

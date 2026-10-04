@@ -17,8 +17,9 @@ on:
         type: boolean
 
 permissions:
-  contents: read
-  actions: read
+  contents: write
+  pull-requests: write
+  actions: write
   checks: read
 
 concurrency:
@@ -48,7 +49,6 @@ jobs:
         env:
           STOCK_TARGET_DATE: ${{ inputs.target_date }}
           STOCK_PREVIEW: ${{ inputs.preview }}
-          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
           GITHUB_TOKEN: ${{ github.token }}
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: |

@@ -156,7 +156,7 @@ def main():
             return 2
         from stock_jp.automation.resources import constrain_memory
         constrain_memory()
-        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get('AUTOMATION_PAT')))
+        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get('GITHUB_TOKEN')))
         provider = http.ProviderTransport(os.environ.get('JQUANTS_API_KEY'))
         context = dict(repository=os.environ.get('GITHUB_REPOSITORY'), ref=os.environ.get('GITHUB_REF'), sha=os.environ.get('GITHUB_SHA'), event=os.environ.get('GITHUB_EVENT_NAME'), actor=os.environ.get('GITHUB_ACTOR'), triggering_actor=os.environ.get('GITHUB_TRIGGERING_ACTOR'), run_id=int(os.environ.get('GITHUB_RUN_ID', '0')), run_attempt=int(os.environ.get('GITHUB_RUN_ATTEMPT', '0')))
         result = Driver(args.root, request, provider, pin=os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256'), writer='actions-v1', context=context).execute(args.target_date)

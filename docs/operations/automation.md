@@ -15,16 +15,28 @@ checkoutする。CIと監視は市場データをcheckoutせず、実データ�
 
 ## 夜間取得
 
-privateリポジトリのownerが管理するmainで動かす。既存のGitHub Secrets
-`AUTOMATION_PAT` と `JQUANTS_API_KEY` を使う。PATにはこのprivateリポジトリの
-ContentsとPull requestsの書き込み、Actionsの読み取り権限が必要。
-CI結果の読み取りには、`checks: read` を付与したActionsの一時トークンを使う。
+privateリポジトリのownerが管理するmainで動かす。GitHubへの保存・PR作成・mergeと
+CI起動にはActionsが発行する一時的な `GITHUB_TOKEN` を使い、`AUTOMATION_PAT` は不要。
+夜間workflowだけに `contents: write`、`pull-requests: write`、`actions: write` と
+CI結果確認用の `checks: read` を付与する。CIと監視の権限は読み取り専用のまま。
+repositoryの `Settings > Actions > General > Workflow permissions` で
+`Allow GitHub Actions to create and approve pull requests` を有効にする。
+GitHub Secretにはデータ取得用の `JQUANTS_API_KEY` だけを登録する。
 取得の有効化は `config/sources.json` の `market_data_git.automatic_upload` で管理する。
 
 1. 採用済み世代を復元・検証し、通信前に消費記録をcheckpoint branchへ保存する。
 2. Light契約の公開時刻に従って日足・master・財務・カレンダーなどを取得する。
 3. 完了したデータをpack・検証し、データと取得完了記録だけのPRを作る。
-4. そのPRのheadで `format`、`test`、`guardrail` が全て成功した後、同じheadをsquash mergeする。
+4. データbranchを指定して `ci.yml` を明示dispatchし、返されたrun IDを追跡する。
+5. そのrunが同じPR headで実行され、対応するcheck suiteの `format`、`test`、`guardrail`
+   が全て成功した後、同じheadをsquash mergeする。
+
+`GITHUB_TOKEN` で作成したPRのCIは承認待ちになるため、自動の `pull_request` 起動に
+依存しない。`workflow_dispatch` は標準トークンでも起動できる。
+詳細は[GitHubのトークン仕様](https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs)を参照する。
+dispatch失敗、run ID不明、対象headの不一致、CI失敗・未完了ではmergeしない。
+標準トークンのAPI上限に合わせた通信予算は
+[`automation/rate.py`](../../src/stock_jp/automation/rate.py) で管理し、再実行にも引き継ぐ。
 
 J-Quantsは直列・最低1.05秒間隔、日付別に最大12回。失敗・不明応答も消費に含め、
 再実行で予算をリセットしない。過去の `date-grants.json` の日付別消費も引き継ぐ。
@@ -38,8 +50,9 @@ J-Quantsは直列・最低1.05秒間隔、日付別に最大12回。失敗・不
 ## 手動実行・再開
 
 Actionsの「Nightly market data」で対象日を指定する。未指定なら実行時のJST日付。
-未完了の対象日がある場合は先にその日を再開する。認証失敗はSecretを修正してから
-対象日を指定して手動実行する。消費記録を消して再試行しない。
+未完了の対象日がある場合は先にその日を再開する。J-Quantsの認証失敗は
+`JQUANTS_API_KEY` を修正し、GitHubの権限不足はworkflowのpermissionsとrepositoryの
+PR作成許可を確認してから、対象日を指定して手動実行する。消費記録を消して再試行しない。
 
 `preview=true` は取得・checkpoint保存・世代の検証後に、検証用draftデータPRを作って
 CIを確認する。mainへ採用しない。修正branchでもownerが手動実行できる。

@@ -104,7 +104,7 @@ def main():
             actor=os.environ.get('GITHUB_ACTOR'), triggering_actor=os.environ.get('GITHUB_TRIGGERING_ACTOR'),
             run_id=int(os.environ.get('GITHUB_RUN_ID','0')), run_attempt=int(os.environ.get('GITHUB_RUN_ATTEMPT','0')))
         # No provider request is made during reservation preparation.
-        result = Driver(args.root, rate.BudgetedTransport(remote.Transport(os.environ.get('AUTOMATION_PAT'))),
+        result = Driver(args.root, rate.BudgetedTransport(remote.Transport(os.environ.get('GITHUB_TOKEN'))),
             http.ProviderTransport(os.environ.get('JQUANTS_API_KEY')), context,
             os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256')).execute(args.target_date)
         print(json.dumps(result, sort_keys=True))
