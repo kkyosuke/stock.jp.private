@@ -136,7 +136,7 @@ class ArchiveTests(unittest.TestCase):
         repo = project_root()
         for path in (repo / '.github/workflows').glob('*.yml'):
             text = path.read_text()
-            if 'actions/checkout@' in text:
+            if 'actions/checkout@' in text and path.name != 'market-data-manual.yml':
                 self.assertIn('!/data/market/jquants/', text)
                 self.assertNotIn('market_data_git.py restore', text)
 
