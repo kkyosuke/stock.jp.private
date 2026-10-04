@@ -166,8 +166,19 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
     try:
         for name in DATASETS:
             if name not in state["inventories"]:
-                payload = client.get("/bulk/list", {"endpoint": BY_NAME[name].endpoint,
-                                                     "from": start.isoformat(), "to": end.isoformat()})
+                cached_path = folder / "inventories" / (name + ".json")
+                cached = ingest.read_json(cached_path)
+                query = {"endpoint": BY_NAME[name].endpoint, "from": start.isoformat(), "to": end.isoformat()}
+                if cached is None:
+                    payload = client.get("/bulk/list", query)
+                    require(isinstance(payload.get("data"), list), "invalid bulk inventory shape")
+                    cached = {"query": query, "retrieved_at": ingest.utc_now(),
+                              "data": [{key: row.get(key) for key in ("Key", "Size", "LastModified")} for row in payload["data"]],
+                              "pagination_key": payload.get("pagination_key")}
+                    ingest.atomic_json(cached_path, cached)
+                    save()
+                require(cached["query"] == query, "financial inventory query changed")
+                payload = cached
                 state["inventories"][name] = inventory(payload, BY_NAME[name].endpoint, start, end)
                 save()
         for name in DATASETS:

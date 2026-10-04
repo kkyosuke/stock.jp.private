@@ -7,6 +7,8 @@ from datetime import date, datetime, timezone
 import json
 import os
 from pathlib import Path
+import subprocess
+import time
 
 from stock_jp.automation import http, rate
 from stock_jp.automation.daily_remote import REPO, RemoteStop, require, git_blob
@@ -27,6 +29,24 @@ class Checkpoint:
         self.revision = git.ref(CHECKPOINT, optional=True)
         self.parent = self.revision or git.ref("main")
         self.tree = git.tree(self.parent)
+        self.local = root / ".work/financial-history-remote"
+        self.local.mkdir(parents=True, exist_ok=True)
+        self.askpass = self.local / "askpass.py"
+        self.askpass.write_text('#!/usr/bin/env python3\nimport os,sys\nprint("x-access-token" if "Username" in sys.argv[1] else os.environ["GITHUB_TOKEN"])\n')
+        self.askpass.chmod(0o700)
+        self.env = {**os.environ, "GIT_ASKPASS": str(self.askpass), "GIT_TERMINAL_PROMPT": "0"}
+        self._git("init", "--quiet")
+        self._git("config", "user.name", "github-actions[bot]")
+        self._git("config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
+        self._git("config", "core.hooksPath", "/dev/null")
+        self._git("remote", "add", "origin", "https://github.com/" + REPO + ".git")
+        self._git("config", "remote.origin.promisor", "true")
+        self._git("config", "remote.origin.partialclonefilter", "blob:none")
+        self._git("fetch", "--filter=blob:none", "--depth=1", "--no-tags", "origin", self.parent)
+        self._git("reset", "--soft", "FETCH_HEAD")
+        self._git("read-tree", "FETCH_HEAD")
+        self.last_push = 0.0
+        self.signatures = {}
         self.document = {"version": 1, "files": {}, "github_budget": None}
         if self.revision:
             require(JOURNAL in self.tree, "financial checkpoint journal missing")
@@ -41,10 +61,38 @@ class Checkpoint:
                 path = RAW_PREFIX + name
                 require(self.tree.get(path) == entry["blob"] and git.modes[self.revision][path] == "100644",
                         "financial checkpoint blob missing")
-                raw = git.read(entry["blob"])
+                raw = self._git("cat-file", "blob", entry["blob"])
                 require(storage.digest(raw) == entry["sha256"], "financial checkpoint checksum mismatch")
                 storage.atomic(self.source / name, raw)
+                p = self.source / name
+                self.signatures[name] = (p.stat().st_size, p.stat().st_mtime_ns)
         self.saved = copy.deepcopy(self.document["files"])
+
+    def _git(self, *args):
+        completed = subprocess.run(["git", "-c", "gc.auto=0", "-C", str(self.local), *args],
+                                   env=self.env, capture_output=True)
+        require(completed.returncode == 0, "financial checkpoint Git operation failed")
+        return completed.stdout
+
+    def push(self, files):
+        require(self.git.ref(CHECKPOINT, optional=True) == self.revision,
+                "financial checkpoint moved")
+        for name, raw in files.items():
+            require(name == JOURNAL or name.startswith(RAW_PREFIX), "unexpected financial checkpoint path")
+            if name != JOURNAL:
+                storage.safe_name(name.removeprefix(RAW_PREFIX))
+            storage.scan(raw)
+            storage.atomic(self.local / name, raw)
+        self._git("add", "--", *sorted(files))
+        self._git("commit", "--quiet", "-m", "Save financial-history checkpoint")
+        # One atomic, non-forced Git push per checkpoint; avoid four REST writes
+        # for every provider receipt. Keep writes at least 10.1 seconds apart.
+        time.sleep(max(0, self.last_push + 10.1 - time.monotonic()))
+        self._git("push", "--quiet", "origin", "HEAD:refs/heads/" + CHECKPOINT)
+        self.last_push = time.monotonic()
+        head = self._git("rev-parse", "HEAD").decode().strip()
+        require(self.git.ref(CHECKPOINT) == head, "financial checkpoint acknowledgement missing")
+        return head
 
     def active_run(self):
         run = self.git.api("GET", "/actions/runs/" + str(self.context["run_id"]))
@@ -63,12 +111,16 @@ class Checkpoint:
                 continue
             name = path.relative_to(self.source).as_posix()
             storage.safe_name(name)
+            signature = (path.stat().st_size, path.stat().st_mtime_ns)
+            if self.signatures.get(name) == signature:
+                continue
             raw = path.read_bytes()
             require(len(raw) <= storage.MAX_SHARD, "financial checkpoint file exceeds the shard limit")
             entry = {"sha256": storage.digest(raw), "blob": git_blob(raw)}
             if self.document["files"].get(name) != entry:
                 self.document["files"][name] = entry
                 files[RAW_PREFIX + name] = raw
+            self.signatures[name] = signature
         if self.saved == self.document["files"]:
             return
         self.active_run()
@@ -76,8 +128,7 @@ class Checkpoint:
         if hasattr(self.git.request, "state"):
             self.document["github_budget"] = self.git.request.state()
         files[JOURNAL] = ingest.encoded(self.document)
-        self.revision = self.git.write(CHECKPOINT, self.revision or self.parent, files,
-                                      exists=self.revision is not None)
+        self.revision = self.push(files)
         self.tree.update({name: git_blob(raw) for name, raw in files.items()})
         self.saved = copy.deepcopy(self.document["files"])
 
