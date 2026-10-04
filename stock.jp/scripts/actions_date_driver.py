@@ -9,12 +9,12 @@ from zoneinfo import ZoneInfo
 try:
     from scripts import actions_date_authorization as approval, actions_date_grants as grants, actions_date_git as remote
     from scripts import actions_authorization as auth, actions_daily_remote as r, actions_http as http
-    from scripts import actions_publication as pub, market_data_git as codec
+    from scripts import actions_publication as pub, market_data_git as codec, actions_rate as rate
     from scripts.git_sandbox import git
 except ModuleNotFoundError:
     import actions_date_authorization as approval, actions_date_grants as grants, actions_date_git as remote
     import actions_authorization as auth, actions_daily_remote as r, actions_http as http
-    import actions_publication as pub, market_data_git as codec
+    import actions_publication as pub, market_data_git as codec, actions_rate as rate
     from git_sandbox import git
 
 
@@ -98,7 +98,7 @@ def main():
             actor=os.environ.get('GITHUB_ACTOR'), triggering_actor=os.environ.get('GITHUB_TRIGGERING_ACTOR'),
             run_id=int(os.environ.get('GITHUB_RUN_ID','0')), run_attempt=int(os.environ.get('GITHUB_RUN_ATTEMPT','0')))
         # No provider request is made during reservation preparation.
-        result = Driver(args.root, remote.Transport(os.environ.get('AUTOMATION_PAT')),
+        result = Driver(args.root, rate.BudgetedTransport(remote.Transport(os.environ.get('AUTOMATION_PAT'))),
             http.ProviderTransport(os.environ.get('JQUANTS_API_KEY')), context,
             os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256')).execute(args.target_date)
         print(json.dumps(result, sort_keys=True)); return 0
