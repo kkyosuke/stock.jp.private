@@ -24,7 +24,7 @@ WorkflowがContents・Pull requests・Actionsの書き込み、Checksの読み�
 1. 採用済み世代を復元・検証し、通信前に消費記録をcheckpoint branchへ保存する。
 2. Light契約の公開時刻に従って日足・master・財務・カレンダーなどを取得する。
 3. 財務・株数・予想・決算予定・価格調整の観測CSVを更新し、検証した保存世代と取得完了記録のPRを作る。
-4. 一時トークンで作ったPRはCIを自動起動しないため、同じbranchのCIを明示的に起動する。
+4. 一時トークンで作ったPRのCIは承認待ちになるため、同じbranchのCIを明示的に起動する。
 5. PRのheadで `format`、`test`、`guardrail` が全て成功した後、同じheadをsquash mergeする。
 
 J-Quantsは直列・最低1.05秒間隔、日付別に最大12回。失敗・不明応答も消費に含め、
@@ -35,6 +35,10 @@ J-Quantsは直列・最低1.05秒間隔、日付別に最大12回。失敗・不
 削除すると予算の根拠が失われるため、削除しない。途中でmainが更新された場合、
 認証失敗、429、不正な応答、予算不足、CI失敗の場合は処理を停止し、保存済み状態を残す。
 実行結果は `nightly-market-data-<run ID>` artifactのJSONで確認する。
+
+一時トークンからのイベントの扱いは
+[GitHubのWorkflow起動仕様](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)
+を参照する。
 
 ## 手動実行・再開
 

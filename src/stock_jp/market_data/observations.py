@@ -191,9 +191,11 @@ def adjustment_record(row, evidence, history):
     action_id = f"jq-adjustment-{code}-{day}-{jpx._stable_id(text)}"
     previous = history.get(action_id, {})
     action = {field: previous.get(field, "") for field in CORPORATE_FIELDS}
-    action.update(action_id=action_id, effective_date=day, code=code,
-                  normalization_factor=text, source_url=ingest.BASE_URL + "/equities/bars/daily",
-                  evidence_path=evidence)
+    action.update(action_id=action_id, effective_date=day, code=code, normalization_factor=text)
+    if not action["source_url"]:
+        action["source_url"] = ingest.BASE_URL + "/equities/bars/daily"
+    if not action["evidence_path"]:
+        action["evidence_path"] = evidence
     if not action["action_type"]:
         action["action_type"] = "JQUANTS_ADJUSTMENT_FACTOR"
     if not action["notes"]:

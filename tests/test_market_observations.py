@@ -82,6 +82,10 @@ class MarketObservationsTest(unittest.TestCase):
         self.assertEqual(action["ratio_numerator"], "")
         self.assertTrue(action["evidence_path"].startswith("data/market/jquants/objects/"))
         action["notes"] = "Human evidence annotation retained"
+        action["action_type"] = "SPLIT"
+        action["ratio_numerator"], action["ratio_denominator"] = "2", "1"
+        action["source_url"] = "https://company.example/ir/fixture"
+        action["evidence_path"] = "operations/evidence/synthetic-ir.json"
         o.save_rows(root, "corporate-actions.csv", [action])
         before = {p: p.read_bytes() for p in o.publication_files(root)}
         self.assertEqual(first["rows"], o.rebuild(root)["rows"])

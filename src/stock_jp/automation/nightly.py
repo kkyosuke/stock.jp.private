@@ -349,7 +349,7 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
                  "データ以外の変更を含まないことと、このheadの全CI成功を確認してから採用します。"),
     })
     report["pull_request"] = pr["html_url"]
-    # GITHUB_TOKEN-created PRs do not trigger pull_request workflows.
+    # GITHUB_TOKEN-created PR workflows may require human approval.
     # workflow_dispatch is explicit and executes CI on this exact branch head.
     git.api("POST", "/actions/workflows/ci.yml/dispatches", {"ref": branch})
     deadline = monotonic() + timeout
