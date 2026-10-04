@@ -145,6 +145,186 @@ class NightlyMarketDataTest(unittest.TestCase):
         checkpoint.prepare(self.fixture.archive.parent)
         return checkpoint
 
+    def test_schedule_boundaries_and_timezone(self):
+        for timestamp, expected in (
+            ("2026-10-04T20:59:00+09:00", "2026-10-03"),
+            ("2026-10-04T21:00:00+09:00", "2026-10-04"),
+            ("2026-10-04T23:59:00+09:00", "2026-10-04"),
+            ("2026-10-05T00:01:00+09:00", "2026-10-04"),
+            ("2026-10-04T15:01:00+00:00", "2026-10-04"),
+        ):
+            with self.subTest(timestamp=timestamp):
+                self.assertEqual(n.scheduled_day(datetime.fromisoformat(timestamp)).isoformat(), expected)
+
+    def test_schedule_binding_survives_failed_prepare_and_next_day_retry(self):
+        self.context["event"] = "schedule"
+        def stopped(root, *, remote, **kwargs):
+            self.assertEqual(remote.target_day, date(2026, 10, 4))
+            self.assertEqual(self.repo.journal()["scheduled_targets"]["123"]["date"], "2026-10-04")
+            raise n.RemoteStop("synthetic preparation stop")
+        for timestamp in ("2026-10-05T00:01:00+09:00", "2026-10-06T23:59:00+09:00"):
+            with patch.object(daily, "run", side_effect=stopped):
+                with self.assertRaisesRegex(n.RemoteStop, "synthetic preparation stop"):
+                    n.execute(self.root, self.context, self.repo, at=datetime.fromisoformat(timestamp))
+        self.assertFalse(self.fixture.calls)
+        self.assertEqual(self.repo.journal()["scheduled_targets"]["123"]["resolved_at"],
+                         "2026-10-05T00:01:00+09:00")
+
+    def test_naive_execution_time_is_rejected_before_binding_write(self):
+        self.context["event"] = "schedule"
+        with self.assertRaisesRegex(ingest.IngestionError, "aware timestamp required"):
+            n.execute(self.root, self.context, self.repo,
+                      at=datetime(2026, 10, 2, 21), transport=self.fixture.transport)
+        self.assertFalse(self.repo.calls)
+        self.assertNotIn(n.CHECKPOINT, self.repo.refs)
+        self.assertFalse(self.fixture.calls)
+        self.assertEqual(self.run_preview()["status"], "PREVIEW_COMPLETE")
+        binding = self.repo.journal()["scheduled_targets"]["123"]
+        self.assertIsNotNone(datetime.fromisoformat(binding["resolved_at"]).tzinfo)
+
+    def test_naive_binding_time_cannot_poison_existing_checkpoint(self):
+        checkpoint = self.checkpoint()
+        checkpoint.bind_schedule(self.fixture.at)
+        saved = copy.deepcopy(self.repo.journal())
+        self.context["run_id"] = 124
+        checkpoint = self.checkpoint()
+        with self.assertRaisesRegex(n.RemoteStop, "aware timestamp required"):
+            checkpoint.bind_schedule(datetime(2026, 10, 3, 21))
+        self.assertEqual(self.repo.journal(), saved)
+        self.checkpoint()  # The durable schema remains readable.
+
+    def test_new_schedule_run_resolves_its_own_date(self):
+        checkpoint = self.checkpoint()
+        checkpoint.bind_schedule(datetime.fromisoformat("2026-10-05T00:01:00+09:00"))
+        self.context["run_id"] = 124
+        checkpoint = self.checkpoint()
+        checkpoint.bind_schedule(datetime.fromisoformat("2026-10-05T21:00:00+09:00"))
+        self.assertEqual(checkpoint.target_day, date(2026, 10, 5))
+        self.assertEqual(self.repo.journal()["scheduled_targets"]["123"]["date"], "2026-10-04")
+
+    def test_inconsistent_schedule_binding_is_rejected(self):
+        checkpoint = self.checkpoint()
+        checkpoint.bind_schedule(datetime.fromisoformat("2026-10-05T00:01:00+09:00"))
+        document = self.repo.journal()
+        document["scheduled_targets"]["123"]["date"] = "2026-10-05"
+        files = self.repo.tree(self.repo.refs[n.CHECKPOINT])
+        files[n.JOURNAL] = self.repo.blob(ingest.encoded(document))
+        self.repo.refs[n.CHECKPOINT] = self.repo.commit(files)
+        with self.assertRaisesRegex(n.RemoteStop, "invalid scheduled target date"):
+            self.checkpoint()
+        self.assertFalse(self.fixture.calls)
+
+    def test_manual_explicit_target_is_unchanged(self):
+        def stopped(root, *, remote, **kwargs):
+            self.assertEqual(remote.target_day, date(2026, 10, 2))
+            self.assertNotIn("scheduled_targets", remote.document)
+            raise n.RemoteStop("synthetic stop")
+        with patch.object(daily, "run", side_effect=stopped):
+            with self.assertRaisesRegex(n.RemoteStop, "synthetic stop"):
+                n.execute(self.root, self.context, self.repo, target=date(2026, 10, 2),
+                          at=datetime.fromisoformat("2026-10-05T00:01:00+09:00"))
+
+    def test_schedule_binding_ack_failure_stops_before_collector(self):
+        self.context["event"] = "schedule"
+        original = self.repo.__call__
+        def request(method, path, body=None):
+            if method == "POST" and path.endswith("/git/refs"):
+                raise n.http.Rejected(503)
+            return original(method, path, body)
+        with patch.object(daily, "run") as collector:
+            with self.assertRaises(n.http.Rejected):
+                n.execute(self.root, self.context, request, at=self.fixture.at)
+            collector.assert_not_called()
+        self.assertFalse(self.fixture.calls)
+
+    def future_wait(self):
+        self.fixture.at = datetime.fromisoformat("2026-10-05T01:07:00+09:00")
+        with self.assertRaises(n.Incomplete):
+            self.run_preview()
+        return copy.deepcopy(self.repo.journal()["runs"]["2026-10-05"])
+
+    def test_delayed_schedule_defers_only_verified_empty_future_wait(self):
+        future = self.future_wait()
+        self.context.update(event="schedule", run_id=124)
+        self.fixture.at = datetime.fromisoformat("2026-10-05T01:08:00+09:00")
+        result = self.run_preview()
+        self.assertEqual((result["run_date"], result["status"], result["requests_used"]),
+                         ("2026-10-04", "PREVIEW_COMPLETE", 1))
+        self.assertEqual(self.repo.journal()["runs"]["2026-10-05"], future)
+        self.assertEqual(self.fixture.calls, [("/markets/calendar", {"from": "2026-10-04", "to": "2026-10-04"})])
+        # New workspace plus next-day retry retains date and request receipts.
+        shutil.rmtree(self.fixture.archive.parent)
+        self.fixture.at = datetime.fromisoformat("2026-10-06T23:59:00+09:00")
+        again = self.run_preview()
+        self.assertEqual((again["run_date"], again["requests_used"]), ("2026-10-04", 1))
+        self.assertEqual(len(self.fixture.calls), 1)
+
+    def test_future_wait_with_different_config_can_defer_but_cannot_resume(self):
+        self.fixture.config["jquants"]["ingestion"]["download_hosts"] = ["example.invalid"]
+        self.fixture.save_config()
+        future = self.future_wait()
+        self.fixture.config["jquants"]["ingestion"]["download_hosts"] = []
+        self.fixture.save_config()
+        self.context.update(event="schedule", run_id=124)
+        result = self.run_preview()
+        self.assertEqual((result["run_date"], result["requests_used"]), ("2026-10-04", 1))
+        saved = self.repo.journal()
+        self.assertNotEqual(saved["runs"]["2026-10-04"]["config_sha256"], future["config_sha256"])
+        self.assertEqual(saved["runs"]["2026-10-05"], future)
+        calls = len(self.fixture.calls)
+        self.fixture.at = datetime.fromisoformat("2026-10-05T21:00:00+09:00")
+        self.context["run_id"] = 125
+        with self.assertRaisesRegex(ingest.IngestionError, "run configuration changed"):
+            self.run_preview()
+        self.assertEqual(len(self.fixture.calls), calls)
+        self.assertEqual(self.repo.journal()["runs"], saved["runs"])
+
+    def test_future_wait_deferral_rejects_unverified_or_nonempty_journals(self):
+        future = self.future_wait()
+        checkpoint = self.checkpoint()
+        checkpoint.target_day = date(2026, 10, 4)
+        self.assertTrue(checkpoint.can_defer(future))
+        changes = [
+            {"status": "BLOCKED"}, {"status": "PAUSED"}, {"status": "BUDGET_EXHAUSTED"},
+            {"requests": [{"endpoint": "/markets/calendar", "query_sha256": "a" * 64,
+                           "reserved_at": future["started_at"]}]},
+            {"tasks": {"record": {}}}, {"data_date": "2026-10-05"},
+            {"error": "publication_pending"}, {"http_status": 0},
+            {"retry_not_before": future["started_at"]},
+            {"started_at": "2026-10-05T21:00:00+09:00"},
+        ]
+        path = daily.run_path(self.fixture.archive, date(2026, 10, 5))
+        name = path.relative_to(checkpoint.source).as_posix()
+        for change in changes:
+            with self.subTest(change=change):
+                state = {**future, **change}
+                checkpoint.document["runs"]["2026-10-05"] = state
+                ingest.atomic_json(path, state)
+                raw = path.read_bytes()
+                checkpoint.document["files"][name] = {"sha256": n.storage.digest(raw), "blob": n.git_blob(raw)}
+                self.assertFalse(checkpoint.can_defer(state))
+        checkpoint.document["runs"]["2026-10-05"] = future
+        ingest.atomic_json(path, future)
+        self.assertFalse(checkpoint.can_defer(future))  # checksum differs
+        checkpoint.document["files"].pop(name)
+        self.assertFalse(checkpoint.can_defer(future))
+        checkpoint.target_day = date(2026, 10, 5)
+        self.assertFalse(checkpoint.can_defer(future))
+
+    def test_schedule_does_not_bypass_existing_configuration_hash(self):
+        self.fixture.at = datetime.fromisoformat("2026-10-04T20:59:00+09:00")
+        with self.assertRaises(n.Incomplete):
+            self.run_preview()
+        old = self.repo.journal()["runs"]["2026-10-04"]
+        self.fixture.config["extra"] = "changed"
+        self.fixture.save_config()
+        self.context.update(event="schedule", run_id=124)
+        self.fixture.at = datetime.fromisoformat("2026-10-05T01:00:00+09:00")
+        with self.assertRaisesRegex(ingest.IngestionError, "run configuration changed"):
+            self.run_preview()
+        self.assertEqual(self.repo.journal()["runs"]["2026-10-04"], old)
+        self.assertFalse(self.fixture.calls)
+
     def test_collect_verify_duplicate_without_more_provider_requests(self):
         result = self.run_preview()
         self.assertEqual(result["status"], "PREVIEW_COMPLETE")
@@ -157,13 +337,16 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(self.repo.refs["main"], self.context["sha"])
 
     def test_crash_reservation_is_durable_and_resume_retains_cost(self):
+        self.context["event"] = "schedule"
         def crash(*_):
             self.assertEqual(len(self.repo.journal()["runs"]["2026-10-02"]["requests"]), 1)
             raise KeyboardInterrupt()
         with self.assertRaises(KeyboardInterrupt):
             self.run_preview(crash)
         shutil.rmtree(self.fixture.archive.parent)
+        self.fixture.at = datetime.fromisoformat("2026-10-03T21:00:00+09:00")
         result = self.run_preview()
+        self.assertEqual(result["run_date"], "2026-10-02")
         self.assertEqual(result["requests_used"], 10)
         self.assertEqual(len(self.fixture.calls), 9)
 
