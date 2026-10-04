@@ -1,6 +1,6 @@
 """Opt-in offline history → adoption → fresh-daily driver smoke test.
 
-Run from stock.jp: PYTHONPATH=.:tests python tests/actions_fullperiod_smoke.py
+Run from the repository: PYTHONPATH=src:. python tests/actions_fullperiod_smoke.py
 All GitHub/provider/controller I/O uses synthetic fixtures. Rate-limit waits advance
 an injected clock; no workflow dispatch, credentials, real acquisition or merge.
 This intentionally exercises the actual 280-session, 47-batch runner and can take
@@ -25,7 +25,7 @@ def main():
         fixture.scope['history_campaign']['sessions'] = 280
         fixture.scope['expires_at'] = (fixture.now + timedelta(days=7)).isoformat()
         codec.atomic(fixture.root / auth.MANIFEST, codec.encoded(fixture.scope))
-        git(fixture.root, 'add', '.github')
+        git(fixture.root, 'add', 'config')
         main = fixture.commit('Synthetic approved full-period scope')
         fixture.remote.refs['heads/main'] = main
         fixture.context['sha'] = main
@@ -33,18 +33,18 @@ def main():
         fixture.remote.store_bodies = False
         clock = [fixture.fixture.at.timestamp()]
         started = clock[0]
-    
+
         def now():
             return datetime.fromtimestamp(clock[0], d.ZoneInfo('Asia/Tokyo'))
-    
+
         def sleep(seconds):
             clock[0] += seconds
-    
+
         class Controller:
-    
+
             def __init__(self):
                 self.reads = 0
-    
+
             def read(self, identity):
                 self.reads += 1
                 return {**copy.deepcopy(fixture.controller_observation), 'observed_at': now().isoformat()}

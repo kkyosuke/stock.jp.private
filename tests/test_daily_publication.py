@@ -171,7 +171,7 @@ class PersonalStateTransitionTest(unittest.TestCase):
         self.run_id='2026-10-02'
         self.prepare_market_fixture()
         self.git('init');self.git('config','user.email','synthetic@example.test');self.git('config','user.name','Synthetic')
-        self.git('add','operations');self.git('commit','-m','base');self.base=self.git('rev-parse','HEAD')
+        self.git('add','config','operations','data/market/observations');self.git('commit','-m','base');self.base=self.git('rev-parse','HEAD')
         prepared=prepare_run(at='2026-10-02T18:30:00+09:00',root=self.root)
         run=self.root/prepared['run_dir'];_complete_artifacts(run,date(2026,10,2))
         self.run_market_assessment()

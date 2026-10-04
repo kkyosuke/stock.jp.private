@@ -290,7 +290,8 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
 
 
 def personal_semantics(root, base, head, run_id, scratch, entries):
-    materialize(root, head, 'operations', scratch)
+    for prefix in ('config', 'operations', 'data/market/observations'):
+        materialize(root, head, prefix, scratch)
     templates = project_root() / 'templates'
     shutil.copytree(templates, scratch / 'templates')
     private = scratch / 'operations'

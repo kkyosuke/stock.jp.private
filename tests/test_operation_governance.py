@@ -24,7 +24,7 @@ class OperationGovernanceTest(unittest.TestCase):
         for phrase in (
             "現在の運用モード: `PAPER`",
             "2025年通年と2026年1月1日から8月31日まで",
-            "historical-replay-2025-2026.md",
+            "historical-replay-2025-2026/README.md",
             "365日または20営業日の完了を待たない",
             "発注権限は `HUMAN_ONLY`",
             "月次",

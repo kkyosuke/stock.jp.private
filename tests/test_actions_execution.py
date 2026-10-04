@@ -181,7 +181,7 @@ class MergeTests(unittest.TestCase):
             head=dict(sha=self.head,ref='daily/market/2026-10-03',repo={'full_name':r.REPO}),base=dict(sha=self.base,ref='main'))
         if '/check-runs?' in suffix:return {'total_count':3,'check_runs':[dict(id=i,name=n,head_sha=self.head,status='completed',conclusion='success',app={'slug':'github-actions'}) for i,n in enumerate(('format','test','guardrail'))]}
         if '/statuses?' in suffix:return [dict(id=1,context='synthetic-ci',created_at='2026-10-03T00:00:00Z',state='failure' if self.bad_status else 'success')]
-        if suffix.startswith('/actions/runs?'):return {'total_count':3,'workflow_runs':[dict(id=i,head_sha=self.head,status='completed',conclusion='success',event='pull_request',path=p) for i,p in enumerate(pub.publication.WORKFLOWS['market'])]}
+        if suffix.startswith('/actions/runs?'):return {'total_count':len(pub.publication.WORKFLOWS['market']),'workflow_runs':[dict(id=i,head_sha=self.head,status='completed',conclusion='success',event='pull_request',path=p) for i,p in enumerate(pub.publication.WORKFLOWS['market'])]}
         if '/reviews?' in suffix:return []
         if '/files?' in suffix:return [dict(filename=self.proof['paths'][0])]
         if suffix=='/pulls/1/merge':

@@ -109,7 +109,7 @@ class Driver:
                 pub.download_archive(self.request, main, archive)
                 codec.restore(archive, adopted)
                 scope, facts = auth.verify_scope(self.request, approved_manifest_sha256=self.pin, mode=mode, writer=self.writer, source=adopted, now=self.clock(), clock=self.clock, allow_pending_publication=initialized, handover_probe=lambda _: attest.verify(self.request, scope, self.pin, main=main, initialized=initialized, now=self.clock(), live_probe=self.live_handover_probe, clock=self.clock))
-            
+
                 def revalidate_handover():
                     return attest.verify(self.request, scope, self.pin, main=main, initialized=initialized, now=self.clock(), live_probe=self.live_handover_probe, clock=self.clock)
                 facts['handover_check'] = revalidate_handover

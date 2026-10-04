@@ -129,7 +129,7 @@ class ApprovedHistoryTests(unittest.TestCase):
         approved=fixture.commit('Synthetic COMPLETE eight baseline')
         scope=fixture.scope;scope['baseline']={'main_sha':approved,'generation':pointer['generation']}
         r.codec.atomic(fixture.root/auth.MANIFEST,r.codec.encoded(scope))
-        git(fixture.root,'add','.github');fixture.commit('Synthetic reviewed history baseline')
+        git(fixture.root,'add',auth.MANIFEST);fixture.commit('Synthetic reviewed history baseline')
         r.codec.pack(sources[1],store);git(fixture.root,'add','data/market')
         weakened=fixture.commit('Synthetic weaker COMPLETE four')
         fixture.remote.refs['heads/main']=weakened
@@ -182,7 +182,7 @@ class FullTreeScopeTests(unittest.TestCase):
         fixture.scope['expires_at']=(fixture.now+timedelta(days=7)).isoformat()
         r.codec.atomic(fixture.root/auth.MANIFEST,r.codec.encoded(fixture.scope))
         fixture.remote.pin=r.codec.digest(r.codec.encoded(fixture.scope))
-        r.codec.pack(source,store);git(fixture.root,'add','data/market','.github')
+        r.codec.pack(source,store);git(fixture.root,'add','data/market',auth.MANIFEST)
         head=fixture.commit('Synthetic adopted COMPLETE 280 history')
         fixture.remote.refs['heads/main']=head
         before=auth.complete_tree(fixture.remote,fixture.base);after=auth.complete_tree(fixture.remote,head)

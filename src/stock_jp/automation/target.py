@@ -106,10 +106,10 @@ class Driver(legacy.Driver):
                     r.require(all((not p['head']['ref'].startswith('daily/market/') or (p['head']['ref'] == 'daily/market/' + target_date and p['head']['sha'] == transaction['head'] and (transaction['number'] is not None) and (p['number'] == transaction['number']) and (p['head']['repo']['full_name'] == r.REPO) and (p['base']['repo']['full_name'] == r.REPO) and (p['base']['ref'] == 'main')) for p in pending)), 'another market publication is unresolved')
                 current = owner.claim(checkpoint, scope, self.context)
                 observation = {}
-            
+
                 def observe():
                     observation['at'] = owner.observe(checkpoint, current)
-            
+
                 def fresh():
                     r.require('at' in observation and 0 <= (self.clock() - observation['at']).total_seconds() <= 60, 'GitHub owner observation expired at send boundary')
                     r.gate(facts, now=self.clock())

@@ -27,7 +27,7 @@ PR #14と同じ日付別CSV契約で、契約範囲の公式日足を`data/daily
 
 ### PR #14互換の日足
 
-- Git正本: [`data/daily-prices/YYYY/YYYY-MM-DD.csv`](../../data/daily-prices/)
+- Git正本: [`data/daily-prices/YYYY/YYYY-MM-DD.csv`](../../data/market/legacy-prices/daily-prices/)
 - 履歴カバレッジ: [`data/historical-replay/price-coverage-2025-2026.json`](../../data/market/historical-replay/price-coverage-2025-2026.json)
 - 先行期間を含む取得範囲: 2024年6月10日〜2026年6月8日
 - 営業日数: 486

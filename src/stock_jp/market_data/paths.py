@@ -26,8 +26,7 @@ def resolve_archive_root(root: Path, config: dict[str, Any] | None = None) -> Pa
     relative = Path(configured)
     if relative.is_absolute() or ".." in relative.parts:
         raise MarketDataStorageError("archive_root must be a private workspace-relative path")
-    # operations/private may be the approved workspace symlink. Descendant
-    # symlinks may not escape this boundary into public or unrelated storage.
+    # Resolve archives only inside the canonical local market-data workspace.
     root = root.resolve()
     allowed = root / '.work/market-data'
     if allowed.resolve() != allowed:
