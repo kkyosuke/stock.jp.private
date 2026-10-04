@@ -1,0 +1,307 @@
+{
+  "files": [
+    {
+      "bytes": 16121,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/latest.json",
+      "rows": null,
+      "sha256": "acc9cf5ada3e57aaeac73fa280028f972f54e2e080542b56a00c6ad4313e5df0"
+    },
+    {
+      "bytes": 2210,
+      "date_max": null,
+      "date_min": null,
+      "path": "daily-prices/latest.json",
+      "rows": null,
+      "sha256": "39c093bdfa29659118aa00d10b99c872e8bdda31008c9fb5f9b579903500cb52"
+    },
+    {
+      "bytes": 163,
+      "date_max": "2026-10-05",
+      "date_min": "2026-10-05",
+      "path": "jquants/objects/d9/d9c1c1f5c76ba330f9ba7a2273e11c0e825a0b1854b7182b2d1962cc4727705d.json",
+      "rows": 1,
+      "sha256": "d9c1c1f5c76ba330f9ba7a2273e11c0e825a0b1854b7182b2d1962cc4727705d"
+    },
+    {
+      "bytes": 1330550,
+      "date_max": "2026-10-02",
+      "date_min": "2026-10-02",
+      "path": "jquants/objects/d2/d2f8646969e625c0f25ae7f5b7fd918e7b75bac2f7a0357d04ad3bc3cec9356c.json",
+      "rows": 4442,
+      "sha256": "d2f8646969e625c0f25ae7f5b7fd918e7b75bac2f7a0357d04ad3bc3cec9356c"
+    },
+    {
+      "bytes": 79,
+      "date_max": "2026-10-02",
+      "date_min": "2026-10-02",
+      "path": "jquants/objects/ca/ca8206ea38116cf3ea537882650ae6ad3ee2b01ceb7bc062f9bcdaed4280d6f0.json",
+      "rows": 1,
+      "sha256": "ca8206ea38116cf3ea537882650ae6ad3ee2b01ceb7bc062f9bcdaed4280d6f0"
+    },
+    {
+      "bytes": 705600,
+      "date_max": "2026-10-02",
+      "date_min": "2026-10-02",
+      "path": "jquants/objects/ba/ba5a65172c6cd04ba021635d232c6dabff68f350e01d2e5b9eddc66290e61bac.json",
+      "rows": 4442,
+      "sha256": "ba5a65172c6cd04ba021635d232c6dabff68f350e01d2e5b9eddc66290e61bac"
+    },
+    {
+      "bytes": 13762,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/objects/ac/acec6532b6475a665e75a1ee42f98a9c8b26947a3fa3c45fbcb2fc6fe8dd557a.json",
+      "rows": 87,
+      "sha256": "acec6532b6475a665e75a1ee42f98a9c8b26947a3fa3c45fbcb2fc6fe8dd557a"
+    },
+    {
+      "bytes": 1070717,
+      "date_max": "2026-10-02",
+      "date_min": "2026-10-02",
+      "path": "jquants/objects/38/38144c5bff13494e014f4474cb1a332d6816eff182b1aa2da428d28a81ae31bf.json",
+      "rows": 4442,
+      "sha256": "38144c5bff13494e014f4474cb1a332d6816eff182b1aa2da428d28a81ae31bf"
+    },
+    {
+      "bytes": 12,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/objects/25/25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90.json",
+      "rows": 0,
+      "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+    },
+    {
+      "bytes": 29149,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/objects/18/182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d.json",
+      "rows": 17,
+      "sha256": "182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d"
+    },
+    {
+      "bytes": 46,
+      "date_max": "2026-10-02",
+      "date_min": "2026-10-02",
+      "path": "jquants/objects/04/04819f804a7bf8825f2c8c376379232954e0ecc0f1996e588e10ca3dc5b3dd8f.json",
+      "rows": 1,
+      "sha256": "04819f804a7bf8825f2c8c376379232954e0ecc0f1996e588e10ca3dc5b3dd8f"
+    },
+    {
+      "bytes": 784,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/trading_calendar/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f"
+    },
+    {
+      "bytes": 784,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/trading_calendar/2026-10-02/revisions/edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f.json",
+      "rows": null,
+      "sha256": "edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f"
+    },
+    {
+      "bytes": 787,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/topix_daily/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034"
+    },
+    {
+      "bytes": 787,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/topix_daily/2026-10-02/revisions/780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034.json",
+      "rows": null,
+      "sha256": "780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034"
+    },
+    {
+      "bytes": 789,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/investor_types/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "4a54cd848fae3b4fd66b315276ff5b356bd9f483f04bc39cf3c77b1fed944187"
+    },
+    {
+      "bytes": 789,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/investor_types/2026-10-02/revisions/4a54cd848fae3b4fd66b315276ff5b356bd9f483f04bc39cf3c77b1fed944187.json",
+      "rows": null,
+      "sha256": "4a54cd848fae3b4fd66b315276ff5b356bd9f483f04bc39cf3c77b1fed944187"
+    },
+    {
+      "bytes": 768,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/financial_summary/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59"
+    },
+    {
+      "bytes": 768,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/financial_summary/2026-10-02/revisions/fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59.json",
+      "rows": null,
+      "sha256": "fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59"
+    },
+    {
+      "bytes": 780,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/equities_valuation/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "ac8503817e4ea931e6d3b94517f46d88d8e5f60325e0aba047c2216e772435ed"
+    },
+    {
+      "bytes": 780,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/equities_valuation/2026-10-02/revisions/ac8503817e4ea931e6d3b94517f46d88d8e5f60325e0aba047c2216e772435ed.json",
+      "rows": null,
+      "sha256": "ac8503817e4ea931e6d3b94517f46d88d8e5f60325e0aba047c2216e772435ed"
+    },
+    {
+      "bytes": 775,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/equities_master/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51"
+    },
+    {
+      "bytes": 775,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/equities_master/2026-10-02/revisions/3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51.json",
+      "rows": null,
+      "sha256": "3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51"
+    },
+    {
+      "bytes": 792,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/equities_daily/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c"
+    },
+    {
+      "bytes": 792,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/equities_daily/2026-10-02/revisions/d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c.json",
+      "rows": null,
+      "sha256": "d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c"
+    },
+    {
+      "bytes": 771,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/earnings_dates/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "a8401f49c114b3b5c77e133abcbbbf6ac2b4344510932ce5f95412079431e550"
+    },
+    {
+      "bytes": 771,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/earnings_dates/2026-10-02/revisions/a8401f49c114b3b5c77e133abcbbbf6ac2b4344510932ce5f95412079431e550.json",
+      "rows": null,
+      "sha256": "a8401f49c114b3b5c77e133abcbbbf6ac2b4344510932ce5f95412079431e550"
+    },
+    {
+      "bytes": 759,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/earnings_calendar/2026-10-02/latest.json",
+      "rows": null,
+      "sha256": "8294830bafac9b6c4889500cf290e79ab3f8be25999b44a662ca1f8be1136e50"
+    },
+    {
+      "bytes": 759,
+      "date_max": null,
+      "date_min": null,
+      "path": "jquants/datasets/earnings_calendar/2026-10-02/revisions/8294830bafac9b6c4889500cf290e79ab3f8be25999b44a662ca1f8be1136e50.json",
+      "rows": null,
+      "sha256": "8294830bafac9b6c4889500cf290e79ab3f8be25999b44a662ca1f8be1136e50"
+    },
+    {
+      "bytes": 359559,
+      "date_max": null,
+      "date_min": null,
+      "path": "daily-prices/2026/2026-10-02.csv",
+      "rows": 3689,
+      "sha256": "324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d"
+    },
+    {
+      "bytes": 1670,
+      "date_max": null,
+      "date_min": null,
+      "path": "daily-prices/revisions/2026-10-02/a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172/manifest-f03dd799969bbb382deace9378ecce5fef23a4fd933da368d9a820047702e05a.json",
+      "rows": null,
+      "sha256": "f03dd799969bbb382deace9378ecce5fef23a4fd933da368d9a820047702e05a"
+    },
+    {
+      "bytes": 376182,
+      "date_max": null,
+      "date_min": null,
+      "path": "daily-prices/revisions/2026-10-02/a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172/2026-10-02.csv",
+      "rows": 3880,
+      "sha256": "a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172"
+    },
+    {
+      "bytes": 2210,
+      "date_max": null,
+      "date_min": null,
+      "path": "daily-prices/revisions/2026-10-02/324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d/manifest-39c093bdfa29659118aa00d10b99c872e8bdda31008c9fb5f9b579903500cb52.json",
+      "rows": null,
+      "sha256": "39c093bdfa29659118aa00d10b99c872e8bdda31008c9fb5f9b579903500cb52"
+    },
+    {
+      "bytes": 359559,
+      "date_max": null,
+      "date_min": null,
+      "path": "daily-prices/revisions/2026-10-02/324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d/2026-10-02.csv",
+      "rows": 3689,
+      "sha256": "324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d"
+    }
+  ],
+  "generations": [
+    {
+      "file_count": 32,
+      "new_generation": "cc3e8353fb378bff2426e5c1bae879f4473a9d47c428a1e539bf6d33e63152f4",
+      "old_generation": "6aead2f0b3af93d5332dc7fd04cab60da46e021d89c766c9e302f79e4399c942",
+      "raw_bytes": 3935913
+    },
+    {
+      "file_count": 34,
+      "new_generation": "184c3410bbd499a6d2f19282bb7f76805aaeab4af374859ead09a644919961cd",
+      "old_generation": "3a893a785ff56975e6ae15c461d207a0555608aa57d86542844d5b8cea1276c8",
+      "raw_bytes": 4281599
+    }
+  ],
+  "largest_file": 1330550,
+  "logical_files": 34,
+  "logical_types": {
+    ".csv": 3,
+    ".json": 31
+  },
+  "new_store_bytes": 3931068,
+  "new_store_files": 26,
+  "old_store_bytes": 659048,
+  "raw_bytes": 4281599,
+  "source_commit": "6053ec00cb46d30aa0a7dcc9a2b8d1b6055ff18b",
+  "provider_requests": 0,
+  "unadopted_payload_imported": false,
+  "stored_extensions": {
+    ".json": 24,
+    ".csv": 2
+  }
+}

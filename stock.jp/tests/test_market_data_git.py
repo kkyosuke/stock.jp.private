@@ -25,11 +25,11 @@ class ArchiveTests(unittest.TestCase):
 
     def test_roundtrip_checkpoints_empty_and_incremental_dedup(self):
         first = m.pack(self.source, self.store)
-        before = set(self.store.rglob('*.gz'))
+        before = {p for p in self.store.rglob('*') if p.is_file() and p.name != 'current.json'}
         self.assertEqual(m.pack(self.source, self.store), first)
         (self.source / 'jquants/empty-copy.json').write_bytes((self.source / 'jquants/empty.json').read_bytes())
         second = m.pack(self.source, self.store)
-        self.assertEqual(len(set(self.store.rglob('*.gz')) - before), 1)  # index only
+        self.assertEqual(len({p for p in self.store.rglob('*') if p.is_file() and p.name != 'current.json'} - before), 1)  # index only
         self.assertNotEqual(first['generation'], second['generation'])
         target = self.root / 'restored'
         self.assertTrue(m.restore(self.store, target)['verified'])
@@ -41,12 +41,39 @@ class ArchiveTests(unittest.TestCase):
 
     def test_corruption_no_partial_restore(self):
         m.pack(self.source, self.store)
-        obj = next((self.store / 'objects').rglob('*.gz'))
+        obj = next((self.store / 'objects').rglob('*.json'))
         obj.write_bytes(b'bad')
         target = self.root / 'restored'
         with self.assertRaises(m.ArchiveError):
             m.restore(self.store, target)
         self.assertFalse(target.exists())
+
+    def test_legacy_gzip_generation_restores_identically_then_writes_plain(self):
+        entries = {}
+        for path in self.source.rglob('*'):
+            if path.is_file():
+                raw = path.read_bytes()
+                entries[path.relative_to(self.source).as_posix()] = dict(sha256=m.digest(raw),
+                    bytes=len(raw), chunks=[m.put(self.store,raw[i:i+m.CHUNK]) for i in range(0,len(raw),m.CHUNK)])
+        generation = m.put(self.store,m.encoded(dict(version=1,files=entries)),'generations')
+        m.atomic(self.store/'current.json',m.encoded(dict(version=1,generation=generation,
+            file_count=len(entries),raw_bytes=sum(e['bytes'] for e in entries.values()))))
+        target = self.root/'legacy-restored'
+        m.restore(self.store,target)
+        plain = self.root/'plain-store'
+        result = m.pack(target,plain)
+        self.assertEqual(result['version'],2)
+        self.assertEqual(list(plain.rglob('*.gz')),[])
+        restored = self.root/'plain-restored'
+        m.restore(plain,restored)
+        for name, entry in entries.items():
+            self.assertEqual(m.digest((restored/name).read_bytes()),entry['sha256'])
+        self.assertTrue(any(plain.rglob('*.csv')))
+
+    def test_plain_size_limit_blocks_before_pointer_publication(self):
+        with patch.object(m,'MAX_SHARD',8):
+            with self.assertRaises(m.ArchiveError): m.pack(self.source,self.store)
+        self.assertFalse((self.store/'current.json').exists())
 
     def test_unsafe_paths_and_symlinks(self):
         for name in ('../escape', '/tmp/escape', 'jquants/../escape', 'jquants/.env', 'jquants//test'):

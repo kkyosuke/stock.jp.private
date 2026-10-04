@@ -44,7 +44,7 @@ def capture(source,recovered,selected,checks,details,*,inspection_at_jst):
     store=source/'stock.jp/data/jquants-archive';pointer=json.loads((store/'current.json').read_text())
     require((store/'current.json').read_bytes()==blob(source,commit,'stock.jp/data/jquants-archive/current.json'),'archive pointer differs from commit')
     codec.verify(store)
-    manifest=json.loads(codec.unpack(store,pointer['generation'],codec.MAX_INDEX,'generations'))
+    manifest=json.loads(codec.manifest_bytes(store,pointer))
     archive_hashes={p:v['sha256'] for p,v in manifest['files'].items()}
     require(bool(archive_hashes),'empty recovery archive')
     for root in (source,recovered):
@@ -95,7 +95,7 @@ def verify(root,drill):
         store=public/'data/jquants-archive'
         require(json.loads((store/'current.json').read_text())==m['archive_pointer'],'inspected generation pointer mismatch')
         codec.restore(store,snapshot/'operations/private/market-data')
-        manifest=json.loads(codec.unpack(store,m['archive_pointer']['generation'],codec.MAX_INDEX,'generations'))
+        manifest=json.loads(codec.manifest_bytes(store,m['archive_pointer']))
         require({p:v['sha256'] for p,v in manifest['files'].items()}==m['archive_hashes'],'archive manifest differs from observed files')
         try:
             from scripts.recovery_drill import validated_paper_run, hashes

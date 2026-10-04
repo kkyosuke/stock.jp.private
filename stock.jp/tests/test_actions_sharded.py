@@ -30,6 +30,40 @@ class ShardedTests(unittest.TestCase):
         document['fence']='f'*32;self.store.cas(revision,document)
         self.assertNotEqual(original,self.git.head)
         with self.assertRaises(r.RemoteStop):self.store.cas(revision,document)
+
+    def test_legacy_snapshot_cold_restore_then_plain_capture_preserves_ledger(self):
+        import json
+        codec=s.codec
+        legacy=self.root/'legacy'
+        raw=b'{"data":[]}\n'
+        chunk=codec.put(legacy,raw)
+        index=codec.encoded(dict(version=1,files={'jquants/empty.json':
+            dict(sha256=codec.digest(raw),bytes=len(raw),chunks=[chunk])}))
+        generation=codec.put(legacy,index,'generations')
+        codec.atomic(legacy/'current.json',codec.encoded(dict(version=1,generation=generation,
+            file_count=1,raw_bytes=len(raw))))
+        snapshot={'format':'git-shards-v1','files':{}}
+        for path in legacy.rglob('*'):
+            if path.is_file():
+                data=path.read_bytes()
+                snapshot['files'][path.relative_to(legacy).as_posix()]={
+                    'sha256':codec.digest(data),'bytes':len(data),'chunks':[self.store.put_blob(data)]}
+        document=dict(version=2,writer='actions-v1',fence='a'*32,blocked_campaigns=[],runs={},
+            snapshot=snapshot,github_budget=dict(window=1,reads=12,writes=4,last_read=0.,last_write=0.,blocked=0.))
+        revision=self.store.create(document)
+        cold=s.ShardedStore(self.git,authorization=f.authorization(),cache=self.root/'cold-cache')
+        _,loaded=cold.read()
+        target=self.root/'cold-source';cold.restore(loaded['snapshot'],target,r.reject_history)
+        self.assertEqual((target/'jquants/empty.json').read_bytes(),raw)
+        before=copy.deepcopy(loaded)
+        loaded['snapshot']=cold.capture(target,r.reject_history)
+        self.assertFalse(any(name.endswith('.gz') for name in loaded['snapshot']['files']))
+        loaded['fence']='b'*32
+        cold.cas(revision,loaded)
+        _,after=cold.read()
+        for key in set(before)-{'snapshot','fence'}:self.assertEqual(before[key],after[key])
+        cold.restore(after['snapshot'],self.root/'plain-restored',r.reject_history)
+        self.assertEqual((self.root/'plain-restored/jquants/empty.json').read_bytes(),raw)
     def test_large_store_shards_stay_under_existing_limits(self):
         # 24 MiB of independent incompressible wire chunks. No provider rows.
         # Metadata stays small; inline snapshot would exceed its 20 MiB cap.
@@ -82,7 +116,7 @@ class ShardedTests(unittest.TestCase):
         for path in self.source.rglob('*.json'):
             restored=self.root/'restored'/path.relative_to(self.source)
             self.assertEqual(s.codec.digest(path.read_bytes()),s.codec.digest(restored.read_bytes()))
-        print(json.dumps(dict(capacity_fixture='280x4000',raw_bytes=raw_bytes,compressed_bytes=compressed,ledger_snapshot_bytes=metadata)))
+        print(json.dumps(dict(capacity_fixture='280x4000',raw_bytes=raw_bytes,stored_bytes=compressed,ledger_snapshot_bytes=metadata)))
 
     def test_restored_snapshot_counts_toward_first_reservation_headroom(self):
         import random

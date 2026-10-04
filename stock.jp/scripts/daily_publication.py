@@ -69,7 +69,7 @@ def classify(kind, run_id, entries):
     for entry in entries:
         path, status = entry['path'], entry['status']
         if kind == 'market':
-            require(re.fullmatch(r'stock\.jp/data/jquants-archive/(current\.json|(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz)', path),
+            require(path.startswith('stock.jp/data/jquants-archive/') and codec.store_member(path.removeprefix('stock.jp/data/jquants-archive/')),
                     'unexpected market path')
             require(path.endswith('/current.json') or status == 'A', 'immutable archive object changed')
         else:
@@ -121,30 +121,28 @@ def strict_metadata(data):
 
 
 def validate_added_archive_members(store, entries):
-    """Every new compressed byte must belong to the fully validated current generation.
+    """Every new stored byte must belong to the fully validated current generation.
 
     Older generations already in base are retained, never rewritten or deleted.
     A daily PR publishes one generation; intermediate/orphan local files stay local.
     """
     pointer = strict_metadata((store / 'current.json').read_bytes())
     require(set(pointer) == {'version', 'generation', 'file_count', 'raw_bytes'}, 'unexpected pointer field')
-    require(type(pointer['version']) is int and pointer['version'] == 1
+    require(type(pointer['version']) is int and pointer['version'] in {1,2}
             and type(pointer['file_count']) is int and type(pointer['raw_bytes']) is int,
             'invalid pointer schema')
-    manifest = strict_metadata(codec.unpack(store, pointer['generation'], codec.MAX_INDEX, 'generations'))
+    manifest = strict_metadata(codec.manifest_bytes(store, pointer))
     require(set(manifest) == {'version', 'files'} and type(manifest['version']) is int
-            and manifest['version'] == 1 and isinstance(manifest['files'], dict), 'unexpected generation schema')
-    reachable = {codec.object_path(store, pointer['generation'], 'generations').relative_to(store).as_posix()}
+            and manifest['version'] == pointer['version'] and isinstance(manifest['files'], dict), 'unexpected generation schema')
     for entry in manifest['files'].values():
-        require(isinstance(entry, dict) and set(entry) == {'sha256', 'bytes', 'chunks'}, 'unexpected file metadata')
-        require(isinstance(entry['chunks'], list), 'invalid chunks')
-        for sha in entry['chunks']:
-            reachable.add(codec.object_path(store, sha).relative_to(store).as_posix())
+        fields = {'sha256', 'bytes', 'chunks'} if pointer['version'] == 1 else {'sha256', 'bytes', 'object'}
+        require(isinstance(entry, dict) and set(entry) == fields, 'unexpected file metadata')
+    reachable = codec.reachable_members(store, pointer)
     for entry in entries:
-        if entry['status'] == 'A' and entry['path'].endswith('.gz'):
+        if entry['status'] == 'A' and entry['path'] != 'stock.jp/data/jquants-archive/current.json':
             name = entry['path'].removeprefix('stock.jp/data/jquants-archive/')
             require(name in reachable, 'unreferenced added archive payload')
-    # restore subsequently verifies every referenced compressed hash/name, shard
+    # restore subsequently verifies every referenced plain or legacy compressed hash/name, shard
     # bound, expanded-size bound and reconstructed file checksum/content.
 
 

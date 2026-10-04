@@ -20,7 +20,7 @@ CLIのpack/restore例のdata/はstock.jp/基準、stageの--rootはrepo rootで�
 
 - 取得・復元: `operations/private/market-data/{jquants,daily-prices}/`（Git除外）
 - 検証用: `operations/private/market-data-staging/`（Git除外）
-- 圧縮正本: `stock.jp/data/jquants-archive/`（同じprivate repoで追跡）
+- JSON/CSV正本: `stock.jp/data/jquants-archive/`（同じprivate repoで追跡）
 - 個人の分析、選定リスト、保有、判断、run、台帳: stock.jp.privateだけで追跡
 - 認証情報: runtimeだけ。設定やarchiveに値を書かない
 
@@ -41,7 +41,7 @@ python -B stock.jp/scripts/jquants_ingest.py --root "$PWD"
 全9dataset完了とは報告しません。small batchと各datasetのサイズsampleを確認してから再開します。
 容量がordinary Gitに不適切なら停止し、対象datasetを黙って落としたりLFSを購入しません。
 
-圧縮・復元を検証後、stock.jpのstage手順を実施します。private可視性・push権限は直前の
+保存・復元を検証後、stock.jpのstage手順を実施します。private可視性・push権限は直前の
 GitHub読取metadataで検証し、本人限定ACLはユーザー確認として記録します。
 本人確認と独立したcollaborator列挙を混同しません。rawをPR本文・ログ・artifactへ出しません。
 専用branch/non-draft日次PRに保存し、[日次PR手順](daily-pr-publication.md)の意味検証と
