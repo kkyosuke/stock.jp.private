@@ -129,9 +129,10 @@ def validate_state(state, read):
         raw = read(PREFIX + item["path"])
         require(ingest.digest(raw) == sha and len(raw) == item["bytes"], "financial bulk checksum mismatch")
         require(datetime.fromisoformat(item["retrieved_at"]).tzinfo is not None)
-        require(type(item["rows"]) is int and item["rows"] >= 0)
+        require(item["rows"] is None or type(item["rows"]) is int and item["rows"] >= 0)
     if state["status"] == "COMPLETE":
         require(set(state["inventories"]) == set(DATASETS) and set(state["files"]) == set(expected))
+        require(all(type(item["rows"]) is int for item in state["files"].values()))
 
 
 class Client(ingest.Client):
@@ -218,21 +219,25 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
         for name in DATASETS:
             for identity in state["inventories"][name]:
                 key = identity["Key"]
-                if key in state["files"]:
+                if key in state["files"] and state["files"][key]["rows"] is not None:
                     continue
-                payload = client.get("/bulk/get", {"key": key})
-                url = payload.get("url")
-                require(isinstance(url, str), "financial download URL missing")
-                host = urlsplit(url).hostname
-                require(isinstance(host, str), "financial download hostname missing")
-                if not client.download_hosts:
-                    state["observed_download_hosts"] = sorted(set(state["observed_download_hosts"]) | {host})
-                    state["status"] = "INSPECTED"
+                if key not in state["files"]:
+                    payload = client.get("/bulk/get", {"key": key})
+                    url = payload.get("url")
+                    require(isinstance(url, str), "financial download URL missing")
+                    host = urlsplit(url).hostname
+                    require(isinstance(host, str), "financial download hostname missing")
+                    if not client.download_hosts:
+                        state["observed_download_hosts"] = sorted(set(state["observed_download_hosts"]) | {host})
+                        state["status"] = "INSPECTED"
+                        save()
+                        return state
+                    blob = delivery._fetch(folder, url, client, compressed=True, expected_size=identity["Size"])
+                    state["files"][key] = {**blob, "retrieved_at": ingest.utc_now(), "rows": None}
                     save()
-                    return state
-                blob = delivery._fetch(folder, url, client, compressed=True, expected_size=identity["Size"])
-                count = sum(1 for _ in csv_rows(folder / blob["path"], name))
-                state["files"][key] = {**blob, "retrieved_at": ingest.utc_now(), "rows": count}
+                item = state["files"][key]
+                count = sum(1 for _ in csv_rows(folder / item["path"], name))
+                item["rows"] = count
                 save()
         state["status"] = "COMPLETE"
         validate_state(state, lambda name: (source / name).read_bytes())
