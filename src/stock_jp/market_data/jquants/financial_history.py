@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 import gzip
 import io
 import json
+import math
 from pathlib import Path
 import re
 from urllib.parse import urlsplit
@@ -38,7 +39,7 @@ def file_period(key, endpoint):
     return start, next_month - timedelta(days=1)
 
 
-def inventory(payload, endpoint, start, end):
+def inventory(payload, endpoint, start, end, calendar=None):
     require(isinstance(payload.get("data"), list) and not payload.get("pagination_key"),
             "bulk inventory is incomplete")
     result, seen = [], set()
@@ -49,7 +50,10 @@ def inventory(payload, endpoint, start, end):
         if last < start or first > end:
             continue
         size, modified = row.get("Size"), row.get("LastModified")
-        require(type(size) is int and 0 < size <= storage.MAX_SHARD,
+        require(type(size) in (int, float) and math.isfinite(size) and size == int(size),
+                "bulk file size must be an exact integer byte count")
+        size = int(size)
+        require(0 < size <= storage.MAX_SHARD,
                 "financial bulk file exceeds the Git shard limit")
         require(isinstance(modified, str) and datetime.fromisoformat(modified.replace("Z", "+00:00")).tzinfo is not None)
         require(key not in seen, "duplicate financial bulk-file key")
@@ -63,7 +67,17 @@ def inventory(payload, endpoint, start, end):
         while day <= min(end, date.fromisoformat(item["to"])):
             covered.add(day)
             day += timedelta(days=1)
-    require(len(covered) == (end - start).days + 1, "financial bulk inventory has a date gap")
+    # Historical files cover whole months; live files are delivered on cash
+    # sessions. Closed dates need no fabricated empty financial CSV.
+    monthly_end = max((date.fromisoformat(item["to"]) for item in result
+                       if len(re.search(r"_(\d+)\.csv\.gz$", item["Key"])[1]) == 6), default=start-timedelta(days=1))
+    calendar = {row["Date"]: str(row["HolDiv"]) for row in (calendar or [])}
+    day = start
+    while day <= end:
+        if day not in covered:
+            require(day > monthly_end and calendar.get(day.isoformat()) in {"0", "3"},
+                    "financial bulk inventory has a date gap")
+        day += timedelta(days=1)
     return sorted(result, key=lambda item: (item["from"], item["Key"]))
 
 
@@ -81,7 +95,7 @@ def csv_rows(path, dataset):
 
 
 def validate_state(state, read):
-    require(set(state) == {"version", "as_of", "from", "plan", "budget", "requests", "inventories", "files", "status", "observed_download_hosts", "error", "retry_not_before"})
+    require(set(state) == {"version", "as_of", "from", "plan", "budget", "requests", "inventories", "files", "status", "observed_download_hosts", "error", "retry_not_before", "calendar"})
     end, start = date.fromisoformat(state["as_of"]), date.fromisoformat(state["from"])
     require(state["version"] == 1 and state["plan"] == "light" and start == period(BY_NAME["financial_summary"], "light", end)[0])
     require(type(state["budget"]) is int and state["budget"] == DEFAULT_BUDGET)
@@ -93,9 +107,16 @@ def validate_state(state, read):
                 and re.fullmatch("[0-9a-f]{64}", receipt["query_sha256"]) is not None)
         require(datetime.fromisoformat(receipt["reserved_at"]).tzinfo is not None)
     require(set(state["inventories"]) <= set(DATASETS))
+    calendar = None
+    if state["calendar"]:
+        ref = state["calendar"]
+        require(set(ref) == {"path", "sha256", "bytes"} and ref["path"] == "calendar.json")
+        raw = read(PREFIX + ref["path"])
+        require(ingest.digest(raw) == ref["sha256"] and len(raw) == ref["bytes"], "financial calendar checksum mismatch")
+        calendar = json.loads(raw)["data"]
     expected = {}
     for name, items in state["inventories"].items():
-        checked = inventory({"data": items}, BY_NAME[name].endpoint, start, end)
+        checked = inventory({"data": items}, BY_NAME[name].endpoint, start, end, calendar)
         require(checked == items)
         expected.update({item["Key"]: (name, item) for item in items})
     require(set(state["files"]) <= set(expected))
@@ -148,7 +169,19 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
     folder.mkdir(parents=True, exist_ok=True)
     state = ingest.read_json(state_path) or {"version": 1, "as_of": end.isoformat(), "from": start.isoformat(),
         "plan": "light", "budget": DEFAULT_BUDGET, "requests": [], "inventories": {}, "files": {},
-        "status": "RUNNING", "observed_download_hosts": [], "error": None, "retry_not_before": None}
+        "status": "RUNNING", "observed_download_hosts": [], "error": None, "retry_not_before": None, "calendar": None}
+    state.setdefault("calendar", None)  # Retain charges from the initial inventory inspection.
+    if state["calendar"] is None and (root / "data/market/jquants/current.json").exists():
+        store = root / "data/market/jquants"
+        pointer = ingest.read_json(store / "current.json")
+        members = json.loads(storage.manifest_bytes(store, pointer))["files"]
+        retained = json.loads(storage.member_bytes(store, pointer, members["jquants/history/state.json"]))
+        pages = retained["ranges"]["trading_calendar"]["pages"]
+        require(len(pages) == 1, "financial history requires the adopted cash calendar")
+        raw = storage.member_bytes(store, pointer, members["jquants/" + pages[0]["path"]])
+        require(ingest.digest(raw) == pages[0]["sha256"])
+        storage.atomic(folder / "calendar.json", raw)
+        state["calendar"] = {"path": "calendar.json", "sha256": ingest.digest(raw), "bytes": len(raw)}
     validate_state(state, lambda name: (source / name).read_bytes())
     def save():
         ingest.atomic_json(state_path, state)
@@ -179,7 +212,8 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
                     save()
                 require(cached["query"] == query, "financial inventory query changed")
                 payload = cached
-                state["inventories"][name] = inventory(payload, BY_NAME[name].endpoint, start, end)
+                calendar = json.loads((folder / "calendar.json").read_bytes())["data"] if state["calendar"] else None
+                state["inventories"][name] = inventory(payload, BY_NAME[name].endpoint, start, end, calendar)
                 save()
         for name in DATASETS:
             for identity in state["inventories"][name]:

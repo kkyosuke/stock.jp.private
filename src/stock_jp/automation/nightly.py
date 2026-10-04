@@ -15,6 +15,7 @@ from stock_jp.workspace import project_root
 from stock_jp.automation import http, rate, publication
 from stock_jp.automation.daily_remote import REPO, RemoteStop, git_blob, require, sha
 from stock_jp.market_data import storage
+from stock_jp.market_data import observations
 from stock_jp.market_data.jquants import daily, ingest
 
 PREFIX = "/repos/" + REPO
@@ -99,7 +100,8 @@ class Git:
             else:
                 require(path == "data/market/jquants/current.json" or re.fullmatch(
                     r"data/market/jquants/(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.(?:json|csv|bin|chunk)", path)
-                    or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path),
+                    or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path)
+                    or path in {"data/market/observations/" + name for name in observations.TABLES},
                     "unexpected data publication path")
             storage.scan(raw)
             blob = git_blob(raw)
@@ -305,8 +307,10 @@ def trusted_context(root, context, preview):
 
 def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
+    observation_report = observations.rebuild(root)
     candidate = storage.stage(root, checkpoint.git.private_metadata())
     report = {**result, "generation": candidate["generation"], "store_bytes": candidate["store_bytes"],
+              "observations": observation_report,
               "analysis_readiness": "NOT_EVALUATED", "preview": checkpoint.preview}
     git = checkpoint.git
     base = git.tree(checkpoint.main)
@@ -328,6 +332,12 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
         name = RECORDS + day + ".json"
         if base.get(name) != git_blob(raw):
             files[name] = raw
+    for name in observations.TABLES:
+        path = "data/market/observations/" + name
+        raw = (root / path).read_bytes()
+        require(len(raw) <= storage.MAX_SHARD, "observation table exceeds the Git shard limit")
+        if base.get(path) != git_blob(raw):
+            files[path] = raw
     if not files:
         return {**report, "status": "ALREADY_ADOPTED"}
     branch = "daily/market/" + result["run_date"] + ("-preview" if checkpoint.preview else "")

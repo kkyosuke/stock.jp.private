@@ -26,6 +26,7 @@ RECORD_PATHS = {
     "schema-migration-log.csv": "operations/ledgers/schema-migration-log.csv",
     "corporate-actions.csv": "data/market/observations/corporate-actions.csv",
     "forecast-history.csv": "data/market/observations/forecast-history.csv",
+    "financial-history.csv": "data/market/observations/financial-history.csv",
     "share-count-history.csv": "data/market/observations/share-count-history.csv",
     "earnings-calendar-history.csv": "data/market/observations/earnings-calendar-history.csv",
     "market-data": ".work/market-data",

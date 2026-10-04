@@ -255,7 +255,9 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(report["status"], "ADOPTED")
         before, after = self.repo.tree(old), self.repo.tree(self.repo.refs["main"])
         changed = {p for p in before.keys() | after.keys() if before.get(p) != after.get(p)}
-        self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) for p in changed))
+        self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) or
+                            p in {"data/market/observations/" + name for name in n.observations.TABLES}
+                            for p in changed))
         operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1] or c[1].endswith("/merge")]
         self.assertEqual(operations, ["GET", "PUT"])
 
