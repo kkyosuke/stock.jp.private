@@ -49,6 +49,8 @@ class FixedHTTP:
                 if not 200 <= status < 300:
                     return status, None
                 raw = response.read(self.limit + 1)
+                if status == 204 and not raw:
+                    return status, None
                 if len(raw) > self.limit:
                     raise RemoteStop('HTTP response exceeds limit')
                 def unique(pairs):
@@ -87,7 +89,8 @@ class GitHubTransport:
             raise RemoteStop('unexpected GitHub repository')
         if method != 'GET':
             suffix = urlsplit(path).path[len(prefix):]
-            if not (method == 'POST' and suffix in {'/git/blobs','/git/trees','/git/commits','/git/refs','/pulls'}
+            if not (method == 'POST' and suffix in {'/git/blobs','/git/trees','/git/commits','/git/refs','/pulls',
+                                                   '/actions/workflows/ci.yml/dispatches'}
                     or method == 'PATCH' and suffix in {
                         '/git/refs/heads/automation/daily-checkpoint-v1',
                         '/git/refs/heads/automation/nightly-market-data',
@@ -95,6 +98,10 @@ class GitHubTransport:
                     }
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
+            if suffix == '/actions/workflows/ci.yml/dispatches' and (
+                    set(body or {}) != {'ref'} or not re.fullmatch(
+                        r'daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?', (body or {}).get('ref', ''))):
+                raise RemoteStop('CI dispatch requires a reviewed market-data branch')
             if suffix == '/git/refs':
                 ref = (body or {}).get('ref','')
                 if not (ref in {

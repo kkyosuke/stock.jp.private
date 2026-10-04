@@ -77,6 +77,10 @@ class Repository:
             if route.startswith("/pulls/"):
                 return copy.deepcopy(self.pulls[int(route.rsplit("/", 1)[-1]) - 1])
         if method == "POST":
+            if route == "/actions/workflows/ci.yml/dispatches":
+                if body["ref"] not in self.refs:
+                    raise AssertionError("CI dispatch for an unknown branch")
+                return None
             if route == "/git/blobs":
                 return {"sha": self.blob(base64.b64decode(body["content"]))}
             if route == "/git/trees":

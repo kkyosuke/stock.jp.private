@@ -109,7 +109,7 @@ def main():
     }.items()}
     try:
         context["run_id"] = int(os.environ.get("GITHUB_RUN_ID", "0"))
-        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get("AUTOMATION_PAT")))
+        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get("GITHUB_TOKEN")))
         result = execute(project_root(), context, request, args.as_of)
         code = 0 if result["status"] in {"COMPLETE", "INSPECTED"} else 2
     except (RemoteStop, ingest.IngestionError, history.delivery.DeliveryError) as error:

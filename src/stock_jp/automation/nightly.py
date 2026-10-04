@@ -342,6 +342,9 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
                  "データ以外の変更を含まないことと、このheadの全CI成功を確認してから採用します。"),
     })
     report["pull_request"] = pr["html_url"]
+    # GITHUB_TOKEN-created PRs do not trigger pull_request workflows.
+    # workflow_dispatch is explicit and executes CI on this exact branch head.
+    git.api("POST", "/actions/workflows/ci.yml/dispatches", {"ref": branch})
     deadline = monotonic() + timeout
     while monotonic() < deadline:
         checks = publication.pages(git.request, "/commits/" + head + "/check-runs", "check_runs")
@@ -417,7 +420,7 @@ def main():
     try:
         context["run_id"] = int(os.environ.get("GITHUB_RUN_ID", "0"))
         request = rate.BudgetedTransport(GitHubRequests(
-            http.GitHubTransport(os.environ.get("AUTOMATION_PAT")),
+            http.GitHubTransport(os.environ.get("GITHUB_TOKEN")),
             http.GitHubTransport(os.environ.get("GITHUB_TOKEN"))))
         result = execute(project_root(), context, request, target=args.target_date, preview=args.preview)
         code = 0
