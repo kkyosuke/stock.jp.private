@@ -6,10 +6,12 @@ import uuid
 try:
     from scripts import actions_daily_remote as r, jquants_daily as daily, jquants_ingest as ingest
     from scripts import market_data_git as codec, jquants_calendar as calendar_validation
+    from scripts import actions_legacy_debit as legacy_debit
     from scripts.jquants_catalog import BY_NAME
 except ModuleNotFoundError:
     import actions_daily_remote as r, jquants_daily as daily, jquants_ingest as ingest
     import market_data_git as codec, jquants_calendar as calendar_validation
+    import actions_legacy_debit as legacy_debit
     from jquants_catalog import BY_NAME
 
 
@@ -32,12 +34,18 @@ def campaign(scope):
 
 def validate(document):
     value = document['targets']
-    r.require(set(value) == {'campaign', 'profiles', 'batches', 'ranges'}, 'invalid target ledger')
+    required = {'campaign', 'profiles', 'batches', 'ranges'}
+    r.require(required <= set(value) <= required | {'legacy_debit'}, 'invalid target ledger')
     campaign({'history_campaign': value['campaign']})
+    debit = value.get('legacy_debit')
+    if debit is not None:
+        legacy_debit.validate(debit, value['campaign'])
     r.require(isinstance(value['profiles'], dict) and set(value['profiles']) == set(document['runs']),
               'date budget identity missing')
     for target, profile in value['profiles'].items():
         day(target)
+        r.require(len(document['runs'][target]['reservation_ids']) + legacy_debit.charges(debit, target) <= 12,
+                  'legacy plus target date budget exceeded')
         r.require(profile in {'daily', 'history'}, 'invalid target profile')
         if profile == 'history':
             r.require(value['campaign']['start_date'] <= target <= value['campaign']['as_of'], 'date outside campaign')
@@ -46,7 +54,9 @@ def validate(document):
               and all(isinstance(b, list) and len(b) <= 12 for b in batches)
               and all(len(b) == 12 for b in batches[:-1]), '50 batch or 12 request limit exceeded')
     receipts = [v for batch in batches for v in batch]
-    r.require(len(receipts) <= 600, '600 request campaign limit exceeded')
+    r.require(len(receipts) + legacy_debit.charges(debit) <= 600, '600 request campaign limit exceeded')
+    r.require((len(batches) if receipts else 0) + len((debit or {}).get('batches', [])) <= 50,
+              'legacy plus target batch limit exceeded')
     expected = {(target, reservation) for target, run in document['runs'].items()
                 if value['profiles'][target] == 'history' for reservation in run['reservation_ids']}
     actual = []
@@ -65,6 +75,7 @@ def validate(document):
 
 def transition(old, new):
     r.require(new['campaign'] == old['campaign'], 'campaign change cannot reset budget')
+    r.require(new.get('legacy_debit') == old.get('legacy_debit'), 'legacy debit cannot change or disappear')
     r.require(all(new['profiles'].get(k) == v for k, v in old['profiles'].items()), 'target profile changed')
     before = [v for b in old['batches'] for v in b]
     after = [v for b in new['batches'] for v in b]
@@ -153,9 +164,15 @@ class TargetCheckpoint(r.RunnerCheckpoint):
 
     def before_reservation(self):
         super().before_reservation()
+        debit = self.document['targets'].get('legacy_debit')
+        if len(self.document['runs'][self.day]['reservation_ids']) + legacy_debit.charges(debit, self.day) >= 12:
+            raise ingest.RequestBudgetExhausted('legacy plus target date exhausted')
         if self.profile == 'history':
             batches = self.document['targets']['batches']
-            if sum(map(len, batches)) >= 600 or len(batches) == 50 and len(batches[-1]) == 12:
+            prior_batches = len((debit or {}).get('batches', []))
+            if (sum(map(len, batches)) + legacy_debit.charges(debit) >= 600
+                    or prior_batches + len(batches) > 50
+                    or prior_batches + len(batches) == 50 and len(batches[-1]) == 12):
                 raise ingest.RequestBudgetExhausted('history campaign exhausted')
 
     def before_provider_io(self):
@@ -191,11 +208,17 @@ class TargetCheckpoint(r.RunnerCheckpoint):
                   and state['budget'] == old['budget'] and state['config_sha256'] == old['config_sha256'],
                   'persistent target budget exhausted or changed')
         reservation = uuid.uuid4().hex
+        debit = self.document['targets'].get('legacy_debit')
+        r.require(len(state['requests']) + legacy_debit.charges(debit, self.day) <= 12,
+                  'legacy plus target date budget exceeded')
         if self.profile == 'history':
             batches = self.document['targets']['batches']
-            r.require(sum(map(len, batches)) < 600, '600 request campaign limit exceeded')
+            r.require(sum(map(len, batches)) + legacy_debit.charges(debit) < 600,
+                      '600 request campaign limit exceeded')
+            prior_batches = len((debit or {}).get('batches', []))
+            r.require(prior_batches + len(batches) <= 50, 'legacy plus target batch limit exceeded')
             if len(batches[-1]) == 12:
-                r.require(len(batches) < 50, '50 batch limit exceeded')
+                r.require(prior_batches + len(batches) < 50, '50 batch limit exceeded')
                 batches.append([])
             batches[-1].append(dict(target_date=self.day, reservation_id=reservation))
         run['state'] = copy.deepcopy(state)

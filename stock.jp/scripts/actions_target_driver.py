@@ -10,12 +10,14 @@ try:
     from scripts import jquants_daily as daily, market_data_git as codec, actions_http as http, actions_rate as rate
     from scripts.actions_sharded import ShardedStore
     from scripts.actions_cache import ImmutableCache
+    from scripts import actions_readiness as readiness
 except ModuleNotFoundError:
     import actions_driver as legacy, actions_owner as owner, actions_targets as targets
     import actions_daily_remote as r, actions_publication as pub, actions_authorization as auth
     import jquants_daily as daily, market_data_git as codec, actions_http as http, actions_rate as rate
     from actions_sharded import ShardedStore
     from actions_cache import ImmutableCache
+    import actions_readiness as readiness
 
 
 class Driver(legacy.Driver):
@@ -57,7 +59,7 @@ class Driver(legacy.Driver):
                 r.require(set(scope.get('modes', [])) == {'daily', 'history'}, 'common Action scopes missing')
                 scope, facts = auth.verify_scope(self.request, approved_manifest_sha256=self.pin, mode='daily',
                     writer=self.writer, source=adopted, now=self.clock(), clock=self.clock,
-                    allow_pending_publication=True,
+                    allow_pending_publication=True, allow_legacy_debit=True,
                     handover_probe=lambda _:dict(retirement_verified=True, github_run_verified=True))
                 store = ShardedStore(self.request, authorization=facts, cache=work/'cache')
                 revision, document = store.read()
@@ -73,6 +75,12 @@ class Driver(legacy.Driver):
                     document['approval_binding'] = binding
                     document['targets'] = dict(campaign=approved_campaign,
                         profiles={day:'daily' for day in document['runs']}, batches=[[]], ranges={})
+                    if 'legacy_debit' in scope:
+                        targets.legacy_debit.validate(scope['legacy_debit'], approved_campaign)
+                        r.require(not document.get('history'), 'legacy debit cannot double count adopted history')
+                        document['targets']['legacy_debit'] = scope['legacy_debit']
+                r.require(document['targets'].get('legacy_debit') == scope.get('legacy_debit'),
+                          'legacy debit differs from pinned scope')
                 r.require(document['targets']['campaign'] == approved_campaign, 'campaign change cannot reset budget')
                 profile = document['targets']['profiles'].get(target_date)
                 if profile is None:
@@ -167,8 +175,9 @@ def main():
     parser.add_argument('--root', type=Path, default=Path.cwd())
     args = parser.parse_args()
     try:
-        if os.environ.get('STOCK_ACTIONS_ENABLED') != 'true':
-            print(json.dumps({'status':'BLOCKED', 'reason':'execution_disabled'}))
+        setup = readiness.report(args.root)
+        if setup['blockers']:
+            print(json.dumps(setup, sort_keys=True))
             return 2
         try:
             from scripts.history_resources import constrain_memory

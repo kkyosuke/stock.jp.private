@@ -1,5 +1,52 @@
 # 手動Actionの開始日と取得前の確認
 
+## 2026-10-04のwriter・予算照合
+
+- 親が旧dot task `6ac043c533dc8191b37cc7ab6aab1af7` を停止。
+  親からの実施結果は `success:true`、`is_enabled:false`、`next_run_time:null`、
+  更新時刻 `2026-10-04T00:51:24.564566+00:00`。親は旧runnerを今後起動しないと通知した。
+  これは親が確認した事実であり、executorからautomation APIを再検証したものではない。
+- executorの旧writer作業コピーとbatch 1復元コピーは、取得データ83ファイルが
+  全件ハッシュ一致。旧作業コピーのHEADはremote branchと同じ `a765dd7` でclean。
+  ローカルのみの追加結果・変更は見つからなかった。
+- journal SHA-256は
+  `cdf57bd1df68ba160b46c55f670b7bf50d84a38c80eb5fbc71292f7c5d75f83e`。
+  12予約・1batch・10完了task。全予約を保存済み応答と1対1で照合した。
+  最終予約は `2026-10-03T13:01:48.425907+09:00`。
+- 確認時に取得プロセスはなく、取得lockは保持されていなかった。
+  残存gitプロセスはzombieであり、実行中writerではない。
+  このプロセス確認は当該executorに限る。
+- 未採用payloadは取り込まない。旧12回・1batchを保持するmetadata-only debitを
+  準備できる。最初の2025-08-07に共有2回を含む4回、08-08・08-12・08-13・08-14に
+  各2回を計上する。新規取得に残る総枠は、この照合対象について588回・49batch。
+  当該日付の12回上限にも旧消費を含める。
+
+この確認は承認manifestの採用・checkpointの作成・Action有効化や実取得成功を
+意味しない。停止証跡と予算metadataを既存のscopeへ反映してから実行時検証を行う。
+
+## 設定不足を一括確認する
+
+実取得を伴わないローカル診断:
+
+```sh
+python stock.jp/scripts/actions_readiness.py --root .
+```
+
+対象日Actionも同じ診断を最初に行い、`execution_disabled` だけでなく
+承認pin・credentialの有無・承認manifest・退役証跡の不足をまとめて返す。
+credentialの値は出力しない。診断はネットワーク通信も設定変更も行わない。
+手元の環境にsecretがないことは、Actions側のsecret欠落を意味しない。
+`LOCAL_CONFIGURATION_PRESENT` はファイルと設定の存在確認にすぎず、実行許可ではない。
+真正な停止証跡、既存checkpoint、未解決履歴、消費予算と承認内容は実行時に検証する。
+旧外部controllerサービスを新設する必要はない。
+
+2026-10-04の再確認ではmain `151d8eb` に承認manifest・退役証跡がなく、
+checkpoint refは404。実行中・待機中Actionsとopen市場データPRはなかった。
+GitHubだけでは旧cloud writerやdotの停止を証明できない。追加の照合結果は上記参照。
+未採用履歴branchは引き続き下記のcommitにあり、予算のリセットや採用は行っていない。
+手動run `37164152501` では親が確認したログ上、取得有効化変数と承認pinが空で、
+既存の2つのsecretは非空だった。secretの有効性・scopeは未検証である。
+
 ## 開始日の回答
 
 既存の280営業日計画を継続する場合、先頭候補は **2025-08-07**。
@@ -72,8 +119,8 @@ GitHubのactor・rerunの意味は
    確認する。スケジュール停止だけをwriter終了の証拠にしない。
 3. 未採用・拒否campaignの扱いと、少なくとも保存済み12回を含む総消費をレビューする。
    拒否payloadを転送せず、既存上限内で予算を継承する方法が必要。
-   現コードはlegacy履歴予算の自動移行を拒否するため、単に新checkpointを作っても
-   この未解決事項を解消したことにはならない。
+   metadata-only debitの形式は[対象日運用手順](actions-target-date.md)を参照する。
+   単に空のcheckpointを作って既使用枠を無視してはならない。
 4. [退役証跡の形式](actions-target-date.md#activation-prerequisites-not-performed-by-this-change)
    に従い、真正な停止証跡を用意する。時刻や終了状態を捏造しない。
 5. 最終コード採用後のbaseline、開始日・終了日・営業日数、checkpoint初期SHA、期限、
