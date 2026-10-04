@@ -93,6 +93,7 @@ state owns request receipts; this record binds their targets to the budget ledge
         raise ingest.IngestionError('local receipt target cannot be reconciled')
 
     def sync(self, state):
+        daily.require(state['batch_limit'] == 12, 'local fill requires twelve-request batches')
         requests = [r for batch in state['batches'] for r in batch]
         old_targets = self.record['request_targets']
         daily.require(len(requests) >= len(old_targets) and
@@ -116,6 +117,15 @@ state owns request receipts; this record binds their targets to the budget ledge
         total = legacy_debit.charges(ledger['legacy_debit']) + sum(ledger['prior_charges'].values())
         if total >= 600:
             raise ingest.RequestBudgetExhausted('shared history budget exhausted')
+        # The local command explicitly requests the whole campaign. Advance
+        # inside the locked collector so each batch need not parse all prior
+        # raw pages again. Reservations still retain the original 12-call bound.
+        if len(self.state['batches'][-1]) == self.state['batch_limit'] and len(self.state['batches']) < 50:
+            self.state['batches'].append([])
+            source = self.root / MARKET_WORK
+            history.validate_history(self.state, lambda name: (source / name).read_bytes())
+            ingest.atomic_json(source / self.record['history_state'], self.state)
+            self.sync(self.state)
 
     def reserve(self, state):
         self.sync(state)
@@ -138,6 +148,9 @@ def run(root, *, as_of, sessions=280, transport=None, sleep=None, progress=None)
     state_path = root / MARKET_WORK / 'jquants/history/state.json'
     state = ingest.read_json(state_path)
     batch = len(state['batches']) if state else 1
+    if state and batch < 50 and state['status'] in {'RUNNING', 'PAUSED', 'BATCH_EXHAUSTED'} and \
+            len(state['batches'][-1]) == state['batch_limit']:
+        batch += 1
     while True:
         result = history.run(root, as_of=as_of, sessions=sessions, batch=batch,
                              remote=journal, transport=transport, sleep=sleep)

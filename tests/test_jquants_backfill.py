@@ -79,6 +79,21 @@ class BackfillTest(unittest.TestCase):
             self.fill()
         self.assertEqual(len(self.calls), before)
 
+    def test_crash_on_batch_boundary_resumes_without_refund(self):
+        self.prepare()
+        attempts = 0
+        def interrupted(endpoint, query):
+            nonlocal attempts
+            attempts += 1
+            if attempts == 12:
+                raise KeyboardInterrupt()
+            return self.transport(endpoint, query)
+        with self.assertRaises(KeyboardInterrupt):
+            self.fill(transport=interrupted)
+        self.assertEqual(sum(self.ledger()['prior_charges'].values()), 12)
+        self.assertEqual(self.fill()['requests_used'], 19)
+        self.assertEqual(sum(self.ledger()['prior_charges'].values()), 19)
+
     def test_paginated_request_targets_and_resume(self):
         self.prepare()
         def paginated(endpoint, query):
