@@ -1,4 +1,7 @@
 node_modules/
+.venv/
+.cache/
+.work/
 .npm-cache/
 .wrangler/
 .dev.vars
@@ -12,7 +15,7 @@ __pycache__/
 *.pem
 *.p12
 *.pfx
-operations/private/historical-replay/**/raw/
-# Uncompressed work area stays local; reviewed compressed generations use stock.jp/data/jquants-archive/.
-operations/private/market-data/
-operations/private/market-data-staging/
+*.egg-info/
+build/
+dist/
+research/**/raw/

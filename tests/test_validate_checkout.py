@@ -1,10 +1,11 @@
+from stock_jp.workspace import project_root
 import importlib.util
 from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('validate_checkout', ROOT / 'scripts/validate_checkout.py')
+ROOT = project_root()
+spec = importlib.util.spec_from_file_location('validate_checkout', ROOT / 'src/stock_jp/automation/checkout.py')
 checkout = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(checkout)
 
@@ -22,7 +23,7 @@ class CheckoutValidationTest(unittest.TestCase):
         self.assertTrue(result['valid'])
         self.assertEqual(result['runtime_readiness'], 'NOT_EVALUATED')
         self.assertIsNone(result['paper_go'])
-        self.assertEqual([call.args[0] for call in command.call_args_list], ['operation_state.py', 'operation_policy.py'])
+        self.assertEqual([call.args[0] for call in command.call_args_list], ['stock_jp.operation.state', 'stock_jp.operation.policy'])
         self.assertTrue(all(call.kwargs == {'include_market_data': False} for call in command.call_args_list))
 
     def test_invalid_schema_mode_submission_and_live_permission_fail(self):
@@ -34,17 +35,17 @@ class CheckoutValidationTest(unittest.TestCase):
             self.assertFalse(checkout.validate_checkout()['valid'])
 
     def test_required_workflow_distinguishes_static_synthetic_and_runtime(self):
-        text = (ROOT / '.github/workflows/format-check.yml').read_text()
-        self.assertIn('python scripts/validate_checkout.py', text)
-        self.assertIn('python stock.jp/scripts/operation_smoke.py --days 20 --start-date 2026-09-01', text)
-        self.assertNotIn('operation_bootstrap.py', text)
+        text = (ROOT / '.github/workflows/ci.yml').read_text()
+        self.assertIn('python -m stock_jp automation validate', text)
+        self.assertIn('python -m stock_jp operation smoke --days 20 --start-date 2026-09-01', text)
+        self.assertNotIn('stock_jp.operation.readiness', text)
         self.assertNotIn('paper_go', text)
         self.assertNotIn('--report-only', text)
 
 
 class PersistedRunMonitoringTest(unittest.TestCase):
     def setUp(self):
-        from scripts.operation_health import persisted_run_report, parse_time
+        from stock_jp.automation.health import persisted_run_report, parse_time
         self.report = persisted_run_report
         self.now = parse_time('2026-10-01T22:00:00+09:00')
         self.state = {'last_run_id': '2026-10-01', 'last_successful_run_at_jst': '2026-10-01T21:30:00+09:00',
@@ -75,5 +76,5 @@ class PersistedRunMonitoringTest(unittest.TestCase):
 
     def test_scheduled_workflow_reads_only_persisted_metadata(self):
         text = (ROOT / '.github/workflows/operation-health.yml').read_text()
-        self.assertIn('operation_health.py --persisted-only --output', text)
+        self.assertIn('python -m stock_jp automation health --persisted-only --output', text)
         self.assertNotIn('--report-only', text)

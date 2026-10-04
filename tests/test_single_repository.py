@@ -1,37 +1,41 @@
-"""Exercise a fresh checkout layout and the preserved import inventory."""
-import hashlib
+"""Canonical layout, sparse checkout metadata, and the installed CLI."""
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[1]
+from stock_jp.workspace import project_root
+
+ROOT = project_root()
 
 
 class SingleRepositoryTest(unittest.TestCase):
-    def test_ci_has_one_local_checkout_without_cross_repository_secret(self):
-        for file in (ROOT / '.github/workflows').glob('*.yml'):
+    def test_one_package_and_explicit_workflow_responsibilities(self):
+        workflows = ROOT / '.github/workflows'
+        self.assertEqual({p.name for p in workflows.glob('*.yml')},
+                         {'ci.yml', 'market-data-manual.yml', 'operation-health.yml'})
+        for file in workflows.glob('*.yml'):
             text = file.read_text()
-            for forbidden in ('repository: kkyosuke/stock.jp', 'submodules:', 'git submodule'):
+            for forbidden in ('submodules:', 'git submodule', 'working-directory: stock.jp'):
                 self.assertNotIn(forbidden, text)
-            if file.name not in {'daily-collector-disabled.yml','history-once-disabled.yml','manual-date-acquisition.yml'}:
-                self.assertNotIn('AUTOMATION_PAT',text)
-            if 'actions/checkout@' in text:
-                self.assertEqual(text.count('actions/checkout@'), 1)
-                self.assertIn('persist-credentials: false', text)
-                self.assertIn('!/stock.jp/data/jquants-archive/', text)
-                self.assertIn('!/stock.jp/data/daily-prices/', text)
-        self.assertFalse((ROOT / '.gitmodules').exists())
-        self.assertFalse((ROOT / 'stock.jp/.git').exists())
+            if file.name != 'market-data-manual.yml':
+                self.assertNotIn('AUTOMATION_PAT', text)
+            self.assertIn('persist-credentials: false', text)
+            self.assertIn('!/data/market/jquants/', text)
+            self.assertIn('!/data/market/legacy-prices/', text)
+            self.assertIn('pip install -e', text)
+        for retired in ('stock.jp', 'scripts', 'cloudflare', 'operations/private', '.gitmodules'):
+            self.assertFalse((ROOT / retired).exists(), retired)
+        self.assertEqual(list(ROOT.glob('**/pyproject.toml'))[:1], [ROOT / 'pyproject.toml'])
 
-    def test_source_inventory_is_complete_in_git_and_data_blobs_are_unchanged(self):
-        inventory = json.loads((ROOT / 'docs/migrations/common-source-inventory.json').read_text())
-        # Read Git metadata, not licensed rows. Sparse CI need not materialize data.
-        output = subprocess.check_output(['git', '-C', str(ROOT), 'ls-files', '--stage', '-z'])
+    def test_market_blobs_and_approval_bytes_are_preserved(self):
+        report = json.loads((ROOT / 'docs/archive/migrations/layout-migration.json').read_text())
         entries = {}
-        for item in output.split(b'\0'):
+        for item in subprocess.check_output(['git', '-C', str(ROOT), 'ls-files', '--stage', '-z']).split(b'\0'):
             if not item:
                 continue
             metadata, path = item.split(b'\t')
@@ -39,39 +43,44 @@ class SingleRepositoryTest(unittest.TestCase):
             self.assertNotEqual(mode, '160000')
             self.assertEqual(stage, '0')
             entries[path.decode()] = (mode, sha)
-        self.assertEqual(len(inventory['files']), 691)
-        for entry in inventory['files']:
-            target = 'stock.jp/' + entry['path']
-            self.assertIn(target, entries)
-            self.assertEqual(entries[target][0], entry['mode'])
-            if entry['path'].startswith('data/') and not entry['path'].endswith('.md'):
-                self.assertEqual(entries[target][1], entry['sha'])
-        self.assertFalse(any(p.startswith('operations/private/market-data/') for p in entries))
+        self.assertEqual(len(report['market_files']), 544)
+        for file in report['market_files']:
+            self.assertEqual(entries[file['path']], ('100644', file['git_blob']))
+        self.assertFalse(any(p.startswith(('.work/', '.cache/', 'stock.jp/')) for p in entries))
+        import hashlib
+        for file in report['preserved_approvals']:
+            self.assertEqual(hashlib.sha256((ROOT / file['path']).read_bytes()).hexdigest(), file['sha256'])
 
-    def test_setup_on_fresh_single_repo_is_idempotent_and_refuses_foreign_paths(self):
+    def command(self, root, *arguments):
+        environment = dict(os.environ, TMPDIR=str(ROOT / '.work/tmp')) if (ROOT / '.work/tmp').exists() else dict(os.environ)
+        return subprocess.run([sys.executable, '-m', 'stock_jp', '--root', str(root), *arguments],
+                              cwd=root, env=environment, text=True, capture_output=True, timeout=30)
+
+    def test_cli_initialization_uses_selected_root_and_preserves_existing_records(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            (root / 'scripts').mkdir()
-            (root / 'stock.jp/operations').mkdir(parents=True)
-            shutil.copy2(ROOT / 'scripts/setup-workspace.sh', root / 'scripts')
-            subprocess.run(['git', 'init', '-q', str(root)], check=True)
-            def setup():
-                return subprocess.run(['sh', str(root / 'scripts/setup-workspace.sh')], capture_output=True)
-            self.assertEqual(setup().returncode, 0)
-            link = root / 'stock.jp/operations/private'
-            self.assertEqual(link.resolve(), root / 'operations/private')
-            self.assertEqual(setup().returncode, 0)
-            (root / 'stock.jp/.git').write_text('stale checkout')
-            self.assertNotEqual(setup().returncode, 0)
-            (root / 'stock.jp/.git').unlink()
-            link.unlink()
-            link.mkdir()
-            (link / 'sentinel').write_text('preserve')
-            self.assertNotEqual(setup().returncode, 0)
-            self.assertEqual((link / 'sentinel').read_text(), 'preserve')
+            shutil.copytree(ROOT / 'templates', root / 'templates')
+            first = self.command(root, 'operation', 'state', 'init')
+            self.assertEqual(first.returncode, 0, first.stderr)
+            records = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+            second = self.command(root, 'operation', 'state', 'init')
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertEqual(json.loads(second.stdout)['created'], [])
+            self.assertEqual(records, {str(p.relative_to(root)): p.read_bytes() for p in root.rglob('*') if p.is_file()})
+            self.assertTrue((root / 'config/sources.json').is_file())
+            self.assertTrue((root / 'operations/ledgers/capital-ledger.csv').is_file())
+            self.assertTrue((root / 'data/market/observations/corporate-actions.csv').is_file())
+            self.assertFalse((root / 'stock.jp').exists())
+            result = self.command(root, 'operation', 'state', 'validate')
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(json.loads(result.stdout)['valid'])
 
-    def test_retired_commands_fail_without_running_git(self):
-        for name in ('update-public-submodule.sh', 'validate-public-auto-update.sh'):
-            result = subprocess.run(['sh', str(ROOT / 'scripts' / name)], capture_output=True)
-            self.assertEqual(result.returncode, 2)
-            self.assertIn(b'retired', result.stderr)
+    def test_catalog_requires_no_credentials_and_uses_selected_config(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / 'config').mkdir()
+            (root / 'config/sources.json').write_text('{"jquants":{"plan":"light","addons":[]}}')
+            result = self.command(root, 'data', 'catalog')
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse((root / '.work').exists())
+            self.assertIn('datasets', json.loads(result.stdout))

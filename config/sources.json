@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.5",
+  "request_timeout_seconds": 30,
+  "initial_lookback_days": 7,
+  "paper_manual_primary_source_fallback": true,
+  "price_source": {
+    "enabled": true,
+    "provider": "jquants_v2_private_archive",
+    "storage": "private_local",
+    "archive_root": ".work/market-data/daily-prices",
+    "manifest_path": "latest.json",
+    "minimum_daily_archive_coverage": 0.98,
+    "minimum_active_target_coverage": 1.0,
+    "maximum_latest_price_age_days": 7
+  },
+  "edinet": {
+    "enabled": true,
+    "base_url": "https://api.edinet-fsa.go.jp/api/v2",
+    "api_key_env": "EDINET_API_KEY"
+  },
+  "jpx_listed_master": {
+    "enabled": true,
+    "url": "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xlsx",
+    "minimum_issue_count": 3000
+  },
+  "jquants": {
+    "enabled": true,
+    "base_url": "https://api.jquants.com/v2",
+    "api_key_env": "JQUANTS_API_KEY",
+    "listed_master_enabled": true,
+    "daily_bars_enabled": true,
+    "financial_summary_enabled": true,
+    "earnings_calendar_enabled": true,
+    "trading_calendar_enabled": true,
+    "liquidity_lookback_calendar_days": 45,
+    "minimum_liquidity_sessions": 20,
+    "maximum_official_price_age_days": 7,
+    "calendar_forward_days": 21,
+    "plan": "light",
+    "addons": [],
+    "ingestion": {
+      "enabled": true,
+      "datasets": "all",
+      "archive_root": ".work/market-data/jquants",
+      "overlap_days": 30,
+      "reconcile_every_days": 30,
+      "max_requests_per_run": 12,
+      "download_hosts": []
+    }
+  },
+  "market_regime": {
+    "enabled": true,
+    "jpx_monthly_statistics_pages": [
+      "https://www.jpx.co.jp/markets/statistics-equities/monthly/index.html",
+      "https://www.jpx.co.jp/markets/statistics-equities/monthly/00-archives-01.html",
+      "https://www.jpx.co.jp/markets/statistics-equities/monthly/00-archives-02.html"
+    ],
+    "nikkei_vi_csv_url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+    "leading_ci_page_url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+    "minimum_vi_observations": 500,
+    "breadth_lookback_sessions": 280,
+    "maximum_breadth_close_age_days": 7,
+    "minimum_breadth_coverage": 0.98
+  },
+  "manual_primary_sources": {
+    "company_ir": true,
+    "tdnet": true,
+    "jpx_notices": true,
+    "official_prices_and_corporate_actions": true,
+    "trading_calendar": true
+  },
+  "market_data_git": {
+    "repository": "kkyosuke/stock.jp.private",
+    "storage": "private_git_plain",
+    "staging_root": ".work/market-data",
+    "store_root": "data/market/jquants",
+    "chunk_bytes": 1048576,
+    "max_shard_bytes": 26214400,
+    "max_store_bytes": 786432000,
+    "owner_only_access_confirmed": true,
+    "access_confirmation_basis": "owner statement in conversation 2026-10-02 JST; collaborator ACL not independently enumerated",
+    "automatic_upload": false
+  }
+}

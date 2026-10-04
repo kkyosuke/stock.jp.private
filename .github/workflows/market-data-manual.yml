@@ -1,0 +1,43 @@
+name: Manual market-data acquisition
+# Manual entry only. Runtime approval, retirement and ledger gates remain mandatory.
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Target date (YYYY-MM-DD); actual retrieval occurs at execution time'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: stock-private-market-writer
+  cancel-in-progress: false
+jobs:
+  reviewed-execution:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: main
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/operations/
+            !/data/market/jquants/
+            !/data/market/legacy-prices/
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+      - name: Install reviewed runtime dependencies
+        run: python -m pip install -e .
+      - name: Prepare reservation or execute approved attempt
+        env:
+          STOCK_TARGET_DATE: ${{ inputs.target_date }}
+          AUTOMATION_PAT: ${{ secrets.AUTOMATION_PAT }}
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+          STOCK_ACTIONS_ENABLED: ${{ vars.STOCK_ACTIONS_ENABLED }}
+          STOCK_ACTIONS_APPROVAL_SHA256: ${{ vars.STOCK_ACTIONS_APPROVAL_SHA256 }}
+        run: python -m stock_jp automation acquire --target-date "$STOCK_TARGET_DATE" --root "$GITHUB_WORKSPACE"

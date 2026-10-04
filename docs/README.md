@@ -1,16 +1,19 @@
-# private ドキュメント索引
+# 資料一覧
 
-## 正本
+現在の構成・操作手順は次の資料を参照する。可変の値と保存先の正本は
+[構成と正本](architecture/repository-layout.md) に定義している。
 
-- [アシスタント日次実行契約](operations/assistant-daily-operation.md): 収集・調査・PAPER実行・private保存・停止条件
-- [リポジトリ全体構成](repository-layout.md): public/private の境界と配置
-- [市場データの非公開保存・移行手順](operations/private-market-data-storage.md): Git外のraw archive、移行前提、欠損時の停止
-- [private 運用手順](operations/private-operation-runbook.md): setup、日次、競合、復旧
-- [運用開始後の詳細スケジュール](operations/post-launch-operation-schedule.md): 日次フロー、人の作業、定期review、LIVE移行
-- [旧submodule同期の廃止](operations/automatic-submodule-update.md): 単一repoでの通常review
-- [LIVE GO/NO-GO 基準](live-readiness.md): gate、evidence、停止条件
-- [2026-09-01 readiness review](reviews/operation-readiness-review-2026-09-01.md): 現在地と次の作業
+- [市場データの保存・取得](operations/market-data.md)
+- [日次運用](operations/runbook.md)
+- [自動化と取得承認](operations/automation.md)
+- [復元と復旧証跡](operations/recovery.md)
+- [LIVE判定と人の承認](operations/live-gates.md)
+- [有効な戦略 v0.4](rules/tenbagger-rule-v0.4.md)
+- [過去の資料](archive/README.md)
 
-汎用的な戦略ルール、コード仕様、研究は [共通ドキュメント](../stock.jp/docs/README.md)を正本とします。private 側には、個人・口座・現在の対象・実運用判断に依存する内容だけを置きます。
+実験の入力・結果・限界は各ディレクトリで管理する。
 
-日次の詳細な report、decision、handoff、台帳は `operations/private/` に保存します。`docs/` に複製して二重の正本を作りません。
+- [価格エピソード 2016–2026](../research/price-episodes-2016-2026/README.md)
+- [価格による出口検証 2016–2026](../research/price-exit-2016-2026/README.md)
+- [資金配分再生 2025](../research/allocation-replay-2025/README.md)
+- [履歴再生 2025–2026](../research/historical-replay-2025-2026/README.md)
