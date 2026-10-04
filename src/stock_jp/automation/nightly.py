@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import base64
 import copy
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 import json
 import os
 from pathlib import Path
@@ -138,6 +138,13 @@ class Git:
         return run_id
 
 
+def scheduled_day(at):
+    """Latest elapsed 21:00 JST boundary, not GitHub's nominal cron date."""
+    require(at.tzinfo is not None and at.utcoffset() is not None, "aware timestamp required")
+    local = at.astimezone(daily.JST)
+    return local.date() - timedelta(days=int(local.hour < 21))
+
+
 class Checkpoint:
     profile = "daily"
 
@@ -151,7 +158,8 @@ class Checkpoint:
                     "nightly checkpoint journal missing or not a regular file")
             self.document = json.loads(git.read(self.tree[JOURNAL]))
             require(self.document.get("version") == 1
-                    and set(self.document) == {"version", "runs", "files", "github_budget"},
+                    and set(self.document) in ({"version", "runs", "files", "github_budget"},
+                                              {"version", "runs", "files", "github_budget", "scheduled_targets"}),
                     "invalid nightly checkpoint")
             for day, state in self.document["runs"].items():
                 daily.validate_state(state)
@@ -162,9 +170,29 @@ class Checkpoint:
             require(not any(p.startswith(RECORDS) for p in self.tree),
                     "published nightly records exist but checkpoint was deleted")
             self.document = {"version": 1, "runs": {}, "files": {}, "github_budget": None}
+        bindings = self.document.get("scheduled_targets", {})
+        require(isinstance(bindings, dict), "invalid scheduled targets")
+        for run_id, binding in bindings.items():
+            require(re.fullmatch(r"[1-9][0-9]*", run_id) is not None
+                    and isinstance(binding, dict) and set(binding) == {"date", "resolved_at"},
+                    "invalid scheduled target identity")
+            require(scheduled_day(daily.aware(binding["resolved_at"])).isoformat() == binding["date"],
+                    "invalid scheduled target date")
         self.saved = ingest.encoded({k: v for k, v in self.document.items() if k != "github_budget"})
         self.pending_bytes = {}
         self.signatures = {}
+
+    def bind_schedule(self, now):
+        # Persist before preparing a collector: even a failed preparation must
+        # not move this Actions run to a different logical date on its retry.
+        key = str(self.context["run_id"])
+        bindings = self.document.setdefault("scheduled_targets", {})
+        if key not in bindings:
+            bindings[key] = {"date": scheduled_day(now).isoformat(), "resolved_at": now.isoformat()}
+            self.flush()
+            self.tree = self.git.tree(self.revision)
+        self.target_day = date.fromisoformat(bindings[key]["date"])
+        require(self.target_day <= scheduled_day(now), "scheduled target is ahead of publication window")
 
     def observe(self):
         require(self.git.ref("main") == self.main, "main moved; resume against current main")
@@ -210,7 +238,23 @@ class Checkpoint:
                 self.document["runs"][state["run_date"]] = copy.deepcopy(state)
 
     def can_defer(self, state):
-        return False
+        # Keep a legacy future WAIT journal intact, and defer only when both
+        # durable copies prove that no request or result was ever recorded.
+        day = date.fromisoformat(state["run_date"])
+        if not (day > self.target_day and state["status"] == "WAIT_PUBLICATION"
+                and not state["requests"] and not state["tasks"]
+                and all(state[k] is None for k in ("data_date", "error", "http_status", "retry_not_before"))
+                and daily.aware(state["started_at"]).astimezone(daily.JST).date() == day
+                and daily.aware(state["started_at"]).astimezone(daily.JST).hour < 21
+                and self.document["runs"].get(state["run_date"]) == state):
+            return False
+        path = daily.run_path(self.source / "jquants", day)
+        entry = self.document["files"].get(path.relative_to(self.source).as_posix())
+        if not entry or not path.is_file():
+            return False
+        raw = path.read_bytes()
+        return (json.loads(raw) == state and storage.digest(raw) == entry["sha256"]
+                and git_blob(raw) == entry["blob"])
 
     def attach(self, state):
         previous = self.document["runs"].get(state["run_date"])
@@ -270,6 +314,9 @@ class Checkpoint:
             self.signatures[name] = signature
         for name in self.document["files"].keys() - seen:
             del self.document["files"][name]
+        self.flush(force=force)
+
+    def flush(self, *, force=False):
         encoded = ingest.encoded({k: v for k, v in self.document.items() if k != "github_budget"})
         if encoded == self.saved and not force:
             return
@@ -415,7 +462,7 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
 def execute(root, context, request, *, target=None, preview=False, at=None, transport=None, sleep=None):
     root = Path(root).resolve()
     trusted_context(root, context, preview)
-    now = at or datetime.now(daily.JST)
+    now = daily.aware((at or datetime.now(daily.JST)).isoformat())
     day = target or now.astimezone(daily.JST).date()
     require(day <= now.astimezone(daily.JST).date(), "future collection date forbidden")
     git = Git(request)
@@ -428,6 +475,8 @@ def execute(root, context, request, *, target=None, preview=False, at=None, tran
     if preview and main != context["sha"]:
         git.tree(context["sha"])  # Reuse verified blobs already present in the preview commit.
     checkpoint = Checkpoint(root, git, main, day, context, preview=preview)
+    if context["event"] == "schedule" and target is None:
+        checkpoint.bind_schedule(now)
     result = daily.run(root, at=now, remote=checkpoint, transport=transport, sleep=sleep)
     result = {k: v for k, v in result.items() if k not in {"remote_saved", "readiness"}}
     result.update(checkpoint_saved=True, analysis_readiness="NOT_EVALUATED")
