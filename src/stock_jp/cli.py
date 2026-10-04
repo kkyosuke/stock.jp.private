@@ -54,6 +54,7 @@ COMMANDS = {
     },
     "automation": {
         "nightly": "automation.nightly",
+        "financial-history": "automation.financial_history",
         "acquire": "automation.date_driver",
         "readiness": "automation.readiness",
         "health": "automation.health",

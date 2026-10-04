@@ -24,6 +24,9 @@ RAW_PREFIX = "nightly-checkpoint/"
 WORKFLOW = ".github/workflows/market-data-manual.yml"
 RECORDS = "operations/acquisition/nightly/"
 CHECKS = {"format", "test", "guardrail"}
+FINANCIAL_CHECKPOINT = "automation/financial-history"
+FINANCIAL_JOURNAL = "operations/acquisition/financial-history-checkpoint.json"
+FINANCIAL_RAW_PREFIX = "financial-history-checkpoint/"
 
 
 class Incomplete(RemoteStop):
@@ -80,17 +83,18 @@ class Git:
         return raw
 
     def write(self, branch, parent, files, *, exists):
-        require(branch == CHECKPOINT or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
+        require(branch in {CHECKPOINT, FINANCIAL_CHECKPOINT} or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
                 "unexpected publication branch")
         if exists:
             require(self.ref(branch) == parent, "checkpoint or data branch moved")
         tree = self.api("GET", "/git/commits/" + parent)["tree"]["sha"]
         entries = []
         for path, raw in sorted(files.items()):
-            if branch == CHECKPOINT:
-                require(path == JOURNAL or path.startswith(RAW_PREFIX), "unexpected checkpoint path")
-                if path != JOURNAL:
-                    storage.safe_name(path.removeprefix(RAW_PREFIX))
+            if branch in {CHECKPOINT, FINANCIAL_CHECKPOINT}:
+                journal, prefix = (JOURNAL, RAW_PREFIX) if branch == CHECKPOINT else (FINANCIAL_JOURNAL, FINANCIAL_RAW_PREFIX)
+                require(path == journal or path.startswith(prefix), "unexpected checkpoint path")
+                if path != journal:
+                    storage.safe_name(path.removeprefix(prefix))
             else:
                 require(path == "data/market/jquants/current.json" or re.fullmatch(
                     r"data/market/jquants/(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.(?:json|csv|bin|chunk)", path)

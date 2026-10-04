@@ -91,6 +91,7 @@ class GitHubTransport:
                     or method == 'PATCH' and suffix in {
                         '/git/refs/heads/automation/daily-checkpoint-v1',
                         '/git/refs/heads/automation/nightly-market-data',
+                        '/git/refs/heads/automation/financial-history',
                     }
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
@@ -99,6 +100,7 @@ class GitHubTransport:
                 if not (ref in {
                         'refs/heads/automation/daily-checkpoint-v1',
                         'refs/heads/automation/nightly-market-data',
+                        'refs/heads/automation/financial-history',
                         }
                         or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?',ref)):
                     raise RemoteStop('unreviewed writable ref')
