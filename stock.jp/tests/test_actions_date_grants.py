@@ -286,6 +286,13 @@ class DateTests(unittest.TestCase):
         changed=copy.deepcopy(ledger);changed['grants'][0]['allowance']=9
         with self.assertRaises(r.RemoteStop):g.validate(changed)
 
+    def test_light_history_window_and_future_dates(self):
+        from datetime import date
+        campaign=self.s.seed['legacy_debit']['campaign']
+        g.check_target(TARGET,campaign,NOW.date())
+        with self.assertRaisesRegex(r.RemoteStop,'Light history'):g.check_target(TARGET,campaign,date(2031,1,1))
+        with self.assertRaisesRegex(r.RemoteStop,'reviewed campaign'):g.check_target('2027-01-01',campaign,NOW.date())
+
     def test_campaign_total_and_batch_limits(self):
         from datetime import date, timedelta
         value=copy.deepcopy(self.s.seed)

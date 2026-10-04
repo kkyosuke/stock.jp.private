@@ -32,7 +32,7 @@ class Driver:
         r.require(git(self.root,'remote','get-url','origin').decode().strip() in
                   {'https://github.com/'+r.REPO+'.git','https://github.com/'+r.REPO,'git@github.com:'+r.REPO+'.git'}, 'execution remote differs')
         campaign = ledger['legacy_debit']['campaign']
-        r.require(campaign['start_date'] <= target <= campaign['as_of'] and target <= self.clock().date().isoformat(), 'target outside reviewed campaign')
+        grants.check_target(target, campaign, self.clock().astimezone(ZoneInfo('Asia/Tokyo')).date())
         selected = next((g for g in ledger['grants'] if g['date'] == target), None)
         # Adopted results are verified from current main before returning NOOP or
         # allowing the next date. Missing/partial results never free the grant.

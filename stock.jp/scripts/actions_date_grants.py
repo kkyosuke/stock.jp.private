@@ -10,10 +10,10 @@ import re
 try:
     from scripts import actions_daily_remote as r, market_data_git as codec
     from scripts import actions_legacy_debit as debit
-    from scripts.jquants_catalog import BY_NAME, query_for
+    from scripts.jquants_catalog import BY_NAME, query_for, period
 except ModuleNotFoundError:
     import actions_daily_remote as r, market_data_git as codec, actions_legacy_debit as debit
-    from jquants_catalog import BY_NAME, query_for
+    from jquants_catalog import BY_NAME, query_for, period
 
 ROOT = 'stock.jp/data/date-acquisition/'
 LEDGER = ROOT + 'ledger.json'
@@ -23,6 +23,15 @@ DATASETS = ('trading_calendar', 'equities_master', 'equities_daily')
 def day(value):
     r.require(isinstance(value, str) and date.fromisoformat(value).isoformat() == value, 'invalid target date')
     return value
+
+
+def check_target(target, campaign, today):
+    day(target)
+    r.require(campaign['start_date'] <= target <= campaign['as_of'] and target <= today.isoformat(),
+              'target outside reviewed campaign')
+    requested = date.fromisoformat(target)
+    r.require(all(period(BY_NAME[name], 'light', today)[0] <= requested <= period(BY_NAME[name], 'light', today)[1]
+                  for name in DATASETS), 'target outside Light history entitlement')
 
 
 def validate(ledger):
