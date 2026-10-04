@@ -9,7 +9,7 @@ J-Quantsの採用済みデータは `data/market/jquants/` に置く。
 `current.json` が世代manifestを指し、manifestが各JSON/CSVのオブジェクトとSHA-256を指す。
 保存形式、manifest、価格・時刻・出典の検証はコードが定義する。
 保存上限は `market_data/storage.py` が定義する。1ファイル22MiB、store全体2GiB。
-履歴補完後の約740MiBに日次追加の余地を確保する。上限超過時は停止し、自動で引き上げない。
+日足・財務履歴の補完後は約751MiB。上限超過時は停止し、自動で引き上げない。
 
 ```bash
 python -m stock_jp data verify
