@@ -47,7 +47,7 @@ def validate_stored_archive(archive: Path, *, check_freshness: bool = True) -> N
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--archive", type=Path, default=ROOT / "data/daily-prices")
+    parser.add_argument("--archive", type=Path, default=ROOT / "data/market/legacy-prices")
     parser.add_argument("--check-freshness", choices=("true", "false"), default="true")
     args = parser.parse_args()
     validate_stored_archive(args.archive, check_freshness=args.check_freshness == "true")

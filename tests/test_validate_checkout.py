@@ -76,5 +76,5 @@ class PersistedRunMonitoringTest(unittest.TestCase):
 
     def test_scheduled_workflow_reads_only_persisted_metadata(self):
         text = (ROOT / '.github/workflows/operation-health.yml').read_text()
-        self.assertIn('operation_health.py --persisted-only --output', text)
+        self.assertIn('python -m stock_jp automation health --persisted-only --output', text)
         self.assertNotIn('--report-only', text)

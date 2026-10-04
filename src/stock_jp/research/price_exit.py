@@ -13,18 +13,20 @@ import argparse
 import bisect
 import csv
 import json
+import os
 import statistics
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from stock_jp.workspace import project_root
 
 from stock_jp.research.price_episodes import Price, add_years, parse_prices
 
 
-DEFAULT_EPISODES = Path('research/price-episodes-2016-2026/episodes.csv')
-DEFAULT_CACHE_DIR = Path(".cache/yahoo-daily")
-DEFAULT_OUTPUT = Path('research/price-exit-2016-2026/results.csv')
-DEFAULT_REPORT = Path('research/price-exit-2016-2026/README.md')
+DEFAULT_EPISODES = project_root() / 'research/price-episodes-2016-2026/episodes.csv'
+DEFAULT_CACHE_DIR = project_root() / '.cache/yahoo-daily'
+DEFAULT_OUTPUT = project_root() / 'research/price-exit-2016-2026/results.csv'
+DEFAULT_REPORT = project_root() / 'research/price-exit-2016-2026/README.md'
 DEFAULT_CALENDAR_CODE = "7203"
 
 
@@ -491,7 +493,10 @@ def write_report(path: Path, results: list[SimulationResult], output_path: Path)
             f"{result.buy_hold_multiple:.2f}倍 | {difference:+.2f}pt |"
         )
 
-    output_link = f"../{output_path.as_posix()}"
+    output_link = Path(os.path.relpath(output_path, path.parent)).as_posix()
+    episode_link = Path(os.path.relpath(DEFAULT_EPISODES, path.parent)).as_posix()
+    validation_link = Path(os.path.relpath(project_root() / "research/price-episodes-2016-2026/README.md", path.parent)).as_posix()
+    rule_link = Path(os.path.relpath(project_root() / "docs/rules/tenbagger-rule-v0.2.md", path.parent)).as_posix()
     lines.extend(
         [
             "",
@@ -526,10 +531,10 @@ def write_report(path: Path, results: list[SimulationResult], output_path: Path)
             "",
             "## データ",
             "",
-            '- 対象一覧: [現存テンバガー価格エピソード](../research/price-episodes-2016-2026/episodes.csv)',
+            f"- 対象一覧: [現存テンバガー価格エピソード]({episode_link})",
             f"- 計算結果: [銘柄別損益CSV]({output_link})",
-            "- 元の検証: [日本株テンバガー仮説の予備検証](tenbagger-validation-2016-2026.md)",
-            "- 運用仕様: [日本株テンバガー判定・運用ルール v0.2](tenbagger-rule-v0.2.md)",
+            f"- 元の検証: [日本株テンバガー仮説の予備検証]({validation_link})",
+            f"- 運用仕様: [日本株テンバガー判定・運用ルール v0.2]({rule_link})",
             "",
             "生のYahoo Finance価格キャッシュはリポジトリに含めていない。候補探索用の二次データであり、最終的な投資検証ではJPXの調整株価とコーポレートアクションで再照合する。",
         ]

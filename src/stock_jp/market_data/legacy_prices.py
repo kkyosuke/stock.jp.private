@@ -16,6 +16,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from stock_jp.workspace import project_root
 import random
 import tempfile
 import time
@@ -80,7 +81,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--jpx-xls", type=Path)
     parser.add_argument("--jpx-url", default=JPX_LIST_URL)
-    parser.add_argument("--output-dir", type=Path, default=Path("data/daily-prices"))
+    parser.add_argument("--output-dir", type=Path, default=project_root() / "data/market/legacy-prices")
     parser.add_argument("--through-date", type=date.fromisoformat, default=None)
     parser.add_argument(
         "--lookback-days",

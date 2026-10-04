@@ -6,7 +6,7 @@ import unittest
 
 
 DATASET = (
-    project_root() / 'data' / 'tenbagger-v0.2-price-only-pnl-2016-2026.csv'
+    project_root() / 'research/price-exit-2016-2026/results.csv'
 )
 
 

@@ -22,6 +22,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
+from stock_jp.workspace import project_root
 from typing import Any, Iterable
 
 from openpyxl import load_workbook
@@ -57,7 +58,7 @@ class Price:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--jpx-xls", type=Path, required=True)
-    parser.add_argument("--cache-dir", type=Path, default=Path(".cache/yahoo-daily"))
+    parser.add_argument("--cache-dir", type=Path, default=project_root() / ".cache/yahoo-daily")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--scan-start", type=date.fromisoformat, default=date(2016, 8, 1))
     parser.add_argument("--data-start", type=date.fromisoformat, default=date(2015, 7, 1))

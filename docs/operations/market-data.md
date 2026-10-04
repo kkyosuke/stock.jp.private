@@ -21,7 +21,7 @@ python -m stock_jp data restore
 | --- | --- | --- |
 | `data/market/jquants/` | 検証して採用した世代・オブジェクト | 追跡 |
 | `data/market/manual-dates/` | 手動承認して採用した対象日ごとの生応答・結果 | 追跡 |
-| `data/market/legacy-prices/` | 過去のYahoo日足・manifest | 追跡 |
+| `data/market/legacy-prices/` | 過去の日足・manifest | 追跡 |
 | `data/market/observations/` | 出典付きの企業行動・株数・予想・決算日 | 追跡 |
 | `.work/market-data/` | 復元済み入力、取得途中のキャッシュ・チェックポイント | 除外 |
 | `.work/staging/` | PR用の保存世代、ロック、途中状態 | 除外 |

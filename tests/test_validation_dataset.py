@@ -6,7 +6,7 @@ import unittest
 
 
 DATASET = (
-    project_root() / 'data' / 'tenbagger-survivor-price-episodes-2016-2026.csv'
+    project_root() / 'research/price-episodes-2016-2026/episodes.csv'
 )
 
 
