@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/market/jquants/
+            !/data/market/legacy-prices/
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run lint:markdown
+      - name: Validate YAML
+        run: |
+          ruby -e 'require "yaml"; (Dir[".github/workflows/*.{yml,yaml}"] + [".markdownlint-cli2.yaml", "lefthook.yml"]).each { |path| YAML.parse_file(path) }'
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/market/jquants/
+            !/data/market/legacy-prices/
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e '.[dev]'
+      - run: python -m unittest discover -s tests -t .
+      - run: python -m compileall -q src tests
+      - name: Twenty-day synthetic operation smoke
+        run: python -m stock_jp operation smoke --days 20 --start-date 2026-09-01
+
+  guardrail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/market/jquants/
+            !/data/market/legacy-prices/
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e '.[dev]'
+      - name: Validate tracked state and PAPER policy
+        run: |
+          python -m stock_jp automation validate
+          git diff --exit-code -- config operations data/market/observations
+          test -z "$(git ls-files --others --exclude-standard -- config operations data/market/observations)"

@@ -1,3 +1,5 @@
+from tests.operation_test_support import prepare_write
+from stock_jp.workspace import project_root, record_path, module_file
 import importlib.util
 import fcntl
 import hashlib
@@ -12,32 +14,31 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("operation_health", ROOT / "scripts/operation_health.py")
+ROOT = project_root()
+spec = importlib.util.spec_from_file_location("operation_health", ROOT / 'src/stock_jp/automation/health.py')
 health = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(health)
 
 
 class OperationHealthTest(unittest.TestCase):
     def prepare_root(self, root):
-        (root / "stock.jp/scripts").mkdir(parents=True)
-        private = root / "operations/private"
-        archive = private / "market-data/daily-prices"
+        for module in ('stock_jp', 'stock_jp.operation', 'stock_jp.market_data'):
+            package = root / 'src' / module.replace('.', '/')
+            package.mkdir(parents=True, exist_ok=True)
+            (package / '__init__.py').write_text('')
+        shutil.copy2(ROOT / 'src/stock_jp/workspace.py', root / 'src/stock_jp/workspace.py')
+        (root / 'operations').mkdir(parents=True)
+        private = root / 'operations'
+        archive = record_path(private.parent, '.work/market-data/daily-prices')
         archive.mkdir(parents=True)
-        (archive / "latest.json").write_text('{"latest_trading_date":"2026-09-11"}')
-        (private / "source-config.json").write_text(json.dumps({
+        (prepare_write(archive / "latest.json")).write_text('{"latest_trading_date":"2026-09-11"}')
+        (prepare_write(record_path(private.parent, 'sources.json'))).write_text(json.dumps({
             "price_source": {"manifest_path": "latest.json"},
         }))
-        (root / "stock.jp/operations").mkdir()
-        (root / "stock.jp/operations/private").symlink_to(private)
         # Storage boundary cases are tested in the public helper's own suite.
         # This fixture also exercises the health script's checkout-local import.
-        (root / "stock.jp/scripts/market_data_storage.py").write_text(
-            'def resolve_archive_root(root):\n'
-            '    p=(root/"operations/private/market-data/daily-prices").resolve()\n'
-            '    if not p.is_dir():\n'
-            '        raise ValueError("private market-data archive is missing; no public fallback")\n'
-            '    return p\n'
+        (prepare_write(root / 'src/stock_jp/market_data/paths.py')).write_text(
+            'def resolve_archive_root(root):\n    p=(root/".work/market-data/daily-prices").resolve()\n    if not p.is_dir():\n        raise ValueError("private market-data archive is missing; no public fallback")\n    return p\n'
         )
         return private, archive
 
@@ -45,11 +46,11 @@ class OperationHealthTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             private, archive = self.prepare_root(root)
-            (root / "stock.jp/scripts/operation_state.py").write_text("print('{\"valid\": true}')\n")
+            (prepare_write(root / 'src/stock_jp/operation/state.py')).write_text("print('{\"valid\": true}')\n")
             with patch.object(health, "ROOT", root), patch.object(health, "configured_archive", side_effect=AssertionError("raw data accessed")):
-                self.assertEqual(health.command_json("operation_state.py", "2026-10-01T21:00:00+09:00", "validate", include_market_data=False), {"valid": True})
+                self.assertEqual(health.command_json("stock_jp.operation.state", "2026-10-01T21:00:00+09:00", "validate", include_market_data=False), {"valid": True})
                 with self.assertRaisesRegex(ValueError, "only for static"):
-                    health.command_json("operation_bootstrap.py", "2026-10-01T21:00:00+09:00", include_market_data=False)
+                    health.command_json("stock_jp.operation.readiness", "2026-10-01T21:00:00+09:00", include_market_data=False)
 
     def test_retired_workflow_history_is_not_required(self):
         def api(path):
@@ -79,55 +80,44 @@ class OperationHealthTest(unittest.TestCase):
         self.assertIn("broker submission boundary must be HUMAN_ONLY", report["alerts"])
 
     def test_validation_isolated_and_migrations_rejected(self):
-        for script in ("operation_bootstrap.py", "operation_watchdog.py", "operation_state.py"):
+        for script in ("stock_jp.operation.readiness", "stock_jp.operation.watchdog", "stock_jp.operation.state"):
             with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 private, archive = self.prepare_root(root)
-                (private / "state.json").write_text('{"original":true}')
-                (root / "stock.jp/scripts" / script).write_text(
-                    'from pathlib import Path\n'
-                    'p=Path(__file__).resolve().parents[1]/"operations/private/state.json"\n'
-                    'p.write_text("{}")\nprint("{}")\n'
+                (prepare_write(record_path(private.parent, 'state.json'))).write_text('{"original":true}')
+                (prepare_write(module_file(root, script))).write_text(
+                    'from pathlib import Path\np=Path.cwd()/"operations/state.json"\np.write_text("{}")\nprint("{}")\n'
                 )
                 with patch.object(health, "ROOT", root), self.assertRaisesRegex(RuntimeError, "requires migration"):
-                    health.command_json(script, "2026-09-11T21:00:00+09:00", "validate" if script == "operation_state.py" else "check")
-                self.assertEqual((private / "state.json").read_text(), '{"original":true}')
+                    health.command_json(script, "2026-09-11T21:00:00+09:00", "validate" if script == "stock_jp.operation.state" else "check")
+                self.assertEqual((record_path(private.parent, 'state.json')).read_text(), '{"original":true}')
 
     def test_readonly_validator_can_return_readiness(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self.prepare_root(root)
-            (root / "stock.jp/scripts/check.py").write_text('print(\'{"paper_go":true}\')')
+            (prepare_write(module_file(root, "stock_jp.operation.check"))).write_text('print(\'{"paper_go":true}\')')
             with patch.object(health, "ROOT", root):
-                self.assertEqual(health.command_json("check.py", "2026-09-11T21:00:00+09:00"), {"paper_go": True})
+                self.assertEqual(health.command_json("stock_jp.operation.check", "2026-09-11T21:00:00+09:00"), {"paper_go": True})
 
     def test_only_configured_private_archive_is_copied(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             private, archive = self.prepare_root(root)
-            (archive / "synthetic.csv").write_text("code,close\nSYNTHETIC,100\n")
-            (private / "market-data/unrelated").mkdir()
-            (private / "market-data/unrelated/sentinel").write_text("do not copy")
-            (private / "market-data-staging").mkdir()
-            (private / "market-data-staging/sentinel").write_text("do not copy")
-            (private / "historical-replay/raw").mkdir(parents=True)
-            (private / "historical-replay/raw/sentinel").write_text("do not copy")
-            (root / "stock.jp/data/daily-prices").mkdir(parents=True)
-            (root / "stock.jp/data/daily-prices/sentinel").write_text("do not copy")
-            (root / "stock.jp/scripts/check.py").write_text(
-                'from pathlib import Path\n'
-                'root=Path(__file__).resolve().parents[1]\n'
-                'archive=root/"operations/private/market-data/daily-prices"\n'
-                'assert (archive/"synthetic.csv").is_file()\n'
-                'assert not archive.is_symlink()\n'
-                'assert not (root/"operations/private/market-data/unrelated").exists()\n'
-                'assert not (root/"operations/private/market-data-staging").exists()\n'
-                'assert not (root/"operations/private/historical-replay/raw").exists()\n'
-                'assert not (root/"data/daily-prices").exists()\n'
-                'print(\'{"paper_go":true}\')\n'
+            (prepare_write(archive / "synthetic.csv")).write_text("code,close\nSYNTHETIC,100\n")
+            (record_path(private.parent, 'market-data/unrelated')).mkdir(parents=True)
+            (prepare_write(record_path(private.parent, 'market-data/unrelated/sentinel'))).write_text("do not copy")
+            (record_path(private.parent, 'market-data-staging')).mkdir(parents=True)
+            (prepare_write(record_path(private.parent, 'market-data-staging/sentinel'))).write_text("do not copy")
+            (record_path(private.parent, 'historical-replay/raw')).mkdir(parents=True)
+            (prepare_write(record_path(private.parent, 'historical-replay/raw/sentinel'))).write_text("do not copy")
+            (root / 'data/market/legacy-prices').mkdir(parents=True)
+            (prepare_write(root / 'data/market/legacy-prices/sentinel')).write_text("do not copy")
+            (prepare_write(module_file(root, "stock_jp.operation.check"))).write_text(
+                'from pathlib import Path\nroot=Path.cwd()\narchive=root/".work/market-data/daily-prices"\nassert (archive/"synthetic.csv").is_file()\nassert not archive.is_symlink()\nassert not (root/".work/market-data/unrelated").exists()\nassert not (root/".work/staging").exists()\nassert not (root/"research/historical-replay/raw").exists()\nassert not (root/"data/daily-prices").exists()\nprint(\'{"paper_go":true}\')\n'
             )
             with patch.object(health, "ROOT", root):
-                self.assertTrue(health.command_json("check.py", "2026-09-11T21:00:00+09:00")["paper_go"])
+                self.assertTrue(health.command_json("stock_jp.operation.check", "2026-09-11T21:00:00+09:00")["paper_go"])
             self.assertEqual((archive / "synthetic.csv").read_text(), "code,close\nSYNTHETIC,100\n")
 
     def test_validator_cannot_modify_canonical_archive(self):
@@ -135,22 +125,20 @@ class OperationHealthTest(unittest.TestCase):
             root = Path(directory)
             private, archive = self.prepare_root(root)
             before = (archive / "latest.json").read_bytes()
-            (root / "stock.jp/scripts/check.py").write_text(
-                'from pathlib import Path\n'
-                'p=Path(__file__).resolve().parents[1]/"operations/private/market-data/daily-prices/latest.json"\n'
-                'p.write_text("{}")\nprint("{}")\n'
+            (prepare_write(module_file(root, "stock_jp.operation.check"))).write_text(
+                'from pathlib import Path\np=Path.cwd()/".work/market-data/daily-prices/latest.json"\np.write_text("{}")\nprint("{}")\n'
             )
             with patch.object(health, "ROOT", root), self.assertRaisesRegex(RuntimeError, "changed isolated market data"):
-                health.command_json("check.py", "2026-09-11T21:00:00+09:00")
+                health.command_json("stock_jp.operation.check", "2026-09-11T21:00:00+09:00")
             self.assertEqual((archive / "latest.json").read_bytes(), before)
 
     def test_archive_symlinks_are_not_followed(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             private, archive = self.prepare_root(root)
-            (archive / "unsafe.csv").symlink_to(private / "source-config.json")
+            (archive / "unsafe.csv").symlink_to(record_path(private.parent, 'sources.json'))
             with patch.object(health, "ROOT", root), self.assertRaisesRegex(ValueError, "unsafe entry"):
-                health.command_json("check.py", "2026-09-11T21:00:00+09:00")
+                health.command_json("stock_jp.operation.check", "2026-09-11T21:00:00+09:00")
 
     def test_missing_private_archive_cannot_use_public_manifest(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -158,10 +146,10 @@ class OperationHealthTest(unittest.TestCase):
             private, archive = self.prepare_root(root)
             (archive / "latest.json").unlink()
             archive.rmdir()
-            (private / "state.json").write_text("{}")
-            public_archive = root / "stock.jp/data/daily-prices"
+            (prepare_write(record_path(private.parent, 'state.json'))).write_text("{}")
+            public_archive = root / 'data/market/legacy-prices'
             public_archive.mkdir(parents=True)
-            (public_archive / "latest.json").write_text('{"latest_trading_date":"2099-01-01"}')
+            (prepare_write(public_archive / "latest.json")).write_text('{"latest_trading_date":"2099-01-01"}')
             output = root / "health.json"
             with patch.object(health, "ROOT", root), patch("sys.argv", [
                 "operation_health.py", "--offline", "--output", str(output),
@@ -179,13 +167,13 @@ class OperationHealthTest(unittest.TestCase):
             with patch.object(health, "ROOT", root):
                 self.assertEqual(health.private_price_manifest()["latest_trading_date"], "2026-09-11")
                 (archive / "latest.json").unlink()
-                (archive / "latest.json").symlink_to(private / "source-config.json")
+                (archive / "latest.json").symlink_to(record_path(private.parent, 'sources.json'))
                 with self.assertRaisesRegex(ValueError, "escapes"):
                     health.private_price_manifest()
 
     def test_health_workflow_does_not_mask_failures(self):
         workflow = (ROOT / ".github/workflows/operation-health.yml").read_text()
-        self.assertIn("python scripts/operation_health.py --persisted-only --output", workflow)
+        self.assertIn('python -m stock_jp automation health --persisted-only --output', workflow)
         self.assertNotIn("--report-only", workflow)
 
     def test_naive_time_is_rejected(self):
@@ -197,10 +185,8 @@ class OperationHealthTest(unittest.TestCase):
 
     def validator_fixture(self, root, body):
         private, archive = self.prepare_root(root)
-        (root / "stock.jp/scripts/check.py").write_text(
-            'from pathlib import Path\nimport os\n'
-            'p=Path(__file__).resolve().parents[1]/"operations/private/market-data/daily-prices/latest.json"\n'
-            + body + '\nprint(\'{"paper_go":true}\')\n')
+        (prepare_write(module_file(root, "stock_jp.operation.check"))).write_text(
+            'from pathlib import Path\nimport os\np=Path.cwd()/".work/market-data/daily-prices/latest.json"\n' + body + '\nprint(\'{"paper_go":true}\')\n')
         return private, archive
 
     def test_redundant_chmod_reproduces_false_positive_and_real_helper_is_idempotent(self):
@@ -208,17 +194,17 @@ class OperationHealthTest(unittest.TestCase):
             root=Path(directory)
             private, archive=self.validator_fixture(root,'p.chmod(0o600)')
             with patch.object(health,'ROOT',root), self.assertRaisesRegex(RuntimeError,'changed isolated market data'):
-                health.command_json('check.py','2026-10-03T21:00:00+09:00')
-            shutil.copy2(ROOT/'stock.jp/scripts/operation_state.py',root/'stock.jp/scripts/operation_state.py')
-            (root/'stock.jp/scripts/check.py').write_text(
-                'from operation_state import secure_private_tree\n'
+                health.command_json('stock_jp.operation.check','2026-10-03T21:00:00+09:00')
+            shutil.copy2(ROOT / 'src/stock_jp/operation/state.py',prepare_write(root / 'src/stock_jp/operation/state.py'))
+            (prepare_write(module_file(root, "stock_jp.operation.check"))).write_text(
+                'from stock_jp.operation.state import secure_private_tree\n'
                 'secure_private_tree()\nsecure_private_tree()\nprint(\'{"paper_go":true}\')\n')
             for mode in (0o644,0o600):
                 with self.subTest(mode=mode):
                     (archive/'latest.json').chmod(mode)
                     before=health.inspect_archive(archive)
                     with patch.object(health,'ROOT',root):
-                        self.assertTrue(health.command_json('check.py','2026-10-03T21:00:00+09:00')['paper_go'])
+                        self.assertTrue(health.command_json('stock_jp.operation.check','2026-10-03T21:00:00+09:00')['paper_go'])
                     self.assertEqual(health.inspect_archive(archive),before)
 
     def test_strict_baseline_rejects_mode_content_inode_and_symlink_changes(self):
@@ -232,37 +218,37 @@ class OperationHealthTest(unittest.TestCase):
             with self.subTest(change=change),tempfile.TemporaryDirectory() as directory:
                 root=Path(directory);_,archive=self.validator_fixture(root,change);before=health.inspect_archive(archive)
                 with patch.object(health,'ROOT',root),self.assertRaisesRegex(RuntimeError,'changed isolated market data'):
-                    health.command_json('check.py','2026-10-03T21:00:00+09:00')
+                    health.command_json('stock_jp.operation.check','2026-10-03T21:00:00+09:00')
                 self.assertEqual(health.inspect_archive(archive),before)
 
     def test_active_writer_blocks_before_validator(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);private,_=self.validator_fixture(root,'pass')
-            for relative in ('market-data-staging/daily-runner.lock','market-data/jquants/.ingestion.lock'):
-                lock=private/relative;lock.parent.mkdir(parents=True,exist_ok=True)
-                with lock.open('a+b') as writer:
+            for relative in ('market-data-staging/daily-runner.lock','.work/market-data/jquants/.ingestion.lock'):
+                lock=record_path(private.parent, relative);lock.parent.mkdir(parents=True,exist_ok=True)
+                with prepare_write(lock).open('a+b') as writer:
                     fcntl.flock(writer,fcntl.LOCK_EX|fcntl.LOCK_NB)
                     with patch.object(health,'ROOT',root),patch.object(health.subprocess,'run') as run:
                         with self.assertRaisesRegex(RuntimeError,'active market-data writer'):
-                            health.command_json('check.py','2026-10-03T21:00:00+09:00')
+                            health.command_json('stock_jp.operation.check','2026-10-03T21:00:00+09:00')
                         run.assert_not_called()
 
     def test_source_change_during_validator_is_not_accepted(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);_,archive=self.validator_fixture(root,'pass')
             def mutate(*args,**kwargs):
-                p=archive/'latest.json';s=p.stat();p.write_bytes(b'X'*s.st_size);os.utime(p,ns=(s.st_atime_ns,s.st_mtime_ns))
+                p=archive/'latest.json';s=p.stat();prepare_write(p).write_bytes(b'X'*s.st_size);os.utime(p,ns=(s.st_atime_ns,s.st_mtime_ns))
                 return subprocess.CompletedProcess(args,0,'{"paper_go":true}','')
             with patch.object(health,'ROOT',root),patch.object(health.subprocess,'run',side_effect=mutate):
                 with self.assertRaisesRegex(RuntimeError,'canonical archive changed'):
-                    health.command_json('check.py','2026-10-03T21:00:00+09:00')
+                    health.command_json('stock_jp.operation.check','2026-10-03T21:00:00+09:00')
 
     def test_hash_and_nofollow_close_leaf_open_race(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);_,archive=self.prepare_root(root)
             path=archive/'latest.json';expected=hashlib.sha256(path.read_bytes()).hexdigest()
             self.assertEqual(health.inspect_archive(archive)['latest.json'][1],expected)
-            outside=root/'outside';outside.write_text('must not be followed')
+            outside=root/'outside';prepare_write(outside).write_text('must not be followed')
             original=health.os.open;attacked=False
             def race(name,flags,*args,**kwargs):
                 nonlocal attacked
@@ -276,7 +262,7 @@ class OperationHealthTest(unittest.TestCase):
     def test_pinned_directory_does_not_follow_root_swap(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);_,archive=self.prepare_root(root)
-            outside=root/'outside';outside.mkdir();(outside/'sentinel').write_text('must not copy')
+            outside=root/'outside';outside.mkdir(parents=True);(prepare_write(outside/'sentinel')).write_text('must not copy')
             original=health.os.listdir;attacked=False;inode=archive.stat().st_ino
             def race(fd):
                 nonlocal attacked
@@ -289,27 +275,27 @@ class OperationHealthTest(unittest.TestCase):
 
     def test_new_writer_lock_during_inspection_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
-            private=Path(directory)
+            private=Path(directory)/'operations';private.mkdir()
             with self.assertRaisesRegex(RuntimeError,'writer lock identity changed'):
                 with health.reader_guard(private):
-                    (private/'market-data-staging').mkdir();(private/'market-data-staging/daily-runner.lock').touch()
+                    (record_path(private.parent, 'market-data-staging')).mkdir(parents=True);(record_path(private.parent, 'market-data-staging/daily-runner.lock')).touch()
 
     def test_trusted_temporary_base_alias_is_resolved_before_child_creation(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory).resolve();self.validator_fixture(root,'pass')
-            base=root/'temp-base';base.mkdir();alias=root/'temp-alias';alias.symlink_to(base,target_is_directory=True)
+            base=root/'temp-base';base.mkdir(parents=True);alias=root/'temp-alias';alias.symlink_to(base,target_is_directory=True)
             with patch.object(health,'ROOT',root),patch.object(health.tempfile,'gettempdir',return_value=str(alias)):
-                self.assertTrue(health.command_json('check.py','2026-10-03T21:00:00+09:00')['paper_go'])
+                self.assertTrue(health.command_json('stock_jp.operation.check','2026-10-03T21:00:00+09:00')['paper_go'])
             self.assertEqual(list(base.iterdir()),[])
             # Resolving the trusted temp base must not weaken archive ancestry.
-            untrusted=alias/'untrusted';untrusted.mkdir()
+            untrusted=alias/'untrusted';untrusted.mkdir(parents=True)
             with self.assertRaises(OSError):health.inspect_archive(untrusted)
 
     def test_special_writer_locks_are_rejected_without_hanging(self):
         import socket
         import textwrap
         with tempfile.TemporaryDirectory() as directory:
-            private=Path(directory).resolve();lock=private/'market-data-staging/daily-runner.lock';lock.parent.mkdir()
+            private=Path(directory).resolve()/'operations';private.mkdir(parents=True);lock=record_path(private.parent, 'market-data-staging/daily-runner.lock');lock.parent.mkdir(parents=True)
             command=textwrap.dedent("""
                 import importlib.util,sys
                 from pathlib import Path
@@ -325,13 +311,20 @@ class OperationHealthTest(unittest.TestCase):
                     sock=None
                     if kind=='fifo':os.mkfifo(lock)
                     elif kind=='socket':
-                        sock=socket.socket(socket.AF_UNIX);sock.bind(str(lock))
+                        sock=socket.socket(socket.AF_UNIX)
+                        previous_directory = Path.cwd()
+                        try:
+                            os.chdir(lock.parent)
+                            sock.bind(lock.name)
+                        finally:
+                            os.chdir(previous_directory)
                     else:lock.symlink_to('/dev/null')
                     try:
-                        result=subprocess.run([health.sys.executable,'-c',command,str(ROOT/'scripts/operation_health.py'),str(private)],capture_output=True,text=True,timeout=3,check=True)
-                        self.assertEqual(result.stdout.strip(),'rejected')
+                        result = subprocess.run([health.sys.executable, '-c', command, str(ROOT / 'src/stock_jp/automation/health.py'), str(private)], capture_output=True, text=True, timeout=3, check=True)
+                        self.assertEqual(result.stdout.strip(), 'rejected')
                     finally:
-                        if sock is not None:sock.close()
+                        if sock is not None:
+                            sock.close()
                         lock.unlink()
             # Direct device metadata is rejected before open, without requiring
             # privileged mknod in the test environment.
@@ -343,14 +336,14 @@ class OperationHealthTest(unittest.TestCase):
     def test_regular_lock_replaced_with_fifo_before_open_does_not_block(self):
         import textwrap
         with tempfile.TemporaryDirectory() as directory:
-            private=Path(directory).resolve();lock=private/'market-data-staging/daily-runner.lock';lock.parent.mkdir();lock.touch()
+            private=Path(directory).resolve()/'operations';private.mkdir(parents=True);lock=record_path(private.parent, 'market-data-staging/daily-runner.lock');lock.parent.mkdir(parents=True);lock.touch()
             command=textwrap.dedent("""
                 import importlib.util,sys,os
                 from pathlib import Path
                 from unittest.mock import patch
                 spec=importlib.util.spec_from_file_location('health',sys.argv[1])
                 health=importlib.util.module_from_spec(spec);spec.loader.exec_module(health)
-                private=Path(sys.argv[2]);lock=private/'market-data-staging/daily-runner.lock'
+                private=Path(sys.argv[2]);lock=private.parent/'.work/staging/daily-runner.lock'
                 original=os.open
                 def race(path,flags,*args,**kwargs):
                     if path==lock:
@@ -363,7 +356,7 @@ class OperationHealthTest(unittest.TestCase):
                     except ValueError:print('rejected')
                     else:raise AssertionError('FIFO replacement accepted')
             """)
-            result=subprocess.run([health.sys.executable,'-c',command,str(ROOT/'scripts/operation_health.py'),str(private)],capture_output=True,text=True,timeout=3,check=True)
+            result=subprocess.run([health.sys.executable,'-c',command,str(ROOT / 'src/stock_jp/automation/health.py'),str(private)],capture_output=True,text=True,timeout=3,check=True)
             self.assertEqual(result.stdout.strip(),'rejected')
 
 

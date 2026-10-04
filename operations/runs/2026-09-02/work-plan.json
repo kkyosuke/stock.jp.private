@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-02",
+  "generated_at_jst": "2026-09-02T21:55:11+09:00",
+  "next_trading_date": "2026-09-03",
+  "trading_calendar_confirmed": true,
+  "status": "COMPLETED",
+  "tasks": [
+    {
+      "task_id": "2026-09-02-daily-event",
+      "task_type": "daily_event",
+      "priority": "HIGH",
+      "reason": "毎日の開示・即時撤退条件確認",
+      "due_at_jst": "2026-09-02T23:59:59+09:00",
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "tdnet-all-2026-09-02",
+        "edinet-manual-2026-09-02",
+        "jpx-halts-2026-09-02",
+        "jpx-supervision-2026-09-02",
+        "jpx-calendar-2026"
+      ],
+      "decision_log_path": "operations/runs/2026-09-02/research-results.md",
+      "notes": "対象0件。公式一覧と手動フォールバックを確認し、売買を要する事象なし。"
+    },
+    {
+      "task_id": "2026-09-02-global-risk",
+      "task_type": "global_risk",
+      "priority": "HIGH",
+      "reason": "為替・金利・資源・主要国政策・地政学を事実→KPI伝播→判断に分けて保存",
+      "due_at_jst": "2026-09-02T23:59:59+09:00",
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "boj-fx-2026-09-02",
+        "boj-policy-2026-07-31",
+        "cao-monthly-2026-08",
+        "meti-energy-2026-06"
+      ],
+      "decision_log_path": "operations/runs/2026-09-02/global-risk.md",
+      "notes": "為替・金利・国内外景気・エネルギー供給の一次資料を確認。保有0件のため個別売買への反映なし。"
+    },
+    {
+      "task_id": "2026-09-02-initial-universe-review",
+      "task_type": "initial_universe_review",
+      "priority": "HIGH",
+      "reason": "監視対象0件: 蓄積済み全市場日足から長期候補を抽出し、一次資料確認対象を絞る",
+      "due_at_jst": "2026-09-02T23:59:59+09:00",
+      "status": "COMPLETED",
+      "evidence_source_ids": [
+        "yahoo-price-2026-09-02-3b441068679c",
+        "company-7256-q1-2027",
+        "company-7794-q1-2027",
+        "company-6166-q1-2027",
+        "company-4052-fy2026"
+      ],
+      "decision_log_path": "operations/runs/2026-09-02/research-results.md",
+      "notes": "既存の将来情報非参照・価格流動性代理条件で59件に絞り、上位4社を一次資料確認。7256/7794/6166はリスクにより見送り、4052だけを全条件精査用watchlistへ登録。"
+    }
+  ]
+}

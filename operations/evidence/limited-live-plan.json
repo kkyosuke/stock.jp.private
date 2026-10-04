@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "status": "DRAFT",
+  "decision": "NOT_DECIDED",
+  "rule_version": "v0.4",
+  "capital_limit_jpy": 3000000,
+  "maximum_total_loss_pct": null,
+  "maximum_new_orders_per_run": 1,
+  "additional_purchases_enabled": false,
+  "approved_by": null,
+  "approved_at_jst": null,
+  "retrospective_diagnostic": {
+    "path": "research/allocation-replay-2025/summary.json",
+    "sha256": "9c555af34b219e6522c077a5af143abb8239cacce3ecb4cecd6de52564c17cad",
+    "accepted_maximum_drawdown_pct": -27.38132
+  },
+  "acknowledgements": {
+    "capital_is_separate_risk_money": false,
+    "capital_limit_is_an_absolute_ceiling": false,
+    "capital_ledger_funding_matches_limit": false,
+    "retrospective_result_is_not_forward_evidence": false,
+    "maximum_drawdown_reviewed": false,
+    "additional_purchases_are_disabled": false,
+    "one_new_order_per_run": false,
+    "human_only_submission": false,
+    "missing_official_source_means_no_action": false,
+    "full_live_still_requires_every_live_gate": false,
+    "returns_are_not_guaranteed": false
+  }
+}

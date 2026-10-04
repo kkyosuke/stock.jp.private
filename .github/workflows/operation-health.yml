@@ -8,10 +8,11 @@ on:
   push:
     branches: [main]
     paths:
-      - stock.jp/**
-      - operations/private/**
-      - scripts/operation_health.py
-      - scripts/validate_checkout.py
+      - src/**
+      - config/**
+      - operations/**
+      - templates/**
+      - pyproject.toml
       - .github/workflows/operation-health.yml
 
 concurrency:
@@ -36,29 +37,29 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /*
-            !/stock.jp/data/jquants-archive/
-            !/stock.jp/data/daily-prices/
+            !/data/market/jquants/
+            !/data/market/legacy-prices/
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
       - name: Install validation dependencies
-        run: python -m pip install "xlrd==2.0.2" "certifi==2026.7.22" PyYAML
+        run: python -m pip install -e '.[dev]'
       - name: Monitor persisted run metadata (not runtime readiness)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/operation_health.py --persisted-only --output .usagi/operation-health.json
+        run: python -m stock_jp automation health --persisted-only --output .work/operation-health.json
       - name: Verify health checks did not change operation data
         if: always()
         run: |
-          git diff --exit-code -- operations/private
-          test -z "$(git ls-files --others --exclude-standard -- operations/private)"
+          git diff --exit-code -- config operations data/market/observations
+          test -z "$(git ls-files --others --exclude-standard -- config operations data/market/observations)"
       - name: Save health report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: operation-health-${{ github.run_id }}
-          path: .usagi/operation-health.json
+          path: .work/operation-health.json
           include-hidden-files: true
           retention-days: 14
           if-no-files-found: warn

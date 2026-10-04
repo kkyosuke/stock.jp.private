@@ -1,0 +1,3873 @@
+{
+  "baseline_commit": "368547275a94f9b991c4df36471e8a88d8fec408",
+  "budget": "PRESERVED_WITH_APPROVAL_SCOPE",
+  "layout_revision": 5,
+  "ledger_rows": [
+    {
+      "path": "operations/ledgers/capital-ledger.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/ledgers/industry-exposure.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/ledgers/market-regime-log.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/ledgers/portfolio-register.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/ledgers/rebuy-restrictions.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/ledgers/recovered-capital-ledger.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/ledgers/rule-review-log.csv",
+      "rows": 0
+    },
+    {
+      "path": "operations/run-history.csv",
+      "rows": 5
+    },
+    {
+      "path": "operations/ledgers/schema-migration-log.csv",
+      "rows": 1
+    },
+    {
+      "path": "operations/ledgers/trade-event-ledger.csv",
+      "rows": 0
+    }
+  ],
+  "market_files": [
+    {
+      "bytes": 130,
+      "git_blob": "546fb5a1a1f6ec27defbb27dfc7dd5e66c3955b6",
+      "path": "data/market/jquants/current.json",
+      "sha256": "d832e39fd77e66a957f4d07837e441ebe0b7adaa156847cf47eb8eae8b5d2b12",
+      "source": "stock.jp/data/jquants-archive/current.json"
+    },
+    {
+      "bytes": 9388,
+      "git_blob": "ec665926ce255c2587e0056f4cf789a3dff10355",
+      "path": "data/market/jquants/generations/18/184c3410bbd499a6d2f19282bb7f76805aaeab4af374859ead09a644919961cd.json",
+      "sha256": "184c3410bbd499a6d2f19282bb7f76805aaeab4af374859ead09a644919961cd",
+      "source": "stock.jp/data/jquants-archive/generations/18/184c3410bbd499a6d2f19282bb7f76805aaeab4af374859ead09a644919961cd.json"
+    },
+    {
+      "bytes": 8725,
+      "git_blob": "0dee92103cf50bf2b913dbe7fea4bd993b70827a",
+      "path": "data/market/jquants/generations/cc/cc3e8353fb378bff2426e5c1bae879f4473a9d47c428a1e539bf6d33e63152f4.json",
+      "sha256": "cc3e8353fb378bff2426e5c1bae879f4473a9d47c428a1e539bf6d33e63152f4",
+      "source": "stock.jp/data/jquants-archive/generations/cc/cc3e8353fb378bff2426e5c1bae879f4473a9d47c428a1e539bf6d33e63152f4.json"
+    },
+    {
+      "bytes": 46,
+      "git_blob": "5561c64d57c237dc70a1da7b125ae3fed8abcd4e",
+      "path": "data/market/jquants/objects/04/04819f804a7bf8825f2c8c376379232954e0ecc0f1996e588e10ca3dc5b3dd8f.json",
+      "sha256": "04819f804a7bf8825f2c8c376379232954e0ecc0f1996e588e10ca3dc5b3dd8f",
+      "source": "stock.jp/data/jquants-archive/objects/04/04819f804a7bf8825f2c8c376379232954e0ecc0f1996e588e10ca3dc5b3dd8f.json"
+    },
+    {
+      "bytes": 29149,
+      "git_blob": "86ffcf0efeade390c6eae30b3ce4c81bae638f8e",
+      "path": "data/market/jquants/objects/18/182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d.json",
+      "sha256": "182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d",
+      "source": "stock.jp/data/jquants-archive/objects/18/182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d.json"
+    },
+    {
+      "bytes": 12,
+      "git_blob": "f93ccdf4b7b5eb860c6cc83a898ef91666d1ce83",
+      "path": "data/market/jquants/objects/25/25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90.json",
+      "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90",
+      "source": "stock.jp/data/jquants-archive/objects/25/25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90.json"
+    },
+    {
+      "bytes": 359559,
+      "git_blob": "ce6e226f30730a3b3bc6a5c5007bb15f7a6fb414",
+      "path": "data/market/jquants/objects/32/324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d.csv",
+      "sha256": "324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d",
+      "source": "stock.jp/data/jquants-archive/objects/32/324c271497593b6afa0dec38d3a46294fa211f5ddbd1f0b05a7406ea774e0f4d.csv"
+    },
+    {
+      "bytes": 775,
+      "git_blob": "1c844bcce31f1611b059290cd08af6c87948ef7f",
+      "path": "data/market/jquants/objects/33/3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51.json",
+      "sha256": "3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51",
+      "source": "stock.jp/data/jquants-archive/objects/33/3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51.json"
+    },
+    {
+      "bytes": 1070717,
+      "git_blob": "d95ab699e03a1c0d10c605618b77e448a95deb76",
+      "path": "data/market/jquants/objects/38/38144c5bff13494e014f4474cb1a332d6816eff182b1aa2da428d28a81ae31bf.json",
+      "sha256": "38144c5bff13494e014f4474cb1a332d6816eff182b1aa2da428d28a81ae31bf",
+      "source": "stock.jp/data/jquants-archive/objects/38/38144c5bff13494e014f4474cb1a332d6816eff182b1aa2da428d28a81ae31bf.json"
+    },
+    {
+      "bytes": 2210,
+      "git_blob": "4a1a47089291cec188b0d671130084935bc70de2",
+      "path": "data/market/jquants/objects/39/39c093bdfa29659118aa00d10b99c872e8bdda31008c9fb5f9b579903500cb52.json",
+      "sha256": "39c093bdfa29659118aa00d10b99c872e8bdda31008c9fb5f9b579903500cb52",
+      "source": "stock.jp/data/jquants-archive/objects/39/39c093bdfa29659118aa00d10b99c872e8bdda31008c9fb5f9b579903500cb52.json"
+    },
+    {
+      "bytes": 789,
+      "git_blob": "b522e67d8235f590334fc723d454e890778f73e2",
+      "path": "data/market/jquants/objects/4a/4a54cd848fae3b4fd66b315276ff5b356bd9f483f04bc39cf3c77b1fed944187.json",
+      "sha256": "4a54cd848fae3b4fd66b315276ff5b356bd9f483f04bc39cf3c77b1fed944187",
+      "source": "stock.jp/data/jquants-archive/objects/4a/4a54cd848fae3b4fd66b315276ff5b356bd9f483f04bc39cf3c77b1fed944187.json"
+    },
+    {
+      "bytes": 787,
+      "git_blob": "3b3c61d1a790d5c39651c23686a40a5331e1759e",
+      "path": "data/market/jquants/objects/78/780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034.json",
+      "sha256": "780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034",
+      "source": "stock.jp/data/jquants-archive/objects/78/780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034.json"
+    },
+    {
+      "bytes": 759,
+      "git_blob": "671591993208c626c9fe0eb59fb8d571d9d894be",
+      "path": "data/market/jquants/objects/82/8294830bafac9b6c4889500cf290e79ab3f8be25999b44a662ca1f8be1136e50.json",
+      "sha256": "8294830bafac9b6c4889500cf290e79ab3f8be25999b44a662ca1f8be1136e50",
+      "source": "stock.jp/data/jquants-archive/objects/82/8294830bafac9b6c4889500cf290e79ab3f8be25999b44a662ca1f8be1136e50.json"
+    },
+    {
+      "bytes": 771,
+      "git_blob": "670408c4f796dc8dac114431717670aa5a303d31",
+      "path": "data/market/jquants/objects/a8/a8401f49c114b3b5c77e133abcbbbf6ac2b4344510932ce5f95412079431e550.json",
+      "sha256": "a8401f49c114b3b5c77e133abcbbbf6ac2b4344510932ce5f95412079431e550",
+      "source": "stock.jp/data/jquants-archive/objects/a8/a8401f49c114b3b5c77e133abcbbbf6ac2b4344510932ce5f95412079431e550.json"
+    },
+    {
+      "bytes": 376182,
+      "git_blob": "8df12e3794736c2a3318c6e53af8036f175099d7",
+      "path": "data/market/jquants/objects/a9/a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172.csv",
+      "sha256": "a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172",
+      "source": "stock.jp/data/jquants-archive/objects/a9/a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172.csv"
+    },
+    {
+      "bytes": 780,
+      "git_blob": "ee1c2288d490a58f0d43eb636f42e2526bf00074",
+      "path": "data/market/jquants/objects/ac/ac8503817e4ea931e6d3b94517f46d88d8e5f60325e0aba047c2216e772435ed.json",
+      "sha256": "ac8503817e4ea931e6d3b94517f46d88d8e5f60325e0aba047c2216e772435ed",
+      "source": "stock.jp/data/jquants-archive/objects/ac/ac8503817e4ea931e6d3b94517f46d88d8e5f60325e0aba047c2216e772435ed.json"
+    },
+    {
+      "bytes": 16121,
+      "git_blob": "be45578d7294974f7f6c3188e2bc01c5423db250",
+      "path": "data/market/jquants/objects/ac/acc9cf5ada3e57aaeac73fa280028f972f54e2e080542b56a00c6ad4313e5df0.json",
+      "sha256": "acc9cf5ada3e57aaeac73fa280028f972f54e2e080542b56a00c6ad4313e5df0",
+      "source": "stock.jp/data/jquants-archive/objects/ac/acc9cf5ada3e57aaeac73fa280028f972f54e2e080542b56a00c6ad4313e5df0.json"
+    },
+    {
+      "bytes": 13762,
+      "git_blob": "7d410623411d58cc0ae12f7e5f11a915b4e9f797",
+      "path": "data/market/jquants/objects/ac/acec6532b6475a665e75a1ee42f98a9c8b26947a3fa3c45fbcb2fc6fe8dd557a.json",
+      "sha256": "acec6532b6475a665e75a1ee42f98a9c8b26947a3fa3c45fbcb2fc6fe8dd557a",
+      "source": "stock.jp/data/jquants-archive/objects/ac/acec6532b6475a665e75a1ee42f98a9c8b26947a3fa3c45fbcb2fc6fe8dd557a.json"
+    },
+    {
+      "bytes": 705600,
+      "git_blob": "98afce9d5dbdd9aded5829167ddd4ddd9b744c51",
+      "path": "data/market/jquants/objects/ba/ba5a65172c6cd04ba021635d232c6dabff68f350e01d2e5b9eddc66290e61bac.json",
+      "sha256": "ba5a65172c6cd04ba021635d232c6dabff68f350e01d2e5b9eddc66290e61bac",
+      "source": "stock.jp/data/jquants-archive/objects/ba/ba5a65172c6cd04ba021635d232c6dabff68f350e01d2e5b9eddc66290e61bac.json"
+    },
+    {
+      "bytes": 79,
+      "git_blob": "246576f75b951a3cc5e3f72678bdf4846ca9e7c2",
+      "path": "data/market/jquants/objects/ca/ca8206ea38116cf3ea537882650ae6ad3ee2b01ceb7bc062f9bcdaed4280d6f0.json",
+      "sha256": "ca8206ea38116cf3ea537882650ae6ad3ee2b01ceb7bc062f9bcdaed4280d6f0",
+      "source": "stock.jp/data/jquants-archive/objects/ca/ca8206ea38116cf3ea537882650ae6ad3ee2b01ceb7bc062f9bcdaed4280d6f0.json"
+    },
+    {
+      "bytes": 1330550,
+      "git_blob": "a07ff3f1af659922fc9273e9582bfc34451c4d4c",
+      "path": "data/market/jquants/objects/d2/d2f8646969e625c0f25ae7f5b7fd918e7b75bac2f7a0357d04ad3bc3cec9356c.json",
+      "sha256": "d2f8646969e625c0f25ae7f5b7fd918e7b75bac2f7a0357d04ad3bc3cec9356c",
+      "source": "stock.jp/data/jquants-archive/objects/d2/d2f8646969e625c0f25ae7f5b7fd918e7b75bac2f7a0357d04ad3bc3cec9356c.json"
+    },
+    {
+      "bytes": 792,
+      "git_blob": "10a1b3536a0bb254c4637707342284dfada54a0b",
+      "path": "data/market/jquants/objects/d4/d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c.json",
+      "sha256": "d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c",
+      "source": "stock.jp/data/jquants-archive/objects/d4/d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c.json"
+    },
+    {
+      "bytes": 163,
+      "git_blob": "2521fb9fc197cc308bb70877950e39ae44ef136d",
+      "path": "data/market/jquants/objects/d9/d9c1c1f5c76ba330f9ba7a2273e11c0e825a0b1854b7182b2d1962cc4727705d.json",
+      "sha256": "d9c1c1f5c76ba330f9ba7a2273e11c0e825a0b1854b7182b2d1962cc4727705d",
+      "source": "stock.jp/data/jquants-archive/objects/d9/d9c1c1f5c76ba330f9ba7a2273e11c0e825a0b1854b7182b2d1962cc4727705d.json"
+    },
+    {
+      "bytes": 784,
+      "git_blob": "d371ccef78eb2f1c1595cd77cb8bced73f39197a",
+      "path": "data/market/jquants/objects/ed/edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f.json",
+      "sha256": "edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f",
+      "source": "stock.jp/data/jquants-archive/objects/ed/edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f.json"
+    },
+    {
+      "bytes": 1670,
+      "git_blob": "3f8cd07ef3a0f3f4e45a2fb230aee01fce6761a1",
+      "path": "data/market/jquants/objects/f0/f03dd799969bbb382deace9378ecce5fef23a4fd933da368d9a820047702e05a.json",
+      "sha256": "f03dd799969bbb382deace9378ecce5fef23a4fd933da368d9a820047702e05a",
+      "source": "stock.jp/data/jquants-archive/objects/f0/f03dd799969bbb382deace9378ecce5fef23a4fd933da368d9a820047702e05a.json"
+    },
+    {
+      "bytes": 768,
+      "git_blob": "8e58f0390034739baa8bd6d6068266bed4bda288",
+      "path": "data/market/jquants/objects/fc/fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59.json",
+      "sha256": "fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59",
+      "source": "stock.jp/data/jquants-archive/objects/fc/fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59.json"
+    },
+    {
+      "bytes": 450381,
+      "git_blob": "7cb6ffc6c1198a6581087a94438ee4b1fc9b9b1c",
+      "path": "data/market/legacy-prices/2024/2024-06-10.csv",
+      "sha256": "b9b7779b70cfc94400cebd03437dba22e75b18106f8d53caa54ae4d3f592d93f",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-10.csv"
+    },
+    {
+      "bytes": 487566,
+      "git_blob": "9ce139950bc93322a6262959ff05c4388ebb0bba",
+      "path": "data/market/legacy-prices/2024/2024-06-11.csv",
+      "sha256": "83d4876a61fa97d161d957e71f77abf694d19c6f5c1134c108382b8159aacbfb",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-11.csv"
+    },
+    {
+      "bytes": 487451,
+      "git_blob": "3b12dbac8f394738b3e24f908dff2fd136ef6ab2",
+      "path": "data/market/legacy-prices/2024/2024-06-12.csv",
+      "sha256": "b9cbde498e5cd52bfb301cf9665eb84bbbdbc1d8bff4a6b7ae5eaade1271f7c3",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-12.csv"
+    },
+    {
+      "bytes": 490330,
+      "git_blob": "9a7234612991e45e94d3d72fb303123477e408a1",
+      "path": "data/market/legacy-prices/2024/2024-06-13.csv",
+      "sha256": "689e89ffe4cbf61862b083e33eca2e08a0f3fa9a5845aae88a3efcfcb856190b",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-13.csv"
+    },
+    {
+      "bytes": 487520,
+      "git_blob": "2758ce3e37bb1603ebd5e25ae5ed3865c605e51b",
+      "path": "data/market/legacy-prices/2024/2024-06-14.csv",
+      "sha256": "30f0e4078258d15b19e08d558e16b898c8eb677de16d921d29f0b90075dc95d9",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-14.csv"
+    },
+    {
+      "bytes": 490675,
+      "git_blob": "e9975a2257cb82b4c566af0542c893bb05573c87",
+      "path": "data/market/legacy-prices/2024/2024-06-17.csv",
+      "sha256": "0676ff54c4297a1b9aa0d7cd11d0878eabf80739d2291775eb399a20cba9b94f",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-17.csv"
+    },
+    {
+      "bytes": 487246,
+      "git_blob": "86fde27be2c0bff9477fcf6ffc12308cae4308be",
+      "path": "data/market/legacy-prices/2024/2024-06-18.csv",
+      "sha256": "6a2ccc8a2a7d203ffba783769c3dc092202e5d1edabd716a0b461ecda21cd60f",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-18.csv"
+    },
+    {
+      "bytes": 488172,
+      "git_blob": "b6794e50caa6db14380bbff09572382a885c6e4f",
+      "path": "data/market/legacy-prices/2024/2024-06-19.csv",
+      "sha256": "8fe87ed9e053c5e83fa90d8d4014501741a94663fc39c4f1dc76f7da9dcc64f6",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-19.csv"
+    },
+    {
+      "bytes": 488836,
+      "git_blob": "f6d22f8bd3cf9be2afc22fe8323b445dcf45acd3",
+      "path": "data/market/legacy-prices/2024/2024-06-20.csv",
+      "sha256": "3fd50e949f55589ec897ebeee7631d514888fb387cff9c38b8fb3c74e38f478e",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-20.csv"
+    },
+    {
+      "bytes": 489305,
+      "git_blob": "2682a86e3a0a216c3cb5626fd9e21bb09c171433",
+      "path": "data/market/legacy-prices/2024/2024-06-21.csv",
+      "sha256": "7e7b65631f0b4151fc2d3eca88dfe171159222e3cebdfe2fb2705b4548a62e3c",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-21.csv"
+    },
+    {
+      "bytes": 488678,
+      "git_blob": "ab7dc032aaa902f3843379aaa0eb5ba92f4394ca",
+      "path": "data/market/legacy-prices/2024/2024-06-24.csv",
+      "sha256": "aee54448a193def2eac68bb8de2b2981de99bf3f04b6d9399ee08b50c2a123a5",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-24.csv"
+    },
+    {
+      "bytes": 488611,
+      "git_blob": "7feb5c924f2f5f4c1a9d7e12de1cd4587223d47c",
+      "path": "data/market/legacy-prices/2024/2024-06-25.csv",
+      "sha256": "9d2dedb0ddf9858b5a3ab95c187d71882a84bb66ef5a3a8bf1ceb9a8b87cba7f",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-25.csv"
+    },
+    {
+      "bytes": 488930,
+      "git_blob": "ac4d691a643f2e0f331130b59163d7f492908307",
+      "path": "data/market/legacy-prices/2024/2024-06-26.csv",
+      "sha256": "de4150e580af276dd1287679469a09f788a2a4ebba748084205a0119fb18a9e6",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-26.csv"
+    },
+    {
+      "bytes": 489789,
+      "git_blob": "1332afd8cc5c548f512f62ff3fe44e6e65a28748",
+      "path": "data/market/legacy-prices/2024/2024-06-27.csv",
+      "sha256": "cf5ce04680f573e94c002384482eae05a474de96b0dd78cd1b699dbf9c281e2c",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-27.csv"
+    },
+    {
+      "bytes": 490634,
+      "git_blob": "8bba98c78f4bde1b29ae7d1862bfd1c7c804a05d",
+      "path": "data/market/legacy-prices/2024/2024-06-28.csv",
+      "sha256": "86b47752ab7400d241dd315a9a62ed437fff8b19f0cf06c40fd2aac7ab7d209e",
+      "source": "stock.jp/data/daily-prices/2024/2024-06-28.csv"
+    },
+    {
+      "bytes": 491035,
+      "git_blob": "387673331b0a2d8ac2220b4921a4b973969fde2e",
+      "path": "data/market/legacy-prices/2024/2024-07-01.csv",
+      "sha256": "2577b478a2feffc895906222cdcc6e0517d5fa1c14d66608b3aec11845425083",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-01.csv"
+    },
+    {
+      "bytes": 490266,
+      "git_blob": "533aa536243ab5a4eb88916eed29d6a66bda74e2",
+      "path": "data/market/legacy-prices/2024/2024-07-02.csv",
+      "sha256": "7827e72d853ef39b99c969a12f7cb87b84f2666bab056e794d081afdfd4a92c3",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-02.csv"
+    },
+    {
+      "bytes": 489724,
+      "git_blob": "c5f64133b02559e780c41740d7d6523b8a161f49",
+      "path": "data/market/legacy-prices/2024/2024-07-03.csv",
+      "sha256": "544dd61e01a6fa581592f78a0763208f489367dbde7ab76db9ae1c8caded7436",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-03.csv"
+    },
+    {
+      "bytes": 489638,
+      "git_blob": "82932ecebd9b22e7d0a4de5458a894779adb83dd",
+      "path": "data/market/legacy-prices/2024/2024-07-04.csv",
+      "sha256": "cdee34e73b5e71f6fcfcd626316567ce9ce09ff7fba07a28b1b7279dad80f0ee",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-04.csv"
+    },
+    {
+      "bytes": 492427,
+      "git_blob": "45e986f13de50e9c24c936a527aff91655c685f8",
+      "path": "data/market/legacy-prices/2024/2024-07-05.csv",
+      "sha256": "b87d765a3ca564a1966628f62df6254c0a214ff5f992ab11c657c355cba74a31",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-05.csv"
+    },
+    {
+      "bytes": 491477,
+      "git_blob": "ed4f5dcf9001ac8cd9eacbe89420ca428bb8c21a",
+      "path": "data/market/legacy-prices/2024/2024-07-08.csv",
+      "sha256": "6805cfc01e06257b9ad02d89f11b327b1a39171b4d623596e3164528ae9e3e25",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-08.csv"
+    },
+    {
+      "bytes": 489998,
+      "git_blob": "f923daaaf90ce610312cbf96b27994c184253100",
+      "path": "data/market/legacy-prices/2024/2024-07-09.csv",
+      "sha256": "f3d5a9a725ed0781f5b7a1266eb12868546c1758126c16b4b8829f8c61c0772b",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-09.csv"
+    },
+    {
+      "bytes": 491139,
+      "git_blob": "8919c488d0a3b0874ce5d2ad7efe22e2623c0c7a",
+      "path": "data/market/legacy-prices/2024/2024-07-10.csv",
+      "sha256": "baee888ea24304e6579f67508aa836bdaea91b32b8b8fe63d5fa2bc78add3eea",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-10.csv"
+    },
+    {
+      "bytes": 489467,
+      "git_blob": "8947b7294bfa6a3eee629879694e38cda99f0411",
+      "path": "data/market/legacy-prices/2024/2024-07-11.csv",
+      "sha256": "c80bc39181cad4c379062719b8a64f35b50e60dd5d2c69da507ba1bd945d8a08",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-11.csv"
+    },
+    {
+      "bytes": 490126,
+      "git_blob": "3cf620ace860550061e250bb0c5312ba1e2e8d15",
+      "path": "data/market/legacy-prices/2024/2024-07-12.csv",
+      "sha256": "61c6291c60b8d6cde0736e2b46751e6e888978865241f86094305dec95f52383",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-12.csv"
+    },
+    {
+      "bytes": 490908,
+      "git_blob": "5610d2639ff15e32e61514f3a9ec80e2d68870f3",
+      "path": "data/market/legacy-prices/2024/2024-07-16.csv",
+      "sha256": "6b07d72ba3b278dcb91caa7284134a6a9dccda12d79a072756d779887e96ced3",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-16.csv"
+    },
+    {
+      "bytes": 489287,
+      "git_blob": "3f1feea4f8b8a6786695efd05e7563003d8b4960",
+      "path": "data/market/legacy-prices/2024/2024-07-17.csv",
+      "sha256": "7fe0f1b92128b30d7ee76ab85cd55b63515f2427ac0fb391aad192044a8346ca",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-17.csv"
+    },
+    {
+      "bytes": 492092,
+      "git_blob": "868aab45fdb96caa3fadced3409a93ab51e378ba",
+      "path": "data/market/legacy-prices/2024/2024-07-18.csv",
+      "sha256": "2728bd852f4b1fe457388c15afdf9501fe3bc0d67ddedcf64d7d3e230c7bc50e",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-18.csv"
+    },
+    {
+      "bytes": 491632,
+      "git_blob": "3b7aee9f16207424fb612b9281dc7b3ea58d9cb7",
+      "path": "data/market/legacy-prices/2024/2024-07-19.csv",
+      "sha256": "dd8b811e1f65a0e3fba7f98259ecd38fb8f7cfdeb4e99a97ae099d1a0498e0ff",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-19.csv"
+    },
+    {
+      "bytes": 493379,
+      "git_blob": "b762a203191570bbcbcd66eb714a89198196b252",
+      "path": "data/market/legacy-prices/2024/2024-07-22.csv",
+      "sha256": "95f2fffc4de82f60bebce07c58a1b3904ba434e050d7f6ae7bbf2612319c9449",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-22.csv"
+    },
+    {
+      "bytes": 488556,
+      "git_blob": "62f22ffce42699e7f06148516e4326c5500f1e87",
+      "path": "data/market/legacy-prices/2024/2024-07-23.csv",
+      "sha256": "81754801b6a15c7269c777cb243f95aa10578070580065af0d974689c1b6f89f",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-23.csv"
+    },
+    {
+      "bytes": 493864,
+      "git_blob": "e559857e27c83ff623afb8415f4bc9990c07af6d",
+      "path": "data/market/legacy-prices/2024/2024-07-24.csv",
+      "sha256": "3a195f9edf0b2a91bd3b1d5bf063e74a95e5fcbdadbca095e4000f0c8c139bad",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-24.csv"
+    },
+    {
+      "bytes": 494731,
+      "git_blob": "48f0c0b8541722cba6cd46e3de554c6898898ec7",
+      "path": "data/market/legacy-prices/2024/2024-07-25.csv",
+      "sha256": "98586dc947227e69dc089671bacab8dabdd953b698930e76b9dd6c691d374b5a",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-25.csv"
+    },
+    {
+      "bytes": 490179,
+      "git_blob": "603996c59ce9afe80079f0843b4a78633496a869",
+      "path": "data/market/legacy-prices/2024/2024-07-26.csv",
+      "sha256": "05dcc8d2b8a147aacaf23346cd427b64ce6ea99e4a885b1104f6bc5c3dae7181",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-26.csv"
+    },
+    {
+      "bytes": 489486,
+      "git_blob": "6ad9d65d9a1fbedc3792d1bf8a7024f3b9bd652b",
+      "path": "data/market/legacy-prices/2024/2024-07-29.csv",
+      "sha256": "a63d6b144df412cb03b01dd2a65b13b7d8bdea7ccc9ee1ca9e7de523ee7f10f2",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-29.csv"
+    },
+    {
+      "bytes": 492755,
+      "git_blob": "4ad3940f7c6e59fc3fc9573fe8a28021af076020",
+      "path": "data/market/legacy-prices/2024/2024-07-30.csv",
+      "sha256": "90eb9efce126195887dcc873f310c2d5829a450f1daa1b357c3613286a0826a8",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-30.csv"
+    },
+    {
+      "bytes": 489594,
+      "git_blob": "a48a6eaa12b654f29ef73297413ee4a67b125c6c",
+      "path": "data/market/legacy-prices/2024/2024-07-31.csv",
+      "sha256": "9b995f1f07fb5e6e2bff536ceb89d4a41e2f560edc6a24c2f8718138ee772575",
+      "source": "stock.jp/data/daily-prices/2024/2024-07-31.csv"
+    },
+    {
+      "bytes": 497710,
+      "git_blob": "702418232a66baf1cec30f8ada476c5a174344a1",
+      "path": "data/market/legacy-prices/2024/2024-08-01.csv",
+      "sha256": "b5c75b4d47e842ba152a69da209c163fd6cb39551979fe1c45c5386aaf8cd3b6",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-01.csv"
+    },
+    {
+      "bytes": 501168,
+      "git_blob": "1998b574e7f9f106d841013e3a338da8615717d0",
+      "path": "data/market/legacy-prices/2024/2024-08-02.csv",
+      "sha256": "f92e5d48d6eec7bf8e0586ba80cf515abe8359993b7e12055eaacef9566ab297",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-02.csv"
+    },
+    {
+      "bytes": 505473,
+      "git_blob": "42f180487400fe50ac50d5b43cc9c2579dc380e1",
+      "path": "data/market/legacy-prices/2024/2024-08-05.csv",
+      "sha256": "f9df78fb51ef4c9ab3d288bbf2d0c03f953f575bee2d540e2fb9d6dd70727b74",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-05.csv"
+    },
+    {
+      "bytes": 494745,
+      "git_blob": "672d24996f62d92ad57b9ec934fee113d9c72bd0",
+      "path": "data/market/legacy-prices/2024/2024-08-06.csv",
+      "sha256": "d09142e9f80d3b807f61d63cc0afc4d6f5afe17a43bbee49cbd90125355f4ca6",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-06.csv"
+    },
+    {
+      "bytes": 492457,
+      "git_blob": "770fbbf86e27f5ce2708bf8c9593155dc8553d58",
+      "path": "data/market/legacy-prices/2024/2024-08-07.csv",
+      "sha256": "e3d0314abf8ca752f36bd8fbd624f2b36249af91c8974639ff4d4e4ce332a014",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-07.csv"
+    },
+    {
+      "bytes": 492517,
+      "git_blob": "97e21df6e482fd5d66ba1e6230d26162fc81b825",
+      "path": "data/market/legacy-prices/2024/2024-08-08.csv",
+      "sha256": "6b741152d7b2efd133188adc21e24fd6f387395b058cd75fcdac03973ddd830e",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-08.csv"
+    },
+    {
+      "bytes": 491820,
+      "git_blob": "4283b2416bff8276c83264e9d3d8aaa307f1270b",
+      "path": "data/market/legacy-prices/2024/2024-08-09.csv",
+      "sha256": "06e67fdf95782f03a37e0d3df376f783d5fa6554fa263fc6ef0b765b79cdab56",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-09.csv"
+    },
+    {
+      "bytes": 492133,
+      "git_blob": "0650595d0a4cdd2b1bc084756bdf8c640227711b",
+      "path": "data/market/legacy-prices/2024/2024-08-13.csv",
+      "sha256": "66d76949df72d117f78a64ead0f74138e473be561f8545a94e58254fb7d3ad99",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-13.csv"
+    },
+    {
+      "bytes": 490984,
+      "git_blob": "2f395d36e2b931d46fbe7fda0142c2a4a8c8133e",
+      "path": "data/market/legacy-prices/2024/2024-08-14.csv",
+      "sha256": "f001eb8a818211e3c3da8de5d78266a4049acd731d8a56ed12d8501ba92f5491",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-14.csv"
+    },
+    {
+      "bytes": 491480,
+      "git_blob": "7c7b4209ef700e1f32d9e3c276079397738654a6",
+      "path": "data/market/legacy-prices/2024/2024-08-15.csv",
+      "sha256": "d88613a8ca17409f7bc808e7ca2d51784ca31b5879fc8b0965c87d51457b3125",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-15.csv"
+    },
+    {
+      "bytes": 490751,
+      "git_blob": "be63ee0c6b644553b449f3679f2e8da094cb6a04",
+      "path": "data/market/legacy-prices/2024/2024-08-16.csv",
+      "sha256": "8fb31cf02518a8dffcec9a6b006ae7b003e4e02aea6cda59bbde7cc08d9b9df5",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-16.csv"
+    },
+    {
+      "bytes": 494267,
+      "git_blob": "261b388c1806a6997a2492132120d52b773dc1ca",
+      "path": "data/market/legacy-prices/2024/2024-08-19.csv",
+      "sha256": "c862cdb777b18a4d3968cb568930eaa361069e019bf4eb99cb6deb6af5a9e69e",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-19.csv"
+    },
+    {
+      "bytes": 489774,
+      "git_blob": "78516092397a5eb0283dca7025ed424fbe99c4bf",
+      "path": "data/market/legacy-prices/2024/2024-08-20.csv",
+      "sha256": "d803ef8f3fb343cc67fd7474b845cb1e55f9b75493bb4bb4055e563b065a0db5",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-20.csv"
+    },
+    {
+      "bytes": 491704,
+      "git_blob": "0dac4d1d109ea685cb4c206a6b5bdf6c8831aada",
+      "path": "data/market/legacy-prices/2024/2024-08-21.csv",
+      "sha256": "2e2b2989e632b7443ee3fdd0a8e012466ac1dae1d506e2fa1825d0f2dffb3a58",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-21.csv"
+    },
+    {
+      "bytes": 489945,
+      "git_blob": "57dd5da21a982d649363a986138204824b4c5546",
+      "path": "data/market/legacy-prices/2024/2024-08-22.csv",
+      "sha256": "fd79876fc107b69186f701125a9de71aedd7afc212d98a10baf5e8644ac71f0d",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-22.csv"
+    },
+    {
+      "bytes": 490448,
+      "git_blob": "80d8c40ae880c75b38d1f89f3d289ec38cae894f",
+      "path": "data/market/legacy-prices/2024/2024-08-23.csv",
+      "sha256": "f2db6ec5b1cb84564d982305158ec52d39dcaf4e0585204256316b9c645756be",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-23.csv"
+    },
+    {
+      "bytes": 491578,
+      "git_blob": "a9d817b63d6701ce51826feed8a28c209306a077",
+      "path": "data/market/legacy-prices/2024/2024-08-26.csv",
+      "sha256": "27b85933fd83885f081cfd25fd18c438324fa45259046bdd3e01f3ff712da0f9",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-26.csv"
+    },
+    {
+      "bytes": 489628,
+      "git_blob": "48c47949b52eadfa6e5104d89607a4c33d4c7909",
+      "path": "data/market/legacy-prices/2024/2024-08-27.csv",
+      "sha256": "8e5334ebfb9e8a93347d5b21baa91d9cf166126d75dcc39c904f085b2d889425",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-27.csv"
+    },
+    {
+      "bytes": 491521,
+      "git_blob": "8aabe87772cb6bf8851fa0ff061e89aa3e6a31de",
+      "path": "data/market/legacy-prices/2024/2024-08-28.csv",
+      "sha256": "753708f6f47ccc10bb4a942f3937d577c009ef808d1fb951d996bbbae6962380",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-28.csv"
+    },
+    {
+      "bytes": 491154,
+      "git_blob": "bb091c736d63f489fba678cad358bfc5a477e7c6",
+      "path": "data/market/legacy-prices/2024/2024-08-29.csv",
+      "sha256": "a2761d719a3b7b6c12c52ceb4c143cfbff47389bceac1246172abe269fc54465",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-29.csv"
+    },
+    {
+      "bytes": 489702,
+      "git_blob": "f4fe04218600976d88f02427a1b25e64bd4a346f",
+      "path": "data/market/legacy-prices/2024/2024-08-30.csv",
+      "sha256": "26cfc3270b58928bb8cc0fd299541ce38f724a797731a00a84f09ec5b87f9a80",
+      "source": "stock.jp/data/daily-prices/2024/2024-08-30.csv"
+    },
+    {
+      "bytes": 491863,
+      "git_blob": "847dcb3315c34c530f5db330446ce47227147aca",
+      "path": "data/market/legacy-prices/2024/2024-09-02.csv",
+      "sha256": "077cd4681a08e33ae689846c6e78154ba6d8582102c54718a5dd1aac5a9b2910",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-02.csv"
+    },
+    {
+      "bytes": 489447,
+      "git_blob": "e2554521cf7ace95f6fc865c0a1ed2c1a6bdbaaa",
+      "path": "data/market/legacy-prices/2024/2024-09-03.csv",
+      "sha256": "9aeb32b2b35572c3fd6cb42cf9de1c940d1a612a522438bdcefee0ce8e61c1b2",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-03.csv"
+    },
+    {
+      "bytes": 497452,
+      "git_blob": "b33169f5efea28f52c440f386e32b8f069589c9e",
+      "path": "data/market/legacy-prices/2024/2024-09-04.csv",
+      "sha256": "c16502af186f984d4125de6038558970f31ba5a1b2ee12dbabc690465b4a9938",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-04.csv"
+    },
+    {
+      "bytes": 490009,
+      "git_blob": "0b5cba767ae51b865bcb713be7f293437411703d",
+      "path": "data/market/legacy-prices/2024/2024-09-05.csv",
+      "sha256": "5b0d1bc9f7cbe039b7b9ecb2768fd145bbadb5f241f8e59e8ed2f57c66bc0b41",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-05.csv"
+    },
+    {
+      "bytes": 492460,
+      "git_blob": "ba066fcecbdb7aa8dff5ce41547be28cfed83a9a",
+      "path": "data/market/legacy-prices/2024/2024-09-06.csv",
+      "sha256": "9d0802c034bfe3a7b0046d58381f3027f68168e0addd72620cace6c05f3f3866",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-06.csv"
+    },
+    {
+      "bytes": 492629,
+      "git_blob": "df5675fc9c211bc25c68ceeaa8d8f2973d76a2ca",
+      "path": "data/market/legacy-prices/2024/2024-09-09.csv",
+      "sha256": "05cf36634177d6d928cf2eb7f59bd941c4690866c3eb050ec34fc4b8f4a3c06e",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-09.csv"
+    },
+    {
+      "bytes": 489429,
+      "git_blob": "4aa716e9cf7ee1e4fc6c2950f42138f570e88fc6",
+      "path": "data/market/legacy-prices/2024/2024-09-10.csv",
+      "sha256": "0550ba432ae50b7c6ddd8341909b1100bbc33d3d69a3e4c3d5cd91e1a295d49b",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-10.csv"
+    },
+    {
+      "bytes": 495190,
+      "git_blob": "d810845e75d5cecc621574931fe300cdf69abf74",
+      "path": "data/market/legacy-prices/2024/2024-09-11.csv",
+      "sha256": "e57188eeee2ba8e726c3651a9c9a6b710b76a1fcfaf9d2477bc58286da0399c1",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-11.csv"
+    },
+    {
+      "bytes": 488425,
+      "git_blob": "2e07210837d31e82015c9c8431666bfc74038daa",
+      "path": "data/market/legacy-prices/2024/2024-09-12.csv",
+      "sha256": "8bff4f0fae464497a59f7cd5c164c1b8abda910218f7bc10aac39f71127ba8e8",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-12.csv"
+    },
+    {
+      "bytes": 490787,
+      "git_blob": "757bbf6389d9d833b76871cbb41903ff6fbccb5b",
+      "path": "data/market/legacy-prices/2024/2024-09-13.csv",
+      "sha256": "f2d739f8ff89b54f6f2c9dfa0022f8886131fb01915eca808097540621ea2f01",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-13.csv"
+    },
+    {
+      "bytes": 490899,
+      "git_blob": "496f36549a2fee039c45839883f2a529c42652b6",
+      "path": "data/market/legacy-prices/2024/2024-09-17.csv",
+      "sha256": "38196f140fa324d6d57c0f88ed334ce0c5203d6ae3ee382386453ed90906e32f",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-17.csv"
+    },
+    {
+      "bytes": 487955,
+      "git_blob": "51e30a5565095c9d3f3a9d4282ef171bdaf93782",
+      "path": "data/market/legacy-prices/2024/2024-09-18.csv",
+      "sha256": "864b302888fe1e6e15842330e4354cc48487eae5927aa1fc701c5b71bee50828",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-18.csv"
+    },
+    {
+      "bytes": 488159,
+      "git_blob": "7e5b710bbeb0b31e32d93e9eb996f4d44e15cfee",
+      "path": "data/market/legacy-prices/2024/2024-09-19.csv",
+      "sha256": "0cf849cb6d540421ebac81880dd2de25ca40337377da40f8e1b4fddff706b79f",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-19.csv"
+    },
+    {
+      "bytes": 489263,
+      "git_blob": "22283fc0a30ad0a9fdbf4085a4b50b91993b58a4",
+      "path": "data/market/legacy-prices/2024/2024-09-20.csv",
+      "sha256": "e83fef5b045f3856fbf0ca27de903801ebee8c25354207e8f6f235bb12415fe1",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-20.csv"
+    },
+    {
+      "bytes": 490626,
+      "git_blob": "170b31b155d633d01492e216d5a51f6f5c9ed827",
+      "path": "data/market/legacy-prices/2024/2024-09-24.csv",
+      "sha256": "176cf8fc055d6128e48816d1955094ada40c81adea324b440909d5074bb727a9",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-24.csv"
+    },
+    {
+      "bytes": 490103,
+      "git_blob": "7eb2b7f9845b0b0d4638ace91afb2afa5b1853d4",
+      "path": "data/market/legacy-prices/2024/2024-09-25.csv",
+      "sha256": "70c9d99f8d29e2e547b79c4b2f95b0d2b452303b3a1dfce267926a7968ba71e0",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-25.csv"
+    },
+    {
+      "bytes": 490996,
+      "git_blob": "35f498e341c0d3006823e4f4988e13ed9afd37d5",
+      "path": "data/market/legacy-prices/2024/2024-09-26.csv",
+      "sha256": "af3ab57d9943e7889e51172f64c137ae880704945f41b9d109c7fa3f3b008101",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-26.csv"
+    },
+    {
+      "bytes": 491653,
+      "git_blob": "8abb6a9ff614aea715df95411ae98d2419292e01",
+      "path": "data/market/legacy-prices/2024/2024-09-27.csv",
+      "sha256": "9c7929ecaf3680f4e3088a3a20c02377dd7ef2b882838a735c6e021b1a620c9a",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-27.csv"
+    },
+    {
+      "bytes": 495317,
+      "git_blob": "9be291af999b531075a4c7d22dc0035031b504ae",
+      "path": "data/market/legacy-prices/2024/2024-09-30.csv",
+      "sha256": "9529509886f43bfe8b5c2daf3aac8116cdcaa8442e91dd4b0ca2ffac8cb40bab",
+      "source": "stock.jp/data/daily-prices/2024/2024-09-30.csv"
+    },
+    {
+      "bytes": 488991,
+      "git_blob": "d1c5c1df8d68ea7735adb73d1390f8c5ae05da7b",
+      "path": "data/market/legacy-prices/2024/2024-10-01.csv",
+      "sha256": "31ce73acc293a834751f975bef146aabf0f54a287f923716118e0b6ecbbac3cd",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-01.csv"
+    },
+    {
+      "bytes": 493468,
+      "git_blob": "286b27e95d74cdc5b999a54eee85079a28c8f16c",
+      "path": "data/market/legacy-prices/2024/2024-10-02.csv",
+      "sha256": "9e567e88dd3e55a5bd26134b97fe5b2d265c5f1822f5e54058889b01c835372d",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-02.csv"
+    },
+    {
+      "bytes": 488668,
+      "git_blob": "5a269a67f7728448c58f69eaf52d1e3db86ba5a6",
+      "path": "data/market/legacy-prices/2024/2024-10-03.csv",
+      "sha256": "6e4b3c733f9128b0886bd0fea76a48ad2884be783df0fe3c216dd2908c5ad5c0",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-03.csv"
+    },
+    {
+      "bytes": 488917,
+      "git_blob": "0b2af903fdd898add98a8de04ff5f710bc3568cb",
+      "path": "data/market/legacy-prices/2024/2024-10-04.csv",
+      "sha256": "f0262844a46d47e53bb7f800b691c771fe918a51eff98308f8877d618b0d20aa",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-04.csv"
+    },
+    {
+      "bytes": 489389,
+      "git_blob": "2aa8d8c5c22ff589bcdd3125e0881095b74df00e",
+      "path": "data/market/legacy-prices/2024/2024-10-07.csv",
+      "sha256": "40353475e2bdf3c8f1664840f0adb5ce33137d259644b16a63824bffc446b633",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-07.csv"
+    },
+    {
+      "bytes": 493428,
+      "git_blob": "4ac8998191a4bf202e05728ff191bb7a61dd25f0",
+      "path": "data/market/legacy-prices/2024/2024-10-08.csv",
+      "sha256": "dcb5cf034926fbfa59eee84185b986db68c0d5ff4f2750f4cb8a004cbc2319ca",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-08.csv"
+    },
+    {
+      "bytes": 489546,
+      "git_blob": "df9ae7f5fe3c0ecca5df838d36210ef59e1b180b",
+      "path": "data/market/legacy-prices/2024/2024-10-09.csv",
+      "sha256": "3759108890640be2752c797b17655d797446cd72b40eee4293c954375403a249",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-09.csv"
+    },
+    {
+      "bytes": 490147,
+      "git_blob": "0ce26aa544effd7620d7ae31edcc595566c877c8",
+      "path": "data/market/legacy-prices/2024/2024-10-10.csv",
+      "sha256": "912a7011550e02b1d1a16cc5fcf6b593c5d6e47e9a3a23a32090280e2cc1a4cc",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-10.csv"
+    },
+    {
+      "bytes": 490261,
+      "git_blob": "9ed9e9ae2c1de7f989fba597ddcd4805455ae385",
+      "path": "data/market/legacy-prices/2024/2024-10-11.csv",
+      "sha256": "9de55f428f873ec0f99be04e7119f959cd2fe4a857b2edf9e419a208d36ea122",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-11.csv"
+    },
+    {
+      "bytes": 489668,
+      "git_blob": "534861c4dcfaff7dc9c535bf221a6e50c947f02b",
+      "path": "data/market/legacy-prices/2024/2024-10-15.csv",
+      "sha256": "5d15fed5e83f66e78fe2837eb344a6383a31d53d1c75f6aaf5204235a1e0f56a",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-15.csv"
+    },
+    {
+      "bytes": 490827,
+      "git_blob": "84535cd3a4424286227a61c2a2be4adf312880ef",
+      "path": "data/market/legacy-prices/2024/2024-10-16.csv",
+      "sha256": "27445831160b3d42d804559e464fd0a56d931404fe25a47556fe03b9c41ccb43",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-16.csv"
+    },
+    {
+      "bytes": 489663,
+      "git_blob": "92381505997f7ce5ac1a747dc624fd42e292ddf7",
+      "path": "data/market/legacy-prices/2024/2024-10-17.csv",
+      "sha256": "80c8e7a4ffa21ad10e18b1fd37ea3590c3b2acb6d19ccd1db079da71b426a9bb",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-17.csv"
+    },
+    {
+      "bytes": 488936,
+      "git_blob": "d06c2b1093499ac81f46cb76836e9ed069860dc8",
+      "path": "data/market/legacy-prices/2024/2024-10-18.csv",
+      "sha256": "a61c2145ea5447ab1337f9d857baee0a1ce0975d9204110dc4e8bec0d44116b7",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-18.csv"
+    },
+    {
+      "bytes": 489589,
+      "git_blob": "73368a66cfc69601bc241dfb9e0dd4937b94948c",
+      "path": "data/market/legacy-prices/2024/2024-10-21.csv",
+      "sha256": "f543ee741bdd44717a4e660fb564bde641a84ed57118f315dc713315cc4fe5bd",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-21.csv"
+    },
+    {
+      "bytes": 493551,
+      "git_blob": "d1b7234ffaaccd8281da5b59537041ba59f2fab9",
+      "path": "data/market/legacy-prices/2024/2024-10-22.csv",
+      "sha256": "f5d829f89020b998c0bdaabb887360f1c4c774ec5a8cefb0c454344c687f28bd",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-22.csv"
+    },
+    {
+      "bytes": 492491,
+      "git_blob": "f19a729321394e20072b930ff173cddeb3644bc2",
+      "path": "data/market/legacy-prices/2024/2024-10-23.csv",
+      "sha256": "7dc5b66e0b800279ecd4a3e98a869b2a76968ccf6ee595753df9e8fce5f5329c",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-23.csv"
+    },
+    {
+      "bytes": 490425,
+      "git_blob": "d535caa6fb8d4d3ce401a2e7cf2c3e0ae27fd051",
+      "path": "data/market/legacy-prices/2024/2024-10-24.csv",
+      "sha256": "e1c9ea86d87bf2aefab82cc6ebea59283fb07750585daaaa7f84242d0bbfb8da",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-24.csv"
+    },
+    {
+      "bytes": 494284,
+      "git_blob": "2420929a91ef62f4218e6e18d9e1f25416e9ce03",
+      "path": "data/market/legacy-prices/2024/2024-10-25.csv",
+      "sha256": "dd26999163cafab761c522c6b3f234e8259596e1d33b6c8b66b8e12f8d9fcf57",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-25.csv"
+    },
+    {
+      "bytes": 489278,
+      "git_blob": "b159d766ce537694ca3afd6d4ecc383b48ebf8ea",
+      "path": "data/market/legacy-prices/2024/2024-10-28.csv",
+      "sha256": "9a4eefb8de4a739b650fb3035544a669b67cd299b8d85309144fe2dfe28e3e74",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-28.csv"
+    },
+    {
+      "bytes": 488385,
+      "git_blob": "8ac2b46013a0ef5918c33df80596e6dbce6ddf62",
+      "path": "data/market/legacy-prices/2024/2024-10-29.csv",
+      "sha256": "5ddaaad0a7d8503090d815acddc09df568959c37c93e59d992c38f71ee2e2b24",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-29.csv"
+    },
+    {
+      "bytes": 491665,
+      "git_blob": "26e98e8dae8bbf276329adeec719450c1e846744",
+      "path": "data/market/legacy-prices/2024/2024-10-30.csv",
+      "sha256": "b746aa851f39c111325e4dcd53e554ca61363185f6d207a55a5a11f94b2f0755",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-30.csv"
+    },
+    {
+      "bytes": 489331,
+      "git_blob": "d1c19aae86698e066a6b6d22192095ce1a1dca64",
+      "path": "data/market/legacy-prices/2024/2024-10-31.csv",
+      "sha256": "219b6d07713c91acf888c9bdb186add649fbad154b926e9e782479473bee72b7",
+      "source": "stock.jp/data/daily-prices/2024/2024-10-31.csv"
+    },
+    {
+      "bytes": 493308,
+      "git_blob": "be0af2b657eb46d013fcd03c567e2d14e95a24dd",
+      "path": "data/market/legacy-prices/2024/2024-11-01.csv",
+      "sha256": "f984652a1507e912db985f2f218cc8d030b18d17155e52c30ea9464c0527e92c",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-01.csv"
+    },
+    {
+      "bytes": 489991,
+      "git_blob": "9e446ce47e9d5ccdee12b08bebf38beb68bb693f",
+      "path": "data/market/legacy-prices/2024/2024-11-05.csv",
+      "sha256": "f23aea3b31b9aacf6f5168c4b8d14b0a4bd5323c2f667912274d36fcbfd50acc",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-05.csv"
+    },
+    {
+      "bytes": 489562,
+      "git_blob": "8eefd63def3305dc4cfbc5770a87aace21fb3811",
+      "path": "data/market/legacy-prices/2024/2024-11-06.csv",
+      "sha256": "07853f3488cc93b35b08a4a5515cf1846842a30fee1bc9b569296bef46af8def",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-06.csv"
+    },
+    {
+      "bytes": 489511,
+      "git_blob": "a6417d5227f8d586a63ed513cadc31bdd38c1bb3",
+      "path": "data/market/legacy-prices/2024/2024-11-07.csv",
+      "sha256": "ea64da1ee40af7fd0d739e4486fb14694df865730da93bc763aa7b8f91dd9ff7",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-07.csv"
+    },
+    {
+      "bytes": 491299,
+      "git_blob": "16c7eedc61b432aebc846e5192bab3c31c194667",
+      "path": "data/market/legacy-prices/2024/2024-11-08.csv",
+      "sha256": "74ff76b0bb1afb4cd9d645b61d76e2e7030c1dddd8964bae4a8a30f29ca9f89f",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-08.csv"
+    },
+    {
+      "bytes": 491330,
+      "git_blob": "bd2f002478bb5d35d4512b5574ecac746ca684ba",
+      "path": "data/market/legacy-prices/2024/2024-11-11.csv",
+      "sha256": "29e752e8fb519b1edf6a176b1cf166a7e969e7418abc4f78ebe524dc95f019f9",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-11.csv"
+    },
+    {
+      "bytes": 490727,
+      "git_blob": "5cc6efe0a4fcc2232a1f89a9b0c1c4d9ead0240e",
+      "path": "data/market/legacy-prices/2024/2024-11-12.csv",
+      "sha256": "fd85a663ecd3a88f55b7a3e7f7bae290ff1dfa6d5c06a8502454bd362e26fcf2",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-12.csv"
+    },
+    {
+      "bytes": 491792,
+      "git_blob": "4d022bda5f9aec5370fd40d18ccdde4590617b6a",
+      "path": "data/market/legacy-prices/2024/2024-11-13.csv",
+      "sha256": "6ce40677f33af9a277ff6bff7e91fd2d078de7015a49a510b58ff9453548bc34",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-13.csv"
+    },
+    {
+      "bytes": 492277,
+      "git_blob": "67c99664a3524c61aee5a9e732f70729198881c9",
+      "path": "data/market/legacy-prices/2024/2024-11-14.csv",
+      "sha256": "c704340a803f29da06d994ea1e0bd86c0c35877b6933488b1a657e8c2504b940",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-14.csv"
+    },
+    {
+      "bytes": 490964,
+      "git_blob": "2b6d13063c72df8b4cc645c427b0e472396b2de2",
+      "path": "data/market/legacy-prices/2024/2024-11-15.csv",
+      "sha256": "52a1641d061ea6490737b850d26bca4330a3f5431acc4b0593808710dfdefa49",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-15.csv"
+    },
+    {
+      "bytes": 490799,
+      "git_blob": "f3e94abc6b5dd98012f5c0930f28fcf1506ef016",
+      "path": "data/market/legacy-prices/2024/2024-11-18.csv",
+      "sha256": "3c4660b7ff835d4bc0894f63b4302360cd47bc8b3b699122a26fa7d1efe7d067",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-18.csv"
+    },
+    {
+      "bytes": 488669,
+      "git_blob": "1ac39ba64b5b763ebef9f592a888c9245fa9cd40",
+      "path": "data/market/legacy-prices/2024/2024-11-19.csv",
+      "sha256": "fa23615bde1109f8f2ee8c9480a3403266b54b7898de2553ada3725b8b0c644c",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-19.csv"
+    },
+    {
+      "bytes": 490239,
+      "git_blob": "72b7cbee317e28378aae124109d574e5086b8893",
+      "path": "data/market/legacy-prices/2024/2024-11-20.csv",
+      "sha256": "6f6715e103d89ba66013d1890297092a8ba6820f71a8f8dcaa38aaf7d9274fca",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-20.csv"
+    },
+    {
+      "bytes": 489648,
+      "git_blob": "8737391dfafa17ce1929f4cff12ff34dc4ec367a",
+      "path": "data/market/legacy-prices/2024/2024-11-21.csv",
+      "sha256": "b31f450b46b98088dfbca51a80a0da882f931b5a64ba061f00fa6a423171a937",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-21.csv"
+    },
+    {
+      "bytes": 489149,
+      "git_blob": "96fc0763eb1e383aca90a721f6b3a830cef1595f",
+      "path": "data/market/legacy-prices/2024/2024-11-22.csv",
+      "sha256": "af7cfe5540242cc0867f528623f78eac8a517cf6851236510041c4759409bfc8",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-22.csv"
+    },
+    {
+      "bytes": 490966,
+      "git_blob": "b6c6f054161bfe44ea2cb68d3f059b5a9cd53e08",
+      "path": "data/market/legacy-prices/2024/2024-11-25.csv",
+      "sha256": "5aad494747a50b9e4a6f6d0a89953e5637dbcca999ed29a6c6bc0948846df551",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-25.csv"
+    },
+    {
+      "bytes": 491450,
+      "git_blob": "3861e187f5629b17f6c301e1f9065a5346425d05",
+      "path": "data/market/legacy-prices/2024/2024-11-26.csv",
+      "sha256": "ae488e420e2c208fc9ffc0959a8246904e351c0b7fb288c6e6c7f9e8fc7d4028",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-26.csv"
+    },
+    {
+      "bytes": 493270,
+      "git_blob": "660ed37a25cb7ed8c609bbd1d77b53d2bc9e2ebc",
+      "path": "data/market/legacy-prices/2024/2024-11-27.csv",
+      "sha256": "ce2fce9873e6edaf60e6698e43888fded4af233672c6a1262c11e40152b99600",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-27.csv"
+    },
+    {
+      "bytes": 488918,
+      "git_blob": "787af9db4574686436ed5edd2affd03396f3ea08",
+      "path": "data/market/legacy-prices/2024/2024-11-28.csv",
+      "sha256": "15feb76f064894033a3d65116727194f269ff7c04b0c9a51d34333ddec6da301",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-28.csv"
+    },
+    {
+      "bytes": 490493,
+      "git_blob": "c1fb963556405f50397e0c0c3f931fe471be72b4",
+      "path": "data/market/legacy-prices/2024/2024-11-29.csv",
+      "sha256": "01d1c7d4911eeda961a17f28bc24331d96734063f85ad88419b69469ab03b5f7",
+      "source": "stock.jp/data/daily-prices/2024/2024-11-29.csv"
+    },
+    {
+      "bytes": 490729,
+      "git_blob": "c5d7ed6bf880514e9cb96769e3ac56660d2208eb",
+      "path": "data/market/legacy-prices/2024/2024-12-02.csv",
+      "sha256": "67b6a6afb265ce6e3045083534e53be6c4d1dfee3b5f12c7de6ee3dd8d291712",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-02.csv"
+    },
+    {
+      "bytes": 490122,
+      "git_blob": "4221ac24a1784bb57cf754200032af435377bdb4",
+      "path": "data/market/legacy-prices/2024/2024-12-03.csv",
+      "sha256": "49153d9b53ffbc239ca75f7a785e86885b6090b7db95957e2a4ca70ea7e52bb7",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-03.csv"
+    },
+    {
+      "bytes": 493419,
+      "git_blob": "e75956dc31d81719b5c228748b8cccb6c8736f6f",
+      "path": "data/market/legacy-prices/2024/2024-12-04.csv",
+      "sha256": "5973502d0529e1d485aaf4cbeafb41d198adf081a1ceb5758b8b244c672fd1c0",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-04.csv"
+    },
+    {
+      "bytes": 490565,
+      "git_blob": "6d4ad5074f96661d39ac51d8c71bf35479f575de",
+      "path": "data/market/legacy-prices/2024/2024-12-05.csv",
+      "sha256": "ccbb2b4edee0cd52daa555d8060ffea486c7d5a3da49affd66d1731941d18bf1",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-05.csv"
+    },
+    {
+      "bytes": 490851,
+      "git_blob": "a3d8ec10098666648de3ee513a92abdb96ea7ab8",
+      "path": "data/market/legacy-prices/2024/2024-12-06.csv",
+      "sha256": "25507b60c0346e1daaee26b0fd43e3fd8620f6e01bc5a6fddf0d95ba50dec59d",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-06.csv"
+    },
+    {
+      "bytes": 490323,
+      "git_blob": "2316b10d7f824bec5a84e5dd0b52a6f899c844ba",
+      "path": "data/market/legacy-prices/2024/2024-12-09.csv",
+      "sha256": "38e6c82e1440b988bbfbef329438794b8d700d2b9097d533ce63d865c55a1eff",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-09.csv"
+    },
+    {
+      "bytes": 490429,
+      "git_blob": "08a78727e2bab494c1e53d873a65c516740d6a94",
+      "path": "data/market/legacy-prices/2024/2024-12-10.csv",
+      "sha256": "306ae1e937cb4054e7c06dbf457f97c7b315e1dab8138da961dec64bc09a79af",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-10.csv"
+    },
+    {
+      "bytes": 490565,
+      "git_blob": "c77ada693e018f56a195332a82daf2fc500bcf8d",
+      "path": "data/market/legacy-prices/2024/2024-12-11.csv",
+      "sha256": "ab7aad6d8db97ad5ff7632fb232e2cc96b608795d8975c42b709a966a2e576f5",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-11.csv"
+    },
+    {
+      "bytes": 490607,
+      "git_blob": "1d7a748f88580b8df1042f039f9e7e9e74242cbb",
+      "path": "data/market/legacy-prices/2024/2024-12-12.csv",
+      "sha256": "48b39c0f62f637ddc2ed603a4b8e26feec05349ba7dfe9a1a708b65a31ff6ce2",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-12.csv"
+    },
+    {
+      "bytes": 491902,
+      "git_blob": "4be98136014bfbe8e1899b5d9ee2010df3beed97",
+      "path": "data/market/legacy-prices/2024/2024-12-13.csv",
+      "sha256": "0fcae2762fad4f3cfc5c2452393056ddc143e478476ecc7e14713425d8eeb649",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-13.csv"
+    },
+    {
+      "bytes": 492835,
+      "git_blob": "6be0ec4847219551890b455915bbfd8654dbe08e",
+      "path": "data/market/legacy-prices/2024/2024-12-16.csv",
+      "sha256": "c272a095ec4a56407015490c27bfb4644859f5ec5ada6990df25a2bbe54f97a9",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-16.csv"
+    },
+    {
+      "bytes": 492723,
+      "git_blob": "6c1eadd0c04d3d4c2cd67d7126e1ae94139c1fc3",
+      "path": "data/market/legacy-prices/2024/2024-12-17.csv",
+      "sha256": "5c6511bc9ba1aeb815af7dc934f140afa06d76ce42c1ee9dcd4859229c7a4528",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-17.csv"
+    },
+    {
+      "bytes": 492141,
+      "git_blob": "d34ae59b1806de9eea8095f073cbb44ffe9fa178",
+      "path": "data/market/legacy-prices/2024/2024-12-18.csv",
+      "sha256": "6bef87643b4017a4553450c3920f903aa11a10e80eda88fc0a1d4553ea034a56",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-18.csv"
+    },
+    {
+      "bytes": 492925,
+      "git_blob": "90bb63ade3c66c9532cbfca9048ebd1040eb8c9d",
+      "path": "data/market/legacy-prices/2024/2024-12-19.csv",
+      "sha256": "4714818809cd31cfb849bc04b5e3287f0528b6be010e4057a7fe446db74a6114",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-19.csv"
+    },
+    {
+      "bytes": 493951,
+      "git_blob": "091283a22009f7e4561b9ff3a3ff9c2827afb2e5",
+      "path": "data/market/legacy-prices/2024/2024-12-20.csv",
+      "sha256": "c10a43702204932b9b57080c1839f44e780dceb3e67c8426fbe2984fcfbfe3e8",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-20.csv"
+    },
+    {
+      "bytes": 492739,
+      "git_blob": "32c6ea7a1104e9f4f29f28ab95cdec96d78400bc",
+      "path": "data/market/legacy-prices/2024/2024-12-23.csv",
+      "sha256": "e1f8f26c0f3419dd67045f87fd5b352c6bb43e4026b736005db34038a165d9c1",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-23.csv"
+    },
+    {
+      "bytes": 493093,
+      "git_blob": "6de39a8e47e8a0ea3cd2e02f3670f3bda9fee649",
+      "path": "data/market/legacy-prices/2024/2024-12-24.csv",
+      "sha256": "2aed53b6919ca7d48bb964220c49f210b81a2db45e15026cea5dfcff4892ad91",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-24.csv"
+    },
+    {
+      "bytes": 493273,
+      "git_blob": "5a5e5818cdce8a0c9566df0e6b7719b60521e6f8",
+      "path": "data/market/legacy-prices/2024/2024-12-25.csv",
+      "sha256": "a59477f2c93f4f03527d4f697b71659edd9908499d23835bfb9702cd2ac3c39f",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-25.csv"
+    },
+    {
+      "bytes": 493091,
+      "git_blob": "fedd7af1992c694745140cc710d7efaae99b107d",
+      "path": "data/market/legacy-prices/2024/2024-12-26.csv",
+      "sha256": "c021deb84b7ecf09956cb75563aee4555ab9f196325357e78c7997b51ed948e8",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-26.csv"
+    },
+    {
+      "bytes": 492845,
+      "git_blob": "6309e0f40684a7dec6528d3d22f12d356e5aa966",
+      "path": "data/market/legacy-prices/2024/2024-12-27.csv",
+      "sha256": "997eecb8ff5226b8069e9b544aa4d718099a8f9c3797e058dc3410ab81d3a11f",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-27.csv"
+    },
+    {
+      "bytes": 493676,
+      "git_blob": "f2fb44ec41b2dbc48d7d8ac7e704acac76d17540",
+      "path": "data/market/legacy-prices/2024/2024-12-30.csv",
+      "sha256": "00b1cc06aa806ebac3fac46062c88003d2b29d831accd980c698c77c9a7f38a9",
+      "source": "stock.jp/data/daily-prices/2024/2024-12-30.csv"
+    },
+    {
+      "bytes": 495699,
+      "git_blob": "8d5971b5b53979a191a489b840157d0e74a00bf7",
+      "path": "data/market/legacy-prices/2025/2025-01-06.csv",
+      "sha256": "78115dafd9f0a656e45665b57bd6860b66f2b8943fd51635e4625eb6436ef8d2",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-06.csv"
+    },
+    {
+      "bytes": 492820,
+      "git_blob": "6d0a65be64244a54942160182a5fd6c48dae5b72",
+      "path": "data/market/legacy-prices/2025/2025-01-07.csv",
+      "sha256": "0654bcf7b84b56303a5ff4f1fa5521d87aa3e35664757d68ddfe901450183238",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-07.csv"
+    },
+    {
+      "bytes": 494269,
+      "git_blob": "8cc26919e78e38b56185b536a3da6888dc844f4d",
+      "path": "data/market/legacy-prices/2025/2025-01-08.csv",
+      "sha256": "2d0cf807fa7cd6dd07c42f4abc96df8ae012906630ee499357fb51cae7cb531d",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-08.csv"
+    },
+    {
+      "bytes": 495001,
+      "git_blob": "5b08752abe6ab173fcdee7c7fad9b8c138c0e80f",
+      "path": "data/market/legacy-prices/2025/2025-01-09.csv",
+      "sha256": "39307dfd59dfcd8dcf0a7869a8be40aa41eada9818c220a85159439efca378b2",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-09.csv"
+    },
+    {
+      "bytes": 492901,
+      "git_blob": "5f42105b0613da1de3baa7d1d9e1b2469fe6cd98",
+      "path": "data/market/legacy-prices/2025/2025-01-10.csv",
+      "sha256": "e96afafe5b06ff97510389936a3ac3c39c35128a397c534b07e65d969cbc1975",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-10.csv"
+    },
+    {
+      "bytes": 496002,
+      "git_blob": "45134061a3b4c945373931be884cd62d10459ed2",
+      "path": "data/market/legacy-prices/2025/2025-01-14.csv",
+      "sha256": "e574528adb71270bf1f9f1b8ec2e007d97a72ad164a2d5745a2d1bb17918f45c",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-14.csv"
+    },
+    {
+      "bytes": 492656,
+      "git_blob": "6385e22a8de06a215717e638aaafdfd61f10958b",
+      "path": "data/market/legacy-prices/2025/2025-01-15.csv",
+      "sha256": "9ca5cd3254a6396eae341a0c0ed13b15a201e2bb1209666a8b5822feee879e5a",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-15.csv"
+    },
+    {
+      "bytes": 493220,
+      "git_blob": "8414b42d63dc29a79c4db38dc8f0b890e5e86284",
+      "path": "data/market/legacy-prices/2025/2025-01-16.csv",
+      "sha256": "69e97a98867de78f9db70d60b0d5b97eab0324ac1d366a17fe7be13cd4b4fe55",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-16.csv"
+    },
+    {
+      "bytes": 492698,
+      "git_blob": "df0acc513076297730ef682de72b026ecd87fb3c",
+      "path": "data/market/legacy-prices/2025/2025-01-17.csv",
+      "sha256": "b68a9aeec29565fb175be1796239fb35bd339cd9ed033d793c57eb89d86c57b8",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-17.csv"
+    },
+    {
+      "bytes": 491309,
+      "git_blob": "d898bab86165b5e5dff9e98fd747d7dd58ff0eab",
+      "path": "data/market/legacy-prices/2025/2025-01-20.csv",
+      "sha256": "878709db389fb9c1bc8d3ab35d26994b9a07768a76a3201c5540b960e8008281",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-20.csv"
+    },
+    {
+      "bytes": 490853,
+      "git_blob": "d5d49d020b8229a3d83ed88f4c4270c40c10ea5c",
+      "path": "data/market/legacy-prices/2025/2025-01-21.csv",
+      "sha256": "e595ffe89bc42b8cb4f748f60d0e687e31fb40c3cf495aee078ce878b9985833",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-21.csv"
+    },
+    {
+      "bytes": 490903,
+      "git_blob": "f3d286e05eec45f1d909f509e5a434583b2c1366",
+      "path": "data/market/legacy-prices/2025/2025-01-22.csv",
+      "sha256": "d6c359aeed2af61779f9393bd19d55d26876c5bd01b426028bff9f66c413a0ab",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-22.csv"
+    },
+    {
+      "bytes": 492417,
+      "git_blob": "89b40a5ea8ef29c741d1407f9edb61e95103aba5",
+      "path": "data/market/legacy-prices/2025/2025-01-23.csv",
+      "sha256": "5322f9eed73a40556bf5988527ef57bc268abac7136fcbd255bf2a640402156e",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-23.csv"
+    },
+    {
+      "bytes": 490749,
+      "git_blob": "8cd5683d24b6786e046820b36db65ad74fe5f341",
+      "path": "data/market/legacy-prices/2025/2025-01-24.csv",
+      "sha256": "e05af89a12b2d2afdc895bd33e1ee5f638bd5f32bba90ed4dd5290d181583533",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-24.csv"
+    },
+    {
+      "bytes": 491725,
+      "git_blob": "df902143a69e9f001cd54ac4b7ab19d5ab8f1c44",
+      "path": "data/market/legacy-prices/2025/2025-01-27.csv",
+      "sha256": "a2d8f76d818290f090b4816900870b91448735be48569f8a717912be0737a067",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-27.csv"
+    },
+    {
+      "bytes": 491587,
+      "git_blob": "2326287627215dbce70002621896c97e3029107d",
+      "path": "data/market/legacy-prices/2025/2025-01-28.csv",
+      "sha256": "94a52f75673d753c017727a48f07d54fd2517f3f6ebde4bc3a7de24c18e750e8",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-28.csv"
+    },
+    {
+      "bytes": 491786,
+      "git_blob": "07744d2ec41cb2c6da8f31fde739ca01082a44fb",
+      "path": "data/market/legacy-prices/2025/2025-01-29.csv",
+      "sha256": "f35b206f31f49f6648de0de8466052348389eec479610911c88439a8244ecf12",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-29.csv"
+    },
+    {
+      "bytes": 492571,
+      "git_blob": "101483f24f6154aa9a773a40f334b2cd3a6a9202",
+      "path": "data/market/legacy-prices/2025/2025-01-30.csv",
+      "sha256": "34ed92616fd9b3f11a3625b9f144c6d45e23f8e9ff22d71fe60d6a7eccb02d9e",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-30.csv"
+    },
+    {
+      "bytes": 492708,
+      "git_blob": "2054af439cafc891fdf24fbe89bdb26dd6ec94f8",
+      "path": "data/market/legacy-prices/2025/2025-01-31.csv",
+      "sha256": "ef971b8547f7f420cab6893492c2646e510009da209ae060d555f62e102efedc",
+      "source": "stock.jp/data/daily-prices/2025/2025-01-31.csv"
+    },
+    {
+      "bytes": 495779,
+      "git_blob": "4638468e12638df534ea4df793edbb7cd5401638",
+      "path": "data/market/legacy-prices/2025/2025-02-03.csv",
+      "sha256": "4400e24ad904b973b0e3258d8033309bbb49e36025777c05f7fa4a98ed6dbfab",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-03.csv"
+    },
+    {
+      "bytes": 491534,
+      "git_blob": "aa7c9f1bc324d35a982b956e02eabe6f0f69e88c",
+      "path": "data/market/legacy-prices/2025/2025-02-04.csv",
+      "sha256": "aa92c7b28a48684987590c186516a21edac96095bfc27ca985273bcff04693a0",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-04.csv"
+    },
+    {
+      "bytes": 491536,
+      "git_blob": "a3157766ea7890acaf4f3981c0410d884f2128f4",
+      "path": "data/market/legacy-prices/2025/2025-02-05.csv",
+      "sha256": "280967a9c16d2705ac76a1996d3325ca86b4fe257e800876dc639525b4649023",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-05.csv"
+    },
+    {
+      "bytes": 490516,
+      "git_blob": "9deeec8d548c9a2c91335eb87793a9edeef5e802",
+      "path": "data/market/legacy-prices/2025/2025-02-06.csv",
+      "sha256": "83352555d77d1382db445742b57ab10b5ebc345a9652abc3ef647c59b3ad313c",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-06.csv"
+    },
+    {
+      "bytes": 492202,
+      "git_blob": "e76fcfa1a57c7d728d614b4ef03159c473bb0838",
+      "path": "data/market/legacy-prices/2025/2025-02-07.csv",
+      "sha256": "a1c6a51063a6ecbfdc26251e8a243fea49814c24166ee2b3e8a1844e27d2ffaa",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-07.csv"
+    },
+    {
+      "bytes": 492384,
+      "git_blob": "991c044456e4bccfa3fa83c63d3f8bd6e20928e2",
+      "path": "data/market/legacy-prices/2025/2025-02-10.csv",
+      "sha256": "4c0802cbe60a82c642fadea526b9d9d193a1c7db1dc8f2a63374ada6c1f774ad",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-10.csv"
+    },
+    {
+      "bytes": 492368,
+      "git_blob": "00bb95cc2ee88a13b8552dd63e81f547921a17e9",
+      "path": "data/market/legacy-prices/2025/2025-02-12.csv",
+      "sha256": "60404be63bce50467a1490d02da6584c7f3830f49ea05362df967fb887fdc1f9",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-12.csv"
+    },
+    {
+      "bytes": 491644,
+      "git_blob": "e22bd1963e9f526a09f6f6c7538d280c70d0818f",
+      "path": "data/market/legacy-prices/2025/2025-02-13.csv",
+      "sha256": "cafc6c504ebf8920f6eef9e3baf050db7f6aac8c7809b1f5a4b6a31ef82ac123",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-13.csv"
+    },
+    {
+      "bytes": 494421,
+      "git_blob": "e6d6a0db7fd34f2b235940976d97efb38c9edafa",
+      "path": "data/market/legacy-prices/2025/2025-02-14.csv",
+      "sha256": "f628a9576319a3088c14b24051a8b88158efb6bf1b390eb25e274679e5a2aed7",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-14.csv"
+    },
+    {
+      "bytes": 494003,
+      "git_blob": "48ca4c136fd1c4e88d835aa95bef29c47d01f081",
+      "path": "data/market/legacy-prices/2025/2025-02-17.csv",
+      "sha256": "029871d7d8a7dbebb5780e4ce4c084af1fe73236cdc1bad73dc725d192fdcadb",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-17.csv"
+    },
+    {
+      "bytes": 491662,
+      "git_blob": "14d8a4b1ffbeb2fb58083fdcba96c2678d207623",
+      "path": "data/market/legacy-prices/2025/2025-02-18.csv",
+      "sha256": "0d5ddbc0395d82616cc37666eab345a160c57d6c097ee0710f7b624e27e3531d",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-18.csv"
+    },
+    {
+      "bytes": 492324,
+      "git_blob": "94722d541a48ecfb58dd291512ea6187f801532d",
+      "path": "data/market/legacy-prices/2025/2025-02-19.csv",
+      "sha256": "44b0c27cca211f0e96ea462f5fd572538036bf29341f8bafe9bc8e4e80422c4f",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-19.csv"
+    },
+    {
+      "bytes": 494368,
+      "git_blob": "5125176abfca4753c94333331103e5d18ad7114b",
+      "path": "data/market/legacy-prices/2025/2025-02-20.csv",
+      "sha256": "705b20d6c18f874f4818b180baef57defbb5c65b10052fe7ab80f1f7537c5aae",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-20.csv"
+    },
+    {
+      "bytes": 492898,
+      "git_blob": "7d626a457aa6ffc7d4d2535eabc97517eb5297ea",
+      "path": "data/market/legacy-prices/2025/2025-02-21.csv",
+      "sha256": "a6e713396cfa6e1fce29dac62b6279a863203241e934a6d3b6b0577d007251d2",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-21.csv"
+    },
+    {
+      "bytes": 492956,
+      "git_blob": "71f0009f6bf06233ee876bd1bd96148b8cd422d0",
+      "path": "data/market/legacy-prices/2025/2025-02-25.csv",
+      "sha256": "c5f893d371ee6ea82086d2d2475c6c4c7e0fb8204544372e6a61a84d899629a6",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-25.csv"
+    },
+    {
+      "bytes": 492776,
+      "git_blob": "1317bce4916a68a9d9982a306586d8796b5aef52",
+      "path": "data/market/legacy-prices/2025/2025-02-26.csv",
+      "sha256": "6529469bf7c52b4c6978ba92f2da78fe65654fc71fdf2f76e3a619ab731905f3",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-26.csv"
+    },
+    {
+      "bytes": 490700,
+      "git_blob": "40ea68b4254e031592e335f84ea44a8914feeebb",
+      "path": "data/market/legacy-prices/2025/2025-02-27.csv",
+      "sha256": "0f522de11b1eb37f30bcbc1522e7e96f769b448189ff2ea5ed0abaa624ecebbd",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-27.csv"
+    },
+    {
+      "bytes": 495391,
+      "git_blob": "32e66fb6545a71ffe22f7391d1a41a798813f737",
+      "path": "data/market/legacy-prices/2025/2025-02-28.csv",
+      "sha256": "39a7f32acfd9699d0a84821a3adaff3c9ea550b3fe423cd4d71e4d3163f1857f",
+      "source": "stock.jp/data/daily-prices/2025/2025-02-28.csv"
+    },
+    {
+      "bytes": 490816,
+      "git_blob": "73e4ee64117ab0332ed18da8e192046dabf0fd77",
+      "path": "data/market/legacy-prices/2025/2025-03-03.csv",
+      "sha256": "36c10e7b42d6c9f581c0cda06ac1075bc943543d8682c0abcf9878b381e73d1c",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-03.csv"
+    },
+    {
+      "bytes": 493013,
+      "git_blob": "e6f7007c47024d89dd94c23279eb1c1337e8f310",
+      "path": "data/market/legacy-prices/2025/2025-03-04.csv",
+      "sha256": "e6ff4fc1a311dfe2013732c96ebbe00fdb9c53408a546399be9af43d03a88e4f",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-04.csv"
+    },
+    {
+      "bytes": 490346,
+      "git_blob": "08cb321abea7807ee7f47f2e3892a0d192820986",
+      "path": "data/market/legacy-prices/2025/2025-03-05.csv",
+      "sha256": "f511124f4df3cf6f950616eecef0cb7479a787fe7f45caa5c442e4b24ee01668",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-05.csv"
+    },
+    {
+      "bytes": 490059,
+      "git_blob": "3dd87f23098eaa664bf847fc0945fa176fba261d",
+      "path": "data/market/legacy-prices/2025/2025-03-06.csv",
+      "sha256": "67297e5e8571815e666635c47b226b45d2b567b5f079ed6c2c9e10fdb17f24f1",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-06.csv"
+    },
+    {
+      "bytes": 492877,
+      "git_blob": "c9c149383376354d2a33c2032a309ddba0dd135b",
+      "path": "data/market/legacy-prices/2025/2025-03-07.csv",
+      "sha256": "43c68b42bdde234facac0f2b70bff8824dee4e8204eef1d841181108dc9a5e98",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-07.csv"
+    },
+    {
+      "bytes": 491192,
+      "git_blob": "4b12b98301e4140d3c6d68ba3ce8de5e2b77ca6b",
+      "path": "data/market/legacy-prices/2025/2025-03-10.csv",
+      "sha256": "91e84fcfefc99cbdebde683bf4727bcccb0bc112ef5c7e556d84f3686f574775",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-10.csv"
+    },
+    {
+      "bytes": 493453,
+      "git_blob": "0de571d92b312c7ad3acc944bdc031e319e748bc",
+      "path": "data/market/legacy-prices/2025/2025-03-11.csv",
+      "sha256": "5512e5a6d73e46e66a37c3b38fbf0164075147db0354c9602bb31374868925af",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-11.csv"
+    },
+    {
+      "bytes": 489395,
+      "git_blob": "dcf11bf6b66bd2794665f30e2e45e28318d5c491",
+      "path": "data/market/legacy-prices/2025/2025-03-12.csv",
+      "sha256": "c2c8419f284b0c54609ba296b888c6c20f2ca50ead700600f6ccb2b3968592e0",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-12.csv"
+    },
+    {
+      "bytes": 490181,
+      "git_blob": "3b5aa922e815ff144e627c6fdf23cf59e2cc9988",
+      "path": "data/market/legacy-prices/2025/2025-03-13.csv",
+      "sha256": "83716c76fac7e9da3173d4f7e4a4fa76b92022d5779bf67c066062147f3af992",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-13.csv"
+    },
+    {
+      "bytes": 489572,
+      "git_blob": "7ae5c3daa45347b788fa149b9c5b775a445f29b6",
+      "path": "data/market/legacy-prices/2025/2025-03-14.csv",
+      "sha256": "d40d58efa34a5fcbc6d95b4c29729b4473496dc01954e719b74edff7d8f51805",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-14.csv"
+    },
+    {
+      "bytes": 490124,
+      "git_blob": "41d8415f4d368cdc3bfcc9c2b1b1ddb790a42ac9",
+      "path": "data/market/legacy-prices/2025/2025-03-17.csv",
+      "sha256": "d7f1b5a5b20f36061b847f58021cbd1ee3bb576d35e2f29c90b3c4f90082c812",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-17.csv"
+    },
+    {
+      "bytes": 490098,
+      "git_blob": "bfc9d9ba4770f0f8617aed82f8b3e5a50de48a81",
+      "path": "data/market/legacy-prices/2025/2025-03-18.csv",
+      "sha256": "685a46e13a928d15db534b8ad31f9214b725f438641e7fd1d58fe2ea723fbd70",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-18.csv"
+    },
+    {
+      "bytes": 490511,
+      "git_blob": "6082f8212998825bd6b5d4e3e595652d7f4cee70",
+      "path": "data/market/legacy-prices/2025/2025-03-19.csv",
+      "sha256": "145e8e29dfb57d7842056f1d726a6ade7b35d83a03e5a19a5bce6405ca29aa6d",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-19.csv"
+    },
+    {
+      "bytes": 491796,
+      "git_blob": "c9ec048b45a1e425e61b11fdf18d6d20bcb57881",
+      "path": "data/market/legacy-prices/2025/2025-03-21.csv",
+      "sha256": "b11ad6ec411c065feed76ace2fad0324570b797893e09007f893019d3920919c",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-21.csv"
+    },
+    {
+      "bytes": 492947,
+      "git_blob": "ecde03ef671d084ca0fe85dcf0ad84ae7aa786fa",
+      "path": "data/market/legacy-prices/2025/2025-03-24.csv",
+      "sha256": "d8d0eccfb7a1cb064c3422f69b00501d832634bf7ac175243a56099c26119a5f",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-24.csv"
+    },
+    {
+      "bytes": 490990,
+      "git_blob": "84f3a5ada32e97c0cca97fd95c9ca95aaa7bd793",
+      "path": "data/market/legacy-prices/2025/2025-03-25.csv",
+      "sha256": "bf96e7b2274e11178e156226b83c3e090be469c681283cb5549b0e4d0d2b1700",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-25.csv"
+    },
+    {
+      "bytes": 490686,
+      "git_blob": "927d94c5a0cd191ff25961d5a1d0129bbbcef6c5",
+      "path": "data/market/legacy-prices/2025/2025-03-26.csv",
+      "sha256": "c16db293a9eeee7edd2459f4f0543181ed6caffa77fed430d5392f05e7273250",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-26.csv"
+    },
+    {
+      "bytes": 492322,
+      "git_blob": "211866ad6c926ab459addbdcb629f6c4d1cacd8f",
+      "path": "data/market/legacy-prices/2025/2025-03-27.csv",
+      "sha256": "ba5376f76615a239831cd7181456ec880ab683d6d8bc6644001ae4f4c04f7a89",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-27.csv"
+    },
+    {
+      "bytes": 496232,
+      "git_blob": "4d5d56d88d9117a3b0db9ce2bba561e9db5020f6",
+      "path": "data/market/legacy-prices/2025/2025-03-28.csv",
+      "sha256": "851c5cf75821b991ead6715c84c8f112b502c45364fb171b983b46c9846b3299",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-28.csv"
+    },
+    {
+      "bytes": 498229,
+      "git_blob": "6a8c7bc6e718fa9003db809078dab99553a6b3f3",
+      "path": "data/market/legacy-prices/2025/2025-03-31.csv",
+      "sha256": "b11c66f0a33a594dfcdfe771000e6b5b65bec856ed4e21c52c4a0394fb5713ad",
+      "source": "stock.jp/data/daily-prices/2025/2025-03-31.csv"
+    },
+    {
+      "bytes": 492533,
+      "git_blob": "37830c61fbc6aa6fa7966086c1a0d83034dc6fa6",
+      "path": "data/market/legacy-prices/2025/2025-04-01.csv",
+      "sha256": "3ae2a47b5a66261adcf5e5df60e4ddcc867f2388be0c457337cf5bf87d546e45",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-01.csv"
+    },
+    {
+      "bytes": 494005,
+      "git_blob": "4bfc63499fce8eab45dbcb697abf50cc77655469",
+      "path": "data/market/legacy-prices/2025/2025-04-02.csv",
+      "sha256": "8fb06c75e39582c1615c22b5732ce5ba2b358fd7e9e195426a1d8a98ffde409e",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-02.csv"
+    },
+    {
+      "bytes": 498297,
+      "git_blob": "2800090a842cde147b9559b88c80c4fa570b413e",
+      "path": "data/market/legacy-prices/2025/2025-04-03.csv",
+      "sha256": "26702146e40882df1a1150f42e3d1a0e61ebb54950bba8ec7bdc96bf45e8cadc",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-03.csv"
+    },
+    {
+      "bytes": 500585,
+      "git_blob": "64bb4e56515dd9f846f01f238dc8a905397fa56c",
+      "path": "data/market/legacy-prices/2025/2025-04-04.csv",
+      "sha256": "4023fbc08e289dacfea58b5c956ef0715a6c6c4f6676c65af5f557bb85df6463",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-04.csv"
+    },
+    {
+      "bytes": 503260,
+      "git_blob": "922fd578dabeb597387ce1abb348bc45b2f076fc",
+      "path": "data/market/legacy-prices/2025/2025-04-07.csv",
+      "sha256": "40437513740f8abfdbdb70a524897a1cf8d192e097367acc7c59c1bbf9fe7e09",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-07.csv"
+    },
+    {
+      "bytes": 494352,
+      "git_blob": "a03ff887b95c64d535d053a6eee747e0dcf9b3ca",
+      "path": "data/market/legacy-prices/2025/2025-04-08.csv",
+      "sha256": "fd6bfee49fce2e82379f270b0a11caad56b0ed173dfd4b3a9a6a9e28ce4ca03b",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-08.csv"
+    },
+    {
+      "bytes": 497507,
+      "git_blob": "9f24271cff5a7676fbca89fbf0c4411c90742d71",
+      "path": "data/market/legacy-prices/2025/2025-04-09.csv",
+      "sha256": "543ef52c321d74d6c2676ad2875f98f0d24c16ea4cd83c661bc387aedd5bd9d5",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-09.csv"
+    },
+    {
+      "bytes": 493379,
+      "git_blob": "b46425246672308980b944f8513c33ac2bb3861b",
+      "path": "data/market/legacy-prices/2025/2025-04-10.csv",
+      "sha256": "4dae6014ba91433330dd42759238f997b3002c49da95a73f4f400a64b2415792",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-10.csv"
+    },
+    {
+      "bytes": 493105,
+      "git_blob": "705b71cfa59e4a8eee2c5a01b54d746e2c1ebbf3",
+      "path": "data/market/legacy-prices/2025/2025-04-11.csv",
+      "sha256": "77f0b42e86f7ff30511b7bdd85dcbdefc0ab0b318ef6d0ff2a051abe40f67d04",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-11.csv"
+    },
+    {
+      "bytes": 491310,
+      "git_blob": "6d8671d4981ee98d471569f3cc514fc2c3779512",
+      "path": "data/market/legacy-prices/2025/2025-04-14.csv",
+      "sha256": "431c0c8ce3c53369eef6ad6bb14a7173c7fa1b67fb81af049df3d774ad14138e",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-14.csv"
+    },
+    {
+      "bytes": 490926,
+      "git_blob": "c9573c454a1f7144645bf6da9ddbc499af4bd15e",
+      "path": "data/market/legacy-prices/2025/2025-04-15.csv",
+      "sha256": "510bff4397912c7b100632a42a2c0d55618d7fbf59711db707fc32cefe7f2fb5",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-15.csv"
+    },
+    {
+      "bytes": 492930,
+      "git_blob": "90a1d69e82ff300a733eb23d0eef606d27856acd",
+      "path": "data/market/legacy-prices/2025/2025-04-16.csv",
+      "sha256": "8a201d5f560b7b335c90ec6cc7fd05e14cdfac77116a086035dc06f3867df727",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-16.csv"
+    },
+    {
+      "bytes": 489598,
+      "git_blob": "26b5a03ce14dd141b7d9a58410e644476c373cee",
+      "path": "data/market/legacy-prices/2025/2025-04-17.csv",
+      "sha256": "2abf93683bc60811ce39bf4592c501779445be479163c26e8bed62ca27147e3a",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-17.csv"
+    },
+    {
+      "bytes": 490782,
+      "git_blob": "c8036c3c86d40553fedbc257a1ab8ec27666943d",
+      "path": "data/market/legacy-prices/2025/2025-04-18.csv",
+      "sha256": "79f95c9b8b817975d75cdbd97115600e5889a52f3cbb5f25b61788a1c3db23a5",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-18.csv"
+    },
+    {
+      "bytes": 493006,
+      "git_blob": "a94808ed8930f7519c619df1c222f65720c4a751",
+      "path": "data/market/legacy-prices/2025/2025-04-21.csv",
+      "sha256": "053623bce0cd65aa75ded521a645ece7399df224a39e831ebabc72e22f0d95c6",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-21.csv"
+    },
+    {
+      "bytes": 491561,
+      "git_blob": "687eb4c255033445660520bcfa75a24e7544c223",
+      "path": "data/market/legacy-prices/2025/2025-04-22.csv",
+      "sha256": "cfe6499dfe42150ec97bf069398d42dbcf139ccf698339feec66c63bec795dfe",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-22.csv"
+    },
+    {
+      "bytes": 490777,
+      "git_blob": "9443f8a13a4e8fc63a0ffe37347e375b97614f37",
+      "path": "data/market/legacy-prices/2025/2025-04-23.csv",
+      "sha256": "108ca8549cbee55e296c52b9e7e7fd76a1e12c2b2182a3f5160dacd318795ec9",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-23.csv"
+    },
+    {
+      "bytes": 492562,
+      "git_blob": "a303dab9f00cccad34f4665bafc75b4aa40e5d1b",
+      "path": "data/market/legacy-prices/2025/2025-04-24.csv",
+      "sha256": "741fb21df3d60c9131df8c1cda033b20e3c3ea6d9f80c7f563f4c1819a4ecdbc",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-24.csv"
+    },
+    {
+      "bytes": 491631,
+      "git_blob": "6f7de85eda1dc8a5d4c3025b2a0ba431fec29986",
+      "path": "data/market/legacy-prices/2025/2025-04-25.csv",
+      "sha256": "be355a6771179fbd9562ce467acf703889baaf029e6621ff92bc520a6be9f556",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-25.csv"
+    },
+    {
+      "bytes": 492028,
+      "git_blob": "0301a8050c0826dccdbfa5495512d77e91ea2065",
+      "path": "data/market/legacy-prices/2025/2025-04-28.csv",
+      "sha256": "069e2ef83bd2433773e976007d3fc725abb191c4aa10d1054542ef51f194e0e9",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-28.csv"
+    },
+    {
+      "bytes": 491538,
+      "git_blob": "142c4a5af4ea1c47825ce6b3677479ee3a346b43",
+      "path": "data/market/legacy-prices/2025/2025-04-30.csv",
+      "sha256": "9b2550d96141d4224e23513727df9f64e0ac50655e2359dba47d063ac8849090",
+      "source": "stock.jp/data/daily-prices/2025/2025-04-30.csv"
+    },
+    {
+      "bytes": 492850,
+      "git_blob": "3753e7a0704bc9f13a5687ce48b9996ac06bba78",
+      "path": "data/market/legacy-prices/2025/2025-05-01.csv",
+      "sha256": "10ad3003b07bc32f7631b5314f14af2caf8ed2bf111cb1b4ab22a2da9c1e597e",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-01.csv"
+    },
+    {
+      "bytes": 492272,
+      "git_blob": "ae954ad34e8806e185f7c62f7fe8d3f1b9417487",
+      "path": "data/market/legacy-prices/2025/2025-05-02.csv",
+      "sha256": "ff569a74302e61541e514583c27589d14852dff817ec98beacd8e2eb0d194cda",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-02.csv"
+    },
+    {
+      "bytes": 491570,
+      "git_blob": "f84ded2de4b38e1e90bef80ade036a69b8753540",
+      "path": "data/market/legacy-prices/2025/2025-05-07.csv",
+      "sha256": "77120c5d77d324ead8a67ff8750adeb1918da7bd20a390925743b0863a960f05",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-07.csv"
+    },
+    {
+      "bytes": 491082,
+      "git_blob": "36c54d502118923c8bf83e079e98b1e1d18359d9",
+      "path": "data/market/legacy-prices/2025/2025-05-08.csv",
+      "sha256": "443faa263dad4c75c57f8c3add4d435ad906934cd1f9826a4e5146fb06292f31",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-08.csv"
+    },
+    {
+      "bytes": 491301,
+      "git_blob": "24cff351f8fbd6e9dd35bd44cba465233c0e2ba5",
+      "path": "data/market/legacy-prices/2025/2025-05-09.csv",
+      "sha256": "3ea3acb44ff42d8be735dd03a9fe96e84c3367c6cbea7afac9a63c276c7ac58c",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-09.csv"
+    },
+    {
+      "bytes": 491999,
+      "git_blob": "f9240db24e4012fb706a70f35cee9ab46e705733",
+      "path": "data/market/legacy-prices/2025/2025-05-12.csv",
+      "sha256": "5907df0f93261cb3c1e390dd12c742ce54c19df5fb2c4668a0783d884a775ced",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-12.csv"
+    },
+    {
+      "bytes": 492617,
+      "git_blob": "23af75073025e9d085fcda2e9b7def0f6f61109c",
+      "path": "data/market/legacy-prices/2025/2025-05-13.csv",
+      "sha256": "6da4a184bab938f99857baee4293eac01b812d398e92841c532c6939597704b6",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-13.csv"
+    },
+    {
+      "bytes": 493375,
+      "git_blob": "fb5746b3915e1ae40123d1ac78e19ec17911a371",
+      "path": "data/market/legacy-prices/2025/2025-05-14.csv",
+      "sha256": "fa666e20028c59035e21087e1a4009e5970e764c0722f3625cd5cee46ec527af",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-14.csv"
+    },
+    {
+      "bytes": 493724,
+      "git_blob": "8a8409d6b5da327aba9bef90621aac7918807f00",
+      "path": "data/market/legacy-prices/2025/2025-05-15.csv",
+      "sha256": "cd987fa97d845521fa57be7125026677383d66b3c012e6810eefcc121a5b3f7a",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-15.csv"
+    },
+    {
+      "bytes": 492068,
+      "git_blob": "67c2516331ebd23a62ee03c50dcca93f036216c5",
+      "path": "data/market/legacy-prices/2025/2025-05-16.csv",
+      "sha256": "f4eb1d46f73a20dde5ca93c8017d4ac880b62ce7e9dc9d159f76ac0073b76c69",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-16.csv"
+    },
+    {
+      "bytes": 491952,
+      "git_blob": "89d962f24bca92d2b907f276e33dfcdf16f35a41",
+      "path": "data/market/legacy-prices/2025/2025-05-19.csv",
+      "sha256": "336689f0923f880eb3331febeb49b5cc815389137645b6fc611510a4cb477438",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-19.csv"
+    },
+    {
+      "bytes": 493409,
+      "git_blob": "a71c8c7c194046959215b78c99061f35e7aab647",
+      "path": "data/market/legacy-prices/2025/2025-05-20.csv",
+      "sha256": "42828277e71905c1d262c8786582d1d79050601641aa9cff5be5c326c127a476",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-20.csv"
+    },
+    {
+      "bytes": 491402,
+      "git_blob": "3c84e82bdfb1c57b096f4fa7ab35ed0dccde21c2",
+      "path": "data/market/legacy-prices/2025/2025-05-21.csv",
+      "sha256": "6e44d38cc5c43b7aec30d5a54320e3662e824e34c4ff42588e1e5749d566f32c",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-21.csv"
+    },
+    {
+      "bytes": 492299,
+      "git_blob": "757b17b5e5a2ed698d45c8146d28bb7e1dac66b5",
+      "path": "data/market/legacy-prices/2025/2025-05-22.csv",
+      "sha256": "2350051c43e5635a8db98589ca93f20765f752b59ecea043d823c2ed04ff0410",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-22.csv"
+    },
+    {
+      "bytes": 490894,
+      "git_blob": "21334249e1397f19894b89f39533bd0d215908f2",
+      "path": "data/market/legacy-prices/2025/2025-05-23.csv",
+      "sha256": "670543fce6e664c49b521df995ea58d29a043a97a575fa888e089a6c5aa510f6",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-23.csv"
+    },
+    {
+      "bytes": 490274,
+      "git_blob": "8e95c099ff78192787d2169a9b31ccbcec0ab899",
+      "path": "data/market/legacy-prices/2025/2025-05-26.csv",
+      "sha256": "81af847db53cf4401ca4f88bfe0014a4c01ddfbdda9dfc6390202350a061fbca",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-26.csv"
+    },
+    {
+      "bytes": 489683,
+      "git_blob": "80223623399e0d4f4933d1b893b606d17847fce2",
+      "path": "data/market/legacy-prices/2025/2025-05-27.csv",
+      "sha256": "80868baab10ffe81dedb16fe069c21b70696f083ed5924b6660fa3c759d0e642",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-27.csv"
+    },
+    {
+      "bytes": 491079,
+      "git_blob": "0674b2449ecde718164a087ca4509b56bd5cb4d1",
+      "path": "data/market/legacy-prices/2025/2025-05-28.csv",
+      "sha256": "81c447e3f0fa82c8efb5ebb05d7cd8f0377d49d8bec36e178e5a2c19c1676022",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-28.csv"
+    },
+    {
+      "bytes": 489964,
+      "git_blob": "fe0e72376a27024d9ec1be0d9095b504d5fde34c",
+      "path": "data/market/legacy-prices/2025/2025-05-29.csv",
+      "sha256": "9a8f6b940d1b3c6acc3a69638ef9fe5f80f04fda81619df81ed74a1f322f90c8",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-29.csv"
+    },
+    {
+      "bytes": 490789,
+      "git_blob": "2ad75a5b5584ff23fe10d8240b111304b8b389da",
+      "path": "data/market/legacy-prices/2025/2025-05-30.csv",
+      "sha256": "953a212334bf6ec29e1c4913639eb3005c2cdf39c01b50ad4f95c2fa22c6215d",
+      "source": "stock.jp/data/daily-prices/2025/2025-05-30.csv"
+    },
+    {
+      "bytes": 491873,
+      "git_blob": "e0a74bfea28b87baf72cf88390696ede02b056e5",
+      "path": "data/market/legacy-prices/2025/2025-06-02.csv",
+      "sha256": "9029a8574f4a520289c6947524f14fd45caee17705258037218eb9b3d7a4c372",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-02.csv"
+    },
+    {
+      "bytes": 491162,
+      "git_blob": "e2aacdecd814455270c1ff472bca2fdd18d6c02c",
+      "path": "data/market/legacy-prices/2025/2025-06-03.csv",
+      "sha256": "4ddec1c0d0e532ac9488ec9863c7abd53734b9aade3ea1c7711c4e5b0abbe0c8",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-03.csv"
+    },
+    {
+      "bytes": 489598,
+      "git_blob": "2b21b44fb6d3f509999cb55c6cf4b29840aa340b",
+      "path": "data/market/legacy-prices/2025/2025-06-04.csv",
+      "sha256": "ed47430f7b5e1b7dd3a22c78d39ff45c069e57357451d8f09b4296389a9c4ea8",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-04.csv"
+    },
+    {
+      "bytes": 491236,
+      "git_blob": "5452173f9b5fdbd03d6dac113a1106ca72799ac0",
+      "path": "data/market/legacy-prices/2025/2025-06-05.csv",
+      "sha256": "e2e7477eb00a61d4625a3bb9e3be577b0069da491219b670894df39ebb00d238",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-05.csv"
+    },
+    {
+      "bytes": 490331,
+      "git_blob": "90cae20ac3210aaf9645003a886b3d03cbfcd421",
+      "path": "data/market/legacy-prices/2025/2025-06-06.csv",
+      "sha256": "62d29148f50c2c2a7fbf513cfa50b54d49ee0af70533586fd93dcccddf45caba",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-06.csv"
+    },
+    {
+      "bytes": 489890,
+      "git_blob": "de5bb62dd6ca114bb21521c0aa5dc64b68c10300",
+      "path": "data/market/legacy-prices/2025/2025-06-09.csv",
+      "sha256": "df9325e3bdd9691c006d569f7f6bfbd78f2cb3145ebb190d58dda5caae92ed68",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-09.csv"
+    },
+    {
+      "bytes": 490206,
+      "git_blob": "26fecadd307c98ab7075352cbb143e6a99bf4d30",
+      "path": "data/market/legacy-prices/2025/2025-06-10.csv",
+      "sha256": "60032b6c7c26cac32b67c03e57923aadc89b0ac73957495ad4ba5984e8419ef4",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-10.csv"
+    },
+    {
+      "bytes": 489422,
+      "git_blob": "144fbb6e23794b9dfb4fbbbbb79c9c48f28bca59",
+      "path": "data/market/legacy-prices/2025/2025-06-11.csv",
+      "sha256": "592a463b6f2ca48fb83269e12305a4351658fcd31da833169b95653f624c8cdb",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-11.csv"
+    },
+    {
+      "bytes": 490716,
+      "git_blob": "9be34473999f1370331e973fa6c2960e62cbef30",
+      "path": "data/market/legacy-prices/2025/2025-06-12.csv",
+      "sha256": "8b09c0e50f7fb8da0e8d452bb827fb37c2019c9ec9e1560cecab8dd2913e3bea",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-12.csv"
+    },
+    {
+      "bytes": 493811,
+      "git_blob": "a94a06301c0748adfe9411fe19af2ea1443aab65",
+      "path": "data/market/legacy-prices/2025/2025-06-13.csv",
+      "sha256": "a5c4bee004f44df2b56a073f2c65dfc29815aeef723aa60f9019b8034a3c5b31",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-13.csv"
+    },
+    {
+      "bytes": 489480,
+      "git_blob": "b74f9c9bcb8a8127bf16f6f0aa42d0cafa209848",
+      "path": "data/market/legacy-prices/2025/2025-06-16.csv",
+      "sha256": "cbbf90cacd1ddc6a3fb1844c37a017dc4de002c3fe69d54b3f2d35bf02d3bbea",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-16.csv"
+    },
+    {
+      "bytes": 488978,
+      "git_blob": "48e65e352c4b93e5956fbc78f9fd0e9d5b836dd6",
+      "path": "data/market/legacy-prices/2025/2025-06-17.csv",
+      "sha256": "eb1cdb56f13579a7d1373771ec40375b9288f73fc81a326d5a2d5e121e797b79",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-17.csv"
+    },
+    {
+      "bytes": 489400,
+      "git_blob": "e1e8a72aaebcbb63c5e05d5c8909630e4d94a342",
+      "path": "data/market/legacy-prices/2025/2025-06-18.csv",
+      "sha256": "e45f95ff1411e180469f24cbf3895487f445bcb61cbe223e77130eff9b2996cc",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-18.csv"
+    },
+    {
+      "bytes": 489695,
+      "git_blob": "4e30a171bb95fd8b6f775063d63900aa6943d170",
+      "path": "data/market/legacy-prices/2025/2025-06-19.csv",
+      "sha256": "2fefe7638937e90ec71235bf4791c6efaf97cbca6c8b54d904094b39c1d2f58a",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-19.csv"
+    },
+    {
+      "bytes": 491764,
+      "git_blob": "26a15b411e99facc9e785ee798afb91dfea0d323",
+      "path": "data/market/legacy-prices/2025/2025-06-20.csv",
+      "sha256": "5df691a0b4eb368f4700672c2c53d735e790152d817188cc2cbce0c5edde1b23",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-20.csv"
+    },
+    {
+      "bytes": 491490,
+      "git_blob": "014c0271b18d3f5d2cb1e4344d9ac165dc6be146",
+      "path": "data/market/legacy-prices/2025/2025-06-23.csv",
+      "sha256": "19bd84b3d8e7e60eddd6db687e217e93ca508960c24c05bc288a58b15180a7f1",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-23.csv"
+    },
+    {
+      "bytes": 489162,
+      "git_blob": "09e9de58380d57625976422b85cacdf3811b8bb4",
+      "path": "data/market/legacy-prices/2025/2025-06-24.csv",
+      "sha256": "70e60cd7772c40a432975cedf3dcca2eb03f8e95fee9dcfa3e1e0a3f3cf5c67c",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-24.csv"
+    },
+    {
+      "bytes": 490929,
+      "git_blob": "be7823467c19e08e7d4ee5e27e4f25046e491c0c",
+      "path": "data/market/legacy-prices/2025/2025-06-25.csv",
+      "sha256": "f80761fa0d2fe54afdf18481a82da7bbe46f3f64e8077fc9647a2f3dd8b3df17",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-25.csv"
+    },
+    {
+      "bytes": 490338,
+      "git_blob": "575143534bcc5952f9eaaae58bd0911db2759796",
+      "path": "data/market/legacy-prices/2025/2025-06-26.csv",
+      "sha256": "f5dbfa137a260343c7bac039ab551bd83d8252000814f3227c8054accb2b78ec",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-26.csv"
+    },
+    {
+      "bytes": 490838,
+      "git_blob": "fd04279b677e84d2cf97507744ed01863b2ea797",
+      "path": "data/market/legacy-prices/2025/2025-06-27.csv",
+      "sha256": "c76c4ea99d1c0a19a1a61c995ba936aecbb66b4d2071c52c8062aa829cb89444",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-27.csv"
+    },
+    {
+      "bytes": 491088,
+      "git_blob": "d4a9d87dbdb85620b684e2b47d19f8a9468146d7",
+      "path": "data/market/legacy-prices/2025/2025-06-30.csv",
+      "sha256": "6e42e535f9714c9e05a6a67aed5d576ee9c8c28292a434bb011983bb41b921d3",
+      "source": "stock.jp/data/daily-prices/2025/2025-06-30.csv"
+    },
+    {
+      "bytes": 492703,
+      "git_blob": "e36d12646c0ad4ebdb777d87256e2de5cc2541e5",
+      "path": "data/market/legacy-prices/2025/2025-07-01.csv",
+      "sha256": "7dd4929d45edc458bbd0033bbb06e61f73b500385560fd5b87d7bada67bd7593",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-01.csv"
+    },
+    {
+      "bytes": 491516,
+      "git_blob": "f6e12f26ac148d7f78008ab632371609127813c5",
+      "path": "data/market/legacy-prices/2025/2025-07-02.csv",
+      "sha256": "b5aae46309dcec2e32f9f28b2c13bfa24c112239f466385a1ac8b6c3ebf59804",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-02.csv"
+    },
+    {
+      "bytes": 490707,
+      "git_blob": "bd0debd1aa61a3a2dbff2047fef6796456ffecfd",
+      "path": "data/market/legacy-prices/2025/2025-07-03.csv",
+      "sha256": "fbda43274d10c2bac9e4a5a3e119e5000d4c99239b0269a01fba83fcf3ca0577",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-03.csv"
+    },
+    {
+      "bytes": 490053,
+      "git_blob": "a0eb080c2e1456e19c92e405e19115fd9967a8cf",
+      "path": "data/market/legacy-prices/2025/2025-07-04.csv",
+      "sha256": "26b678abb7f3c5d47c0ac934886962f1978f8231b239d5c9ad93ab12453679bb",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-04.csv"
+    },
+    {
+      "bytes": 490878,
+      "git_blob": "66ef2ce91c04cc95e3c78f9ff26dea0dc0b0f336",
+      "path": "data/market/legacy-prices/2025/2025-07-07.csv",
+      "sha256": "1d40fa255885f372608700d552742ebe14be926420e9b604c6f35de06449dab4",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-07.csv"
+    },
+    {
+      "bytes": 489634,
+      "git_blob": "b7517e438874bbaae66a9feba4c89702cfcae3cf",
+      "path": "data/market/legacy-prices/2025/2025-07-08.csv",
+      "sha256": "4bb9ec51065971a89063ecbb362a31b94c9bee69fbc3053a416750fa19479695",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-08.csv"
+    },
+    {
+      "bytes": 489444,
+      "git_blob": "d62dd9f895b8c5e754b38f9f24644e86dd5b4433",
+      "path": "data/market/legacy-prices/2025/2025-07-09.csv",
+      "sha256": "0dc66e16dae5501e0be2399439ab0d5c3443489fab934202f8b78e342b734c4f",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-09.csv"
+    },
+    {
+      "bytes": 491314,
+      "git_blob": "778b83cd0836483561f45b141c07fcd76e06f020",
+      "path": "data/market/legacy-prices/2025/2025-07-10.csv",
+      "sha256": "5e38ea719b71aad96b5f168ac4e73c743f023591642bb229a91e8c9cd975a00f",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-10.csv"
+    },
+    {
+      "bytes": 489950,
+      "git_blob": "169b911abade15427e2fe068f0882206424409e2",
+      "path": "data/market/legacy-prices/2025/2025-07-11.csv",
+      "sha256": "cb63a8e46e35ab030a08d3cbbbd4a5be49fa9816316d20b02e62854cdcd8f04e",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-11.csv"
+    },
+    {
+      "bytes": 490743,
+      "git_blob": "fd2bc3306a499eab46dbd834a45dc70305c2e931",
+      "path": "data/market/legacy-prices/2025/2025-07-14.csv",
+      "sha256": "fb0e8c671929f321c296de80f2704e090588ea4c9616c4ade819a59b896ef5d0",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-14.csv"
+    },
+    {
+      "bytes": 492102,
+      "git_blob": "1e863c67a968fb08e9058b754054573bbbc85462",
+      "path": "data/market/legacy-prices/2025/2025-07-15.csv",
+      "sha256": "da21440ac6ead4952da65168a53d787bb27130d15f4f31916db19374b0c5858c",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-15.csv"
+    },
+    {
+      "bytes": 490832,
+      "git_blob": "120d681350f49231baf1762e77331056f4601460",
+      "path": "data/market/legacy-prices/2025/2025-07-16.csv",
+      "sha256": "782e3a650cc039eb78a065bdf3b45e5828b086eb94002c353d1778e40c404a5d",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-16.csv"
+    },
+    {
+      "bytes": 488907,
+      "git_blob": "7d41e1ea46a36e2060849306f95869fb3080b6ed",
+      "path": "data/market/legacy-prices/2025/2025-07-17.csv",
+      "sha256": "3dd3eaac5441eaf163e962b8a24e45a0fba036810a0ea9a6694ea356659af58d",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-17.csv"
+    },
+    {
+      "bytes": 492452,
+      "git_blob": "da3fb1d5aa69a4332d0f0a54489edaa1f96a4dfc",
+      "path": "data/market/legacy-prices/2025/2025-07-18.csv",
+      "sha256": "e8ae1810cc3814fb77e69c3511389699bd3518cd9b95d35adcd4bce4f7db7f22",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-18.csv"
+    },
+    {
+      "bytes": 491362,
+      "git_blob": "f92295ee4111a9bfd8d1d21a67dc89fddca55c71",
+      "path": "data/market/legacy-prices/2025/2025-07-22.csv",
+      "sha256": "bcdcb28ca3004ff45b123cbc78c9c4838435d78cf8c6a5acb061b4252579e904",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-22.csv"
+    },
+    {
+      "bytes": 490939,
+      "git_blob": "2e3803d7684d8838a979a3c18a6d6593e2a487d7",
+      "path": "data/market/legacy-prices/2025/2025-07-23.csv",
+      "sha256": "80d444e2f92fb66aa66c592df668034e0ae0c51f5380bcab53d825f67e62252c",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-23.csv"
+    },
+    {
+      "bytes": 490338,
+      "git_blob": "8696a2dfd9b2602e42eaed6793bbc9a3f281115e",
+      "path": "data/market/legacy-prices/2025/2025-07-24.csv",
+      "sha256": "62350a304218ffce66d189468fbb8c20ebbac798864a3c40cff86f9128bde8fe",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-24.csv"
+    },
+    {
+      "bytes": 491081,
+      "git_blob": "d2b4805835431e93ceabe6b30a699204f011ef0f",
+      "path": "data/market/legacy-prices/2025/2025-07-25.csv",
+      "sha256": "de412fab8a63f517975e64fa31e4c56285daf2cd297f03126f25938b90f1bf14",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-25.csv"
+    },
+    {
+      "bytes": 491023,
+      "git_blob": "062cdf45dd89404670c2a173026654c7a1ed4cce",
+      "path": "data/market/legacy-prices/2025/2025-07-28.csv",
+      "sha256": "bea4e4858e86379e1e2501486e560358c06188a86ad6d6764fcb06e49fa0aca1",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-28.csv"
+    },
+    {
+      "bytes": 491520,
+      "git_blob": "080070388e68ea0dc27fb2b80366e524ff7a63da",
+      "path": "data/market/legacy-prices/2025/2025-07-29.csv",
+      "sha256": "8e3dc00fe0bd125435288c641987be151cbc1da5f4a18919e54d037d04605933",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-29.csv"
+    },
+    {
+      "bytes": 489751,
+      "git_blob": "b4e46c17e3385ccf69fa7635c02e4793a432df6d",
+      "path": "data/market/legacy-prices/2025/2025-07-30.csv",
+      "sha256": "2c5e3a43bf8ddd306cfc989caa1b1cb799242973ca54c7e1e75154a2b5e2bf7c",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-30.csv"
+    },
+    {
+      "bytes": 489448,
+      "git_blob": "4beb81cb419dd2b1c75570dbcceb00a929dafd16",
+      "path": "data/market/legacy-prices/2025/2025-07-31.csv",
+      "sha256": "4445347e12b8ee1bea112f29ddfb23bee734d6d2c678b0d8966b292e22b2d9da",
+      "source": "stock.jp/data/daily-prices/2025/2025-07-31.csv"
+    },
+    {
+      "bytes": 490268,
+      "git_blob": "32d08febd15acb3c26f9795c1504c0a7eb61d111",
+      "path": "data/market/legacy-prices/2025/2025-08-01.csv",
+      "sha256": "ed80af3b9a6464e04271284ceebc12c3ae9b52aa7de3738d7dfec7c6a9b584c2",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-01.csv"
+    },
+    {
+      "bytes": 491880,
+      "git_blob": "e750c2a2d919a5aa856906912ef01d6cf50eb642",
+      "path": "data/market/legacy-prices/2025/2025-08-04.csv",
+      "sha256": "27e0705f90c23fed77e2eeab1d8fdb9303fd428e384bac2fb96fb48d7923cc7b",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-04.csv"
+    },
+    {
+      "bytes": 489885,
+      "git_blob": "ba1ae1da04b15886d62fadf65b0163f0965f4822",
+      "path": "data/market/legacy-prices/2025/2025-08-05.csv",
+      "sha256": "608958bc5c1267f70b21625025d6c9e1547f91d4e43a899881856b9924b54793",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-05.csv"
+    },
+    {
+      "bytes": 489986,
+      "git_blob": "d71b36c3c1c0104180d5a6307e6658e34be23b25",
+      "path": "data/market/legacy-prices/2025/2025-08-06.csv",
+      "sha256": "d6273cb345c058cc9eb703ef7878efeff60f13175025fdbd868228713736d196",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-06.csv"
+    },
+    {
+      "bytes": 490631,
+      "git_blob": "86324008fc07e73898016a462316faa99169351f",
+      "path": "data/market/legacy-prices/2025/2025-08-07.csv",
+      "sha256": "e2311d21d141c4fd2197d943d86b25b3cdaa6a33d713ed35ca524bc2d2dbddab",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-07.csv"
+    },
+    {
+      "bytes": 491843,
+      "git_blob": "0e8410f04612d500d96821ea3969abf78ff0855d",
+      "path": "data/market/legacy-prices/2025/2025-08-08.csv",
+      "sha256": "8074b422efe1c2486f2466f6d06455a977a5e3c048f838e70210a5acdf8df12b",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-08.csv"
+    },
+    {
+      "bytes": 492500,
+      "git_blob": "4d80d0ed1f1859419cdbf540fcdcd85485b3f1c3",
+      "path": "data/market/legacy-prices/2025/2025-08-12.csv",
+      "sha256": "3ea9121ef392e2c8c2cf292d75d63fb1ca1e17ae50c69af354edc45e0780fcb5",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-12.csv"
+    },
+    {
+      "bytes": 492027,
+      "git_blob": "408397ab7e8289c4a5128eff1c36528c1a177356",
+      "path": "data/market/legacy-prices/2025/2025-08-13.csv",
+      "sha256": "84cec119fcae3513f63beda275ae82b886584855f67b0b45b7878c6d27173607",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-13.csv"
+    },
+    {
+      "bytes": 492866,
+      "git_blob": "a801b308f7f1beb842f48b4f6ba7b5ce1b0afce9",
+      "path": "data/market/legacy-prices/2025/2025-08-14.csv",
+      "sha256": "d067cc66abad32b2d392dd64f4e73bce906b8cbe9930630c8db87a894ef042ff",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-14.csv"
+    },
+    {
+      "bytes": 491949,
+      "git_blob": "9add6e3548ad437927da0858fa33848b74f57235",
+      "path": "data/market/legacy-prices/2025/2025-08-15.csv",
+      "sha256": "a828bb5587dadca50aef54907856b553dfc059b073c572e76b7b767ccf8af9ba",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-15.csv"
+    },
+    {
+      "bytes": 490902,
+      "git_blob": "697642f73acdcd0c8dd03fc7880517ac4be7b0d2",
+      "path": "data/market/legacy-prices/2025/2025-08-18.csv",
+      "sha256": "ac36eac7180f05b753b4d84f1e220e5b8867df2c6294e404aef198a49183742f",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-18.csv"
+    },
+    {
+      "bytes": 490734,
+      "git_blob": "a6bd8d903605dd1f6ab1d2c5cccee49148865937",
+      "path": "data/market/legacy-prices/2025/2025-08-19.csv",
+      "sha256": "217513ce77cc75247e43db4cd6bbb8b639e5a23ff1d4c48bf4068a04bc35f100",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-19.csv"
+    },
+    {
+      "bytes": 492071,
+      "git_blob": "17176ecbd0e32f57638d3e77c4e526276ad140b7",
+      "path": "data/market/legacy-prices/2025/2025-08-20.csv",
+      "sha256": "ab3af5239c6aca10ab6f84f6be0c7374e72eaaae8af90f385d7ec64ec88a6149",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-20.csv"
+    },
+    {
+      "bytes": 491045,
+      "git_blob": "b6e4581f499ac6e5a61c592c2326aa5d1ede9e6f",
+      "path": "data/market/legacy-prices/2025/2025-08-21.csv",
+      "sha256": "c10c9ad06c93836fe9be985e0bae00a663b4f816358bf2b582c17e526b9b749c",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-21.csv"
+    },
+    {
+      "bytes": 490692,
+      "git_blob": "eac43cc7a86ead63f4977513e05fdb8909ba6eee",
+      "path": "data/market/legacy-prices/2025/2025-08-22.csv",
+      "sha256": "176f6a39549a9097981c95f1ee9dd969640ec174854bfcc402f996620daae066",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-22.csv"
+    },
+    {
+      "bytes": 491623,
+      "git_blob": "ad50e9f1b54b01e27ce5578c18c3443e7ecc0c22",
+      "path": "data/market/legacy-prices/2025/2025-08-25.csv",
+      "sha256": "55bcd0c242a51fb78a457df10a4777d9d2c35550c53842f6a614edb6f987a6b0",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-25.csv"
+    },
+    {
+      "bytes": 492944,
+      "git_blob": "ac5b0a7033aaa215d007a1a0b56b4cbdf9480f86",
+      "path": "data/market/legacy-prices/2025/2025-08-26.csv",
+      "sha256": "a7b74a7f038df73a45eaf17abea8bffd890d7e9f3cee3fd608df432a2634f794",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-26.csv"
+    },
+    {
+      "bytes": 491386,
+      "git_blob": "6f21a84bb84e0fb5ca9bb8191e03aa1c4bfea143",
+      "path": "data/market/legacy-prices/2025/2025-08-27.csv",
+      "sha256": "0e992baff931d421d16becf068e1555c37c2bad32232df98f368e6e3c1d90884",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-27.csv"
+    },
+    {
+      "bytes": 490813,
+      "git_blob": "dbdd4480f7e450249d379110322a16f2b4fbe667",
+      "path": "data/market/legacy-prices/2025/2025-08-28.csv",
+      "sha256": "beb99df778951a84d07cd7c26677756226677fa49153fad04f17557d8293409d",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-28.csv"
+    },
+    {
+      "bytes": 490836,
+      "git_blob": "d64af2acd8cd5fc0686c789a267b8a1e8520e406",
+      "path": "data/market/legacy-prices/2025/2025-08-29.csv",
+      "sha256": "cac368e713da50b420db80449a5e137c633823fe7b45825621f14c9a8fd3deb4",
+      "source": "stock.jp/data/daily-prices/2025/2025-08-29.csv"
+    },
+    {
+      "bytes": 491414,
+      "git_blob": "7f4a1c2584b8a1dbfdaebb75348185d6d6986f53",
+      "path": "data/market/legacy-prices/2025/2025-09-01.csv",
+      "sha256": "e5e60021fc53dd10dafba80b5abea58c3bfebcc4f7429d8e0bf27e3b1894398c",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-01.csv"
+    },
+    {
+      "bytes": 490081,
+      "git_blob": "a18749358445bb2d4012150868dd94836e9422eb",
+      "path": "data/market/legacy-prices/2025/2025-09-02.csv",
+      "sha256": "ee0184fba319e13ab331dc0e590cec3e19fa819cbb9bc856ec50b2539362f3e3",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-02.csv"
+    },
+    {
+      "bytes": 492314,
+      "git_blob": "0ca7d6b8f6beee8b68a7c2a11ce23aa416c15e81",
+      "path": "data/market/legacy-prices/2025/2025-09-03.csv",
+      "sha256": "18bc5c31b6652e6e3204c7f7e540835b1742f3d621be67ea1e94d8d05c7f37a9",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-03.csv"
+    },
+    {
+      "bytes": 489313,
+      "git_blob": "827b929067fbe645a49ec121a6878ffd344e78f8",
+      "path": "data/market/legacy-prices/2025/2025-09-04.csv",
+      "sha256": "3433ec1f57a3a7a7972e3c1213b241810f6ae4b82f1a241f9eb4472827c52ced",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-04.csv"
+    },
+    {
+      "bytes": 489473,
+      "git_blob": "5011c85954c295a79bba67cbf04334bad01867b9",
+      "path": "data/market/legacy-prices/2025/2025-09-05.csv",
+      "sha256": "6bd775a2cb5e1894c38458cd05cd8dbf38bea995642a2f863214d3b97e5e58d2",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-05.csv"
+    },
+    {
+      "bytes": 489340,
+      "git_blob": "443700ee645b605696be5b5bac4ddc1d9b2ff523",
+      "path": "data/market/legacy-prices/2025/2025-09-08.csv",
+      "sha256": "3cd71fb8c5345d5a2299cafeda0824d1957929300acebb76aede7f768cf410fe",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-08.csv"
+    },
+    {
+      "bytes": 491915,
+      "git_blob": "e399e3cb691c0a196b741368e7fadb713af9dbce",
+      "path": "data/market/legacy-prices/2025/2025-09-09.csv",
+      "sha256": "5e28f998e53d133d24f2a3808b01a6d4230b457e99bd7e1cd98b2fb410b8fd1d",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-09.csv"
+    },
+    {
+      "bytes": 489932,
+      "git_blob": "e7b41d8d429472d44776f8a096e067d0ba4f47d2",
+      "path": "data/market/legacy-prices/2025/2025-09-10.csv",
+      "sha256": "7f6d2ff2e6ce81869ae1ffd0f82810f3a086249450d0ae6bf3445a55fa185416",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-10.csv"
+    },
+    {
+      "bytes": 491242,
+      "git_blob": "44226a4a60329933f4c217d107b4b734bdfc0ce1",
+      "path": "data/market/legacy-prices/2025/2025-09-11.csv",
+      "sha256": "86db852a40529d86c940925e5d225167a6c5ef4d883b415ae7d21148647a9a3b",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-11.csv"
+    },
+    {
+      "bytes": 490378,
+      "git_blob": "56ff32dcdf26ab2df1999af486bedfd4dd472409",
+      "path": "data/market/legacy-prices/2025/2025-09-12.csv",
+      "sha256": "57f9e32c99feb9967de9439ab015deb7b2c935cb71eb1e462561bbbd49b64309",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-12.csv"
+    },
+    {
+      "bytes": 490503,
+      "git_blob": "fcb7bdf4c48fbf57e4493e2223e16c7ff2ee9868",
+      "path": "data/market/legacy-prices/2025/2025-09-16.csv",
+      "sha256": "5d76d2f744aa18db59e9ec9227bde810eceb067e88e39073aac3bcdc264bf288",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-16.csv"
+    },
+    {
+      "bytes": 492885,
+      "git_blob": "f00a6e836dd9d693217b8f858cc0cde5b21ba79f",
+      "path": "data/market/legacy-prices/2025/2025-09-17.csv",
+      "sha256": "8415aba2bad50f15a6d0959d9c5faf73d30c293a5ddc83d4fdbd0609b8fa903c",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-17.csv"
+    },
+    {
+      "bytes": 490541,
+      "git_blob": "3ea4b78e82b76ae6a2de6b6f0774931434052679",
+      "path": "data/market/legacy-prices/2025/2025-09-18.csv",
+      "sha256": "8c29c8117d7f89218d269028521ad4cbd10308cac824ba774927b1f4bf539c7b",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-18.csv"
+    },
+    {
+      "bytes": 491926,
+      "git_blob": "5d7df9fe9d0d760757d64820185b0c930f5f2754",
+      "path": "data/market/legacy-prices/2025/2025-09-19.csv",
+      "sha256": "7e3096fde998ee96ecf9ba0034ce9d72cdae586b570cecc594668200db67e615",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-19.csv"
+    },
+    {
+      "bytes": 489999,
+      "git_blob": "63a6a6f05680e26839158416f76aae5e0ad7d3d0",
+      "path": "data/market/legacy-prices/2025/2025-09-22.csv",
+      "sha256": "8a41fee23ae64f43ea4379cfde4058a6e6b185647741f589ca14b6d92c35e2f7",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-22.csv"
+    },
+    {
+      "bytes": 491220,
+      "git_blob": "97f5ae9499846542f231ea593f5843dd1dd420a9",
+      "path": "data/market/legacy-prices/2025/2025-09-24.csv",
+      "sha256": "efd56d1366942ab7ad4b866ab114a173ddb3f6c3c9645d1279be1c05d7f7f909",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-24.csv"
+    },
+    {
+      "bytes": 490354,
+      "git_blob": "9f1a6ac03bab9af14d68b14f8b72c50fccb48a53",
+      "path": "data/market/legacy-prices/2025/2025-09-25.csv",
+      "sha256": "d85d0a0244a817252f3c96e901d105d947416599cc5a3c527ef8443b380b1889",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-25.csv"
+    },
+    {
+      "bytes": 490525,
+      "git_blob": "8ea454e78f1898e945d95a45603c56c3ca4eb219",
+      "path": "data/market/legacy-prices/2025/2025-09-26.csv",
+      "sha256": "ec56e4718bebcce7003637238d75307991631bc228a144183634ed40284fe4da",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-26.csv"
+    },
+    {
+      "bytes": 493553,
+      "git_blob": "c93a39478286666dd384eeef842fe5ad87c3f48c",
+      "path": "data/market/legacy-prices/2025/2025-09-29.csv",
+      "sha256": "9b4b8a43551758964395c5d8f67e208fee52cbfa4fa9d4bd1485dbbefdb5409c",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-29.csv"
+    },
+    {
+      "bytes": 491269,
+      "git_blob": "c48200e73e2e6b7a81bdcb569c4a6303d4cd9d75",
+      "path": "data/market/legacy-prices/2025/2025-09-30.csv",
+      "sha256": "481faa4b017ee87d33680286f7dcfc36392e0f4b06575088554c7ff879e1b3bf",
+      "source": "stock.jp/data/daily-prices/2025/2025-09-30.csv"
+    },
+    {
+      "bytes": 495921,
+      "git_blob": "fd69236892b06bc8c583f10716c03835889c93ce",
+      "path": "data/market/legacy-prices/2025/2025-10-01.csv",
+      "sha256": "366aa2f44a5d9729d549042aa2c493d9dca2280ebb036e39bef8df0628a741df",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-01.csv"
+    },
+    {
+      "bytes": 491349,
+      "git_blob": "62db0e1fd2952997c4b2f2977e8baec1fcc2b236",
+      "path": "data/market/legacy-prices/2025/2025-10-02.csv",
+      "sha256": "b0b72e2b5683a6940974430421d2d00bf13897ecf5b5b894af14c502739bff84",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-02.csv"
+    },
+    {
+      "bytes": 488603,
+      "git_blob": "fb8e5309391c8077bc852080f4f40994781a7e90",
+      "path": "data/market/legacy-prices/2025/2025-10-03.csv",
+      "sha256": "e1cd61503c940283ea476d6093eef7706c2bd05d389d69a8dcc844212a4e8bc3",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-03.csv"
+    },
+    {
+      "bytes": 490120,
+      "git_blob": "80146f417a32da2f6f34326d7a625071bad597cb",
+      "path": "data/market/legacy-prices/2025/2025-10-06.csv",
+      "sha256": "695fea7c63e11c301eee81a7cd59dbeb138d5b5fd9eccb2c39d951cf4a04176c",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-06.csv"
+    },
+    {
+      "bytes": 490321,
+      "git_blob": "513733d1185064d5dbe8dccaf5b62a7cb71badc1",
+      "path": "data/market/legacy-prices/2025/2025-10-07.csv",
+      "sha256": "f51e377c4768ff85c71b10ddb4055d916a5c391d89c82e2f6fc2ef9848630029",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-07.csv"
+    },
+    {
+      "bytes": 490794,
+      "git_blob": "c4b34d7bf06dce292fd11c64e6583ca2de30a39f",
+      "path": "data/market/legacy-prices/2025/2025-10-08.csv",
+      "sha256": "12649920f0d07341b03f865f2e4e3d9f6fc077b336cb6f06691f977eef1e0cd7",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-08.csv"
+    },
+    {
+      "bytes": 490195,
+      "git_blob": "787dc96cdcffd981a88dbdb05ba822454f815aa0",
+      "path": "data/market/legacy-prices/2025/2025-10-09.csv",
+      "sha256": "a2ac356651ce275cc65c2e082307750059eb8236903901fcde8bbc813ec97bd0",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-09.csv"
+    },
+    {
+      "bytes": 494582,
+      "git_blob": "59c87b369a9dbaa39989db7fc0da8dfbaf1365fe",
+      "path": "data/market/legacy-prices/2025/2025-10-10.csv",
+      "sha256": "fbc73de19058e860e9fd12e33adb52c101793294698d9bee9ac0ba44fac1fb9b",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-10.csv"
+    },
+    {
+      "bytes": 496038,
+      "git_blob": "8efa0d81e7088aa8264b236c27cd6146304d795c",
+      "path": "data/market/legacy-prices/2025/2025-10-14.csv",
+      "sha256": "4f79f00c659f974c792e9dfafabbb7562f6e4a89c92fc9d7205ebfb350a76517",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-14.csv"
+    },
+    {
+      "bytes": 489329,
+      "git_blob": "8f45f598fa35aa5fd5946c39b09b3100bb115bb4",
+      "path": "data/market/legacy-prices/2025/2025-10-15.csv",
+      "sha256": "b87beadbdd07849c8dad4ac68ad17a4caad3af731edd34150a41e972107aebc4",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-15.csv"
+    },
+    {
+      "bytes": 489259,
+      "git_blob": "059938ae4a5636b1424ce3242fafd9c2ee0166e8",
+      "path": "data/market/legacy-prices/2025/2025-10-16.csv",
+      "sha256": "780cc5d72bf82b9a9e2a4a115729ded912360cf8d2f0ba49393a2f629ffc5047",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-16.csv"
+    },
+    {
+      "bytes": 492146,
+      "git_blob": "8b1780ca69cf8f6d7bef3e45cb2b54f44480bb8d",
+      "path": "data/market/legacy-prices/2025/2025-10-17.csv",
+      "sha256": "0f4f94f37b41c6e5ae49536bbca134df9570a39b5ee37d1131485062f37282d5",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-17.csv"
+    },
+    {
+      "bytes": 489010,
+      "git_blob": "e8b0c3c01d09232487d6efe713125a784ed92e1f",
+      "path": "data/market/legacy-prices/2025/2025-10-20.csv",
+      "sha256": "279233fa44f68f972ee9d1ab987cb54982406f6b16622d58853f14efef1d4abb",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-20.csv"
+    },
+    {
+      "bytes": 490099,
+      "git_blob": "072772a9f0ea575ecd4fec646e306298efc261b2",
+      "path": "data/market/legacy-prices/2025/2025-10-21.csv",
+      "sha256": "5e105704968a21f732657e1d2317c25398a8490c08d01a0ec2332e7305710fdf",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-21.csv"
+    },
+    {
+      "bytes": 488775,
+      "git_blob": "6e023f78dfd2b676fa734e8f03150f9aa6ee8f06",
+      "path": "data/market/legacy-prices/2025/2025-10-22.csv",
+      "sha256": "f7984ddf426f1bbeec4ac8f0e69d0596a7a05124a1fb0042523ac4eaea07c482",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-22.csv"
+    },
+    {
+      "bytes": 490012,
+      "git_blob": "78eafccdbea6ae29f495520913ab1764561b8a8d",
+      "path": "data/market/legacy-prices/2025/2025-10-23.csv",
+      "sha256": "89f3e3c86142064b14981845ff292629d2754930e5bcb64d8de4d6624acc8490",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-23.csv"
+    },
+    {
+      "bytes": 491193,
+      "git_blob": "8786cd68e1a2767e8e2493dcfeee3be134777dbc",
+      "path": "data/market/legacy-prices/2025/2025-10-24.csv",
+      "sha256": "9c56f3814450c9e2875fc64c4279d66968a166e8f4de301271fe8d38b6c3659d",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-24.csv"
+    },
+    {
+      "bytes": 490238,
+      "git_blob": "47b84bf7918b1889d09aa4f8034a500632c58cc1",
+      "path": "data/market/legacy-prices/2025/2025-10-27.csv",
+      "sha256": "b52b4d2e710b4666c839931a5f700a343c7840fb0d038f1a6638c7305c3c2188",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-27.csv"
+    },
+    {
+      "bytes": 495003,
+      "git_blob": "e23d3f84c8e4598793ba97f5c9bbd588f42244d6",
+      "path": "data/market/legacy-prices/2025/2025-10-28.csv",
+      "sha256": "9f57c9250b17aa93240ed9da7e5e81ceac74c17d37118f8acd8a0c1d033bcd39",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-28.csv"
+    },
+    {
+      "bytes": 495307,
+      "git_blob": "b290e302d54bf24dc9d65e8f8172116aa8c0146c",
+      "path": "data/market/legacy-prices/2025/2025-10-29.csv",
+      "sha256": "501ee9cc21f6fd9841900bdf544c76e1ccb76a323c100901d6029e2d089841c8",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-29.csv"
+    },
+    {
+      "bytes": 490196,
+      "git_blob": "a45cc574b12a4955e8b28a0f602a57b42969768d",
+      "path": "data/market/legacy-prices/2025/2025-10-30.csv",
+      "sha256": "c6fa2f97fa3f8e1c9f572d3ec8c34cfd371c1d5888f7a02aed182617d41cffd1",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-30.csv"
+    },
+    {
+      "bytes": 490587,
+      "git_blob": "60000174039e74637dca8fa30362990e69e1a9ef",
+      "path": "data/market/legacy-prices/2025/2025-10-31.csv",
+      "sha256": "19e9fae7760b6bfbbb634f92c46f42acfe069403da1963e560f14fe4965dcd4d",
+      "source": "stock.jp/data/daily-prices/2025/2025-10-31.csv"
+    },
+    {
+      "bytes": 491535,
+      "git_blob": "30951c9f048b5410bbfe5b0d101d9784db341aa0",
+      "path": "data/market/legacy-prices/2025/2025-11-04.csv",
+      "sha256": "57c597b561ef2f6eb5dd061618572b0e640f2d85938c52e455241c2551747748",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-04.csv"
+    },
+    {
+      "bytes": 493482,
+      "git_blob": "81afe4c38b639547f40ff302ecd405c836c837d7",
+      "path": "data/market/legacy-prices/2025/2025-11-05.csv",
+      "sha256": "fce00015e7157bf910565b273ae14d60265433fd2ab35e7bc4b5a158f05872b5",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-05.csv"
+    },
+    {
+      "bytes": 489531,
+      "git_blob": "486d4b621db5b7235145e21a6320addcf0d60c11",
+      "path": "data/market/legacy-prices/2025/2025-11-06.csv",
+      "sha256": "adea786fe9035c4b3fc1d3be71c91162029e00e6d29eb3c68609176a06505444",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-06.csv"
+    },
+    {
+      "bytes": 490266,
+      "git_blob": "b4f92b0bc31988025fae08e138e52f492fb54740",
+      "path": "data/market/legacy-prices/2025/2025-11-07.csv",
+      "sha256": "9afe2df7aa6512d3386b004baff5ae480426d8b387564d023c97394e1c0c193f",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-07.csv"
+    },
+    {
+      "bytes": 489526,
+      "git_blob": "5346fc9dd2314cc4f67cf560dbe1ce2151fd6e8a",
+      "path": "data/market/legacy-prices/2025/2025-11-10.csv",
+      "sha256": "99e6754506cbd3158d75d788b6e5c28eabde7a28ef568e71f44a250ddb16df14",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-10.csv"
+    },
+    {
+      "bytes": 490568,
+      "git_blob": "20096d305c5a320d2b2552f241683c9a0325cf26",
+      "path": "data/market/legacy-prices/2025/2025-11-11.csv",
+      "sha256": "e979d3e98f74645935d9e65189de4d16010861a3b47dca1dc5172de8dfc6e76f",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-11.csv"
+    },
+    {
+      "bytes": 489756,
+      "git_blob": "e99628972d0583ff5ee57ee0c6eb24b489e8bd0d",
+      "path": "data/market/legacy-prices/2025/2025-11-12.csv",
+      "sha256": "829916318e4bed33b86ee1c28bf456a60951e0efca94eb62bae1272867f3198d",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-12.csv"
+    },
+    {
+      "bytes": 490811,
+      "git_blob": "ee15bc124c1b7fbc36a61893dac7bf205ced56b1",
+      "path": "data/market/legacy-prices/2025/2025-11-13.csv",
+      "sha256": "766a8ff2aa06ea4ca1472f2b5b34dead3e60d5397edc29ffb00c34bcc04d076c",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-13.csv"
+    },
+    {
+      "bytes": 492682,
+      "git_blob": "f8c3157c3b1fef306df08994dcb0a932e121586a",
+      "path": "data/market/legacy-prices/2025/2025-11-14.csv",
+      "sha256": "d662a09065972992832f918d7eec44c166c4839600f8bfb1422b4743e30f1169",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-14.csv"
+    },
+    {
+      "bytes": 493068,
+      "git_blob": "5091ba9fb72531dc75278c13cde807de89e2ee1e",
+      "path": "data/market/legacy-prices/2025/2025-11-17.csv",
+      "sha256": "4b337640ad39b8ffad6a9f62cc4796613c7ebba8fbe6c9e12c36a52074de3f00",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-17.csv"
+    },
+    {
+      "bytes": 494722,
+      "git_blob": "358505b4c8b3d6923f908ec468b33dbd9884ff1f",
+      "path": "data/market/legacy-prices/2025/2025-11-18.csv",
+      "sha256": "a91999776ffd7b4c161c445546b235bad0cbfa37a23471f54266d6b4adc81b4e",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-18.csv"
+    },
+    {
+      "bytes": 490919,
+      "git_blob": "53ce9b15ec0a9add083516d5fafec4b57a3b6024",
+      "path": "data/market/legacy-prices/2025/2025-11-19.csv",
+      "sha256": "b01b687f474fd4174ff6c3fe530c60c38e648a87858485d1ed4b94187b0d49d9",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-19.csv"
+    },
+    {
+      "bytes": 489648,
+      "git_blob": "ebaa2868b0e471df3e4d1854e69df287cc2d203f",
+      "path": "data/market/legacy-prices/2025/2025-11-20.csv",
+      "sha256": "0fedf038c80cb8354e5a3d096ca42fed1705f34b13c1244b23b718396c4bbb58",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-20.csv"
+    },
+    {
+      "bytes": 490396,
+      "git_blob": "7be6bf367a52400c01d0b76beddb6bd862b5b5cf",
+      "path": "data/market/legacy-prices/2025/2025-11-21.csv",
+      "sha256": "5055a68258f0a032cbc4135729e5d9c2897c58c74ab26579bfcc1102f829ae72",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-21.csv"
+    },
+    {
+      "bytes": 491212,
+      "git_blob": "5d0e50728d69030526d68d97882c4d91ed6c5a9e",
+      "path": "data/market/legacy-prices/2025/2025-11-25.csv",
+      "sha256": "afe982a603c03bdc2e8f29d38bae12e1e5b417607d5ca2342187aa3d2001201f",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-25.csv"
+    },
+    {
+      "bytes": 489166,
+      "git_blob": "1f1c7b7c50b344854b3f67a5e0ac86d0d109c068",
+      "path": "data/market/legacy-prices/2025/2025-11-26.csv",
+      "sha256": "397736dd84852681f6f3281c000baff64d3182ea16ffbe305b4d30b9c454c625",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-26.csv"
+    },
+    {
+      "bytes": 489182,
+      "git_blob": "8ecb37ae18114f678caae1f49c61e11bbfffc72a",
+      "path": "data/market/legacy-prices/2025/2025-11-27.csv",
+      "sha256": "9585fb2a24be4c9e1c6c33a1e64ae7a4fc2dbd89e709168e48d01ff228fef40c",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-27.csv"
+    },
+    {
+      "bytes": 488917,
+      "git_blob": "1f00ea5f92eb7d979fe8826d7dd1020256aab274",
+      "path": "data/market/legacy-prices/2025/2025-11-28.csv",
+      "sha256": "87a6acdd20b912f26ffd8af27d6fcb37b771cb2a56f171fda6238a630866dd2a",
+      "source": "stock.jp/data/daily-prices/2025/2025-11-28.csv"
+    },
+    {
+      "bytes": 493425,
+      "git_blob": "9ace365c0621420ad50eff3797edbbb4e262c512",
+      "path": "data/market/legacy-prices/2025/2025-12-01.csv",
+      "sha256": "3b1958d6c8bf10dd414954f999007a3f952143bd2f83df40795dac460c2170a1",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-01.csv"
+    },
+    {
+      "bytes": 492032,
+      "git_blob": "5c184b7546788c6121608de69d2b4ce15e277a7f",
+      "path": "data/market/legacy-prices/2025/2025-12-02.csv",
+      "sha256": "e2f77d4c4af8497bb607cfe2b5bb7ae6323874e1cd3cd574a59f8bef0b12acbf",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-02.csv"
+    },
+    {
+      "bytes": 491357,
+      "git_blob": "fee63bf95011e5dc4e8dcec3ea284b3e487c9a2e",
+      "path": "data/market/legacy-prices/2025/2025-12-03.csv",
+      "sha256": "c458085dad63d4c13fc23ebc73fdd41235049af9bd23800bf9634b044476c8a2",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-03.csv"
+    },
+    {
+      "bytes": 488577,
+      "git_blob": "ee365f22441e70d2b2faf1158f02748a87faa3c2",
+      "path": "data/market/legacy-prices/2025/2025-12-04.csv",
+      "sha256": "734538e65fadf61bb963719cd201ee0847c4129511493d38d27f1cc0034a08de",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-04.csv"
+    },
+    {
+      "bytes": 491826,
+      "git_blob": "19f817aa379fa7c693fd80f3999eca5b7276c7b5",
+      "path": "data/market/legacy-prices/2025/2025-12-05.csv",
+      "sha256": "a9330e3defb9d8b6335c2b3b9363cce01bd451aa8597ad6d4d33d4024d172318",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-05.csv"
+    },
+    {
+      "bytes": 489343,
+      "git_blob": "2426213012c2a1daea8f1d8978f67dbce9447c5d",
+      "path": "data/market/legacy-prices/2025/2025-12-08.csv",
+      "sha256": "f2e96a3ea3a7d1a95b7d2e1e34b1915dee7e37a06f913438819431164bedafd0",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-08.csv"
+    },
+    {
+      "bytes": 490543,
+      "git_blob": "9a7a607302e6ce9974bafe8b8e3b54aa96b900bd",
+      "path": "data/market/legacy-prices/2025/2025-12-09.csv",
+      "sha256": "e5ee5770be50e597ed82a701341d017e281c11e171e05c88ba7419ac9af5bcf1",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-09.csv"
+    },
+    {
+      "bytes": 489152,
+      "git_blob": "fb2be10c761b09bcc057bb2dffdb3fe1415630a4",
+      "path": "data/market/legacy-prices/2025/2025-12-10.csv",
+      "sha256": "91cba6d8ff126947459f16a0e7c435e399971c37ba7eb43adc9b1d01693f9388",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-10.csv"
+    },
+    {
+      "bytes": 492782,
+      "git_blob": "1bd3a553cfa4f05814589c35b8e4d9bef320c193",
+      "path": "data/market/legacy-prices/2025/2025-12-11.csv",
+      "sha256": "d0dbe24f72733b7a1da0e9b77006deb26975bde7d8e6702fa81ca2c268163bd3",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-11.csv"
+    },
+    {
+      "bytes": 489172,
+      "git_blob": "ded8d50dd7d4ef14906840cb9cda747cb229769b",
+      "path": "data/market/legacy-prices/2025/2025-12-12.csv",
+      "sha256": "ca4ca6fedaf282f75ca3355f7ee024cbfc93dc6692f5e19bbac1b2dd57dbe918",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-12.csv"
+    },
+    {
+      "bytes": 489735,
+      "git_blob": "4995ad3d607dee766aa736ddc64326a1079a6e0e",
+      "path": "data/market/legacy-prices/2025/2025-12-15.csv",
+      "sha256": "07ed07b969a5c85c36db9a60572171cc8138b889204ed368aea265e16c5cced0",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-15.csv"
+    },
+    {
+      "bytes": 493078,
+      "git_blob": "c8f53919a057319c3604e3e8e967e5987eebc9d8",
+      "path": "data/market/legacy-prices/2025/2025-12-16.csv",
+      "sha256": "82050bdf48cad21f2acd63266aa26e6c05cd935d921d077cc93e36a8497a38f1",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-16.csv"
+    },
+    {
+      "bytes": 490495,
+      "git_blob": "59426b2c6244c7940abdf0148dba6d5db83a043d",
+      "path": "data/market/legacy-prices/2025/2025-12-17.csv",
+      "sha256": "f1b38785a514daf2dc29ba1fc19f7aa165a253a3468550c9bfd2ce13ca75aa39",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-17.csv"
+    },
+    {
+      "bytes": 489830,
+      "git_blob": "dab9594f3e0d04a2c4298f565a133c16fd36b35b",
+      "path": "data/market/legacy-prices/2025/2025-12-18.csv",
+      "sha256": "ef1aca7bec6ffe144a2db59709600e99b7e2b4b20135c6eccca020802c571ae5",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-18.csv"
+    },
+    {
+      "bytes": 489694,
+      "git_blob": "2cb18bb777a055abcdc55e6ff39b9822a134a97e",
+      "path": "data/market/legacy-prices/2025/2025-12-19.csv",
+      "sha256": "6c3575507b12c32f57276acf62169d2bf01f6b4590072378fc9766b31b185225",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-19.csv"
+    },
+    {
+      "bytes": 491606,
+      "git_blob": "c53af921b2a7786ae9889cd3f1eecdead1ba365f",
+      "path": "data/market/legacy-prices/2025/2025-12-22.csv",
+      "sha256": "f5416397caa66b7df473895e6603af23433f312e0bbe58ffe71a872553a9a5a2",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-22.csv"
+    },
+    {
+      "bytes": 489689,
+      "git_blob": "cc45fc9c54c18f26915252d4740023a2a9e13ee3",
+      "path": "data/market/legacy-prices/2025/2025-12-23.csv",
+      "sha256": "24ee3edeff33eb4657b7c7699f4556c8b3ef474c69a5a87fadbdb487d9f886f8",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-23.csv"
+    },
+    {
+      "bytes": 491541,
+      "git_blob": "7c5b9e5f3bba37111e767848799866879f53f49d",
+      "path": "data/market/legacy-prices/2025/2025-12-24.csv",
+      "sha256": "8c1ba5e884c92c95499d72bf68a0ad84d8e17c31c143a177dab42e73bb49b1af",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-24.csv"
+    },
+    {
+      "bytes": 490114,
+      "git_blob": "f2b5d7e42bc92754fc8fd27ccc0544ad2ffc9a32",
+      "path": "data/market/legacy-prices/2025/2025-12-25.csv",
+      "sha256": "129fb70a4c4d1733a963e8b2e37c5d82b9944bd3d1c8e17d4a579bd442edd770",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-25.csv"
+    },
+    {
+      "bytes": 491634,
+      "git_blob": "e036f85aa4bf48b15b7a42349941ee1e20de4cb2",
+      "path": "data/market/legacy-prices/2025/2025-12-26.csv",
+      "sha256": "8a8481230120788c024a8dfa0761237adcbc1577adaca2b3fdb299190860d57b",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-26.csv"
+    },
+    {
+      "bytes": 492016,
+      "git_blob": "8e607f9755d3c84ad4ee3710e6fb174a37b328c6",
+      "path": "data/market/legacy-prices/2025/2025-12-29.csv",
+      "sha256": "573d54cac439a5583c6b51361c748ac812b160b363f4687e0f48a4be6fa0a051",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-29.csv"
+    },
+    {
+      "bytes": 492491,
+      "git_blob": "467b3f8f5d4d527fdd2bfdc42fc60fcada8e40f2",
+      "path": "data/market/legacy-prices/2025/2025-12-30.csv",
+      "sha256": "54c9ae2827a0d27b921f2c4c0cb52cc5830a8cb8a23b6387849871b7eb4d6868",
+      "source": "stock.jp/data/daily-prices/2025/2025-12-30.csv"
+    },
+    {
+      "bytes": 491439,
+      "git_blob": "e4445e4dbcd726f592982e3bbdeefd4adf2e4d70",
+      "path": "data/market/legacy-prices/2026/2026-01-05.csv",
+      "sha256": "b310f54c73de1cc47dff0cc6ce02e9e511441bcc65f4cf64ebaa005d5976c173",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-05.csv"
+    },
+    {
+      "bytes": 490416,
+      "git_blob": "8d3c81d853f00423f1a00e4386a6a6923c9abcb2",
+      "path": "data/market/legacy-prices/2026/2026-01-06.csv",
+      "sha256": "a3d8140f95b78583d82335135df1a9d0e104efe53b4a8938700c3f46762654ef",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-06.csv"
+    },
+    {
+      "bytes": 490997,
+      "git_blob": "1238af04104d1cf21df43d543c6fb1c29e8376b1",
+      "path": "data/market/legacy-prices/2026/2026-01-07.csv",
+      "sha256": "edc4ebbad510fc4c91f6bddab265921c325798b957fb6743ea53899282368996",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-07.csv"
+    },
+    {
+      "bytes": 491498,
+      "git_blob": "3e53cc476f7e88677e70e2b5d3757c52d132faee",
+      "path": "data/market/legacy-prices/2026/2026-01-08.csv",
+      "sha256": "2502d9ec89ea8f0e50ab36c123d74a39957da033ff6c774cb909aeb1dac44171",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-08.csv"
+    },
+    {
+      "bytes": 489850,
+      "git_blob": "1349108fc314c3c25336c3e17a1f3e5b1be40437",
+      "path": "data/market/legacy-prices/2026/2026-01-09.csv",
+      "sha256": "9ba444d59eaa0e8256ceadd0d37831b4fa53bb134a8017e4e35b355ac53305b1",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-09.csv"
+    },
+    {
+      "bytes": 491618,
+      "git_blob": "34e99a96defbc47962f86547f2f8a62546fdda33",
+      "path": "data/market/legacy-prices/2026/2026-01-13.csv",
+      "sha256": "de0d97716bbc2a857d5aae23a78c687a6bde1d6b3f01cc9fd48a760347c2b37d",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-13.csv"
+    },
+    {
+      "bytes": 490818,
+      "git_blob": "bbf5bc75c6f200f400fd5bf6f1ed23d30184b2c5",
+      "path": "data/market/legacy-prices/2026/2026-01-14.csv",
+      "sha256": "c2dff1363ba316a6ac8d2ec2ac310e84026f7805da1e2f930a77c1e0c8892eb1",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-14.csv"
+    },
+    {
+      "bytes": 490351,
+      "git_blob": "13e9826d9edf6972fd4c15fc2a9c3d6d18541529",
+      "path": "data/market/legacy-prices/2026/2026-01-15.csv",
+      "sha256": "9625dbc2214c445e4a99cc8f8140688d5f7e052865e04025ede2f8ad18dfc289",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-15.csv"
+    },
+    {
+      "bytes": 490538,
+      "git_blob": "018749f252707059991687a062ef442e7c8316f9",
+      "path": "data/market/legacy-prices/2026/2026-01-16.csv",
+      "sha256": "4a71d6bf83cd68ec260450eff50095f70f658a11e3417c96896e9938dfcc9b6f",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-16.csv"
+    },
+    {
+      "bytes": 491979,
+      "git_blob": "3754c430848afac59675b9c01e4e9337cf9b9de1",
+      "path": "data/market/legacy-prices/2026/2026-01-19.csv",
+      "sha256": "3ab9259b7a488bac3868cb7ebeca934825799b73883e040ba739fb54f55018d3",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-19.csv"
+    },
+    {
+      "bytes": 492881,
+      "git_blob": "5f55c2fba028cb25dca75c13b81ca7a4b5a71ecd",
+      "path": "data/market/legacy-prices/2026/2026-01-20.csv",
+      "sha256": "0a66aeedcf23514cfe017fcdca6547703d838b90f035c675865778b6d05f5d6d",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-20.csv"
+    },
+    {
+      "bytes": 493289,
+      "git_blob": "2dcd89078d93cf26f5796a20f037e20ab1c9257d",
+      "path": "data/market/legacy-prices/2026/2026-01-21.csv",
+      "sha256": "c43ddd6c67c0bbaefbf183db3004b3951524ef28e3dbdce4b74c8aa6b9cca5b1",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-21.csv"
+    },
+    {
+      "bytes": 489795,
+      "git_blob": "ab7c8a90cbcb9f117654899c5eb309c30e038d8c",
+      "path": "data/market/legacy-prices/2026/2026-01-22.csv",
+      "sha256": "291994c4c5dd2b5ed9013dc7b2afe3708fa8d4bafed62c0f582ef75ecb4017b2",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-22.csv"
+    },
+    {
+      "bytes": 489978,
+      "git_blob": "00dbb7572c10f6c63813284e87828878b8578800",
+      "path": "data/market/legacy-prices/2026/2026-01-23.csv",
+      "sha256": "11cfd2d1d3ec6ead207da7ff53144d1e7e7d6755d36f4816ca3cb8f2ff92f946",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-23.csv"
+    },
+    {
+      "bytes": 494542,
+      "git_blob": "fdb8486bcde4617d5b243f7bc2f5820395d5e0ae",
+      "path": "data/market/legacy-prices/2026/2026-01-26.csv",
+      "sha256": "b8f6e1f845a4d107800484bc195a34d8b074424d341920b3033b4ea939c32e6e",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-26.csv"
+    },
+    {
+      "bytes": 490265,
+      "git_blob": "871534e6666573745baaaf36d8aaf551d80f8e16",
+      "path": "data/market/legacy-prices/2026/2026-01-27.csv",
+      "sha256": "d83ac0c349f923a42db25a67296a35886e25aff91c75e7150c95668cf9eef480",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-27.csv"
+    },
+    {
+      "bytes": 493979,
+      "git_blob": "48d41c7fd2c5c7d9cf3e64ed463ff09de5c33b66",
+      "path": "data/market/legacy-prices/2026/2026-01-28.csv",
+      "sha256": "5c3d28efabe5814e69ebd3b82b2b4fee170986f09d977d2a3936a239152ae47d",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-28.csv"
+    },
+    {
+      "bytes": 490962,
+      "git_blob": "0c517c12242dc063c6f8d8bb7bdc41f3da20a528",
+      "path": "data/market/legacy-prices/2026/2026-01-29.csv",
+      "sha256": "2c0e320530b8e7ae37ac0540f143a6e9492ee5a5e9fd5e2420b9bd273bdd5946",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-29.csv"
+    },
+    {
+      "bytes": 489548,
+      "git_blob": "b807193daac8113244621b71133c786d28536fd8",
+      "path": "data/market/legacy-prices/2026/2026-01-30.csv",
+      "sha256": "c2c2e2aec2307c32b50c05e623fd8a9c84c33c0c734d23a8c9adcb0c59b621ed",
+      "source": "stock.jp/data/daily-prices/2026/2026-01-30.csv"
+    },
+    {
+      "bytes": 491595,
+      "git_blob": "de0ef478746bb15f273b310b434dfb157ee9cd36",
+      "path": "data/market/legacy-prices/2026/2026-02-02.csv",
+      "sha256": "ef9c04532c2f60c48ee2241a1b06584083be84ccda9185638c52e4fa8275fc2f",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-02.csv"
+    },
+    {
+      "bytes": 489031,
+      "git_blob": "cbb19cc67f7623cd1c156aa52d3b3cf47686aaaf",
+      "path": "data/market/legacy-prices/2026/2026-02-03.csv",
+      "sha256": "9667c1303cdefb20a296e0a38335d5b36b73c9f012c593e9e7b1f058746dccab",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-03.csv"
+    },
+    {
+      "bytes": 490115,
+      "git_blob": "294b203e1374c0de3c70bf37b3d0f526cdfe8032",
+      "path": "data/market/legacy-prices/2026/2026-02-04.csv",
+      "sha256": "b9a259253b1f0e9955adf8f2687a7dfdd6416a237fbd4478f877b93c3f99603e",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-04.csv"
+    },
+    {
+      "bytes": 489438,
+      "git_blob": "04a171f41bac25aa03a6a27140cc98eac54833fd",
+      "path": "data/market/legacy-prices/2026/2026-02-05.csv",
+      "sha256": "0cca8f827a07ea18ac100f565bd12c8c505bf4351d6e2127bb755e0504051b50",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-05.csv"
+    },
+    {
+      "bytes": 491098,
+      "git_blob": "3f8741ba13a69dd4919f6c4c1790dd39dfe20a2e",
+      "path": "data/market/legacy-prices/2026/2026-02-06.csv",
+      "sha256": "80f550ae6fe2f22b88901c94f748bd0fab2945378024257b523c9b293e6019d5",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-06.csv"
+    },
+    {
+      "bytes": 490191,
+      "git_blob": "87dc75999ddd607a0739e2993a91b0d7e0e55c32",
+      "path": "data/market/legacy-prices/2026/2026-02-09.csv",
+      "sha256": "8e55d050e533865fdf6332236f27e844c0bcefe58cc17cf6b01208e4a4c7d97f",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-09.csv"
+    },
+    {
+      "bytes": 489814,
+      "git_blob": "14ab58f82e5bfa30bbcdb4c579fb08a851c065e1",
+      "path": "data/market/legacy-prices/2026/2026-02-10.csv",
+      "sha256": "a6f74742a1b6d0e95cb44d8d20df2cd0a06cd8c815698828ff3da92b453382ad",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-10.csv"
+    },
+    {
+      "bytes": 491483,
+      "git_blob": "4ebb75ecbfd97146d4882a3cef6381e79ffcefa7",
+      "path": "data/market/legacy-prices/2026/2026-02-12.csv",
+      "sha256": "2698cdf9a3cd36f6ba02d5ab07d3f0531c4cd7a9ded7d856275acba1dab4dd8e",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-12.csv"
+    },
+    {
+      "bytes": 495319,
+      "git_blob": "84ebdbec9f1cbc71a37d2c3fe28f7613b0cdd80d",
+      "path": "data/market/legacy-prices/2026/2026-02-13.csv",
+      "sha256": "be373a0d7b88eac4b40bed47edb142d25ed29d12547ac5658ec9c7fe0e25f2de",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-13.csv"
+    },
+    {
+      "bytes": 492308,
+      "git_blob": "b5e122d62efb16e15a1f27ba1be8b11651872399",
+      "path": "data/market/legacy-prices/2026/2026-02-16.csv",
+      "sha256": "4096adc8afcc45e222c612dc373daeef9c3d851e3192845ff0390f777803cddf",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-16.csv"
+    },
+    {
+      "bytes": 491993,
+      "git_blob": "a6d66e6c9c9a2e822f921539ad29d2af9ea7bee5",
+      "path": "data/market/legacy-prices/2026/2026-02-17.csv",
+      "sha256": "f47eaebeed9deaddcb22c036c3d4978ae80e546d36690b86ed91632501fa8ba2",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-17.csv"
+    },
+    {
+      "bytes": 489971,
+      "git_blob": "6334aaa3841608e7cfb32b858ff64e864ae8e341",
+      "path": "data/market/legacy-prices/2026/2026-02-18.csv",
+      "sha256": "dc6ee770e6f1e024b8d359f6488b261a25e5ef96cf97e0a49885641e9c25293d",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-18.csv"
+    },
+    {
+      "bytes": 490182,
+      "git_blob": "068cf9502119341b2682cc2446a800139f73b8af",
+      "path": "data/market/legacy-prices/2026/2026-02-19.csv",
+      "sha256": "57485def708a05f8dd1bd7090fc8ef0ef20d068ce9006f0aefb8c6682db772fe",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-19.csv"
+    },
+    {
+      "bytes": 493470,
+      "git_blob": "0e0dad3b840f1458fdacb79ec12ab9cd9b590782",
+      "path": "data/market/legacy-prices/2026/2026-02-20.csv",
+      "sha256": "93873511fdcf9cc99a6c8e75821bc09b76c56140667bba014dbbaabc0cf26155",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-20.csv"
+    },
+    {
+      "bytes": 492086,
+      "git_blob": "398035bffe89b8c8654e76bdfcabee53a1fa943d",
+      "path": "data/market/legacy-prices/2026/2026-02-24.csv",
+      "sha256": "495928d976f7004c3d1b6c10077c276ac3790532e5577568d691dd678bb942e3",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-24.csv"
+    },
+    {
+      "bytes": 491189,
+      "git_blob": "4ffaa69ed35acd71918cf0d96d89503fe36b7715",
+      "path": "data/market/legacy-prices/2026/2026-02-25.csv",
+      "sha256": "467c884ba353ec63e896920ce4fc52ff1293fa7d0eb8def72824302597ea9759",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-25.csv"
+    },
+    {
+      "bytes": 490904,
+      "git_blob": "6eccfa0bc2eb04b521a0e18b4049b6234467f3fa",
+      "path": "data/market/legacy-prices/2026/2026-02-26.csv",
+      "sha256": "cf3e2da5ebb00055af31f702085fb538a9a24f9f640805913e54cb4f12915643",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-26.csv"
+    },
+    {
+      "bytes": 490330,
+      "git_blob": "4dd2ba2e8e33eb408976711a08cf5347e09230d0",
+      "path": "data/market/legacy-prices/2026/2026-02-27.csv",
+      "sha256": "9972291583be7e5cb300726bf28cc5cd2d4bf46ce30e9de8c72dd4824cb04bf7",
+      "source": "stock.jp/data/daily-prices/2026/2026-02-27.csv"
+    },
+    {
+      "bytes": 494782,
+      "git_blob": "6d627370f1ed1d2e5ae5399c8b6b9fb14b4f7e48",
+      "path": "data/market/legacy-prices/2026/2026-03-02.csv",
+      "sha256": "f5b62080679bb441cb9d9329a58a35ea9bd01ec8add0224d182bd3c869b787e7",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-02.csv"
+    },
+    {
+      "bytes": 497238,
+      "git_blob": "440f414eb1deeeb7f5dcac828630fe574e36b574",
+      "path": "data/market/legacy-prices/2026/2026-03-03.csv",
+      "sha256": "792064001d859942f063a85dbfdc9009f7221039036a4bafeb28049d2307c868",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-03.csv"
+    },
+    {
+      "bytes": 498077,
+      "git_blob": "2400177379adfb0934f37b27223f10ea4e73e294",
+      "path": "data/market/legacy-prices/2026/2026-03-04.csv",
+      "sha256": "be7a3e3cd49a6dd0c015141247582b2733b41fad921089fb5ce5566fc1dd4886",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-04.csv"
+    },
+    {
+      "bytes": 490834,
+      "git_blob": "5cd10d8cb11db9dfa7717432e2d05ba736dff162",
+      "path": "data/market/legacy-prices/2026/2026-03-05.csv",
+      "sha256": "c12cca8aaea8efa3f77b1819ecf76c6973efb2bfae25e9af4e87d5eb8e224f34",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-05.csv"
+    },
+    {
+      "bytes": 490679,
+      "git_blob": "1e2449558ace0d7d4e83dffed9be66057701ee87",
+      "path": "data/market/legacy-prices/2026/2026-03-06.csv",
+      "sha256": "e8a26d0702a714584e083149ef8ef55592f43557a24a887afcb8c172e8112883",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-06.csv"
+    },
+    {
+      "bytes": 497290,
+      "git_blob": "8c5e72f59d2e54f5f0a0ce4899cfbc06f3fbe7f2",
+      "path": "data/market/legacy-prices/2026/2026-03-09.csv",
+      "sha256": "7075499a61e4513c099e6eb154a7c752544bd93ca2c13892fa6046816a0199f1",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-09.csv"
+    },
+    {
+      "bytes": 489967,
+      "git_blob": "5ff5fa184064cbda46795e7d991787f376fad3aa",
+      "path": "data/market/legacy-prices/2026/2026-03-10.csv",
+      "sha256": "a3252ca93b2f5450340e82a782c3c518e3c0a6b34c7e1bb3a93923dc3ded36df",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-10.csv"
+    },
+    {
+      "bytes": 489394,
+      "git_blob": "8358cbf668e01eaed15dbb1dca1972c8b1a5afcc",
+      "path": "data/market/legacy-prices/2026/2026-03-11.csv",
+      "sha256": "79ef9ee230cf8125fc395d6d902e052ce15049cdd06e2a04426d8c54a52d6256",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-11.csv"
+    },
+    {
+      "bytes": 494380,
+      "git_blob": "a2ef4c941d7d48ec31ea79fc0d903a8c702acb83",
+      "path": "data/market/legacy-prices/2026/2026-03-12.csv",
+      "sha256": "17128d3a26d18d4ae5d924245df7352ab32572e78111533f4429176e97d1dd9b",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-12.csv"
+    },
+    {
+      "bytes": 491271,
+      "git_blob": "29dfbfea82db86eb1e09d103ee1536fc5dba915b",
+      "path": "data/market/legacy-prices/2026/2026-03-13.csv",
+      "sha256": "2965266afce46b3d065f854b5535eb2b8fa5475a0ea4a0d97b213ab9446b33ef",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-13.csv"
+    },
+    {
+      "bytes": 490860,
+      "git_blob": "585dba07cba34a0f95dc3faa96ee57eb622d7cf2",
+      "path": "data/market/legacy-prices/2026/2026-03-16.csv",
+      "sha256": "53ef2c9e56afa10c6fd2241610ce363cce51f3c9f0db689bb2efc0515de1b16b",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-16.csv"
+    },
+    {
+      "bytes": 488920,
+      "git_blob": "0f3ce8df44a1d663c274e458cefc63bd0e29714d",
+      "path": "data/market/legacy-prices/2026/2026-03-17.csv",
+      "sha256": "7ce858c868aab39cb35625f25bf6a7f77f7f1f7351129d02569bd6e9260bd02d",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-17.csv"
+    },
+    {
+      "bytes": 488678,
+      "git_blob": "33c4ae958485751d38ce8290cec4bc72716393ed",
+      "path": "data/market/legacy-prices/2026/2026-03-18.csv",
+      "sha256": "294ef81fca44c6d3f9f518e0a569f3dcfa68ea8dcce76e1f6612b9b7afd534e5",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-18.csv"
+    },
+    {
+      "bytes": 495527,
+      "git_blob": "8ddc98700986b43a508ca9ee9d5920512d23244b",
+      "path": "data/market/legacy-prices/2026/2026-03-19.csv",
+      "sha256": "040466608f6bed016a1728055840c9f5e5f7ae9d8022b54e013f335f4e38ee67",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-19.csv"
+    },
+    {
+      "bytes": 496498,
+      "git_blob": "bc9a4c4d1ab1473f51720dd8a36c3cbd7a313be5",
+      "path": "data/market/legacy-prices/2026/2026-03-23.csv",
+      "sha256": "00fe5403b44dc9767aa827cdd8b44b7c4d3554d4709dbcf47bad6a99ae9b8fa1",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-23.csv"
+    },
+    {
+      "bytes": 488449,
+      "git_blob": "380f6360704bc2de112bf381ce99381d30649dee",
+      "path": "data/market/legacy-prices/2026/2026-03-24.csv",
+      "sha256": "0b75ecc77182172e7f969cf1f5cfcd5a95329f5cc9915280aff701123d932e6a",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-24.csv"
+    },
+    {
+      "bytes": 488985,
+      "git_blob": "bd899f0703e62b1ea51f66a8ac57e75e91facd8f",
+      "path": "data/market/legacy-prices/2026/2026-03-25.csv",
+      "sha256": "e98ceb246918ec949c4cec81ac22b5e0233d7eacbf505b0199b5d6e90e7d95ff",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-25.csv"
+    },
+    {
+      "bytes": 491542,
+      "git_blob": "3f873ac0003c615ecb8b9623adc8df9f22cc6379",
+      "path": "data/market/legacy-prices/2026/2026-03-26.csv",
+      "sha256": "c634b3f6104f8d8310acce844fbd6859f4b5f53a3485f25e3312300b801cc24b",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-26.csv"
+    },
+    {
+      "bytes": 489440,
+      "git_blob": "c983b7c51cbe36d0eab0f1e266f5052d360f5830",
+      "path": "data/market/legacy-prices/2026/2026-03-27.csv",
+      "sha256": "e931eb51355599f173948f9fc79d2129c1d2b3000ba1424c02e352b33657e0f2",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-27.csv"
+    },
+    {
+      "bytes": 494843,
+      "git_blob": "3037727ea23ed49c2d2f490e52203581bb6cc57a",
+      "path": "data/market/legacy-prices/2026/2026-03-30.csv",
+      "sha256": "3c597b27898982912a19b3341ac7054eea0dab46f4e6bc802be051f40f950849",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-30.csv"
+    },
+    {
+      "bytes": 489275,
+      "git_blob": "fc28487b512185b34f8147df6debd8ee1ace7860",
+      "path": "data/market/legacy-prices/2026/2026-03-31.csv",
+      "sha256": "e7cace9a99aff262fafdb4060449afcf50cab2f0a0f3c618bd050b60211c387d",
+      "source": "stock.jp/data/daily-prices/2026/2026-03-31.csv"
+    },
+    {
+      "bytes": 488492,
+      "git_blob": "6c5f299de20619a4d80e86dc954c0e7460536127",
+      "path": "data/market/legacy-prices/2026/2026-04-01.csv",
+      "sha256": "92c26fc05cabb911397d96ad7c6042fbd598b5c7dcdf5c495de3df901d9b01c9",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-01.csv"
+    },
+    {
+      "bytes": 491397,
+      "git_blob": "b53899ec79d44e715fb310b3d5f294b2a9f12f1b",
+      "path": "data/market/legacy-prices/2026/2026-04-02.csv",
+      "sha256": "2e8cf75cde9a57990400b62100f37ca4e98d1b75340536157a3b0cbc7152f00b",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-02.csv"
+    },
+    {
+      "bytes": 486748,
+      "git_blob": "837cb23b8b3c2a854924af724891bf2dca7a81b0",
+      "path": "data/market/legacy-prices/2026/2026-04-03.csv",
+      "sha256": "b947d388eaa4edfecf120e6a8470251632681d0536fb27315e4080890533282a",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-03.csv"
+    },
+    {
+      "bytes": 487559,
+      "git_blob": "ddce97de4e1c9fc7e2a1c3b719b8a2eb7d51e18b",
+      "path": "data/market/legacy-prices/2026/2026-04-06.csv",
+      "sha256": "5ff079a298dac61b97a65626c9a2184bd39011b9ecf8080ecbee5bf5e2df37d0",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-06.csv"
+    },
+    {
+      "bytes": 487416,
+      "git_blob": "ecf6947112ef24c503afe97cf4bac029a5ab3a5e",
+      "path": "data/market/legacy-prices/2026/2026-04-07.csv",
+      "sha256": "f9e591e317a5206cbdf333f8c334b04cfa9b6b489ef6dcf6201a2dcca3d378ba",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-07.csv"
+    },
+    {
+      "bytes": 488384,
+      "git_blob": "1474cf558b6e24df19b7f39cd3ccacca21afd779",
+      "path": "data/market/legacy-prices/2026/2026-04-08.csv",
+      "sha256": "6b28efb43a3c0003a9beb9b7f9837df1d59dd45332d7f33d5f351a652a3230b8",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-08.csv"
+    },
+    {
+      "bytes": 491450,
+      "git_blob": "0dd79f2c31b9408a30828d18cbaff9b5a658ad2c",
+      "path": "data/market/legacy-prices/2026/2026-04-09.csv",
+      "sha256": "b261bef9490cf9b8d021491d326f3afe95f2bd06e0626d266c661882f0d79455",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-09.csv"
+    },
+    {
+      "bytes": 490134,
+      "git_blob": "051278c40d9434791585f2c2ee0d05fd7dec8522",
+      "path": "data/market/legacy-prices/2026/2026-04-10.csv",
+      "sha256": "91a1bec7d334e69b72f556eb2bd7a8d785a5681540884188113720b78ba45245",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-10.csv"
+    },
+    {
+      "bytes": 489743,
+      "git_blob": "42ebe13c6835c7ca14873477167f1e6910933565",
+      "path": "data/market/legacy-prices/2026/2026-04-13.csv",
+      "sha256": "9389b3fa5315dd75a06d55bc1991aafc506d6cd6edf9895343e284fa08369ac6",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-13.csv"
+    },
+    {
+      "bytes": 488324,
+      "git_blob": "2f9027762a3482f985f04b098f55e69180fce643",
+      "path": "data/market/legacy-prices/2026/2026-04-14.csv",
+      "sha256": "73edd3dff34cc63cdebf3842297864a453afd6556bcd799b8271c56c72629d22",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-14.csv"
+    },
+    {
+      "bytes": 488182,
+      "git_blob": "bf25a300f0e61993049a13505ba56d4861e1978d",
+      "path": "data/market/legacy-prices/2026/2026-04-15.csv",
+      "sha256": "4f3aa5736d9bbbb66a92d78fe7f8155462bcde33d0d8aa37cb92025e95b844ac",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-15.csv"
+    },
+    {
+      "bytes": 487659,
+      "git_blob": "b9b9138589c60bef8ee7601b44885d155ca8448c",
+      "path": "data/market/legacy-prices/2026/2026-04-16.csv",
+      "sha256": "f1871234e607f289f809cac47a370d82ba986b44e5869ed9f038e2fd6ddab307",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-16.csv"
+    },
+    {
+      "bytes": 488764,
+      "git_blob": "02d2f27a9ddbe0ba7ed9bdb711c139dfc6cc1073",
+      "path": "data/market/legacy-prices/2026/2026-04-17.csv",
+      "sha256": "d89ac61e630e393d97c996bd58a375a24975ae9b71424dd8416a3fe5294987cd",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-17.csv"
+    },
+    {
+      "bytes": 488746,
+      "git_blob": "885153f98c5511e0a4ae5d3beeae8a75c370127d",
+      "path": "data/market/legacy-prices/2026/2026-04-20.csv",
+      "sha256": "6df2ac8464eaad06e12de89106ebecf08e3b058363a328795abf87bf22186c0e",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-20.csv"
+    },
+    {
+      "bytes": 488824,
+      "git_blob": "7b71195edf51580186de67f2d50d49769c4ff6fa",
+      "path": "data/market/legacy-prices/2026/2026-04-21.csv",
+      "sha256": "a30ca4ddea58b471e5bde855f79079ad05c850e8f54903330f18cc6c733a5b93",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-21.csv"
+    },
+    {
+      "bytes": 490976,
+      "git_blob": "e9f956b3bc82712de3b9e85880953c3c70998280",
+      "path": "data/market/legacy-prices/2026/2026-04-22.csv",
+      "sha256": "941e66a22ad0f926c438b891a8d7ebd0644f9c77dd3b5be1eb861b6e70fbe106",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-22.csv"
+    },
+    {
+      "bytes": 491829,
+      "git_blob": "c2e09cfb16e88c10c421eb062660e47eefe3e3c7",
+      "path": "data/market/legacy-prices/2026/2026-04-23.csv",
+      "sha256": "57b186b3c938de998515eb8bc6efd00f2369a2775bcbb1c262a74150c8ad2dca",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-23.csv"
+    },
+    {
+      "bytes": 490266,
+      "git_blob": "cbd12eec28b301f341d57ed8bc484f9ce7783ee6",
+      "path": "data/market/legacy-prices/2026/2026-04-24.csv",
+      "sha256": "161ddb21e48786e5e71d2d0bab2742723d2f43b727ddce083e36f12893893f62",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-24.csv"
+    },
+    {
+      "bytes": 490168,
+      "git_blob": "2c9b03cdd5ffdbeb15502f06e1a870b437ae5bb3",
+      "path": "data/market/legacy-prices/2026/2026-04-27.csv",
+      "sha256": "67597e90db96bb89af1c447dee8a8edbc747663b4864534fc661c8f49bca31bb",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-27.csv"
+    },
+    {
+      "bytes": 487658,
+      "git_blob": "00e570fde900344061d03b685b4159a22b5426b9",
+      "path": "data/market/legacy-prices/2026/2026-04-28.csv",
+      "sha256": "3f19fa4dc36aad804fd9e69cf34137e2e818974b63616977c4ae0b0046c080fe",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-28.csv"
+    },
+    {
+      "bytes": 491412,
+      "git_blob": "6b7df42ebce59de826db1e3cf88bee6b78ef79e8",
+      "path": "data/market/legacy-prices/2026/2026-04-30.csv",
+      "sha256": "491d11ebd19d71cd0fba3efbbe27b0ca6deed58fc0ed2d40a217a86d9216387a",
+      "source": "stock.jp/data/daily-prices/2026/2026-04-30.csv"
+    },
+    {
+      "bytes": 488276,
+      "git_blob": "1d0e378d8e86929f7991e18bc49508ac4a4574e1",
+      "path": "data/market/legacy-prices/2026/2026-05-01.csv",
+      "sha256": "b6f0e7dbbb591b423679647183b8a280f29bc35d6655e92bdbe556da23a418b6",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-01.csv"
+    },
+    {
+      "bytes": 488979,
+      "git_blob": "2beacff4d741b94703146b66e38ce52b482d072d",
+      "path": "data/market/legacy-prices/2026/2026-05-07.csv",
+      "sha256": "23c4e0064e6ecc78eaa0a41d54cf512f52ca2cc35fed00d0e3d39102e28f49cd",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-07.csv"
+    },
+    {
+      "bytes": 489170,
+      "git_blob": "7dde5869366f4bc80aae00cd21f51e5e324b2657",
+      "path": "data/market/legacy-prices/2026/2026-05-08.csv",
+      "sha256": "46e371d9ec7c0e14eb988d8b774e0293afab921749fdeefa5384f39083b93372",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-08.csv"
+    },
+    {
+      "bytes": 488903,
+      "git_blob": "b9d60f7d29b969d490ff687d755753884ce3beea",
+      "path": "data/market/legacy-prices/2026/2026-05-11.csv",
+      "sha256": "b0826903c45a73216f4305ed60e466aa5bdd3b2459e871b722a438f39db14901",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-11.csv"
+    },
+    {
+      "bytes": 489644,
+      "git_blob": "ce2a690b9780d366b55e28f15a707533f4347763",
+      "path": "data/market/legacy-prices/2026/2026-05-12.csv",
+      "sha256": "c31d36c39ab6392eb865f9cd8054a32971c2bd45b830d6a6bf3371b998c8b0fb",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-12.csv"
+    },
+    {
+      "bytes": 488667,
+      "git_blob": "2f7ac9acc07f5e47c035070cf33bac59f0148697",
+      "path": "data/market/legacy-prices/2026/2026-05-13.csv",
+      "sha256": "ec1a5c7b98fff6a936be5e1c964c34c5cca930aa0d1d16fb6eaf21f1eee16732",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-13.csv"
+    },
+    {
+      "bytes": 491177,
+      "git_blob": "cd7766d1d83e5c0b1207df18dae7de6fdae86837",
+      "path": "data/market/legacy-prices/2026/2026-05-14.csv",
+      "sha256": "59b5e00298b1ddecf9718b4731443c4eed2f7e65d8a9f09876b4549abea47323",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-14.csv"
+    },
+    {
+      "bytes": 489930,
+      "git_blob": "bef3f0bc5d50654010f60b947815cbe55c27e6b7",
+      "path": "data/market/legacy-prices/2026/2026-05-15.csv",
+      "sha256": "d3f2644ee0dcceee2d5d283733639d494b527400f21d7a8723d1b5f3ca13c9a8",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-15.csv"
+    },
+    {
+      "bytes": 491710,
+      "git_blob": "2591a0b31903b73e35e5d35c958e250afc1b7934",
+      "path": "data/market/legacy-prices/2026/2026-05-18.csv",
+      "sha256": "fdde7f701d5665a8029631d365818b0aa7412dd1e865b2ec5c72706021ee4142",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-18.csv"
+    },
+    {
+      "bytes": 487633,
+      "git_blob": "ad4f7fd26bc28bb292d66d65555a42feee2f54ea",
+      "path": "data/market/legacy-prices/2026/2026-05-19.csv",
+      "sha256": "d8f84a7e7ce990000cb84c29a68609d2b833bafb13027bf2842504570bbf7ff2",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-19.csv"
+    },
+    {
+      "bytes": 491629,
+      "git_blob": "896ec97c7c12aaab8b826250110de982d541a24b",
+      "path": "data/market/legacy-prices/2026/2026-05-20.csv",
+      "sha256": "2945dce8bce569a5f988474fef94d99c414f4ef03e4d446ea671ddd7fa3b8302",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-20.csv"
+    },
+    {
+      "bytes": 486812,
+      "git_blob": "69af0ba58a4d8948db3df0c49897375b6f8f1509",
+      "path": "data/market/legacy-prices/2026/2026-05-21.csv",
+      "sha256": "7d8d7e05374bd57dd1a61cded8c6281f0360c9fea3ae97f1ee84aa973da38de4",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-21.csv"
+    },
+    {
+      "bytes": 487348,
+      "git_blob": "4fb15b38f03eec9b5b6a3d7ab555c33add5108d4",
+      "path": "data/market/legacy-prices/2026/2026-05-22.csv",
+      "sha256": "fcc3cd558f6fef8d27c05753b335841ba0a816fbbb3f2ec034c44bc0e486f23a",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-22.csv"
+    },
+    {
+      "bytes": 489601,
+      "git_blob": "cdf2e979792bbcc56a3f0b94aa5e7459aac753be",
+      "path": "data/market/legacy-prices/2026/2026-05-25.csv",
+      "sha256": "b5f6a675f61ef3cd162922c260177ed387997870224c419f5d4b3103c2e5923b",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-25.csv"
+    },
+    {
+      "bytes": 488211,
+      "git_blob": "55e031360b51825128b55251561f34e04809a101",
+      "path": "data/market/legacy-prices/2026/2026-05-26.csv",
+      "sha256": "98bc4e6b04357fe5b2d7f50661b2b04b80d3b8db24e42313b1886de148b01a1a",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-26.csv"
+    },
+    {
+      "bytes": 488770,
+      "git_blob": "452b7eb75d0b9ba6953d1a66005968ae5b9e18ef",
+      "path": "data/market/legacy-prices/2026/2026-05-27.csv",
+      "sha256": "f75f9d9884ca67f5d6373903c528d1448df7fe1ae1db11c598fc9287b31fd1c2",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-27.csv"
+    },
+    {
+      "bytes": 487498,
+      "git_blob": "e9b1b34ce78a7a35716ef49d062f7bda81b0793d",
+      "path": "data/market/legacy-prices/2026/2026-05-28.csv",
+      "sha256": "a83d0da32ee379baa4f2e0d83b5dcb891d2f06575a02c2150d7117c3c8a2ca30",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-28.csv"
+    },
+    {
+      "bytes": 487243,
+      "git_blob": "92772fdf44dcc85224c21cbcc8080d4f86c5c4cc",
+      "path": "data/market/legacy-prices/2026/2026-05-29.csv",
+      "sha256": "dcaad9bfe9fe3222c0abf93a5d7163f80494a6df856a84d609cf77eb53a98f7d",
+      "source": "stock.jp/data/daily-prices/2026/2026-05-29.csv"
+    },
+    {
+      "bytes": 490264,
+      "git_blob": "de7d3956d2efa4a20ec37291dd1d8c3ada23e57e",
+      "path": "data/market/legacy-prices/2026/2026-06-01.csv",
+      "sha256": "0ae5c306fac972bcfa54224b9d9f609f3b6637d7bff6721f7eafb17e0957e510",
+      "source": "stock.jp/data/daily-prices/2026/2026-06-01.csv"
+    },
+    {
+      "bytes": 489469,
+      "git_blob": "0ba58db9f485c094f330d4b9fba36d853e1c9b1e",
+      "path": "data/market/legacy-prices/2026/2026-06-02.csv",
+      "sha256": "0558cab6b94b3307a2ebf756e306b6e8483e806f8d07cc34262214dde251983f",
+      "source": "stock.jp/data/daily-prices/2026/2026-06-02.csv"
+    },
+    {
+      "bytes": 486953,
+      "git_blob": "4685393b7ade55e7ecdcbf38d23759c0f05019fe",
+      "path": "data/market/legacy-prices/2026/2026-06-03.csv",
+      "sha256": "f105bfb8779a29098f5c4272c8a90ebc9d9279254beb4fb52547ebe3d7ca7908",
+      "source": "stock.jp/data/daily-prices/2026/2026-06-03.csv"
+    },
+    {
+      "bytes": 488045,
+      "git_blob": "93b284c124888624c4cf55f1e5d7ffb1cc501399",
+      "path": "data/market/legacy-prices/2026/2026-06-04.csv",
+      "sha256": "bea0d54485aec2b83da8bf5df5b5a3ab034cf7aa227f43a9acae2926fc015c67",
+      "source": "stock.jp/data/daily-prices/2026/2026-06-04.csv"
+    },
+    {
+      "bytes": 485519,
+      "git_blob": "48cdaa64e67680a86c01ea4f89dfbd6590700a83",
+      "path": "data/market/legacy-prices/2026/2026-06-05.csv",
+      "sha256": "0902e041e6f878bd21ed2bfea9d6f2521dc88cb11e03f626bae43968fab70222",
+      "source": "stock.jp/data/daily-prices/2026/2026-06-05.csv"
+    },
+    {
+      "bytes": 490254,
+      "git_blob": "af49ce1592c2deac64c9ff4d3c283034c76f313e",
+      "path": "data/market/legacy-prices/2026/2026-06-08.csv",
+      "sha256": "7cb2b52b9e4fdae6dd1db6ad0d9034806b5b6133f88892b8b0b9213542522029",
+      "source": "stock.jp/data/daily-prices/2026/2026-06-08.csv"
+    },
+    {
+      "bytes": 464756,
+      "git_blob": "9862ac167a6845c6428dfd9623f9207c769a4d27",
+      "path": "data/market/legacy-prices/2026/2026-08-12.csv",
+      "sha256": "3d43ca06e1254446fb5462545f6fe0abc524467e59c6825661c0c995c9e7dfbe",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-12.csv"
+    },
+    {
+      "bytes": 464625,
+      "git_blob": "0abd8fbac01803726f83c5b01445945e11a52d8b",
+      "path": "data/market/legacy-prices/2026/2026-08-13.csv",
+      "sha256": "c6f5f03e7b766c7968590a5f7107740e20de5232df980c87779eeaea65add760",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-13.csv"
+    },
+    {
+      "bytes": 464990,
+      "git_blob": "e22b7512da230c6bee90398a3fca9815603d824e",
+      "path": "data/market/legacy-prices/2026/2026-08-14.csv",
+      "sha256": "8a67415307904a8df29324f005a0f6a882cb52ea30bcfc21750bc9b37fa9db94",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-14.csv"
+    },
+    {
+      "bytes": 466142,
+      "git_blob": "7c92155be79b14b53b073f253eca3b0a37640587",
+      "path": "data/market/legacy-prices/2026/2026-08-17.csv",
+      "sha256": "b4de9e3cc2696507489c63db693c1999c5d695e69a43bb148f0cf0b3e4b0a5ff",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-17.csv"
+    },
+    {
+      "bytes": 465889,
+      "git_blob": "531fd9a2aff6441fce66cf5fe5a91b21efe62999",
+      "path": "data/market/legacy-prices/2026/2026-08-18.csv",
+      "sha256": "4e3011e8f04d9fc3a07f5b5fad7e0293cd3af086e37a0280fc81d6378236aa1c",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-18.csv"
+    },
+    {
+      "bytes": 468418,
+      "git_blob": "ebaa4990f9ea96d3e952c8ea86bfac8900d7b274",
+      "path": "data/market/legacy-prices/2026/2026-08-19.csv",
+      "sha256": "d6117a87eb2cbe97f7d9fb1079f60a70eccbfb67ec0bc8138716a8b32eb9e09e",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-19.csv"
+    },
+    {
+      "bytes": 463418,
+      "git_blob": "917f98cfd1fea9d3aedcbc5b9d2875c7bd4715a4",
+      "path": "data/market/legacy-prices/2026/2026-08-20.csv",
+      "sha256": "649a604e075bdb9629916f1cd8b020234f5d3e5bbc5944c2e23841096e59bfc0",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-20.csv"
+    },
+    {
+      "bytes": 464150,
+      "git_blob": "f03d76da2c7cfebab4172c3c2380b4f914ddbafc",
+      "path": "data/market/legacy-prices/2026/2026-08-21.csv",
+      "sha256": "97196c39ffd478f84af26be16a315bc9b82184fcc87f13cc9bae13c95a75c3cf",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-21.csv"
+    },
+    {
+      "bytes": 464553,
+      "git_blob": "f307ff556688a24c906b1e28ea98166b9ba2b19d",
+      "path": "data/market/legacy-prices/2026/2026-08-24.csv",
+      "sha256": "1dad3bb12df09515ab9104d5e74f9f98cf9970982a89fc9776eaf0834afdc57e",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-24.csv"
+    },
+    {
+      "bytes": 464236,
+      "git_blob": "753443155ff721bb40c96751c9e0beddc04fc2eb",
+      "path": "data/market/legacy-prices/2026/2026-08-25.csv",
+      "sha256": "c6ca7e5ad6b1fb076a92efe7a050b9343e3eac7a4ca8aed7c6fc2f9b7218ace4",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-25.csv"
+    },
+    {
+      "bytes": 464098,
+      "git_blob": "7494000f4eb13c497108850af39b6eb37c9c44e5",
+      "path": "data/market/legacy-prices/2026/2026-08-26.csv",
+      "sha256": "16f6f979c0e462241c80510339c7d51bf806c0d74e4f35ca6666ca4fe0aac9dc",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-26.csv"
+    },
+    {
+      "bytes": 464330,
+      "git_blob": "f98092092d6df7cb049175e73c5e9eb208e381fa",
+      "path": "data/market/legacy-prices/2026/2026-08-27.csv",
+      "sha256": "50c80f24b7792a4daead5b0d00b8391d4364c9876ef7748c122a91cb68bf3f54",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-27.csv"
+    },
+    {
+      "bytes": 464182,
+      "git_blob": "d7729c8345b10a343477f57be611f176f13df8e7",
+      "path": "data/market/legacy-prices/2026/2026-08-28.csv",
+      "sha256": "c9976e9a4ba041b2567be411e198b8c2c709d7ad74952409a2c6eff46c31a978",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-28.csv"
+    },
+    {
+      "bytes": 464533,
+      "git_blob": "7dbce885584c91554f128193ecc6eae095fadf4f",
+      "path": "data/market/legacy-prices/2026/2026-08-31.csv",
+      "sha256": "d2947df7edb5676c8149b38f41c51e8131ff2e761dc57b16e9981e99e6524f0e",
+      "source": "stock.jp/data/daily-prices/2026/2026-08-31.csv"
+    },
+    {
+      "bytes": 464511,
+      "git_blob": "fc1180db43510856b59b4bbadf5b907ca6b7d7f8",
+      "path": "data/market/legacy-prices/2026/2026-09-01.csv",
+      "sha256": "014d2149ab3a6b7901d34dc5c98184ee0a2f7bf2f14e4bcc7b1c425bde2f6301",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-01.csv"
+    },
+    {
+      "bytes": 468519,
+      "git_blob": "e5c59a2281f14503e7c6e9f1fff9aae749c548e5",
+      "path": "data/market/legacy-prices/2026/2026-09-02.csv",
+      "sha256": "20e970f3cf8292466285f9558b55e33d21ec5d8e2daee93beef57883af9894d7",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-02.csv"
+    },
+    {
+      "bytes": 463790,
+      "git_blob": "cfb65b3c2a0e1cd2f867857f2d65da81a8119691",
+      "path": "data/market/legacy-prices/2026/2026-09-03.csv",
+      "sha256": "af53f31c7f91f978b3a94bb4952bf01502abc3ee4344191c967e3a5d478a745a",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-03.csv"
+    },
+    {
+      "bytes": 463145,
+      "git_blob": "923d4efbf6b5b8da7cd285aea342661e4e479e83",
+      "path": "data/market/legacy-prices/2026/2026-09-04.csv",
+      "sha256": "96ea6d70cf432af7af3787985eeb346fb84419d84131f457345fbdc1b9cf3329",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-04.csv"
+    },
+    {
+      "bytes": 464980,
+      "git_blob": "7b1a4b9a0b6038cf73394a26c55203471d2eb234",
+      "path": "data/market/legacy-prices/2026/2026-09-07.csv",
+      "sha256": "9af91105b698e6845693c7e3bcef32a33910b85823bf7b9bfd97aa186053ea0b",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-07.csv"
+    },
+    {
+      "bytes": 466373,
+      "git_blob": "10fa8708ce27427e08faa50887cb07129aeb0319",
+      "path": "data/market/legacy-prices/2026/2026-09-08.csv",
+      "sha256": "6254734d8b3fb34840000d24c0e557820c3ccdfaf717fc791ee4553b58667f7e",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-08.csv"
+    },
+    {
+      "bytes": 464466,
+      "git_blob": "f80521607b9b9120ffc98eca21e9c3962b21ffd4",
+      "path": "data/market/legacy-prices/2026/2026-09-09.csv",
+      "sha256": "372cc7f2a3a5bbbbeb9076971eb34409b3487101b6653907543bf449b0879d6b",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-09.csv"
+    },
+    {
+      "bytes": 464100,
+      "git_blob": "0ae9c88d4d131fedb15c1d2135c69a9a3a226449",
+      "path": "data/market/legacy-prices/2026/2026-09-10.csv",
+      "sha256": "8d865fc6e8ab37f5ec9f3c409f8c64f99c6c7cabc7860a18ebe7c1edc4fa8f03",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-10.csv"
+    },
+    {
+      "bytes": 465771,
+      "git_blob": "fd1e3c37db5ff878925b53f9d7be73e586a4371b",
+      "path": "data/market/legacy-prices/2026/2026-09-11.csv",
+      "sha256": "3096dc4e79cdefd2f73626447fbd8b017eb646a1f3b639fd72362a321faa8e71",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-11.csv"
+    },
+    {
+      "bytes": 463178,
+      "git_blob": "32c433e7836c679b43598bf722c7e9d912397dee",
+      "path": "data/market/legacy-prices/2026/2026-09-14.csv",
+      "sha256": "1ca25483b9b3651994effff98c5ffd12bd094dcf4a61301d18e777547d94295a",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-14.csv"
+    },
+    {
+      "bytes": 463028,
+      "git_blob": "de704341bd053f6d4b3dfa913d69c34e2cd858f7",
+      "path": "data/market/legacy-prices/2026/2026-09-15.csv",
+      "sha256": "5a510ae1b8214f93ae872ea18eac80bab88fc74a6780c10561d22248f1a523fe",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-15.csv"
+    },
+    {
+      "bytes": 463306,
+      "git_blob": "a27ad669074b83bd3f3bb7b9feaa49b357f47c5d",
+      "path": "data/market/legacy-prices/2026/2026-09-16.csv",
+      "sha256": "e99fa140b2333912e3ffe9e2b812ae90ddb10531f3e8cd7028b5dfcadb05fb24",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-16.csv"
+    },
+    {
+      "bytes": 462466,
+      "git_blob": "50c30eaf10fdb4e91c9131481c7d490e51bd8e63",
+      "path": "data/market/legacy-prices/2026/2026-09-17.csv",
+      "sha256": "fe701ddee71ad541de70aa66756deb696329d1e6ec315e1d84e95058c4494b58",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-17.csv"
+    },
+    {
+      "bytes": 464663,
+      "git_blob": "1a4e306657c72b13869da8d5863f6cb6874f3ecb",
+      "path": "data/market/legacy-prices/2026/2026-09-18.csv",
+      "sha256": "0f94073566ba94373e5f497000ce040bf9ba7c73f8492fa2897c0bc9ddc96c59",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-18.csv"
+    },
+    {
+      "bytes": 465373,
+      "git_blob": "fcfb8749ad8a49f38cf1d5f7b7a648a74cd88dfd",
+      "path": "data/market/legacy-prices/2026/2026-09-24.csv",
+      "sha256": "d5d904d7583f807a016937bcf0cb2266d6c492ba20223ddfc8bdc212ac194e1d",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-24.csv"
+    },
+    {
+      "bytes": 463449,
+      "git_blob": "4d8c4ccc475fd254d66d96db81c7d66eca5bf524",
+      "path": "data/market/legacy-prices/2026/2026-09-25.csv",
+      "sha256": "087bf07a028b49a922580a2189b86556a83ad04f2472a3f1844260cd8a3e4f49",
+      "source": "stock.jp/data/daily-prices/2026/2026-09-25.csv"
+    },
+    {
+      "bytes": 2358,
+      "git_blob": "bd142b743f8033774a07a77ca7ed5064bf615c4a",
+      "path": "data/market/legacy-prices/README.md",
+      "sha256": "9306d9cca10614393d7dc9c3d5fe1d06733b560cbd5baf1bf3a00b3f76961b13",
+      "source": "stock.jp/data/daily-prices/README.md"
+    },
+    {
+      "bytes": 662,
+      "git_blob": "dbf098a7c940b29989958197de6623314e6c0231",
+      "path": "data/market/legacy-prices/latest.json",
+      "sha256": "d24f9369ab6b151e837e7e83e293f57f05b4c8e2b138411260d52aa5d9f41ac6",
+      "source": "stock.jp/data/daily-prices/latest.json"
+    }
+  ],
+  "policy": "UNCHANGED_EXCEPT_PATH_REFERENCES",
+  "preserved_acquisition_ledger": {
+    "path": "operations/acquisition/date-grants.json",
+    "sha256": "a440c4524fc75f0f7ca78d6ba86cb6ae7a83b3299083ae4244e8b01b45f83fec"
+  },
+  "preserved_approvals": [
+    {
+      "path": "config/automation.json",
+      "sha256": "a0f3729f11f593682ffe55353be11a70bd00fd6d7584da90f2bfbbc444ce8228"
+    },
+    {
+      "path": "operations/evidence/automation-retirement.json",
+      "sha256": "db61c3eced5f6dd18c02895e1f71d062c2a95f8cd653b7373edaacc195e48201"
+    }
+  ],
+  "version": 1
+}
