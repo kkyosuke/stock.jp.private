@@ -247,7 +247,7 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
         if error.status == 429:
             state["retry_not_before"] = (datetime.now().astimezone() + timedelta(seconds=120)).isoformat()
         raise
-    except (ValueError, OSError):
+    except (ingest.IngestionError, ValueError, OSError):
         state["status"], state["error"] = "PAUSED", "financial bulk validation or download failed"
         raise
     finally:

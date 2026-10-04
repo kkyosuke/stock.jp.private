@@ -52,6 +52,12 @@ class FinancialHistoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ingest.IngestionError, "date gap"):
             h.inventory(payload, "/fins/summary", date(2021, 10, 2), self.day)
 
+        with self.assertRaisesRegex(ingest.IngestionError, "date gap"):
+            h.collect(self.root, self.day, transport=lambda *_: payload, sleep=lambda _: None)
+        self.assertEqual(self.state()["status"], "PAUSED")
+        self.assertEqual(len(self.state()["requests"]), 1)
+        self.assertEqual(self.state()["files"], {})
+
     def test_failed_request_is_reserved_before_provider_and_retained(self):
         def denied(*_):
             self.assertEqual(len(self.state()["requests"]), 1)
