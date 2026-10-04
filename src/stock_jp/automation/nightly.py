@@ -128,6 +128,7 @@ class Git:
 
 def scheduled_day(at):
     """Latest elapsed 21:00 JST boundary, not GitHub's nominal cron date."""
+    require(at.tzinfo is not None and at.utcoffset() is not None, "aware timestamp required")
     local = at.astimezone(daily.JST)
     return local.date() - timedelta(days=int(local.hour < 21))
 
@@ -425,7 +426,7 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
 def execute(root, context, request, *, target=None, preview=False, at=None, transport=None, sleep=None):
     root = Path(root).resolve()
     trusted_context(root, context, preview)
-    now = at or datetime.now(daily.JST)
+    now = daily.aware((at or datetime.now(daily.JST)).isoformat())
     day = target or now.astimezone(daily.JST).date()
     require(day <= now.astimezone(daily.JST).date(), "future collection date forbidden")
     git = Git(request)

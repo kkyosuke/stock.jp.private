@@ -170,6 +170,29 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(self.repo.journal()["scheduled_targets"]["123"]["resolved_at"],
                          "2026-10-05T00:01:00+09:00")
 
+    def test_naive_execution_time_is_rejected_before_binding_write(self):
+        self.context["event"] = "schedule"
+        with self.assertRaisesRegex(ingest.IngestionError, "aware timestamp required"):
+            n.execute(self.root, self.context, self.repo,
+                      at=datetime(2026, 10, 2, 21), transport=self.fixture.transport)
+        self.assertFalse(self.repo.calls)
+        self.assertNotIn(n.CHECKPOINT, self.repo.refs)
+        self.assertFalse(self.fixture.calls)
+        self.assertEqual(self.run_preview()["status"], "PREVIEW_COMPLETE")
+        binding = self.repo.journal()["scheduled_targets"]["123"]
+        self.assertIsNotNone(datetime.fromisoformat(binding["resolved_at"]).tzinfo)
+
+    def test_naive_binding_time_cannot_poison_existing_checkpoint(self):
+        checkpoint = self.checkpoint()
+        checkpoint.bind_schedule(self.fixture.at)
+        saved = copy.deepcopy(self.repo.journal())
+        self.context["run_id"] = 124
+        checkpoint = self.checkpoint()
+        with self.assertRaisesRegex(n.RemoteStop, "aware timestamp required"):
+            checkpoint.bind_schedule(datetime(2026, 10, 3, 21))
+        self.assertEqual(self.repo.journal(), saved)
+        self.checkpoint()  # The durable schema remains readable.
+
     def test_new_schedule_run_resolves_its_own_date(self):
         checkpoint = self.checkpoint()
         checkpoint.bind_schedule(datetime.fromisoformat("2026-10-05T00:01:00+09:00"))
@@ -235,6 +258,26 @@ class NightlyMarketDataTest(unittest.TestCase):
         again = self.run_preview()
         self.assertEqual((again["run_date"], again["requests_used"]), ("2026-10-04", 1))
         self.assertEqual(len(self.fixture.calls), 1)
+
+    def test_future_wait_with_different_config_can_defer_but_cannot_resume(self):
+        self.fixture.config["jquants"]["ingestion"]["download_hosts"] = ["example.invalid"]
+        self.fixture.save_config()
+        future = self.future_wait()
+        self.fixture.config["jquants"]["ingestion"]["download_hosts"] = []
+        self.fixture.save_config()
+        self.context.update(event="schedule", run_id=124)
+        result = self.run_preview()
+        self.assertEqual((result["run_date"], result["requests_used"]), ("2026-10-04", 1))
+        saved = self.repo.journal()
+        self.assertNotEqual(saved["runs"]["2026-10-04"]["config_sha256"], future["config_sha256"])
+        self.assertEqual(saved["runs"]["2026-10-05"], future)
+        calls = len(self.fixture.calls)
+        self.fixture.at = datetime.fromisoformat("2026-10-05T21:00:00+09:00")
+        self.context["run_id"] = 125
+        with self.assertRaisesRegex(ingest.IngestionError, "run configuration changed"):
+            self.run_preview()
+        self.assertEqual(len(self.fixture.calls), calls)
+        self.assertEqual(self.repo.journal()["runs"], saved["runs"])
 
     def test_future_wait_deferral_rejects_unverified_or_nonempty_journals(self):
         future = self.future_wait()
