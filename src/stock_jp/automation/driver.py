@@ -340,7 +340,7 @@ def main():
         r.require(os.environ.get('STOCK_ACTIONS_ENABLED') == 'true', 'execution disabled')
         from stock_jp.automation.resources import constrain_memory
         constrain_memory()
-        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get('AUTOMATION_PAT')))
+        request = rate.BudgetedTransport(http.GitHubTransport(os.environ.get('GITHUB_TOKEN')))
         provider = http.ProviderTransport(os.environ.get('JQUANTS_API_KEY'))
         result = Driver(args.root, request, provider, pin=os.environ.get('STOCK_ACTIONS_APPROVAL_SHA256'), writer='actions-v1', context=dict(repository=os.environ.get('GITHUB_REPOSITORY'), ref=os.environ.get('GITHUB_REF'), sha=os.environ.get('GITHUB_SHA'), event=os.environ.get('GITHUB_EVENT_NAME'))).execute(args.mode)
         print(json.dumps(result, sort_keys=True))

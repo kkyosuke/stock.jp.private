@@ -61,6 +61,16 @@ class RateTests(unittest.TestCase):
         self.assertEqual(self.calls,[])
         new.deadline=self.now+20000;new.before_provider()
         self.assertEqual(new.writes,0);self.assertEqual(self.calls,[])
+    def test_actions_token_budget_counts_writes_and_waits_before_more_io(self):
+        client=self.make()
+        client.reads=799
+        client('POST','/synthetic',{})
+        reset=(int(self.now//3600)+1)*3600
+        self.assertEqual(client.writes,1)
+        client('GET','/synthetic')
+        self.assertGreaterEqual(self.calls[-1][0],reset)
+        self.assertEqual(client.reads,1)
+        self.assertEqual(client.writes,0)
     def test_retry_after_headers_cover_rest_and_graphql(self):
         from urllib.error import HTTPError
         error=HTTPError('unused',429,'synthetic',{'retry-after':'120'},None)

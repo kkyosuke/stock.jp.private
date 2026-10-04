@@ -19,7 +19,7 @@ def report(root=None, environ=None):
         blockers.append('execution_disabled')
     if not re.fullmatch('[0-9a-f]{64}', env.get('STOCK_ACTIONS_APPROVAL_SHA256', '')):
         blockers.append('reviewed_approval_pin_missing_or_invalid')
-    credentials = {name: bool(env.get(name)) for name in ('AUTOMATION_PAT', 'JQUANTS_API_KEY')}
+    credentials = {name: bool(env.get(name)) for name in ('GITHUB_TOKEN', 'JQUANTS_API_KEY')}
     for name, present in credentials.items():
         if not present:
             blockers.append(name.lower() + '_missing')

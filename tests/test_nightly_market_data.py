@@ -1,8 +1,10 @@
 """Real collector/codec with synthetic provider data and an in-memory Git API."""
 import base64
 import copy
+import contextlib
 from datetime import date, datetime
 import hashlib
+import io
 import json
 import shutil
 import unittest
@@ -21,6 +23,9 @@ class Repository:
                         "status": "completed", "conclusion": "success"}
                        for i, name in enumerate(sorted(n.CHECKS), 1)]
         self.fail_patch = False
+        self.fail_dispatch = False
+        self.ci_runs = {}
+        self.run_change = {}
         self.reviews = []
         files = {p.relative_to(root).as_posix(): self.blob(p.read_bytes())
                  for p in root.rglob("*") if p.is_file() and ".work" not in p.parts}
@@ -64,8 +69,16 @@ class Repository:
             if route.startswith(("/git/blobs/", "/git/trees/", "/git/commits/")):
                 return copy.deepcopy(self.objects[route.rsplit("/", 1)[-1]])
             if route.startswith("/actions/runs/"):
+                run_id = int(route.rsplit("/", 1)[-1])
+                if run_id in self.ci_runs:
+                    return {**copy.deepcopy(self.ci_runs[run_id]), **self.run_change}
                 return {"status": "in_progress", "head_sha": self.workflow_sha, "path": n.WORKFLOW}
             if route.endswith("/check-runs"):
+                if route.startswith("/check-suites/"):
+                    suite_id = int(route.split("/")[2])
+                    run = next(r for r in self.ci_runs.values() if r["check_suite_id"] == suite_id)
+                    return {"check_runs": [{"head_sha": run["head_sha"], "check_suite": {"id": suite_id},
+                                            **copy.deepcopy(c)} for c in self.checks]}
                 return {"check_runs": copy.deepcopy(self.checks)}
             if route.endswith("/reviews"):
                 return copy.deepcopy(self.reviews)
@@ -78,9 +91,14 @@ class Repository:
                 return copy.deepcopy(self.pulls[int(route.rsplit("/", 1)[-1]) - 1])
         if method == "POST":
             if route == "/actions/workflows/ci.yml/dispatches":
-                if body["ref"] not in self.refs:
-                    raise AssertionError("CI dispatch for an unknown branch")
-                return None
+                if self.fail_dispatch:
+                    raise n.http.Rejected(403)
+                run_id = 1000 + len(self.ci_runs)
+                self.ci_runs[run_id] = {"id": run_id, "path": n.CI_WORKFLOW,
+                    "event": "workflow_dispatch", "head_sha": self.refs[body["ref"]],
+                    "head_branch": body["ref"], "status": "completed", "conclusion": "success",
+                    "check_suite_id": 2000 + len(self.ci_runs)}
+                return copy.deepcopy(getattr(self, "dispatch_response", {"workflow_run_id": run_id}))
             if route == "/git/blobs":
                 return {"sha": self.blob(base64.b64decode(body["content"]))}
             if route == "/git/trees":
@@ -159,6 +177,9 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(len(self.repo.pulls), 1)
         self.assertTrue(self.repo.pulls[0]["draft"])
         self.assertEqual(self.repo.refs["main"], self.context["sha"])
+        run = self.repo.ci_runs[result["ci_run_id"]]
+        self.assertEqual(run["head_branch"], "daily/market/2026-10-02-preview")
+        self.assertEqual(run["head_sha"], self.repo.pulls[0]["head"]["sha"])
 
     def test_crash_reservation_is_durable_and_resume_retains_cost(self):
         def crash(*_):
@@ -255,15 +276,11 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(report["status"], "ADOPTED")
         before, after = self.repo.tree(old), self.repo.tree(self.repo.refs["main"])
         changed = {p for p in before.keys() | after.keys() if before.get(p) != after.get(p)}
-        self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) or
-                            n.observations.publication_path(p)
+        self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) or n.observations.publication_path(p)
                             for p in changed))
-        operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1] or c[1].endswith("/merge")]
-        self.assertEqual(operations, ["GET", "PUT"])
-        dispatch = next(index for index, call in enumerate(self.repo.calls) if call[1].endswith('/ci.yml/dispatches'))
-        checked = next(index for index, call in enumerate(self.repo.calls) if '/check-runs' in call[1])
-        self.assertLess(dispatch, checked)
-        self.assertEqual(self.repo.calls[dispatch][2], {'ref': 'daily/market/2026-10-02'})
+        operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1]
+                      or c[1].endswith(("/dispatches", "/merge"))]
+        self.assertEqual(operations, ["POST", "GET", "PUT"])
 
     def test_installation_token_proves_write_permission_once_before_collection(self):
         def request(method, path, body=None):
@@ -318,6 +335,107 @@ class NightlyMarketDataTest(unittest.TestCase):
         with self.assertRaisesRegex(n.RemoteStop, "unexpected changes"):
             n.publish(self.root, self.checkpoint(), result)
         self.assertEqual(len(self.repo.pulls), 1)
+
+    def test_cli_collects_saves_and_checks_ci_with_only_actions_token(self):
+        execute = n.execute
+        env = {"GITHUB_TOKEN": "synthetic-actions-token", "JQUANTS_API_KEY": "synthetic-provider-key",
+               "GITHUB_REPOSITORY": n.REPO, "GITHUB_EVENT_NAME": "workflow_dispatch",
+               "GITHUB_REF": "refs/heads/main", "GITHUB_SHA": self.context["sha"],
+               "GITHUB_ACTOR": "KKyosuke", "GITHUB_TRIGGERING_ACTOR": "KKyosuke", "GITHUB_RUN_ID": "123"}
+        output = io.StringIO()
+        with patch.dict(n.os.environ, env, clear=True), \
+             patch("sys.argv", ["nightly", "--preview", "--report", str(self.root / "report.json")]), \
+             patch.object(n, "project_root", return_value=self.root), \
+             patch.object(n.http, "GitHubTransport", return_value=self.repo) as github, \
+             patch.object(n.rate, "BudgetedTransport", side_effect=lambda request: request), \
+             patch.object(n, "execute", side_effect=lambda root, context, request, **kwargs:
+                          execute(root, context, request, at=self.fixture.at,
+                                  transport=self.fixture.transport, sleep=lambda _: None, **kwargs)), \
+             patch.object(ingest, "utc_now", return_value=self.fixture.at.isoformat()), \
+             contextlib.redirect_stdout(output):
+            self.assertEqual(n.main(), 0)
+        github.assert_called_once_with("synthetic-actions-token")
+        self.assertEqual(json.loads(output.getvalue())["status"], "PREVIEW_COMPLETE")
+        self.assertEqual(len(self.fixture.calls), 9)
+        self.assertTrue(self.repo.ci_runs)
+        self.assertNotIn("synthetic-actions-token", (self.root / "report.json").read_text())
+
+    def test_dispatch_failure_keeps_collected_data_and_pr_without_merge(self):
+        result = self.run_preview()
+        old, count = self.repo.refs["main"], len(self.fixture.calls)
+        self.repo.fail_dispatch = True
+        with self.assertRaises(n.http.Rejected):
+            n.publish(self.root, self.checkpoint(), result)
+        self.assertEqual(self.repo.refs["main"], old)
+        self.assertEqual(len(self.fixture.calls), count)
+        self.assertEqual(self.repo.journal()["runs"]["2026-10-02"]["status"], "COLLECTED")
+        self.assertEqual(len(self.repo.pulls), 2)
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
+        self.repo.fail_dispatch = False
+        self.assertEqual(n.publish(self.root, self.checkpoint(), result)["status"], "ADOPTED")
+        self.assertEqual(len(self.repo.pulls), 2)
+
+    def test_candidate_drift_stops_before_dispatch(self):
+        result = self.run_preview()
+        checkpoint = self.checkpoint()
+        original = self.repo.__call__
+        def request(method, path, body=None):
+            response = original(method, path, body)
+            if method == "POST" and path.endswith("/pulls"):
+                self.repo.refs[body["head"]] = self.repo.refs["main"]
+            return response
+        checkpoint.git.request = request
+        self.repo.calls.clear()
+        with self.assertRaisesRegex(n.RemoteStop, "branch moved before CI dispatch"):
+            n.publish(self.root, checkpoint, result)
+        self.assertFalse(any(c[0] == "PUT" or c[1].endswith("/dispatches") for c in self.repo.calls))
+
+    def test_missing_dispatch_run_identity_never_merges(self):
+        result = self.run_preview()
+        for response in (None, {}, {"workflow_run_id": True}, {"workflow_run_id": 0}):
+            with self.subTest(response=response):
+                self.repo.dispatch_response = response
+                with self.assertRaisesRegex(n.RemoteStop, "run identity unavailable"):
+                    n.publish(self.root, self.checkpoint(), result)
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
+
+    def test_ci_run_must_match_dispatched_workflow_branch_and_head(self):
+        result = self.run_preview()
+        for change in ({"id": 1}, {"path": ".github/workflows/other.yml"}, {"event": "pull_request"},
+                       {"head_sha": "f" * 40}, {"head_branch": "main"}):
+            with self.subTest(change=change):
+                self.repo.run_change = change
+                with self.assertRaisesRegex(n.RemoteStop, "CI run identity or head changed"):
+                    n.publish(self.root, self.checkpoint(), result)
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
+
+    def test_previous_success_cannot_replace_pending_dispatched_ci(self):
+        result = self.run_preview()
+        self.repo.run_change = {"status": "in_progress", "conclusion": None}
+        ticks = iter([0, 0, 90])
+        with self.assertRaisesRegex(n.RemoteStop, "CI pending"):
+            n.publish(self.root, self.checkpoint(), result, timeout=60,
+                      monotonic=lambda: next(ticks), sleep=lambda _: None)
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
+
+    def test_ci_checks_must_match_dispatched_suite_and_head(self):
+        result = self.run_preview()
+        for change in ({"head_sha": "f" * 40}, {"check_suite": {"id": 1}}):
+            with self.subTest(change=change):
+                self.repo.checks[0].update(change)
+                ticks = iter([0, 0, 90])
+                with self.assertRaisesRegex(n.RemoteStop, "CI pending"):
+                    n.publish(self.root, self.checkpoint(), result, timeout=60,
+                              monotonic=lambda: next(ticks), sleep=lambda _: None)
+                self.repo.checks[0].pop(next(iter(change)))
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
+
+    def test_failed_dispatched_run_cannot_use_previous_success(self):
+        result = self.run_preview()
+        self.repo.run_change = {"conclusion": "failure"}
+        with self.assertRaisesRegex(n.RemoteStop, "CI failed"):
+            n.publish(self.root, self.checkpoint(), result)
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
 
     def test_deleted_checkpoint_after_adoption_cannot_reset_budget(self):
         result = self.run_preview()

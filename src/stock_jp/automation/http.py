@@ -48,9 +48,9 @@ class FixedHTTP:
                     raise RemoteStop('redirect rejected')
                 if not 200 <= status < 300:
                     return status, None
-                raw = response.read(self.limit + 1)
-                if status == 204 and not raw:
+                if status == 204 and self.origin == 'https://api.github.com':
                     return status, None
+                raw = response.read(self.limit + 1)
                 if len(raw) > self.limit:
                     raise RemoteStop('HTTP response exceeds limit')
                 def unique(pairs):
@@ -98,10 +98,13 @@ class GitHubTransport:
                     }
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
-            if suffix == '/actions/workflows/ci.yml/dispatches' and (
-                    set(body or {}) != {'ref'} or not re.fullmatch(
-                        r'daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?', (body or {}).get('ref', ''))):
-                raise RemoteStop('CI dispatch requires a reviewed market-data branch')
+            if suffix == '/actions/workflows/ci.yml/dispatches':
+                if (path != prefix + suffix or not isinstance(body, dict)
+                        or set(body) != {'ref', 'return_run_details'}
+                        or body['return_run_details'] is not True
+                        or not isinstance(body['ref'], str)
+                        or not re.fullmatch(r'daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?', body['ref'])):
+                    raise RemoteStop('unreviewed CI dispatch')
             if suffix == '/git/refs':
                 ref = (body or {}).get('ref','')
                 if not (ref in {

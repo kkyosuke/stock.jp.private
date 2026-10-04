@@ -1,14 +1,15 @@
 from stock_jp.workspace import project_root
 from pathlib import Path
 import unittest
+import yaml
 
 ROOT = project_root()
 
 
 class GuardrailOwnershipTest(unittest.TestCase):
-    def test_workflows_have_no_writer_credentials_or_mutating_actions(self):
+    def test_only_nightly_workflow_can_write_and_dispatch_ci(self):
         forbidden = (
-            "CLOUDFLARE_API_TOKEN", "create-pull-request@", "gh pr merge",
+            "CLOUDFLARE_API_TOKEN", "AUTOMATION_PAT", "create-pull-request@", "gh pr merge",
             "wrangler deploy", "collect_daily_prices.py", "./scripts/update-public-submodule.sh",
             "nightly_operation.py start", "git push", "workflow_run:",
             'python src/stock_jp/operation/state.py validate',
@@ -21,10 +22,10 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 if path.name == 'market-data-manual.yml':
                     self.assertIn("github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke'", content)
                     self.assertIn("github.ref == 'refs/heads/main'", content)
-                    self.assertNotIn('AUTOMATION_PAT', content)
                     self.assertIn('GITHUB_TOKEN: ${{ github.token }}', content)
-                    for permission in ('contents: write', 'pull-requests: write', 'actions: write', 'checks: read'):
-                        self.assertIn(permission, content)
+                    self.assertEqual(yaml.safe_load(content)['permissions'], {
+                        'contents': 'write', 'pull-requests': 'write',
+                        'actions': 'write', 'checks': 'read'})
                     self.assertNotIn('STOCK_ACTIONS_', content)
                     self.assertIn('python -m stock_jp automation nightly', content)
                     self.assertIn('STOCK_TARGET_DATE: ${{ inputs.target_date }}', content)
@@ -32,10 +33,8 @@ class GuardrailOwnershipTest(unittest.TestCase):
                     self.assertIn("cron: '0 21 * * *'", content)
                     self.assertIn('timezone: Asia/Tokyo', content)
                 else:
-                    self.assertNotIn("AUTOMATION_PAT", content)
-                    self.assertNotIn('contents: write', content)
-                    self.assertNotIn('pull-requests: write', content)
-                    self.assertNotIn('actions: write', content)
+                    self.assertTrue(all(value in {'read', 'none'} for value in
+                                        yaml.safe_load(content)['permissions'].values()))
                 if "actions/checkout@" in content:
                     self.assertIn("persist-credentials: false", content)
 
