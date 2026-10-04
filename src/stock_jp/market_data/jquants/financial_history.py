@@ -238,7 +238,8 @@ def collect(root, as_of, *, remote=None, transport=None, sleep=None):
                 item = state["files"][key]
                 count = sum(1 for _ in csv_rows(folder / item["path"], name))
                 item["rows"] = count
-                save()
+                # The next reservation (or final save) persists the parsed
+                # count; the verified bytes are already acknowledged remotely.
         state["status"] = "COMPLETE"
         validate_state(state, lambda name: (source / name).read_bytes())
     except ingest.ApiError as error:

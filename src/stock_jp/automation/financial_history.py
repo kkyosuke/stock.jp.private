@@ -144,7 +144,7 @@ def execute(root, context, request, as_of, *, transport=None, sleep=None):
             "requests_used": len(state["requests"]), "budget": state["budget"],
             "inventory_file_count": sum(map(len, state["inventories"].values())),
             "downloaded_file_count": len(state["files"]),
-            "rows": sum(item["rows"] for item in state["files"].values()),
+            "rows": sum(item["rows"] or 0 for item in state["files"].values()),
             "stored_bytes": sum(item["bytes"] for item in state["files"].values()),
             "download_hosts": state["observed_download_hosts"], "checkpoint_saved": True,
             "adopted_on_main": False, "analysis_readiness": "NOT_EVALUATED"}
