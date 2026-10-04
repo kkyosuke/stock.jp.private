@@ -1,5 +1,28 @@
 # 手動Actionの開始日と取得前の確認
 
+## 設定不足を一括確認する
+
+実取得を伴わないローカル診断:
+
+```sh
+python stock.jp/scripts/actions_readiness.py --root .
+```
+
+対象日Actionも同じ診断を最初に行い、`execution_disabled` だけでなく
+承認pin・credentialの有無・承認manifest・退役証跡の不足をまとめて返す。
+credentialの値は出力しない。診断はネットワーク通信も設定変更も行わない。
+手元の環境にsecretがないことは、Actions側のsecret欠落を意味しない。
+`LOCAL_CONFIGURATION_PRESENT` はファイルと設定の存在確認にすぎず、実行許可ではない。
+真正な停止証跡、既存checkpoint、未解決履歴、消費予算と承認内容は実行時に検証する。
+旧外部controllerサービスを新設する必要はない。
+
+2026-10-04の再確認ではmain `151d8eb` に承認manifest・退役証跡がなく、
+checkpoint refは404。実行中・待機中Actionsとopen市場データPRはなかった。
+旧cloud writerやdotの停止はこの確認では証明できない。
+未採用履歴branchは引き続き下記のcommitにあり、予算のリセットや採用は行っていない。
+手動run `37164152501` では親が確認したログ上、取得有効化変数と承認pinが空で、
+既存の2つのsecretは非空だった。secretの有効性・scopeは未検証である。
+
 ## 開始日の回答
 
 既存の280営業日計画を継続する場合、先頭候補は **2025-08-07**。

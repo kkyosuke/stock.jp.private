@@ -10,12 +10,14 @@ try:
     from scripts import jquants_daily as daily, market_data_git as codec, actions_http as http, actions_rate as rate
     from scripts.actions_sharded import ShardedStore
     from scripts.actions_cache import ImmutableCache
+    from scripts import actions_readiness as readiness
 except ModuleNotFoundError:
     import actions_driver as legacy, actions_owner as owner, actions_targets as targets
     import actions_daily_remote as r, actions_publication as pub, actions_authorization as auth
     import jquants_daily as daily, market_data_git as codec, actions_http as http, actions_rate as rate
     from actions_sharded import ShardedStore
     from actions_cache import ImmutableCache
+    import actions_readiness as readiness
 
 
 class Driver(legacy.Driver):
@@ -167,8 +169,9 @@ def main():
     parser.add_argument('--root', type=Path, default=Path.cwd())
     args = parser.parse_args()
     try:
-        if os.environ.get('STOCK_ACTIONS_ENABLED') != 'true':
-            print(json.dumps({'status':'BLOCKED', 'reason':'execution_disabled'}))
+        setup = readiness.report(args.root)
+        if setup['blockers']:
+            print(json.dumps(setup, sort_keys=True))
             return 2
         try:
             from scripts.history_resources import constrain_memory
