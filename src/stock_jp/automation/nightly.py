@@ -36,6 +36,7 @@ class Git:
     def __init__(self, request):
         self.request = request
         self.blobs = set()
+        self.modes = {}
 
     def api(self, method, path, body=None):
         return self.request(method, PREFIX + path, body)
@@ -52,9 +53,10 @@ class Git:
         tree_sha = self.api("GET", "/git/commits/" + sha(commit))["tree"]["sha"]
         tree = self.api("GET", "/git/trees/" + sha(tree_sha) + "?recursive=1")
         require(tree.get("truncated") is False, "Git tree is truncated")
-        result = {item["path"]: item["sha"] for item in tree["tree"]
-                  if item["type"] == "blob" and item["mode"] == "100644"}
-        self.blobs.update(result.values())
+        members = [item for item in tree["tree"] if item["type"] != "tree"]
+        result = {item["path"]: item["sha"] for item in members}
+        self.modes[commit] = {item["path"]: item["mode"] for item in members}
+        self.blobs.update(item["sha"] for item in members if item["type"] == "blob")
         return result
 
     def read(self, blob):
@@ -120,7 +122,8 @@ class Checkpoint:
         self.revision = git.ref(CHECKPOINT, optional=True)
         self.tree = git.tree(self.revision or main)
         if self.revision:
-            require(JOURNAL in self.tree, "nightly checkpoint journal missing")
+            require(JOURNAL in self.tree and git.modes[self.revision][JOURNAL] == "100644",
+                    "nightly checkpoint journal missing or not a regular file")
             self.document = json.loads(git.read(self.tree[JOURNAL]))
             require(self.document.get("version") == 1
                     and set(self.document) == {"version", "runs", "files", "github_budget"},
@@ -162,7 +165,8 @@ class Checkpoint:
         for name, entry in self.document["files"].items():
             storage.safe_name(name)
             member = RAW_PREFIX + name
-            require(member in self.tree and self.tree[member] == entry["blob"],
+            require(member in self.tree and self.tree[member] == entry["blob"]
+                    and self.git.modes[self.revision][member] == "100644",
                     "checkpoint member missing")
             local = ingest.confined(source, name)
             if local.is_file():
@@ -306,8 +310,11 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
     checkpoint.observe()
     head = existing or git.write(branch, checkpoint.main, files, exists=False)
     final_tree = git.tree(head)
-    changed = {p for p in base.keys() | final_tree.keys() if base.get(p) != final_tree.get(p)}
-    require(changed == set(files) and all(final_tree[p] == git_blob(files[p]) for p in changed),
+    changed = {p for p in base.keys() | final_tree.keys()
+               if (base.get(p), git.modes[checkpoint.main].get(p))
+               != (final_tree.get(p), git.modes[head].get(p))}
+    require(changed == set(files) and all(final_tree[p] == git_blob(files[p])
+            and git.modes[head][p] == "100644" for p in changed),
             "candidate contains unexpected changes")
     opened = git.api("GET", "/pulls?state=open&base=main&head=kkyosuke:" + branch + "&per_page=100")
     require(len(opened) <= 1, "duplicate nightly data PRs")
@@ -322,7 +329,7 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
     report["pull_request"] = pr["html_url"]
     deadline = monotonic() + timeout
     while monotonic() < deadline:
-        checks = git.api("GET", "/commits/" + head + "/check-runs?per_page=100")["check_runs"]
+        checks = publication.pages(git.request, "/commits/" + head + "/check-runs", "check_runs")
         latest = {}
         for check in checks:
             if check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions":
@@ -358,10 +365,15 @@ def execute(root, context, request, *, target=None, preview=False, at=None, tran
     require(day <= now.astimezone(daily.JST).date(), "future collection date forbidden")
     git = Git(request)
     git.private_metadata()
+    # Exercise the publication read permissions before spending provider budget.
+    git.api("GET", "/pulls?state=open&base=main&per_page=1")
+    git.api("GET", "/commits/" + context["sha"] + "/check-runs?per_page=1")
     main = git.ref("main")
     require(preview or main == context["sha"], "workflow does not use current main")
     checkpoint = Checkpoint(root, git, main, day, context, preview=preview)
     result = daily.run(root, at=now, remote=checkpoint, transport=transport, sleep=sleep)
+    result = {k: v for k, v in result.items() if k not in {"remote_saved", "readiness"}}
+    result.update(checkpoint_saved=True, analysis_readiness="NOT_EVALUATED")
     result["prior_requests_used"] = checkpoint.old_charged
     result["requests_for_date"] = checkpoint.old_charged + result["requests_used"] - checkpoint.baseline_requests
     if result["status"] not in {"COLLECTED", "HOLIDAY"}:

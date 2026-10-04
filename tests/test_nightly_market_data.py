@@ -36,8 +36,8 @@ class Repository:
         self.objects[ident] = {"encoding": "base64", "content": base64.b64encode(raw).decode()}
         return ident
 
-    def commit(self, files):
-        tree = self.put({"tree": [{"path": p, "sha": s, "mode": "100644", "type": "blob"}
+    def commit(self, files, modes=None):
+        tree = self.put({"tree": [{"path": p, "sha": s, "mode": (modes or {}).get(p, "100644"), "type": "blob"}
                                   for p, s in sorted(files.items())], "truncated": False})
         return self.put({"tree": {"sha": tree}, "parents": []})
 
@@ -237,6 +237,7 @@ class NightlyMarketDataTest(unittest.TestCase):
     def test_data_only_candidate_is_adopted_after_all_ci(self):
         result = self.run_preview()
         old = self.repo.refs["main"]
+        self.repo.calls.clear()
         report = n.publish(self.root, self.checkpoint(), result)
         self.assertEqual(report["status"], "ADOPTED")
         before, after = self.repo.tree(old), self.repo.tree(self.repo.refs["main"])
@@ -280,7 +281,7 @@ class NightlyMarketDataTest(unittest.TestCase):
         result = self.run_preview()
         files = self.repo.tree(self.repo.refs["main"])
         files["src/unexpected.py"] = self.repo.blob(b"unexpected\n")
-        self.repo.refs["daily/market/2026-10-02"] = self.repo.commit(files)
+        self.repo.refs["daily/market/2026-10-02"] = self.repo.commit(files, {"src/unexpected.py": "100755"})
         with self.assertRaisesRegex(n.RemoteStop, "unexpected changes"):
             n.publish(self.root, self.checkpoint(), result)
         self.assertFalse(self.repo.pulls)
