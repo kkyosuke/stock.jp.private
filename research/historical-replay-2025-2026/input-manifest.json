@@ -20,7 +20,6 @@
     "includes_corporate_actions": false,
     "includes_all_material_disclosures": false,
     "source_rights_reviewed": false,
-    "jquants_excluded": true,
     "unofficial_prices_excluded": true
   },
   "datasets": [

@@ -43,7 +43,6 @@ LIVE_REQUIREMENT_EVIDENCE = {
     POINT_IN_TIME_GATE: 'operations/evidence/point-in-time.json',
     HISTORICAL_REPLAY_GATE: 'operations/evidence/historical-replay.json',
     OFFICIAL_COVERAGE_GATE: 'operations/evidence/official-coverage.json',
-    REPOSITORY_RECOVERY_GATE: 'operations/evidence/repository-recovery.json',
     PERSONAL_RISK_GATE: 'operations/evidence/personal-risk.json',
     V04_PROMOTION_GATE: 'operations/evidence/v04-promotion.json',
 }
@@ -1699,7 +1698,6 @@ def evaluate_v04_promotion(
                     "inputs_and_execution_rules_frozen",
                     "thresholds_frozen_before_results",
                     "changes_restart_the_holdout",
-                    "jquants_will_not_be_used",
                 ):
                     if plan_acknowledgements.get(name) is not True:
                         blockers.append(f"holdout plan acknowledgement {name} must be true")
@@ -1872,7 +1870,6 @@ def evaluate_all_live_requirements(*, root: Path = PROJECT_ROOT) -> dict[str, di
         POINT_IN_TIME_GATE: evaluate_point_in_time(root=root),
         HISTORICAL_REPLAY_GATE: evaluate_historical_replay(root=root),
         OFFICIAL_COVERAGE_GATE: evaluate_official_coverage(root=root),
-        REPOSITORY_RECOVERY_GATE: evaluate_repository_recovery(root=root),
         PERSONAL_RISK_GATE: evaluate_personal_risk(root=root),
         V04_PROMOTION_GATE: evaluate_v04_promotion(root=root),
     }

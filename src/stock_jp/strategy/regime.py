@@ -12,6 +12,8 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
 
+from stock_jp.market_data.regime_sources import JPX_EXTRACTION_VERSION
+
 
 @dataclass(frozen=True)
 class MarketRegimeInput:
@@ -248,7 +250,7 @@ def derive_market_regime(
     if not isinstance(series, dict):
         raise ValueError("market-regime input requires series")
     growth_source = series.get("growth250", {})
-    if "03_sisu" in str(growth_source.get("source_url", "")) and growth_source.get("extraction_version") != "jpx-table-3-1-named-layout-v2":
+    if "03_sisu" in str(growth_source.get("source_url", "")) and growth_source.get("extraction_version") != JPX_EXTRACTION_VERSION:
         raise ValueError("legacy JPX Growth250 extraction is unverified; preserve and re-extract for review")
     jst = ZoneInfo("Asia/Tokyo")
     cutoff_text = document.get("information_cutoff_at_jst")

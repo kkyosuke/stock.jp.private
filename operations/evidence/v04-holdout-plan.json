@@ -21,7 +21,6 @@
     "period_was_unobserved_when_frozen": false,
     "inputs_and_execution_rules_frozen": false,
     "thresholds_frozen_before_results": false,
-    "changes_restart_the_holdout": false,
-    "jquants_will_not_be_used": true
+    "changes_restart_the_holdout": false
   }
 }

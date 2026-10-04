@@ -3,7 +3,7 @@
 
 The replay never downloads market data.  It accepts only a hash-bound private
 manifest whose datasets are explicitly marked official and authorised for this
-replay.  J-Quants and unofficial price providers are rejected.  Missing rows,
+replay.  Official J-Quants inputs are permitted; unofficial price providers are rejected. Missing rows,
 future-published assessment inputs and incomplete universe coverage stop the
 run instead of being replaced by optimistic defaults.
 """
@@ -40,7 +40,7 @@ REQUIRED_DATASETS = {
     "market_regime",
     "benchmark",
 }
-PROHIBITED_PROVIDER_TOKENS = ("j-quants", "jquants", "yahoo")
+PROHIBITED_PROVIDER_TOKENS = ("yahoo",)
 IMMEDIATE_EXIT_RULES = {f"S-A{index}" for index in range(1, 7)}
 QUARTERLY_EXIT_RULES = {f"S-B{index}" for index in range(1, 6)}
 PERMANENT_REBUY_BLOCK_RULES = {"S-A1", "S-A2", "S-A4"}
@@ -266,7 +266,7 @@ def _research_relative(root: Path, path: Path) -> str:
 def _provider_is_prohibited(provider: str) -> bool:
     lowered = provider.lower()
     compact = "".join(character for character in lowered if character.isalnum())
-    return "jquants" in compact or "yahoo" in compact or any(
+    return "yahoo" in compact or any(
         token in lowered for token in PROHIBITED_PROVIDER_TOKENS
     )
 
@@ -381,7 +381,6 @@ def validate_inputs(
         "includes_corporate_actions",
         "includes_all_material_disclosures",
         "source_rights_reviewed",
-        "jquants_excluded",
         "unofficial_prices_excluded",
     ):
         if certifications.get(field_name) is not True:
@@ -501,7 +500,6 @@ def validate_inputs(
                     "inputs_and_execution_rules_frozen",
                     "thresholds_frozen_before_results",
                     "changes_restart_the_holdout",
-                    "jquants_will_not_be_used",
                 ):
                     if acknowledgements.get(field_name) is not True:
                         blockers.append(f"holdout plan acknowledgement must be true: {field_name}")
@@ -2030,7 +2028,7 @@ def initialize_input_bundle(
             "point_in_time_security_master": False, "includes_delisted": False,
             "includes_mergers": False, "includes_corporate_actions": False,
             "includes_all_material_disclosures": False,
-            "source_rights_reviewed": False, "jquants_excluded": True,
+            "source_rights_reviewed": False,
             "unofficial_prices_excluded": True,
         },
         "datasets": datasets,

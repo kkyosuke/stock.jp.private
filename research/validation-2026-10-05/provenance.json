@@ -1,0 +1,48 @@
+{
+  "base_main_commit": "82f3a2ca5324c260b4dab779d43e923883d6ec2f",
+  "adopted_generation": "7de87dce283a1cd8ae488767cec934158c3d4a598e97fc8e6d269c59dc4b23a4",
+  "reproduction_network_requests": 0,
+  "jquants_requests_this_task": 0,
+  "corporate_action_source": "splits.json",
+  "baseline_2025_reproduced": true,
+  "inputs": {
+    "price-input-register.json": "d437e6462409aebe9b34e021b411c73126b8272d9b0d42e2f3cc3df413bef0d3",
+    "splits.json": "dc2835041bc60e7649c3f233b7f1f3ec6817b67db9de0b7f0b61aecae008ff86",
+    "company-primary-sources.json": "80f9a9a7bc519d42dd1e8de442c75c1efc782ba1fc5a064bc2d215b43469d86d",
+    "market-primary-sources.json": "c503fd18a2ce507e271af439fee7a30010283b52202d6c0235dfcf6ffd72fda9",
+    "market-components.json": "44acec0de3d67ac73eadfd8fa0fad97fbf0388df29e7ce38f5c5f7b90bce9765"
+  },
+  "code": {
+    "src/stock_jp/research/allocation.py": "2eb5504e720fab19102a642737db1586bbccd3b0ca82014684e72e470c333823",
+    "src/stock_jp/research/historical_replay.py": "9ecc7a14bb349f09aed85d6ad189708f8ffb072023fdd7523913991c783204e7",
+    "src/stock_jp/market_data/regime_sources.py": "041f94dee6844de5fbee7457068dfc6c1dd5395e872d35d58327811ca16bc717",
+    "research/validation-2026-10-05/reproduce.py": "222b3edb171db510e1a98c0a046daad83745209912ab697b73e9a32e23e71477",
+    "research/validation-2026-10-05/plot.py": "f926004e5158d99e00a83d05d9ee819d290c78612b9ee3081becc01b77bfe939"
+  },
+  "outputs": {
+    "4052-primary-review.json": "308653bdf67692210f61d771fe64df4998d96ab263d88de1d40875107ead1854",
+    "benchmark-summary.json": "7b4b0f8af8cd49440a2dddb0632773e29b99919f34a4b51bd6a8cfb5e7579e6f",
+    "benchmark.csv": "bc8e31abfcb61b373b17748b753c44966b88e93ff756cc32f760431f6871e914",
+    "company-primary-sources.json": "80f9a9a7bc519d42dd1e8de442c75c1efc782ba1fc5a064bc2d215b43469d86d",
+    "continuous-candidates.csv": "fd4ecf248399daf28acd45e354e77ce3f3106bd3d7e4bd8f3537f319161cc194",
+    "continuous-daily.csv": "3e5fa81b7d6fc73ac7c1045ad1b2726d6ab2e0f31f3adcccdf0d7109a48daf11",
+    "continuous-summary.json": "e50baa1b2bda792e6c72c7fad84ab970b792640f944521b984011818c717b2d2",
+    "continuous-trades.csv": "09d7f69cdf906b56d57bed90ab2ff3ba3efb0e282a9801d13426434e8b80b928",
+    "coverage-audit.json": "fa2a159477e734f2ebfcd2d889f7239e826654f483b981852381f145eddfaeed",
+    "fee-000-candidates.csv": "fd4ecf248399daf28acd45e354e77ce3f3106bd3d7e4bd8f3537f319161cc194",
+    "fee-000-daily.csv": "076738e30df444bfa57e960217c3d0f6f78c5f247ad8ec1a9a3ea94df5a4c5f9",
+    "fee-000-summary.json": "9bba8747375063057f869438a75aeff15f62ff28c813fce929e4a23676bed13c",
+    "fee-000-trades.csv": "2ae7338d8778b0fcb3fc4e2023b9f3d78a770746933b18a3570f291facd16173",
+    "fee-050-candidates.csv": "fd4ecf248399daf28acd45e354e77ce3f3106bd3d7e4bd8f3537f319161cc194",
+    "fee-050-daily.csv": "b61f278cb1174ab485673f8fd93fd6805c861d109a3f358bde40d67ebb1431a9",
+    "fee-050-summary.json": "7bc18ff155484a13c2008020d8250dfd76ba710e873d425f8d496e29f0002bd3",
+    "fee-050-trades.csv": "d3f9ad481db6cc65f45d6573c07a7c2560d5e30ab6243904f57e4e61d4875da3",
+    "fee-sensitivity.json": "dc3bd0598c4ddb1242208722eb046d67c4a357040ef7b2db3d32c0083fb0d2ac",
+    "formal-run.json": "3e0218371a4d2b1967bd2d01275d30546f9d56069098373222764d32098b5b39",
+    "formal-validation.json": "3e0218371a4d2b1967bd2d01275d30546f9d56069098373222764d32098b5b39",
+    "market-components.json": "44acec0de3d67ac73eadfd8fa0fad97fbf0388df29e7ce38f5c5f7b90bce9765",
+    "market-primary-sources.json": "c503fd18a2ce507e271af439fee7a30010283b52202d6c0235dfcf6ffd72fda9",
+    "price-input-register.json": "d437e6462409aebe9b34e021b411c73126b8272d9b0d42e2f3cc3df413bef0d3",
+    "splits.json": "dc2835041bc60e7649c3f233b7f1f3ec6817b67db9de0b7f0b61aecae008ff86"
+  }
+}

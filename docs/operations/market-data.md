@@ -25,9 +25,14 @@ python -m stock_jp data restore
 | `data/market/manual-dates/` | 手動承認して採用した対象日ごとの生応答・結果 | 追跡 |
 | `data/market/legacy-prices/` | 過去の日足・manifest | 追跡 |
 | `data/market/observations/` | 出典付きの財務・株数・予想・決算日・価格調整 | 追跡 |
+| `data/market/primary-sources/` | 企業IR・JPX・指数・景気統計の原本。SHA-256名で重複排除 | 追跡 |
 | `.work/market-data/` | 復元済み入力、取得途中のキャッシュ・チェックポイント | 除外 |
 | `.work/staging/` | PR用の保存世代、ロック、途中状態 | 除外 |
 | `operations/acquisition/` | 取得取引、消費予算、完了記録 | 追跡 |
+
+企業IR・市場資料の出典、公表日時、取得日時、ハッシュ、確認範囲は
+[過去検証の資料一覧](../../research/validation-2026-10-05/README.md)で管理する。
+原本の保存だけで、当時の公表値・訂正履歴や採点が確認済みになるわけではない。
 
 ## 取得
 

@@ -77,9 +77,10 @@ _JPX_BASE = ("TOPIX", "Dividend-included TOPIX", "Ex-TOPIX", "Prime Market",
 _JPX_2025 = _JPX_BASE + ("Growth250", "REIT Index", "Infrastructure Funds Index",
                        "Prime weighted average", "Prime arithmetic average",
                        "Standard weighted average", "Standard arithmetic average")
+_JPX_2024 = _JPX_2025[:2] + ("Ex-TSE First Section Index",) + _JPX_2025[2:]
 _JPX_2026 = _JPX_BASE + ("JPX Start-Up Acceleration 100 Index", "Growth250",
                        "REIT Index", "Infrastructure Funds Index")
-JPX_EXTRACTION_VERSION = "jpx-table-3-1-named-layout-v2"
+JPX_EXTRACTION_VERSION = "jpx-table-3-1-named-layout-v3"
 
 
 def _jpx_layout(text: str, period: date, headers: tuple[str, ...] = ()) -> tuple[str, ...]:
@@ -91,7 +92,9 @@ def _jpx_layout(text: str, period: date, headers: tuple[str, ...] = ()) -> tuple
     old = "StockPriceIndex&StockPriceAverage(EndofYear/Month/Daily)" in compact
     new = "StockPriceIndex(EndofYear/Month/Daily)" in compact
     startup = "JPXStart-UpAcceleration100Index" in compact
-    if old and not new and not startup and date(2025, 1, 1) <= period < date(2026, 3, 1):
+    if old and not new and not startup and date(2024, 12, 1) <= period < date(2025, 2, 1):
+        columns = _JPX_2024
+    elif old and not new and not startup and date(2025, 2, 1) <= period < date(2026, 3, 1):
         columns = _JPX_2025
     elif new and not old and startup and period >= date(2026, 3, 1):
         columns = _JPX_2026
@@ -116,9 +119,11 @@ _JPX_HEADER_NAMES = {
     "DividendincludedTOPIX": "Dividend-included TOPIX",
     "TOPIXDividendincludedTOPIX": "Dividend-included TOPIX",
     "ExTOPIX": "Ex-TOPIX", "TOPIXExTOPIX": "Ex-TOPIX",
+    "ExTSEFirstSectionIndex": "Ex-TSE First Section Index",
     "PrimeMarket": "Prime Market", "StandardMarket": "Standard Market",
     "GrowthMarket": "Growth Market", "JPXPrime150Index": "JPX Prime 150 Index",
     "JPXStartUpAcceleration100Index": "JPX Start-Up Acceleration 100 Index",
+    "JPXJPXStartUpAcceleration100Index": "JPX Start-Up Acceleration 100 Index",
     "TokyoStockExchangeGrowthMarket250Index": "Growth250",
     "REITIndex": "REIT Index", "InfrastructureFundsIndex": "Infrastructure Funds Index",
     "PrimeMarketWeightedStockPriceAverage": "Prime weighted average",
@@ -137,17 +142,28 @@ def _jpx_physical_headers(payload: bytes) -> tuple[str, ...]:
     recognized = []
     with pdfplumber.open(BytesIO(payload)) as document:
         page = document.pages[0]
-        for table in page.find_tables():
+        horizontal = [edge for edge in page.edges if edge.get('orientation') == 'h'
+                      and edge['x1'] - edge['x0'] > page.width / 2]
+        # The real JPX table has no vertical right border. Close it at the
+        # endpoint of the printed horizontal rule, keeping physical geometry.
+        settings = ({'explicit_vertical_lines': [max(edge['x1'] for edge in horizontal)]}
+                    if horizontal else {})
+        for table in page.find_tables(table_settings=settings):
             matrix = table.extract()
             body = None
             header_end = None
             indices = []
             for row_index, row in enumerate(matrix):
-                numeric = [i for i, cell in enumerate(row) if cell and re.fullmatch(
-                    r"[◎●r\s]*\d[\d,]*\.\d+[◎●r\s]*", cell)]
+                # Published PDFs merge all daily observations into one tall
+                # cell; synthetic ruled tables may have one cell per day.
+                numeric = [i for i, cell in enumerate(row) if cell
+                    and (lines := [line for line in cell.splitlines() if line.strip() != "円 \\"])
+                    and all(
+                    re.fullmatch(r"[◎●r\s]*\d[\d,]*\.\d+[◎●r\s]*", line)
+                    for line in lines)]
                 if header_end is None and len(numeric) >= 2:
                     header_end = row_index
-                if len(numeric) in {11, 14}:
+                if len(numeric) in {11, 14, 15}:
                     body, indices = row_index, numeric
                     break
             if body is None or not header_end:

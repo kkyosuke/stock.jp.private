@@ -1,0 +1,2 @@
+# Preserve downloaded primary sources byte-for-byte, including CRLF and HTML whitespace.
+data/market/primary-sources/** -text -diff

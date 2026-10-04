@@ -286,14 +286,14 @@ class OperationStateTest(unittest.TestCase):
         self.assertFalse(migrated["v04_holdout_promotion"])
         self.assertIsNone(migrated["limited_live"]["capital_limit_jpy"])
 
-    def test_migrates_backup_gate_to_private_repository_recovery(self) -> None:
+    def test_initialization_does_not_reintroduce_waived_recovery_requirements(self) -> None:
         initialize_or_migrate_workspace(self.root)
         private = self.root / 'operations'
         policy_path = record_path(private.parent, 'policy.json')
         policy = json.loads(policy_path.read_text(encoding="utf-8"))
         policy["schema_version"] = "1.1"
-        policy["live_gates"].pop("private_repository_recovery")
-        policy["live_gate_evidence"].pop("private_repository_recovery")
+        policy["live_gates"]["private_repository_recovery"] = False
+        policy["live_gate_evidence"]["private_repository_recovery"] = None
         policy["live_gates"]["backup_restore_drill"] = True
         policy["live_gate_evidence"]["backup_restore_drill"] = (
             'operations/evidence/recovery.md'
@@ -304,11 +304,8 @@ class OperationStateTest(unittest.TestCase):
         migrated = json.loads(policy_path.read_text(encoding="utf-8"))
 
         self.assertEqual(migrated["schema_version"], "1.4")
-        self.assertTrue(migrated["live_gates"]["private_repository_recovery"])
-        self.assertEqual(
-            migrated["live_gate_evidence"]["private_repository_recovery"],
-            'operations/evidence/recovery.md',
-        )
+        self.assertNotIn("private_repository_recovery", migrated["live_gates"])
+        self.assertNotIn("private_repository_recovery", migrated["live_gate_evidence"])
         self.assertNotIn("backup_restore_drill", migrated["live_gates"])
         self.assertNotIn("backup_restore_drill", migrated["live_gate_evidence"])
 

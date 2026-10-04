@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay v0.2 versus v0.4 allocation over the complete 2025 price archive.
+"""Replay v0.2 versus v0.4 allocation over an authorized price archive.
 
 This is deliberately an allocation diagnostic, not a full tenbagger strategy
 backtest and not a substitute for explicit LIVE promotion review.
@@ -12,11 +12,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date
 import json
 import math
+import shlex
 from stock_jp.workspace import project_root
 from pathlib import Path
 from typing import Iterable
@@ -31,6 +33,10 @@ DEFAULT_SUMMARY = project_root() / 'research/allocation-replay-2025/summary.json
 DEFAULT_REPORT = project_root() / "research/allocation-replay-2025/README.md"
 BOARD_LOT = 100
 FEE_RATE = 0.0015
+DOMESTIC_MARKETS = {
+    "プライム", "スタンダード", "グロース",
+    "プライム（内国株式）", "スタンダード（内国株式）", "グロース（内国株式）",
+}
 EXCLUDED_PROXY_SECTORS = {
     "医薬品",
     "銀行業",
@@ -97,6 +103,45 @@ class PortfolioRun:
     summary: dict[str, float | int | str]
 
 
+@dataclass(frozen=True)
+class Split:
+    code: str
+    price_adjustment_day: date
+    numerator: int
+    denominator: int
+
+
+def load_splits(path: Path | None) -> tuple[Split, ...]:
+    if path is None:
+        return ()
+    root = project_root().resolve()
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data.get("schema_version") != "1.0":
+        raise ValueError("split evidence schema_version must be 1.0")
+    result = []
+    seen = set()
+    for item in data["splits"]:
+        source = (root / item["source_path"]).resolve()
+        if not source.is_relative_to(root) or not source.is_file():
+            raise ValueError("split evidence source must be a project file")
+        if hashlib.sha256(source.read_bytes()).hexdigest() != item["source_sha256"]:
+            raise ValueError("split evidence source hash mismatch")
+        announced = date.fromisoformat(item["announced_date"])
+        adjustment = date.fromisoformat(item["price_adjustment_date"])
+        effective = date.fromisoformat(item["legal_effective_date"])
+        if announced >= adjustment or adjustment > effective:
+            raise ValueError("split evidence dates are inconsistent")
+        numerator, denominator = item["ratio_numerator"], item["ratio_denominator"]
+        if any(type(value) is not int or value <= 0 for value in (numerator, denominator)):
+            raise ValueError("split ratio must contain positive integers")
+        key = (item["code"], adjustment)
+        if key in seen:
+            raise ValueError("duplicate split evidence")
+        seen.add(key)
+        result.append(Split(item["code"], adjustment, numerator, denominator))
+    return tuple(result)
+
+
 def _number(value: str) -> float:
     parsed = float(value)
     if not math.isfinite(parsed) or parsed <= 0:
@@ -113,7 +158,7 @@ def _read_bars(
             code = row["銘柄コード"].strip()
             if wanted is not None and code not in wanted:
                 continue
-            if row["取得状態"] != "OK" or "内国株式" not in row["市場・商品区分"]:
+            if row["取得状態"] != "OK" or row["市場・商品区分"] not in DOMESTIC_MARKETS:
                 continue
             if not all(row[field].strip() for field in ("始値", "高値", "安値", "終値", "売買高(株)")):
                 continue
@@ -214,7 +259,8 @@ def select_candidates(
 
 
 def load_replay_bars(
-    *, archive: Path, candidates: list[Candidate], start: date, end: date
+    *, archive: Path, candidates: list[Candidate], start: date, end: date,
+    splits: tuple[Split, ...] = (),
 ) -> tuple[list[date], dict[str, dict[date, Bar]]]:
     wanted = {candidate.code for candidate in candidates}
     bars: dict[str, dict[date, Bar]] = defaultdict(dict)
@@ -236,11 +282,14 @@ def load_replay_bars(
                 f"{candidate.code} is missing {len(missing)} replay sessions; "
                 "do not silently carry prices forward"
             )
+        factors = {split.price_adjustment_day: split.numerator / split.denominator
+                   for split in splits if split.code == candidate.code}
         ordered = [bars[candidate.code][day].close for day in sessions]
         suspicious = [
-            current / previous
-            for previous, current in zip(ordered, ordered[1:])
-            if current / previous <= 0.5 or current / previous >= 2.0
+            current * factors.get(day, 1.0) / previous
+            for day, previous, current in zip(sessions[1:], ordered, ordered[1:])
+            if current * factors.get(day, 1.0) / previous <= 0.5
+            or current * factors.get(day, 1.0) / previous >= 2.0
         ]
         if suspicious:
             raise ValueError(
@@ -279,6 +328,7 @@ def build_fills(
     initial_capital: float,
     scheduled_tranches: tuple[tuple[str, date], ...],
     fee_rate: float = FEE_RATE,
+    splits: tuple[Split, ...] = (),
 ) -> tuple[list[Fill], list[SkippedOrder]]:
     caps = allocation_caps(rule_version)
     cash = initial_capital
@@ -305,6 +355,10 @@ def build_fills(
                 if first_replay_session
                 else bars[candidate.code][evaluation_day].close
             )
+            for split in splits:
+                if (split.code == candidate.code
+                        and evaluation_day < split.price_adjustment_day <= trade_day):
+                    evaluation_close *= split.denominator / split.numerator
             price = _model_fill_price(
                 evaluation_close,
                 bars[candidate.code][trade_day],
@@ -361,6 +415,7 @@ def value_portfolio(
     initial_capital: float,
     fills: list[Fill],
     skipped: list[SkippedOrder],
+    splits: tuple[Split, ...] = (),
 ) -> PortfolioRun:
     fills_by_day: dict[date, list[Fill]] = defaultdict(list)
     for fill in fills:
@@ -373,6 +428,12 @@ def value_portfolio(
     maximum_drawdown = 0.0
     daily_rows: list[dict[str, float | str]] = []
     for day in sessions:
+        for split in splits:
+            if split.price_adjustment_day == day:
+                shares = quantities[split.code] * split.numerator
+                if shares % split.denominator:
+                    raise ValueError("fractional split shares require official cash settlement evidence")
+                quantities[split.code] = shares // split.denominator
         for fill in fills_by_day[day]:
             cash -= fill.gross_cost + fill.fee
             quantities[fill.code] += fill.quantity
@@ -424,6 +485,8 @@ def run_replay(
     selection_day: date,
     start: date,
     end: date,
+    splits: tuple[Split, ...] = (),
+    fee_rate: float = FEE_RATE,
 ) -> tuple[list[Candidate], int, list[date], dict[str, dict[date, Bar]], list[PortfolioRun]]:
     candidates, eligible_count = select_candidates(
         archive=archive,
@@ -431,7 +494,7 @@ def run_replay(
         initial_capital=initial_capital,
     )
     sessions, bars = load_replay_bars(
-        archive=archive, candidates=candidates, start=start, end=end
+        archive=archive, candidates=candidates, start=start, end=end, splits=splits
     )
     schedule = (
         ("INITIAL", start),
@@ -447,6 +510,8 @@ def run_replay(
             bars=bars,
             initial_capital=initial_capital,
             scheduled_tranches=schedule,
+            fee_rate=fee_rate,
+            splits=splits,
         )
         runs.append(
             value_portfolio(
@@ -457,6 +522,7 @@ def run_replay(
                 initial_capital=initial_capital,
                 fills=fills,
                 skipped=skipped,
+                splits=splits,
             )
         )
     return candidates, eligible_count, sessions, bars, runs
@@ -483,6 +549,9 @@ def write_outputs(
     daily_path: Path,
     summary_path: Path,
     report_path: Path,
+    fee_rate: float = FEE_RATE,
+    archive: Path,
+    splits_path: Path | None = None,
 ) -> None:
     _write_csv(
         candidates_path,
@@ -573,7 +642,7 @@ def write_outputs(
         "initial_capital": initial_capital,
         "candidate_count": len(candidates),
         "eligible_proxy_count": eligible_count,
-        "transaction_cost_rate": FEE_RATE,
+        "transaction_cost_rate": fee_rate,
         "mrs_assumption": "NORMAL",
         "add_assumption": "ALL_PROXY_CANDIDATES_PASS_UNOBSERVED_QUARTERLY_ADD_GATES",
         "full_strategy_backtest": False,
@@ -587,7 +656,7 @@ def write_outputs(
     v02 = summaries["v0.2"]
     v04 = summaries["v0.4"]
     lines = [
-        "# v0.4資金配分の12か月過去データ実験（2025年）",
+        "# v0.2・v0.4資金配分の過去データ検証",
         "",
         "- 状態: `ALLOCATION_DIAGNOSTIC_ONLY`",
         f"- 候補選定日: {selection_day.isoformat()}",
@@ -595,15 +664,15 @@ def write_outputs(
         f"- 比較用初期資産: ¥{initial_capital:,.0f}（個人資産額ではない）",
         "- 比較: v0.2資金配分 対 v0.4全額テンバガー資金配分",
         "",
-        "> これは12か月の前向きPAPER運用ではなく、そのLIVEゲートを満たさない。財務・開示・希薄化・SAM/SOM・MRSのpoint-in-time入力が不足するため、銘柄選定能力と完全な入口・出口は検証していない。結果は資金配分による損益とドローダウンの増幅を診断するものに限る。",
+        "> 前向きholdoutと正式な履歴再生のLIVEゲートは満たさない。財務・開示・希薄化・SAM/SOM・MRSのpoint-in-time入力が不足するため、銘柄選定能力と完全な入口・出口は検証していない。結果は資金配分による損益とドローダウンの増幅を診断するものに限る。",
         "",
         "## 結果",
         "",
         "| 指標 | v0.2 | v0.4 |",
-        "|---|---:|---:|",
+        "| --- | ---: | ---: |",
         f"| 取得原価ベース投資率 | {float(v02['acquisition_cost_pct']):.2f}% | {float(v04['acquisition_cost_pct']):.2f}% |",
         f"| 期末資産 | ¥{float(v02['final_nav']):,.0f} | ¥{float(v04['final_nav']):,.0f} |",
-        f"| 12か月損益率 | {float(v02['return_pct']):+.2f}% | {float(v04['return_pct']):+.2f}% |",
+        f"| 期間損益率 | {float(v02['return_pct']):+.2f}% | {float(v04['return_pct']):+.2f}% |",
         f"| 最大ドローダウン | {float(v02['maximum_drawdown_pct']):.2f}% | {float(v04['maximum_drawdown_pct']):.2f}% |",
         f"| 期末戦略待機資金比率 | {float(v02['final_strategy_waiting_cash_pct']):.2f}% | {float(v04['final_strategy_waiting_cash_pct']):.2f}% |",
         f"| 売買費用 | ¥{float(v02['fees']):,.0f} | ¥{float(v04['fees']):,.0f} |",
@@ -613,40 +682,48 @@ def write_outputs(
         "",
         "## 固定した代理候補契約",
         "",
-        f"2024年末までの情報だけを使い、代理条件に合格した{eligible_count}銘柄から12銘柄を順位固定した。",
+        f"{selection_day.isoformat()}までの情報だけを使い、代理条件に合格した{eligible_count}銘柄から12銘柄を順位固定した。",
         "",
-        "1. 2024年12月30日に有効な国内株日足があり、直近120観測以上",
+        f"1. {selection_day.isoformat()}に有効な国内株日足があり、直近120観測以上",
         "2. 120観測モメンタム20%以上300%以下",
         "3. 直近20日平均売買代金1億円以上",
         "4. v0.2の初回1%でも100株を購入できる終値1,000円以下",
         "5. 金融4業種と医薬品を代理画面から除外",
         "6. 同一業種最大2銘柄、モメンタム、流動性、コード順で上位12銘柄",
         "",
-        "この代理条件はv0.2/v0.4の70点スコアではない。公式履歴日足のpoint-in-time日次母集団を使い、将来リターンを使って候補を選んでいないが、価格モメンタム銘柄に限定した別戦略のサンプルである。",
+        "この代理条件はv0.2/v0.4の100点スコアではない。公式履歴日足を使い、将来リターンを使って候補を選んでいない。旧archiveには月次マスタの属性補完が含まれるため、厳密なpoint-in-time全母集団の認証も行っていない。価格モメンタム銘柄に限定した別戦略のサンプルである。",
         "",
         "## 執行契約",
         "",
-        "- 初回は2025年最初の営業日、追加は4月1日以後と7月1日以後の最初の営業日",
+        f"- 初回は{sessions[0].isoformat()}、追加は初回と同じ年の4月1日以後と7月1日以後の最初の営業日",
         "- 前営業日終値の1.15倍を指値上限とし、寄付または日中安値で約定可能な場合だけ購入",
         "- 100株単位へ切り下げ、候補群・銘柄・業種・現金上限を適用",
         "- MRSは`NORMAL`、全代理候補が未観測の四半期追加条件を満たすというストレス仮定",
-        "- 売買ごとに約定代金の0.15%を費用控除",
+        f"- 売買ごとに約定代金の{fee_rate * 100:.2f}%を費用控除",
         "- 配当、税、貸株、金利は含めない",
-        "- 入口・出口の財務条件がないため、12月30日まで保有する配分比較",
+        f"- 入口・出口の財務条件がないため、{sessions[-1].isoformat()}まで保有する配分比較",
         "",
         "## 解釈と限界",
         "",
         "- v0.4の損益も最大DDも、候補が同じなら概ね投資率に応じて増幅する。",
         "- 100株単位、指値、費用、候補群上限により、候補群100%でも投資率が100%へ一致するとは限らない。残りは安全資産ではなく戦略待機資金である。",
         "- 未観測の追加条件を全通過としたため、実運用より追加が多い可能性が高い。",
-        "- 未調整表示価格を使用している。選定12銘柄の隣接終値倍率が0.5倍以下または2倍以上なら実験全体を停止するが、公式コーポレートアクション表による完全調整ではない。",
+        "- 未調整価格と原本・hashを確認した分割証拠を使用する。数量調整後も隣接終値倍率が0.5倍以下または2倍以上なら実験全体を停止する。未確認の企業行動を推測して補わない。",
         "- 正式な検証にはpoint-in-time財務・開示、全ハードゲート、100点スコア、MRS、上場廃止、税・費用、全出口条件が必要である。",
         "- PAPERの経過日数と連続run数はLIVEリリース条件にしない。",
         "",
         "## 再現",
         "",
         "```bash",
-        "python -m stock_jp research allocation --archive .work/market-data/daily-prices",
+        shlex.join([
+            "python", "-m", "stock_jp", "research", "allocation", "--archive", str(archive),
+            "--selection-date", selection_day.isoformat(), "--start", sessions[0].isoformat(),
+            "--end", sessions[-1].isoformat(), "--initial-capital", str(initial_capital),
+            "--fee-rate", str(fee_rate),
+            *(["--splits", str(splits_path)] if splits_path is not None else []),
+            "--candidates", str(candidates_path), "--trades", str(trades_path),
+            "--daily", str(daily_path), "--summary", str(summary_path), "--report", str(report_path),
+        ]),
         "```",
         "",
         f"候補は[{candidates_path.name}]({candidates_path.name})、約定は[{trades_path.name}]({trades_path.name})、日次資産は[{daily_path.name}]({daily_path.name})、機械可読集計は[{summary_path.name}]({summary_path.name})に保存する。",
@@ -660,9 +737,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, required=True, help="explicit authorized archive; no public fallback")
     parser.add_argument("--initial-capital", type=float, default=10_000_000)
+    parser.add_argument("--fee-rate", type=float, default=FEE_RATE)
     parser.add_argument("--selection-date", type=date.fromisoformat, default=date(2024, 12, 30))
     parser.add_argument("--start", type=date.fromisoformat, default=date(2025, 1, 6))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2025, 12, 30))
+    parser.add_argument("--splits", type=Path, help="source-bound official split evidence")
     parser.add_argument("--candidates", type=Path, default=DEFAULT_CANDIDATES)
     parser.add_argument("--trades", type=Path, default=DEFAULT_TRADES)
     parser.add_argument("--daily", type=Path, default=DEFAULT_DAILY)
@@ -675,12 +754,16 @@ def main() -> None:
     args = parse_args()
     if not math.isfinite(args.initial_capital) or args.initial_capital <= 0:
         raise ValueError("initial-capital must be finite and positive")
+    if not math.isfinite(args.fee_rate) or not 0 <= args.fee_rate < 1:
+        raise ValueError("fee-rate must be finite and between 0 and 1")
     candidates, eligible_count, sessions, _, runs = run_replay(
         archive=args.archive,
         initial_capital=args.initial_capital,
         selection_day=args.selection_date,
         start=args.start,
         end=args.end,
+        splits=load_splits(args.splits),
+        fee_rate=args.fee_rate,
     )
     write_outputs(
         candidates=candidates,
@@ -694,6 +777,9 @@ def main() -> None:
         daily_path=args.daily,
         summary_path=args.summary,
         report_path=args.report,
+        fee_rate=args.fee_rate,
+        archive=args.archive,
+        splits_path=args.splits,
     )
     print(json.dumps({run.rule_version: run.summary for run in runs}, ensure_ascii=False, indent=2))
 

@@ -1,0 +1,11 @@
+{
+  "source": "JPX official monthly statistics table 3-1",
+  "price_calendar_verified_sessions": 404,
+  "missing_sessions": [],
+  "from_close": "2024-12-30",
+  "through_close": "2026-08-31",
+  "topix_price_return_pct": 49.24270715137238,
+  "growth250_price_return_pct": 26.05793411779316,
+  "dividends_fees_taxes_included": false,
+  "point_in_time_mrs_inputs_certified": false
+}

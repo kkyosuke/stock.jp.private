@@ -8,6 +8,7 @@
 - [自動化と取得承認](operations/automation.md)
 - [復元と復旧証跡](operations/recovery.md)
 - [LIVE判定と人の承認](operations/live-gates.md)
+- [過去検証の入力・実行方法](operations/historical-replay.md)
 - [有効な戦略 v0.4](rules/tenbagger-rule-v0.4.md)
 - [過去の資料](archive/README.md)
 
@@ -16,4 +17,5 @@
 - [価格エピソード 2016–2026](../research/price-episodes-2016-2026/README.md)
 - [価格による出口検証 2016–2026](../research/price-exit-2016-2026/README.md)
 - [資金配分再生 2025](../research/allocation-replay-2025/README.md)
+- [2026年10月5日の一次資料・過去検証](../research/validation-2026-10-05/README.md)
 - [履歴再生 2025–2026](../research/historical-replay-2025-2026/README.md)

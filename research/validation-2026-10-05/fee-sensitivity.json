@@ -1,0 +1,104 @@
+{
+  "status": "ALLOCATION_DIAGNOSTIC_ONLY",
+  "results": [
+    {
+      "fee_rate": 0.0015,
+      "results": {
+        "v0.2": {
+          "rule_version": "v0.2",
+          "initial_capital": 10000000,
+          "final_nav": 10325483.38,
+          "return_pct": 3.254834,
+          "maximum_drawdown_pct": -8.744012,
+          "final_cash": 8666923.38,
+          "final_market_value": 1658560.0,
+          "final_strategy_waiting_cash_pct": 83.937217,
+          "acquisition_cost_pct": 13.3108,
+          "fees": 1996.62,
+          "fill_count": 21,
+          "skipped_order_count": 15
+        },
+        "v0.4": {
+          "rule_version": "v0.4",
+          "initial_capital": 10000000,
+          "final_nav": 11969166.7,
+          "return_pct": 19.691667,
+          "maximum_drawdown_pct": -34.803641,
+          "final_cash": 42886.7,
+          "final_market_value": 11926280.0,
+          "final_strategy_waiting_cash_pct": 0.35831,
+          "acquisition_cost_pct": 99.422,
+          "fees": 14913.3,
+          "fill_count": 31,
+          "skipped_order_count": 5
+        }
+      }
+    },
+    {
+      "fee_rate": 0.0,
+      "results": {
+        "v0.2": {
+          "rule_version": "v0.2",
+          "initial_capital": 10000000,
+          "final_nav": 10327480.0,
+          "return_pct": 3.2748,
+          "maximum_drawdown_pct": -8.742442,
+          "final_cash": 8668920.0,
+          "final_market_value": 1658560.0,
+          "final_strategy_waiting_cash_pct": 83.940322,
+          "acquisition_cost_pct": 13.3108,
+          "fees": 0.0,
+          "fill_count": 21,
+          "skipped_order_count": 15
+        },
+        "v0.4": {
+          "rule_version": "v0.4",
+          "initial_capital": 10000000,
+          "final_nav": 11953880.0,
+          "return_pct": 19.5388,
+          "maximum_drawdown_pct": -34.891133,
+          "final_cash": 3600.0,
+          "final_market_value": 11950280.0,
+          "final_strategy_waiting_cash_pct": 0.030116,
+          "acquisition_cost_pct": 99.964,
+          "fees": 0.0,
+          "fill_count": 31,
+          "skipped_order_count": 5
+        }
+      }
+    },
+    {
+      "fee_rate": 0.005,
+      "results": {
+        "v0.2": {
+          "rule_version": "v0.2",
+          "initial_capital": 10000000,
+          "final_nav": 10320824.6,
+          "return_pct": 3.208246,
+          "maximum_drawdown_pct": -8.747676,
+          "final_cash": 8662264.6,
+          "final_market_value": 1658560.0,
+          "final_strategy_waiting_cash_pct": 83.929966,
+          "acquisition_cost_pct": 13.3108,
+          "fees": 6655.4,
+          "fill_count": 21,
+          "skipped_order_count": 15
+        },
+        "v0.4": {
+          "rule_version": "v0.4",
+          "initial_capital": 10000000,
+          "final_nav": 11934369.0,
+          "return_pct": 19.34369,
+          "maximum_drawdown_pct": -34.877903,
+          "final_cash": 8089.0,
+          "final_market_value": 11926280.0,
+          "final_strategy_waiting_cash_pct": 0.067779,
+          "acquisition_cost_pct": 99.422,
+          "fees": 49711.0,
+          "fill_count": 31,
+          "skipped_order_count": 5
+        }
+      }
+    }
+  ]
+}

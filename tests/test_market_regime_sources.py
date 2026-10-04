@@ -11,7 +11,8 @@ from unittest.mock import patch
 from pypdf import PdfWriter
 from pypdf.generic import DictionaryObject, NameObject, DecodedStreamObject
 
-from stock_jp.market_data.regime_sources import MarketRegimeSourceError, _jpx_month_points, _jpx_index_points, _ci_vintage, _leading_ci, _jpx_physical_headers, _JPX_2025, _JPX_2026
+from stock_jp.market_data.regime_sources import MarketRegimeSourceError, _jpx_month_points, _jpx_index_points, _ci_vintage, _leading_ci, _jpx_physical_headers, _JPX_2024, _JPX_2025, _JPX_2026
+from stock_jp.workspace import project_root
 from stock_jp.strategy.regime import derive_market_regime
 from stock_jp.operation.assessment import _existing_mrs
 
@@ -93,9 +94,27 @@ class IndexLayoutTest(unittest.TestCase):
         for bad in (swapped, missing, unknown, [*labels, 'Unknown Extra Index']):
             with self.subTest(headers=bad), self.assertRaises(MarketRegimeSourceError):
                 self.parse(text, NEW_URL, bad)
-        for columns in (_JPX_2025, _JPX_2026):
+        for columns in (_JPX_2024, _JPX_2025, _JPX_2026):
             self.assertEqual(_jpx_physical_headers(ruled_pdf(english_labels(columns))), columns)
         self.assertEqual(_jpx_physical_headers(ruled_pdf(english_labels(_JPX_2025), merged_averages=True)), _JPX_2025)
+
+    def test_actual_published_pdfs_with_open_border_currency_and_wrapped_headers(self):
+        directory = project_root() / "research/validation-2026-10-05"
+        import json
+        register = json.loads((directory / "market-primary-sources.json").read_text())
+        examples = {
+            "2412": ("2024-12-30", 2784.92, 644.18),
+            "2506": ("2025-06-02", 2777.29, 746.0),
+            "2608": ("2026-08-31", 4156.29, 812.04),
+        }
+        for month, (day, topix_value, growth_value) in examples.items():
+            with self.subTest(month=month):
+                source = next(row for row in register["sources"]
+                              if f"03_sisu{month}.pdf" in row["url"])
+                topix, growth = _jpx_month_points(
+                    (project_root() / source["path"]).read_bytes(), source["url"])
+                self.assertEqual(next(row["value"] for row in topix if row["date"] == day), topix_value)
+                self.assertEqual(next(row["value"] for row in growth if row["date"] == day), growth_value)
 
     def test_verified_old_growth_column_is_not_arithmetic_average(self):
         # June 2, 2025: only the target and misleading last cell are official;

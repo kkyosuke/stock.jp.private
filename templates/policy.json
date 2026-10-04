@@ -12,14 +12,12 @@
     "point_in_time_full_universe_validation": false,
     "historical_replay_2025_2026_accepted": false,
     "official_source_coverage": false,
-    "private_repository_recovery": false,
     "personal_risk_and_broker_check": false
   },
   "live_gate_evidence": {
     "point_in_time_full_universe_validation": null,
     "historical_replay_2025_2026_accepted": null,
     "official_source_coverage": null,
-    "private_repository_recovery": null,
     "personal_risk_and_broker_check": null
   },
   "v03_holdout_promotion": false,

@@ -1,0 +1,304 @@
+{
+  "sources": [
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/index.html",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/index.html",
+      "retrieved_at_jst": "2026-10-05T06:57:59+09:00",
+      "sha256": "6069563b81b53aac766ba01011ea1ee3948b628f2c8d544e4ef90a08f8c5fea9",
+      "bytes": 76285,
+      "path": "data/market/primary-sources/6069563b81b53aac766ba01011ea1ee3948b628f2c8d544e4ef90a08f8c5fea9.html",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/00-archives-01.html",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/00-archives-01.html",
+      "retrieved_at_jst": "2026-10-05T06:57:59+09:00",
+      "sha256": "8fbc17efe273aa79daea9b99e6ab9d7c448f171196bd2517744be4dd9c714964",
+      "bytes": 89689,
+      "path": "data/market/primary-sources/8fbc17efe273aa79daea9b99e6ab9d7c448f171196bd2517744be4dd9c714964.html",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/00-archives-02.html",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/00-archives-02.html",
+      "retrieved_at_jst": "2026-10-05T06:58:00+09:00",
+      "sha256": "51b4eab70f74c2e32997c6f69c4447722fd595e3ce47d7151edef425bc79cf27",
+      "bytes": 89665,
+      "path": "data/market/primary-sources/51b4eab70f74c2e32997c6f69c4447722fd595e3ce47d7151edef425bc79cf27.html",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/mklp77000000qb2z-att/03_sisu2412.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/mklp77000000qb2z-att/03_sisu2412.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:00+09:00",
+      "sha256": "8bd810bc59b299c9043d29ea248d6ef1c39512e4b3abef49c02e1a03b87c0cbe",
+      "bytes": 351335,
+      "path": "data/market/primary-sources/8bd810bc59b299c9043d29ea248d6ef1c39512e4b3abef49c02e1a03b87c0cbe.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt0000004nsd-att/03_sisu2510.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt0000004nsd-att/03_sisu2510.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:01+09:00",
+      "sha256": "e82921ef084b83358092d49e2aa26205326fbd06528e6793d54ddbd491ddc949",
+      "bytes": 815560,
+      "path": "data/market/primary-sources/e82921ef084b83358092d49e2aa26205326fbd06528e6793d54ddbd491ddc949.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000d42z-att/03_sisu2511.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000d42z-att/03_sisu2511.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:02+09:00",
+      "sha256": "24d9a09e5580bb4d6a77977b163ee7e0501b0a4340a3ed3337682d62c4d48690",
+      "bytes": 805127,
+      "path": "data/market/primary-sources/24d9a09e5580bb4d6a77977b163ee7e0501b0a4340a3ed3337682d62c4d48690.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000h2iz-att/03_sisu2512.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000h2iz-att/03_sisu2512.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:03+09:00",
+      "sha256": "7227fb27bb51f0282a58ff809aa80b9d3a5deab91a3edca093358ef60d250048",
+      "bytes": 815492,
+      "path": "data/market/primary-sources/7227fb27bb51f0282a58ff809aa80b9d3a5deab91a3edca093358ef60d250048.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000nwgb-att/03_sisu2601.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000nwgb-att/03_sisu2601.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:04+09:00",
+      "sha256": "f4dcb3776086e12b9b388aa89dfa3da6013d61a0826737d2336ab0fc32277c93",
+      "bytes": 807974,
+      "path": "data/market/primary-sources/f4dcb3776086e12b9b388aa89dfa3da6013d61a0826737d2336ab0fc32277c93.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000poko-att/03_sisu2602.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000000poko-att/03_sisu2602.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:05+09:00",
+      "sha256": "b761e752c0167939491609bbfcb5aa0558d5e473d1aced2489e3d8a41b0253a2",
+      "bytes": 804840,
+      "path": "data/market/primary-sources/b761e752c0167939491609bbfcb5aa0558d5e473d1aced2489e3d8a41b0253a2.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt0000013821-att/03_sisu2603.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt0000013821-att/03_sisu2603.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:07+09:00",
+      "sha256": "3cf450b7293936954b7d3ea8eb30575c6f301061b15ee74a90b64d260315da8e",
+      "bytes": 844447,
+      "path": "data/market/primary-sources/3cf450b7293936954b7d3ea8eb30575c6f301061b15ee74a90b64d260315da8e.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt00000178b0-att/03_sisu2604.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt00000178b0-att/03_sisu2604.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:08+09:00",
+      "sha256": "759d0c86e36bfb88efc9bbdfd04baa75d1d83bf0e686dcb9035dc8e1d9353e7d",
+      "bytes": 843368,
+      "path": "data/market/primary-sources/759d0c86e36bfb88efc9bbdfd04baa75d1d83bf0e686dcb9035dc8e1d9353e7d.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001hyrc-att/03_sisu2605.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001hyrc-att/03_sisu2605.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:09+09:00",
+      "sha256": "444c6189b4790c2a6cf9a7b2a336098317638949fd89351b499daa7c9898bcfa",
+      "bytes": 835595,
+      "path": "data/market/primary-sources/444c6189b4790c2a6cf9a7b2a336098317638949fd89351b499daa7c9898bcfa.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001jmoi-att/03_sisu2606.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001jmoi-att/03_sisu2606.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:10+09:00",
+      "sha256": "8ef4fc8210800177d324620c968e65795734ae93d982ef4c2b7acd0b8b2b6a04",
+      "bytes": 846457,
+      "path": "data/market/primary-sources/8ef4fc8210800177d324620c968e65795734ae93d982ef4c2b7acd0b8b2b6a04.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001ul01-att/03_sisu2607.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001ul01-att/03_sisu2607.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:11+09:00",
+      "sha256": "d40c7a6c241859264bd58dc3fa01826037026b3b1277eb87942ba0e55f337fa7",
+      "bytes": 846792,
+      "path": "data/market/primary-sources/d40c7a6c241859264bd58dc3fa01826037026b3b1277eb87942ba0e55f337fa7.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001ypy8-att/03_sisu2608.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/t13vrt000001ypy8-att/03_sisu2608.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:12+09:00",
+      "sha256": "d111a075a3b81d5be6c898fe8bf1640a79c8d38409f799518d8f0b51651393f4",
+      "bytes": 841087,
+      "path": "data/market/primary-sources/d111a075a3b81d5be6c898fe8bf1640a79c8d38409f799518d8f0b51651393f4.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000000tg9q-att/03_sisu2501.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000000tg9q-att/03_sisu2501.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:12+09:00",
+      "sha256": "96e49a90e4188b808a7ffbb4821b02af3a7d5a258767af179e8461598ee453cf",
+      "bytes": 351527,
+      "path": "data/market/primary-sources/96e49a90e4188b808a7ffbb4821b02af3a7d5a258767af179e8461598ee453cf.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000011pks-att/03_sisu2502.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000011pks-att/03_sisu2502.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:13+09:00",
+      "sha256": "a4e8090aafeb9e7474520b4f8a9771cc3401fe8de7e9c1b77d54faec9aeb93b8",
+      "bytes": 349889,
+      "path": "data/market/primary-sources/a4e8090aafeb9e7474520b4f8a9771cc3401fe8de7e9c1b77d54faec9aeb93b8.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000016a4y-att/03_sisu2503.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000016a4y-att/03_sisu2503.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:14+09:00",
+      "sha256": "19047308882cf935a41bf5682ae33e15177690bfa097897a6ff7d0c0b3ce0aed",
+      "bytes": 354675,
+      "path": "data/market/primary-sources/19047308882cf935a41bf5682ae33e15177690bfa097897a6ff7d0c0b3ce0aed.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000001irkr-att/03_sisu2504.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000001irkr-att/03_sisu2504.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:15+09:00",
+      "sha256": "78e8d6953cba451590c9f8cd0cb35f36cb8e4a4a250086c24c55ea4a8c376641",
+      "bytes": 355167,
+      "path": "data/market/primary-sources/78e8d6953cba451590c9f8cd0cb35f36cb8e4a4a250086c24c55ea4a8c376641.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000001n0z7-att/03_sisu2505.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000001n0z7-att/03_sisu2505.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:15+09:00",
+      "sha256": "5236ed145bb581e68a931381be6fff95ab93db45c93e2a020b5141f87bc2c66e",
+      "bytes": 350535,
+      "path": "data/market/primary-sources/5236ed145bb581e68a931381be6fff95ab93db45c93e2a020b5141f87bc2c66e.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000001r4m1-att/03_sisu2506.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc000001r4m1-att/03_sisu2506.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:16+09:00",
+      "sha256": "6731976bb7657434b1d1fa31c20034affd0856c25774e92f212190921f1f7f4d",
+      "bytes": 350029,
+      "path": "data/market/primary-sources/6731976bb7657434b1d1fa31c20034affd0856c25774e92f212190921f1f7f4d.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000021nwt-att/03_sisu2507.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000021nwt-att/03_sisu2507.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:17+09:00",
+      "sha256": "7a84b50f0c680fe1bfb8fad4c1347a6ef58ab86f916297851a0e9836ad0c11e7",
+      "bytes": 352192,
+      "path": "data/market/primary-sources/7a84b50f0c680fe1bfb8fad4c1347a6ef58ab86f916297851a0e9836ad0c11e7.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000023upu-att/03_sisu2508.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000023upu-att/03_sisu2508.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:17+09:00",
+      "sha256": "36da328536ca08ef4711ee108ae02420419faf34f138e5cb8a7dad3a11e62366",
+      "bytes": 355297,
+      "path": "data/market/primary-sources/36da328536ca08ef4711ee108ae02420419faf34f138e5cb8a7dad3a11e62366.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000027wd5-att/03_sisu2509.pdf",
+      "url": "https://www.jpx.co.jp/markets/statistics-equities/monthly/um3qrc0000027wd5-att/03_sisu2509.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:18+09:00",
+      "sha256": "357903ed2aa2f03003eb9faeb55d31563ebbb45a1083f562462420825246b211",
+      "bytes": 810249,
+      "path": "data/market/primary-sources/357903ed2aa2f03003eb9faeb55d31563ebbb45a1083f562462420825246b211.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+      "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+      "retrieved_at_jst": "2026-10-05T06:58:19+09:00",
+      "sha256": "3cb5a0f32a72ffc97d91df94bab60e9293893bde7d669d4d3b3cb5a665374502",
+      "bytes": 42352,
+      "path": "data/market/primary-sources/3cb5a0f32a72ffc97d91df94bab60e9293893bde7d669d4d3b3cb5a665374502.csv",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+      "retrieved_at_jst": "2026-10-05T06:58:19+09:00",
+      "sha256": "8b663dea9743dc72aea986f77a7e1d5d34940bcc91a5c9cc9e001a5dfed28137",
+      "bytes": 62949,
+      "path": "data/market/primary-sources/8b663dea9743dc72aea986f77a7e1d5d34940bcc91a5c9cc9e001a5dfed28137.html",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202606report.pdf",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/202606report.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:19+09:00",
+      "sha256": "7cc789a45337c847d8682092192d602404fe7b47c0ef0cda986834a5cd08a3e3",
+      "bytes": 1350590,
+      "path": "data/market/primary-sources/7cc789a45337c847d8682092192d602404fe7b47c0ef0cda986834a5cd08a3e3.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202606rsummary.pdf",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/202606rsummary.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:19+09:00",
+      "sha256": "e262831e97836ab9f8f4649766af695269521c956c5534c91e662660a6c53465",
+      "bytes": 240993,
+      "path": "data/market/primary-sources/e262831e97836ab9f8f4649766af695269521c956c5534c91e662660a6c53465.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202607report.pdf",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/202607report.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:20+09:00",
+      "sha256": "2f56d50ef93ea7735cc2be93488646d013436c652144c703d7a2bfe83ff35a9e",
+      "bytes": 1187979,
+      "path": "data/market/primary-sources/2f56d50ef93ea7735cc2be93488646d013436c652144c703d7a2bfe83ff35a9e.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    },
+    {
+      "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202607rsummary.pdf",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/202607rsummary.pdf",
+      "retrieved_at_jst": "2026-10-05T06:58:20+09:00",
+      "sha256": "dda89e565363544f241c820674f20cfc61ec5afb1292ab9ace820dfb3c94648d",
+      "bytes": 446371,
+      "path": "data/market/primary-sources/dda89e565363544f241c820674f20cfc61ec5afb1292ab9ace820dfb3c94648d.pdf",
+      "primary_source": true,
+      "original_historical_vintage_verified": false
+    }
+  ]
+}

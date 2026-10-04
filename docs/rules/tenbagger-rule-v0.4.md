@@ -82,14 +82,14 @@ v0.4は資金配分を大きく変えるため、v0.2の成績をそのまま流
 4. 追加購入前後の損益と、追加しなかった反実仮想
 5. 100株単位、流動性、候補不足で配分できなかった比率
 
-v0.4を`LIVE`へ昇格するには[運用ガバナンス](../archive/operations/operation-governance-v0.1.md)の全ゲートに加え、v0.4凍結後に開始した未観測のpoint-in-time全母集団holdoutでv0.2より大きくなる集中損失を利用者が確認して、`v04_holdout_promotion`を明示承認する。PAPERの経過日数と連続run数には最低条件を設けない。一方、holdout planに事前固定した観測数と損失floorは満たす必要がある。
+v0.4を`LIVE`へ昇格するには[有効なLIVE条件](../operations/live-gates.md)の全ゲートに加え、v0.4凍結後に開始した未観測のpoint-in-time全母集団holdoutでv0.2より大きくなる集中損失を利用者が確認して、`v04_holdout_promotion`を明示承認する。PAPERの経過日数と連続run数には最低条件を設けない。一方、holdout planに事前固定した観測数と損失floorは満たす必要がある。
 
-通常LIVE前に少額の実約定を観察する場合は、[制限付き実運用](../archive/operations/limited-live-v0.1.md)に従い
+通常LIVE前に少額の実約定を観察する場合は、[制限付き実運用](../operations/limited-live.md)に従い
 `LIMITED_LIVE`を使う。このモードは専用資金の絶対上限、1 run 1新規注文、追加購入禁止、
 累積損失停止を機械的に強制するが、forward holdoutや通常LIVE gateを代替しない。
 
 [2025年の12か月過去データ実験](../../research/allocation-replay-2025/README.md)は、同じ代理候補へv0.2とv0.4の資金配分を適用し、投資率・損益・最大ドローダウンの増幅だけを診断する。財務・開示を使う正式な候補判定や本人のLIVE承認を代替しない。
 
-2025年1月1日〜2026年8月31日はv0.4発効前なので、正式な全入力を再構築できても回顧的stress testとして扱い、`predeclared` holdoutとは呼ばない。入力契約、成果物、forward holdoutの手順は[point-in-time履歴再生](../archive/operations/historical-replay-v0.1.md)を正本とする。
+2025年1月1日〜2026年8月31日はv0.4発効前なので、正式な全入力を再構築できても回顧的stress testとして扱い、`predeclared` holdoutとは呼ばない。入力契約、成果物、forward holdoutの手順は[point-in-time履歴再生](../operations/historical-replay.md)を正本とする。
 
 本ルールは運用資産を安全資産として守る設計ではなく、高リスク戦略内で強制購入と過度な単一銘柄・業種集中を避ける設計である。将来の利益、10倍到達、元本回収を保証しない。
