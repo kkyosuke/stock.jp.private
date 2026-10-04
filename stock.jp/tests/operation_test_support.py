@@ -69,7 +69,7 @@ def write_price_archive(
     }
     if provider == "jquants_v2_private_archive":
         manifest["source"] = dict(SOURCE)
-        manifest["universe"].update({"provider": UNIVERSE_PROVIDER, "scope": UNIVERSE_SCOPE})
+        manifest["universe"].update({"provider": UNIVERSE_PROVIDER, "scope": UNIVERSE_SCOPE, "excluded_market_codes": ["0105"]})
     elif provider != "yahoo_finance_unofficial_tracked_archive":
         raise ValueError("unsupported fixture provider")
     (archive / "latest.json").write_text(

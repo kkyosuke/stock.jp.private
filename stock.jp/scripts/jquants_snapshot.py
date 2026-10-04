@@ -36,7 +36,12 @@ SOURCE = {
     "volume_unit": "shares",
 }
 UNIVERSE_PROVIDER = "J-Quants API V2 equities/master"
-UNIVERSE_SCOPE = "point-in-time domestic stocks"
+UNIVERSE_SCOPE = "point-in-time domestic common stocks excluding PRO MARKET"
+# Historical segments stay eligible on their dated master; never use today's listing.
+ELIGIBLE_MARKETS = frozenset({"0101", "0102", "0104", "0106", "0107", "0111", "0112", "0113"})
+EXCLUDED_MARKETS = frozenset({"0105"})
+BAR_KEYS = ("O", "H", "L", "C", "Vo", "Va")
+DIAGNOSTICS = ("ROW_MISSING", "NO_EXECUTION", "PARTIAL_NULL_OR_INVALID", "VALID_PRICE")
 
 
 class JQuantsSnapshotError(ValueError):
@@ -61,8 +66,11 @@ def _text_number(value: Decimal) -> str:
 
 def _bar_fields(bar: dict[str, Any] | None) -> tuple[dict[str, str], str]:
     fields = {name: "" for name in ("始値", "高値", "安値", "終値", "売買高(株)")}
-    if bar is None or all(bar.get(key) is None for key in ("O", "H", "L", "C", "Vo")):
+    diagnostic = bar_diagnostic(bar)
+    if diagnostic in {"ROW_MISSING", "NO_EXECUTION"}:
         return fields, "NO_QUOTE"
+    if diagnostic != "VALID_PRICE":
+        return fields, "FETCH_ERROR"
     try:
         op, hi, lo, cl, volume = (_number(bar.get(key)) for key in ("O", "H", "L", "C", "Vo"))
         if min(op, hi, lo, cl) <= 0 or hi < max(op, lo, cl) or lo > min(op, hi, cl):
@@ -74,6 +82,29 @@ def _bar_fields(bar: dict[str, Any] | None) -> tuple[dict[str, str], str]:
     return dict(zip(fields, (_text_number(value) for value in (op, hi, lo, cl, volume)))), "OK"
 
 
+def bar_diagnostic(bar: dict[str, Any] | None) -> str:
+    """Distinguish absent rows from explicit no-execution and unusable values.
+
+    NO_EXECUTION describes only the exchange session covered by the API;
+    it does not establish absence of a trading halt or off-exchange activity.
+    """
+    if bar is None:
+        return "ROW_MISSING"
+    if not all(key in bar for key in BAR_KEYS):
+        return "PARTIAL_NULL_OR_INVALID"
+    if all(bar[key] is None for key in BAR_KEYS):
+        return "NO_EXECUTION"
+    try:
+        op, hi, lo, cl, volume, value = (_number(bar[key]) for key in BAR_KEYS)
+        if min(op, hi, lo, cl, volume, value) <= 0:
+            raise ValueError("nonpositive executed price, volume or value")
+        if hi < max(op, lo, cl) or lo > min(op, hi, cl) or volume != volume.to_integral_value():
+            raise ValueError("invalid OHLC or volume")
+    except (ValueError, TypeError):
+        return "PARTIAL_NULL_OR_INVALID"
+    return "VALID_PRICE"
+
+
 def _safe_path(archive: Path, relative: Path) -> Path:
     path = (archive / relative).resolve()
     if not path.is_relative_to(archive) or path == archive:
@@ -83,10 +114,10 @@ def _safe_path(archive: Path, relative: Path) -> Path:
 
 def _atomic_bytes(archive: Path, relative: Path, content: bytes, *, immutable: bool = False) -> None:
     path = _safe_path(archive, relative)
-    if immutable and path.exists():
-        if path.read_bytes() != content:
-            raise JQuantsSnapshotError("immutable snapshot revision was modified")
-        return
+    if path.exists():
+        previous=path.read_bytes()
+        if previous==content:return
+        if immutable:raise JQuantsSnapshotError("immutable snapshot revision was modified")
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     for parent in (path.parent, *path.parent.parents):
         if not parent.is_relative_to(archive):
@@ -143,6 +174,7 @@ def export_daily_snapshot(
 
     issues: dict[str, dict[str, Any]] = {}
     master_codes: set[str] = set()
+    excluded_pro_count = 0
     for row in master_rows:
         if not isinstance(row, dict) or row.get("Date") != day:
             raise JQuantsSnapshotError("master must be a point-in-time snapshot for the price date")
@@ -161,6 +193,12 @@ def export_daily_snapshot(
         # https://jpx-jquants.com/en/help/data (common share reserve code is 0)
         if str(row["ProdCat"]) != "011" or (len(raw_code) == 5 and not raw_code.endswith("0")):
             continue
+        market = str(row.get("Mkt") or "")
+        if market in EXCLUDED_MARKETS:
+            excluded_pro_count += 1
+            continue
+        if market not in ELIGIBLE_MARKETS:
+            raise JQuantsSnapshotError("domestic common stock has missing or unsupported dated market code")
         issues[code] = row
     if not issues:
         raise JQuantsSnapshotError("point-in-time domestic stock universe is empty")
@@ -182,7 +220,12 @@ def export_daily_snapshot(
     rows: list[dict[str, str]] = []
     counts = {"OK": 0, "NO_QUOTE": 0, "FETCH_ERROR": 0}
     error_codes: list[str] = []
+    diagnostics = {name: 0 for name in DIAGNOSTICS}
+    raw_diagnostics = {name: 0 for name in DIAGNOSTICS}
+    for code in master_codes:
+        raw_diagnostics[bar_diagnostic(bars.get(code))] += 1
     for code, issue in sorted(issues.items()):
+        diagnostics[bar_diagnostic(bars.get(code))] += 1
         fields, status = _bar_fields(bars.get(code))
         counts[status] += 1
         if status == "FETCH_ERROR":
@@ -217,6 +260,15 @@ def export_daily_snapshot(
             "master_date": day,
             "product_category": "011",
             "common_share_reserve_code": "0",
+            "excluded_market_codes": sorted(EXCLUDED_MARKETS),
+            "excluded_pro_market_count": excluded_pro_count,
+        },
+        "acquisition": {
+            "master_row_count": len(master_codes),
+            "bar_row_count": len(bars),
+            "missing_bar_row_count": len(master_codes - bars.keys()),
+            "row_coverage_ratio": len(bars) / len(master_codes),
+            "diagnostics": raw_diagnostics,
         },
         "retrieved_at": retrieved_at,
         "latest_trading_date": day,
@@ -231,6 +283,7 @@ def export_daily_snapshot(
             "canonical_file": canonical.as_posix(),
             "sha256": checksum,
             "quote_count": counts["OK"],
+            "diagnostics": diagnostics,
             "no_quote_count": counts["NO_QUOTE"],
             "fetch_error_count": counts["FETCH_ERROR"],
         },

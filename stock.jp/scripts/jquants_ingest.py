@@ -130,7 +130,7 @@ class Client:
     """Fixed-origin API-key client, serial pacing, bounded transient retries."""
     def __init__(self, *, plan: str, timeout: int = 30, max_requests: int | None = None,
                  transport: Callable | None = None, sleep: Callable = time.sleep,
-                 monotonic: Callable = time.monotonic, retries: int = 5, download_hosts: tuple[str, ...] = ()):
+                 monotonic: Callable = time.monotonic, retries: int = 5, download_hosts: tuple[str, ...] = (), max_response_bytes: int | None = None):
         if plan not in PLANS:
             raise IngestionError("verify and configure the purchased plan before collection")
         self._key = os.environ.get("JQUANTS_API_KEY", "") if transport is None else ""
@@ -138,6 +138,7 @@ class Client:
             raise IngestionError("JQUANTS_API_KEY is not set; collection blocked")
         if max_requests is not None and max_requests < 1:
             raise ValueError("max_requests must be positive")
+        self.max_response_bytes = max_response_bytes
         self.transport, self.timeout, self.max_requests = transport, timeout, max_requests
         self.download_hosts = download_hosts
         self.sleep, self.monotonic, self.retries = sleep, monotonic, retries
@@ -155,13 +156,16 @@ class Client:
             with self.opener.open(request, timeout=self.timeout) as response:
                 if response.status == 210:
                     raise ApiError(210, "not_available")
-                return json.loads(response.read(), parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
+                data = response.read() if self.max_response_bytes is None else response.read(self.max_response_bytes + 1)
+                if self.max_response_bytes is not None and len(data) > self.max_response_bytes:
+                    raise ApiError(200, "response_too_large")
+                return json.loads(data, parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
         except HTTPError as error:
             # Never persist error bodies, URLs containing signed tokens, or headers.
             kind = "access_denied_unclassified" if error.code == 403 else "api_error"
             if error.code in {401, 403}:
                 try:
-                    message = json.loads(error.read()).get("message", "")
+                    message = json.loads(error.read(self.max_response_bytes + 1) if self.max_response_bytes is not None else error.read()).get("message", "")
                     if message == "The incoming api key is invalid or expired." or error.code == 401:
                         kind = "authentication_failed"
                 except (ValueError, TypeError, AttributeError):
@@ -224,7 +228,7 @@ def checked_payload(root: Path, ref: dict) -> dict:
     return json.loads(data)
 
 
-def collect_partition(root: Path, dataset: Dataset, day: date, client: Client) -> dict:
+def collect_partition(root: Path, dataset: Dataset, day: date, client: Client, *, page_saved=None) -> dict:
     """Commit page then checkpoint. Publish a partition only when pagination ends."""
     folder = confined(root, "datasets", dataset.name, day.isoformat())
     checkpoint_path = confined(root, "datasets", dataset.name, day.isoformat(), "checkpoint.json")
@@ -258,6 +262,8 @@ def collect_partition(root: Path, dataset: Dataset, day: date, client: Client) -
             checkpoint["seen_keys"].append(next_key)
         checkpoint["complete"] = not bool(next_key)
         atomic_json(checkpoint_path, checkpoint)
+        if page_saved is not None:
+            page_saved()  # synchronous remote ACK before requesting another page
     partition = {"schema_version": 1, "provider": "J-Quants API V2", "api_version": "v2", "dataset": dataset.name,
                  "endpoint": BASE_URL + dataset.endpoint, "query": params, "period": {"from": day.isoformat(), "to": day.isoformat()},
                  "universe": "all returned issues; no configured watchlist filter", "units": dataset.units,
@@ -301,6 +307,9 @@ def days_between(start: date, end: date):
         day += timedelta(days=1)
 
 
+_snapshot_exports = {}
+
+
 def publish_snapshot(root: Path, archive: Path, day: date) -> dict:
     try:
         from scripts.jquants_snapshot import export_daily_snapshot
@@ -310,16 +319,43 @@ def publish_snapshot(root: Path, archive: Path, day: date) -> dict:
     target = private_root(root, config.get("price_source", {}).get("archive_root", "operations/private/market-data/daily-prices"))
     if target == archive.resolve() or target.is_relative_to(archive.resolve()) or archive.resolve().is_relative_to(target):
         raise IngestionError("raw and normalized archives must be separate sibling directories")
+    inputs={name:confined(archive,'datasets',name,day.isoformat(),'latest.json').read_bytes()
+            for name in ('equities_master','equities_daily')}
+    provenance={"api_version":"v2","archive_root":config['jquants']['ingestion']['archive_root'],
+        "partitions":[{"dataset":name,"path":f"datasets/{name}/{day.isoformat()}/revisions/{digest(raw)}.json",
+                       "sha256":digest(raw)} for name,raw in inputs.items()]}
+    # Re-exporting an unchanged acquisition must not manufacture new retrieval
+    # times/revisions on every history batch. Corrections have a new input hash.
+    retrieved=max(datetime.fromisoformat(json.loads(raw)['completed_at'].replace('Z','+00:00')) for raw in inputs.values()).isoformat()
+    # A same-process history continuation may reuse an output we actually
+    # generated and semantically checked, only after rechecking every input page
+    # and output hash. Cold processes recompute once; stable input time keeps
+    # their immutable output identical as well.
+    module_root=Path(__file__).parent
+    binding=digest(b''.join((module_root/name).read_bytes() for name in
+                           ('jquants_snapshot.py','price_snapshot.py','collect_daily_prices.py'))+encoded(provenance))
+    cache_key=(str(root.resolve()),day.isoformat());cached=_snapshot_exports.get(cache_key)
+    if cached and cached['binding']==binding:
+        for raw in inputs.values():
+            for page in json.loads(raw)['pages']:
+                content=confined(archive,page['path']).read_bytes()
+                if digest(content)!=page['sha256'] or len(content)!=page['bytes']:
+                    raise IngestionError('raw page changed during snapshot reuse')
+        for name,checksum in cached['files'].items():
+            if digest(confined(target,name).read_bytes())!=checksum:
+                raise IngestionError('normalized snapshot changed during reuse')
+        return dict(cached['summary'])
     manifest = export_daily_snapshot(
         root, day.isoformat(), partition_rows(archive, "equities_master", day),
-        partition_rows(archive, "equities_daily", day), utc_now(),
-        raw_provenance={"api_version": "v2", "archive_root": config["jquants"]["ingestion"]["archive_root"], "partitions": [
-            {"dataset": name,
-             "path": f"datasets/{name}/{day.isoformat()}/revisions/{digest(confined(archive, 'datasets', name, day.isoformat(), 'latest.json').read_bytes())}.json",
-             "sha256": digest(confined(archive, "datasets", name, day.isoformat(), "latest.json").read_bytes())}
-            for name in ("equities_master", "equities_daily")]})
-    return {"status": "exported", "date": day.isoformat(), "quote_count": manifest["latest_session"]["quote_count"],
+        partition_rows(archive, "equities_daily", day), retrieved, raw_provenance=provenance)
+    summary={"status": "exported", "date": day.isoformat(), "quote_count": manifest["latest_session"]["quote_count"],
             "universe_count": manifest["universe"]["count"], "readiness": "independent_coverage_freshness_and_active_target_validation_required"}
+    metadata=(json.dumps(manifest,ensure_ascii=False,indent=2,allow_nan=False)+'\n').encode()
+    session=manifest['latest_session'];manifest_name=(Path(session['file']).parent/('manifest-'+digest(metadata)+'.json')).as_posix()
+    _snapshot_exports[cache_key]={'binding':binding,'summary':summary,'files':{
+        session['file']:session['sha256'],session['canonical_file']:session['sha256'],manifest_name:digest(metadata)}}
+    while len(_snapshot_exports)>280:_snapshot_exports.pop(next(iter(_snapshot_exports)))
+    return summary
 
 
 def initial_snapshot(root: Path, archive: Path, plan: str, as_of: date, client: Client) -> dict:

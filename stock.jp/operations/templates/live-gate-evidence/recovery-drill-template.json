@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "drill_id": "{{DRILL_ID}}",
   "operator": "{{OPERATOR}}",
   "repository_visibility": "PRIVATE",
@@ -21,5 +21,9 @@
     "all_ledgers": false,
     "unreconciled_orders": false
   },
-  "result_notes": ""
+  "result_notes": "",
+  "provenance": null,
+  "provenance_errors": [],
+  "selected_run": null,
+  "run_validation_errors": []
 }

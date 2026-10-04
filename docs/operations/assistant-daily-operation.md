@@ -51,7 +51,7 @@ credentialは認可済み保管場所から実行時だけ利用し、新規権�
 - Yahoo bulk取得を停止し、許可されたprovider以外から全市場価格を自動取得しない
 - 取得元の自動取得・保存・分析・削除条件を確認してから、認可済みcollectorで取得・検証する
 - archiveは`operations/private/source-config.json`に明示したprivate local領域へ保存する
-- rawの作業領域はGit追跡外とし、圧縮世代を同じrepoの`stock.jp/data/jquants-archive/`へ保存する。旧`data/daily-prices/`へfallbackしない
+- rawの作業領域はGit追跡外とし、JSON/CSV世代を同じrepoの`stock.jp/data/jquants-archive/`へ保存する。旧`data/daily-prices/`へfallbackしない
 - Yahoo等の補助データを公式証跡と偽らない
 - JPXの取引日・銘柄master・価格、TDnet、EDINET、会社IR、必要な内閣府・日銀資料を調べる
 - 公表時刻、取得時刻、URL、対象期間、単位、cutoff、取得失敗とcoverageを証跡化する
@@ -63,7 +63,7 @@ credentialは認可済み保管場所から実行時だけ利用し、新規権�
 
 ## 3. 共通データ・個人分析の境界と採用
 
-市場データの圧縮正本は同じrepoの`stock.jp/data/jquants-archive/`です。個人分析はstock.jp.privateへ分離します。
+市場データのJSON/CSV正本は同じrepoの`stock.jp/data/jquants-archive/`です。個人分析はstock.jp.privateへ分離します。
 共有は本人のプロジェクト間利用であり、第三者配信や公開の許可ではありません。
 保有・監視リスト、資金、数量、個別判断、会社別research-inputs、私的source使用記録、
 run成果物はprivateに置きます。取得元の条件が派生物にも適用される場合はその条件を守ります。

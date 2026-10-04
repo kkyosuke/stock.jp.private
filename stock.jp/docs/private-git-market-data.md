@@ -38,19 +38,29 @@ work area, including its resumable page checkpoints and normalized daily prices.
 The existing private-path resolver and readiness gates are unchanged. Restore
 into that work area explicitly; never fall back to legacy `data/daily-prices/`.
 
-The codec splits each file into stable 1 MiB blocks, compresses with deterministic
-gzip, and stores blocks by SHA-256 under `objects/<prefix>/<hash>.gz`. Repeated
-blocks are reused; changed blocks are appended without rewriting old blocks.
-Every shard is limited to 25 MiB compressed. Generation indexes contain file
-paths, lengths, hashes and ordered chunk references; indexes are compressed,
-checksummed and immutable under `generations/`. `current.json` changes atomically
-only after the entire generation validates. Commit blocks, index and pointer
-together. Interrupted packing leaves the previous pointer valid; orphan blocks
-may be reused and are never automatically deleted.
+New writes use version 2: complete original JSON and CSV bytes are stored under
+`objects/<prefix>/<sha256>.json` or `.csv`. The generation index maps the original
+logical filenames to those objects and retains each file's SHA-256 and byte count.
+No JSON-to-CSV conversion or pretty-printing changes the original bytes. Non-JSON/
+CSV binary cache members, if encountered, remain lossless `.bin` objects; this
+migration contains only JSON and CSV. Indexes are readable JSON under
+`generations/<prefix>/<sha256>.json`; `current.json` selects a fully validated index.
+
+Whole files are limited to 25 MiB and the store to 750 MiB. Oversized files stop
+before pointer publication; they are not silently truncated, split into invalid
+JSON, or converted to a lossy format. Identical objects are reused. Existing
+objects and indexes are immutable during ordinary daily publication. The explicit
+format-migration PR replaces the working tree representation after verifying every
+old generation; it does not rewrite Git history.
+
+Version-1 gzip/chunk archives remain readable. New writes, including captures by
+the legacy Actions adapter, use version 2. Git checkpoint transport may still split
+complete stored files into 1 MiB Git blobs; this is distinct from the on-disk format.
+The deleted legacy checkpoint branch is not recreated by this change.
 
 Packing holds the collector's local archive lock. Use only one runtime/writer;
 this is not a distributed lock. Git non-fast-forward failures stop publication.
-Restore validates compressed hashes, expanded-size bounds, relative paths and
+Restore validates legacy compressed or new plain hashes, size bounds, relative paths and
 complete file hashes into a new directory, then renames it into place. It refuses
 symlinks and existing targets, preserving any active checkpoints. Credentials and
 signed URL patterns are rejected without reading runtime secrets. No codec

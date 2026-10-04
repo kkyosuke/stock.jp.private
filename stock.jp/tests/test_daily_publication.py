@@ -31,6 +31,14 @@ class DailyGateTest(unittest.TestCase):
     def test_validated_non_draft_daily_pr_allowed(self):
         self.assertEqual(p.allow_auto_merge(self.proof(),self.evidence())['action'],'enable_native_auto_merge')
 
+    def test_failed_history_requires_review(self):
+        for status in ('PAUSED','BLOCKED','EXHAUSTED','RUNNING'):
+            proof=self.proof();proof['history_status']=status
+            with self.subTest(status=status),self.assertRaises(p.Blocked):p.allow_auto_merge(proof,self.evidence())
+        for status in ('COMPLETE','BATCH_EXHAUSTED'):
+            proof=self.proof();proof['history_status']=status
+            self.assertTrue(p.allow_auto_merge(proof,self.evidence())['eligible'])
+
     def test_identity_visibility_reviews_and_head_base_races_block(self):
         for field,value in [('draft',True),('head_sha','c'*40),('base_sha','c'*40),('head_ref','dependabot/pkg'),('author_login','other'),('review_decision','CHANGES_REQUESTED'),('mergeable',False)]:
             e=self.evidence();e['pr'][field]=value
@@ -104,7 +112,7 @@ class ArchiveReachabilityTest(unittest.TestCase):
 
     def additions(self, before=()):
         return [{'path':'stock.jp/data/jquants-archive/'+p.relative_to(self.store).as_posix(),'status':'A'}
-                for p in self.store.rglob('*.gz') if p not in before]
+                for p in self.store.rglob('*') if p.is_file() and p.name != 'current.json' and p not in before]
 
     def test_unreferenced_valid_hash_secret_object_or_generation_rejected(self):
         for kind in ('objects','generations'):
@@ -115,7 +123,7 @@ class ArchiveReachabilityTest(unittest.TestCase):
                 codec.object_path(self.store,sha,kind).unlink()
 
     def test_existing_history_preserved_legitimate_correction_validates(self):
-        old=set(self.store.rglob('*.gz'))
+        old={p for p in self.store.rglob('*') if p.is_file() and p.name != 'current.json'}
         (self.source/'jquants/latest.json').write_text('{"synthetic":"correction"}')
         codec.pack(self.source,self.store)
         p.validate_added_archive_members(self.store,self.additions(old))
@@ -127,9 +135,9 @@ class ArchiveReachabilityTest(unittest.TestCase):
 
     def test_extra_generation_metadata_and_duplicate_fields_rejected(self):
         pointer=json.loads((self.store/'current.json').read_text())
-        data=codec.unpack(self.store,pointer['generation'],codec.MAX_INDEX,'generations')
+        data=codec.manifest_bytes(self.store,pointer)
         metadata=json.loads(data);metadata['personal_analysis']='hidden'
-        pointer['generation']=codec.put(self.store,codec.encoded(metadata),'generations')
+        pointer['generation']=Path(codec.put_plain(self.store,codec.encoded(metadata),'.json','generations')).stem
         (self.store/'current.json').write_bytes(codec.encoded(pointer))
         with self.assertRaises(p.Blocked):p.validate_added_archive_members(self.store,self.additions())
         with self.assertRaises(p.Blocked):p.strict_metadata(b'{"files":{},"files":{}}')
@@ -137,7 +145,7 @@ class ArchiveReachabilityTest(unittest.TestCase):
     def test_referenced_corrupt_and_oversized_blobs_fail_validation(self):
         from unittest.mock import patch
         p.validate_added_archive_members(self.store,self.additions())
-        obj=next((self.store/'objects').rglob('*.gz'))
+        obj=next((self.store/'objects').rglob('*.json'))
         original=obj.read_bytes();obj.write_bytes(b'not-gzip')
         with self.assertRaises(codec.ArchiveError):codec.verify(self.store)
         obj.write_bytes(original)

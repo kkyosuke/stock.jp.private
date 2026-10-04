@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "source": {
+    "provider": "J-Quants API V2",
+    "official": true,
+    "api_version": "v2",
+    "price_basis": "unadjusted",
+    "volume_unit": "shares"
+  },
+  "universe": {
+    "provider": "J-Quants API V2 equities/master",
+    "scope": "point-in-time domestic stocks",
+    "count": 3880,
+    "master_date": "2026-10-02",
+    "product_category": "011",
+    "common_share_reserve_code": "0"
+  },
+  "retrieved_at": "2026-10-02T22:07:10.985505+00:00",
+  "latest_trading_date": "2026-10-02",
+  "fetch": {
+    "success_count": 3880,
+    "error_count": 0,
+    "error_codes": []
+  },
+  "latest_session": {
+    "date": "2026-10-02",
+    "file": "revisions/2026-10-02/a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172/2026-10-02.csv",
+    "canonical_file": "2026/2026-10-02.csv",
+    "sha256": "a9b35ad84c6ea15426543280c2f22a5905fb491c7769d172af1fb7f119a26172",
+    "quote_count": 3660,
+    "no_quote_count": 220,
+    "fetch_error_count": 0
+  },
+  "raw_provenance": {
+    "api_version": "v2",
+    "archive_root": "operations/private/market-data/jquants",
+    "partitions": [
+      {
+        "dataset": "equities_master",
+        "path": "datasets/equities_master/2026-10-02/revisions/3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51.json",
+        "sha256": "3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51"
+      },
+      {
+        "dataset": "equities_daily",
+        "path": "datasets/equities_daily/2026-10-02/revisions/d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c.json",
+        "sha256": "d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c"
+      }
+    ]
+  }
+}

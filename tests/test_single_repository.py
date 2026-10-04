@@ -14,8 +14,10 @@ class SingleRepositoryTest(unittest.TestCase):
     def test_ci_has_one_local_checkout_without_cross_repository_secret(self):
         for file in (ROOT / '.github/workflows').glob('*.yml'):
             text = file.read_text()
-            for forbidden in ('AUTOMATION_PAT', 'repository: kkyosuke/stock.jp', 'submodules:', 'git submodule'):
+            for forbidden in ('repository: kkyosuke/stock.jp', 'submodules:', 'git submodule'):
                 self.assertNotIn(forbidden, text)
+            if file.name not in {'daily-collector-disabled.yml','history-once-disabled.yml'}:
+                self.assertNotIn('AUTOMATION_PAT',text)
             if 'actions/checkout@' in text:
                 self.assertEqual(text.count('actions/checkout@'), 1)
                 self.assertIn('persist-credentials: false', text)

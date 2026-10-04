@@ -9,7 +9,7 @@
 機械取得と一次サイト確認の境界は次のとおり。
 
 | 情報源 | 取得内容 | 認証 | coverageへの効果 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | EDINET API v2 | 日付別の提出書類一覧 | `EDINET_API_KEY` | 全日成功時に`edinet=CHECKED` |
 | JPX上場銘柄一覧 | 内国株式の銘柄・市場・33/17業種をrun時点で保存 | なし | 取得不能時は候補選定を停止 |
 | TDnet公開ページ | 適時開示と検索範囲0件の証跡 | なし | エージェント確認後に`tdnet=CHECKED` |
@@ -17,7 +17,7 @@
 | JPX公開ページ | 売買停止、監理・整理、上場廃止、現物株休業日 | なし | 確認後に`jpx=CHECKED`、翌営業日確定 |
 | `data/daily-prices/` | PR #14形式の候補探索用日足 | なし | 価格候補を作るが、単独では公式確認を閉じない |
 
-TDnetと会社IRは、エージェントが一次サイトを確認する`PENDING`タスクとして毎回作る。公式価格、コーポレートアクション、JPX現物株カレンダーも一次サイト確認タスクとし、証跡が付くまで重大データ不足を開いたままにして注文票を作らない。この運用ではJ-Quantsを使用せず、設定の全dataset flagを`false`に保つ。
+TDnetと会社IRは、エージェントが一次サイトを確認する`PENDING`タスクとして毎回作る。公式価格、コーポレートアクション、JPX現物株カレンダーも一次サイト確認タスクとし、証跡が付くまで重大データ不足を開いたままにして注文票を作らない。本人承認済みLight契約内ではJ-Quantsの公式価格・カレンダー等を利用する。取得成功だけで手動開示確認を完了扱いにせず、dataset設定をこの文書から自動変更しない。Standard指数API・追加契約は利用しない。
 
 公式仕様の確認先:
 
@@ -28,11 +28,11 @@ TDnetと会社IRは、エージェントが一次サイトを確認する`PENDIN
 
 ## 2. 認証情報
 
-EDINETのAPIキーは環境変数だけで渡す。JSON、チャット、ログ、コマンド引数、Git管理下へ値を書かない。J-QuantsのAPIキーは設定しない。
-
-~~~bash
-export EDINET_API_KEY='EDINETで発行した値'
-~~~
+`EDINET_API_KEY`と`JQUANTS_API_KEY`は、実際にcollectorを実行する環境の承認済みsecret機構から環境変数として渡す。
+J-Quantsは[private取得の認証手順](../jquants-private-ingestion.md)を参照し、既存の承認済みLight収集経路を使う。
+値をJSON、チャット、ログ、コマンド引数、Git管理下やfixtureへ書かず、有無だけを確認する。
+GitHub Actionsのsecretを外部collectorから読み出そうとしない。認証不足・拒否時は停止して報告する。
+収集用credentialの利用許可は、LIVE昇格や既存forward holdoutへのデータ採用承認を意味しない。
 
 変数名、エンドポイント、timeoutは`operations/private/source-config.json`で設定する。値そのものは保存しない。公開ページ確認には認証値を保存せず、URL、確認範囲、公開日時、取得日時を`sources.csv`へ残す。
 

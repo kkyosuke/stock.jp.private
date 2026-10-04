@@ -40,7 +40,11 @@ def require(value, reason):
 
 
 def git(root, *args):
-    return subprocess.check_output(['git', '-C', str(root), *args], stderr=subprocess.DEVNULL)
+    try:
+        from scripts.git_sandbox import git as safe_git
+    except ModuleNotFoundError:
+        from git_sandbox import git as safe_git
+    return safe_git(root,*args)
 
 
 def changes(root, base, head):
@@ -65,7 +69,7 @@ def classify(kind, run_id, entries):
     for entry in entries:
         path, status = entry['path'], entry['status']
         if kind == 'market':
-            require(re.fullmatch(r'stock\.jp/data/jquants-archive/(current\.json|(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.gz)', path),
+            require(path.startswith('stock.jp/data/jquants-archive/') and codec.store_member(path.removeprefix('stock.jp/data/jquants-archive/')),
                     'unexpected market path')
             require(path.endswith('/current.json') or status == 'A', 'immutable archive object changed')
         else:
@@ -117,30 +121,28 @@ def strict_metadata(data):
 
 
 def validate_added_archive_members(store, entries):
-    """Every new compressed byte must belong to the fully validated current generation.
+    """Every new stored byte must belong to the fully validated current generation.
 
     Older generations already in base are retained, never rewritten or deleted.
     A daily PR publishes one generation; intermediate/orphan local files stay local.
     """
     pointer = strict_metadata((store / 'current.json').read_bytes())
     require(set(pointer) == {'version', 'generation', 'file_count', 'raw_bytes'}, 'unexpected pointer field')
-    require(type(pointer['version']) is int and pointer['version'] == 1
+    require(type(pointer['version']) is int and pointer['version'] in {1,2}
             and type(pointer['file_count']) is int and type(pointer['raw_bytes']) is int,
             'invalid pointer schema')
-    manifest = strict_metadata(codec.unpack(store, pointer['generation'], codec.MAX_INDEX, 'generations'))
+    manifest = strict_metadata(codec.manifest_bytes(store, pointer))
     require(set(manifest) == {'version', 'files'} and type(manifest['version']) is int
-            and manifest['version'] == 1 and isinstance(manifest['files'], dict), 'unexpected generation schema')
-    reachable = {codec.object_path(store, pointer['generation'], 'generations').relative_to(store).as_posix()}
+            and manifest['version'] == pointer['version'] and isinstance(manifest['files'], dict), 'unexpected generation schema')
     for entry in manifest['files'].values():
-        require(isinstance(entry, dict) and set(entry) == {'sha256', 'bytes', 'chunks'}, 'unexpected file metadata')
-        require(isinstance(entry['chunks'], list), 'invalid chunks')
-        for sha in entry['chunks']:
-            reachable.add(codec.object_path(store, sha).relative_to(store).as_posix())
+        fields = {'sha256', 'bytes', 'chunks'} if pointer['version'] == 1 else {'sha256', 'bytes', 'object'}
+        require(isinstance(entry, dict) and set(entry) == fields, 'unexpected file metadata')
+    reachable = codec.reachable_members(store, pointer)
     for entry in entries:
-        if entry['status'] == 'A' and entry['path'].endswith('.gz'):
+        if entry['status'] == 'A' and entry['path'] != 'stock.jp/data/jquants-archive/current.json':
             name = entry['path'].removeprefix('stock.jp/data/jquants-archive/')
             require(name in reachable, 'unreferenced added archive payload')
-    # restore subsequently verifies every referenced compressed hash/name, shard
+    # restore subsequently verifies every referenced plain or legacy compressed hash/name, shard
     # bound, expanded-size bound and reconstructed file checksum/content.
 
 
@@ -158,6 +160,7 @@ def market_semantics(root, head, scratch, entries):
                    or re.fullmatch(r'jquants/(latest|size-sample)\.json', name)
                    or re.fullmatch(r'jquants/objects/[0-9a-f]{2}/[0-9a-f]{64}\.json', name)
                    or re.fullmatch(r'jquants/runs/[0-9TZ]+\.json', name)
+                   or name in {'jquants/history/state.json', 'jquants/history-marker.json', 'jquants/target-history/ranges.json'}
                    or re.fullmatch(r'jquants/datasets/[a-z_]+/(state\.json|[0-9-]{10}/(latest\.json|checkpoint\.json|revisions/[0-9a-f]{64}\.json))', name)
                    or re.fullmatch(r'daily-prices/(latest\.json|[0-9]{4}/[0-9-]{10}\.csv|revisions/[0-9-]{10}/[0-9a-f]{64}/([0-9-]{10}\.csv|manifest-[0-9a-f]{64}\.json))', name))
         require(allowed, 'unexpected restored market member')
@@ -169,6 +172,15 @@ def market_semantics(root, head, scratch, entries):
                 elif isinstance(value, list):
                     for child in value: reject_personal(child)
             reject_personal(json.loads(path.read_text()))
+            value = json.loads(path.read_text())
+            if re.fullmatch(r'jquants/runs/[0-9]{8}T120000Z\.json', name):
+                try:
+                    from scripts.jquants_daily import validate_state
+                except ModuleNotFoundError:
+                    from jquants_daily import validate_state
+                validate_state(value)
+                require(Path(name).name == value['run_date'].replace('-', '') + 'T120000Z.json',
+                        'daily journal filename does not match run date')
     report = json.loads((scratch / 'restored/jquants/latest.json').read_text())
     require(report.get('provider') == 'J-Quants API V2' and report.get('declared_plan') == 'light'
             and report.get('declared_addons') == [], 'unexpected subscription/provider')
@@ -180,7 +192,10 @@ def market_semantics(root, head, scratch, entries):
                 {'complete', 'pending_resume', 'pending'} for n in required), 'dataset error or unclassified state')
     complete = all(rows[n]['collection_status'] == 'complete' for n in required)
     require(report.get('all_entitled_complete') is complete, 'inconsistent completeness claim')
-    return {'scope': 'complete_acquisition' if complete else 'partial_acquisition', 'operational_readiness': False}
+    history_path = scratch / 'restored/jquants/history/state.json'
+    history_status = json.loads(history_path.read_text())['status'] if history_path.exists() else None
+    return {'scope': 'complete_acquisition' if complete else 'partial_acquisition',
+            'operational_readiness': False, 'history_status': history_status}
 
 
 def validate_proposal_events(old_bytes, new_bytes, orders, run_id):
@@ -370,6 +385,8 @@ def allow_auto_merge(proof, evidence, now=None):
         elapsed = (now - datetime.fromisoformat(item[key])).total_seconds()
         require(0 <= elapsed <= age, 'stale validation or GitHub snapshot')
     kind = proof['kind']; pr = evidence['pr']
+    require(proof.get('history_status') in (None, 'COMPLETE', 'BATCH_EXHAUSTED'),
+            'unfinished or failed history needs review; no automatic merge')
     require(proof.get('validated') is True and proof['repository'] == REPOS[kind], 'invalid semantic proof')
     require(evidence['repository'] == REPOS[kind] and evidence['visibility'] == 'private', 'private destination required')
     require(evidence.get('auto_merge_allowed') is True, 'native auto-merge unavailable; do not alter settings')

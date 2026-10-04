@@ -24,8 +24,10 @@ DESTINATION = 'kkyosuke/stock.jp.private'
 
 try:
     from scripts import nightly_cache_archive as nightly_cache
+    from scripts.jquants_archive_validation import validate_archive
 except ModuleNotFoundError:
     import nightly_cache_archive as nightly_cache
+    from jquants_archive_validation import validate_archive
 
 
 class ArchiveError(ValueError):
@@ -137,6 +139,75 @@ def unpack(store, sha, limit, kind='objects'):
         raise ArchiveError('invalid compressed object') from None
 
 
+def store_member(name):
+    return name == 'current.json' or bool(re.fullmatch(
+        r'(?:objects/[0-9a-f]{2}/[0-9a-f]{64}\.(?:gz|json|csv|bin)|generations/[0-9a-f]{2}/[0-9a-f]{64}\.(?:gz|json))', name))
+
+
+def put_plain(store, data, suffix, kind='objects'):
+    if suffix not in {'.json', '.csv', '.bin'} or kind not in {'objects', 'generations'}:
+        raise ArchiveError('invalid plain object type')
+    if len(data) > MAX_SHARD:
+        raise ArchiveError('plain file exceeds 25 MiB; no implicit lossy splitting')
+    sha = digest(data)
+    name = f'{kind}/{sha[:2]}/{sha}{suffix}'
+    path = Path(store)/name
+    if path.exists():
+        if path.read_bytes() != data:
+            raise ArchiveError('existing plain object checksum mismatch')
+    else:
+        size = sum(p.stat().st_size for p in Path(store).rglob('*') if p.is_file())
+        if size + len(data) > MAX_STORE:
+            raise ArchiveError('private Git store exceeds conservative size budget')
+        atomic(path, data)
+    return name
+
+
+def plain_bytes(store, name, sha, limit):
+    if (not store_member(name) or name.endswith('.gz') or Path(name).stem != sha
+            or Path(name).parent.name != sha[:2]):
+        raise ArchiveError('invalid plain object identity')
+    path = Path(store)/name
+    if not path.is_file() or path.is_symlink() or path.stat().st_size > min(limit, MAX_SHARD):
+        raise ArchiveError('missing or oversized plain file')
+    data = path.read_bytes()
+    if digest(data) != sha:
+        raise ArchiveError('plain file checksum mismatch')
+    return data
+
+
+def manifest_bytes(store, pointer):
+    if pointer.get('version') == 1:
+        return unpack(store, pointer['generation'], MAX_INDEX, 'generations')
+    if pointer.get('version') == 2:
+        sha = pointer['generation']
+        return plain_bytes(store, f'generations/{sha[:2]}/{sha}.json', sha, MAX_INDEX)
+    raise ArchiveError('unsupported pointer version')
+
+
+def member_bytes(store, pointer, entry):
+    if pointer['version'] == 1:
+        if set(entry) != {'sha256', 'bytes', 'chunks'} or not isinstance(entry['chunks'], list):
+            raise ArchiveError('invalid legacy file metadata')
+        if len(entry['chunks']) != (entry['bytes'] + CHUNK - 1) // CHUNK:
+            raise ArchiveError('invalid chunk count')
+        return b''.join(unpack(store, sha, CHUNK) for sha in entry['chunks'])
+    if set(entry) != {'sha256', 'bytes', 'object'} or not entry['object'].startswith('objects/'):
+        raise ArchiveError('invalid plain file metadata')
+    return plain_bytes(store, entry['object'], entry['sha256'], MAX_SHARD)
+
+
+def reachable_members(store, pointer):
+    manifest = json.loads(manifest_bytes(store, pointer))
+    if pointer['version'] == 1:
+        names = {object_path(Path(store), pointer['generation'], 'generations').relative_to(store).as_posix()}
+        for entry in manifest['files'].values():
+            names.update(object_path(Path(store), sha).relative_to(store).as_posix() for sha in entry['chunks'])
+        return names
+    return {f"generations/{pointer['generation'][:2]}/{pointer['generation']}.json"} | {
+        entry['object'] for entry in manifest['files'].values()}
+
+
 def pack(source, store):
     source, store = Path(source), Path(store)
     if any(p.is_symlink() for p in (*source.parents, *store.parents)):
@@ -169,15 +240,18 @@ def pack(source, store):
             safe_name(name)
             if path.name.startswith('.pending-'):
                 raise ArchiveError('unfinished atomic write')
+            if path.stat().st_size > MAX_SHARD:
+                raise ArchiveError('plain file exceeds 25 MiB')
             data = path.read_bytes()
             scan(data)
-            chunks = [put(store, data[i:i + CHUNK]) for i in range(0, len(data), CHUNK)]
-            entries[name] = {'sha256': digest(data), 'bytes': len(data), 'chunks': chunks}
-        manifest = encoded({'version': 1, 'files': entries})
+            suffix = path.suffix if path.suffix in {'.json', '.csv'} else '.bin'
+            member = put_plain(store, data, suffix)
+            entries[name] = {'sha256': digest(data), 'bytes': len(data), 'object': member}
+        manifest = encoded({'version': 2, 'files': entries})
         if len(manifest) > MAX_INDEX:
             raise ArchiveError('generation index exceeds limit')
-        generation = put(store, manifest, 'generations')
-        pointer = {'version': 1, 'generation': generation, 'file_count': len(entries),
+        generation = Path(put_plain(store, manifest, '.json', 'generations')).stem
+        pointer = {'version': 2, 'generation': generation, 'file_count': len(entries),
                    'raw_bytes': sum(e['bytes'] for e in entries.values())}
         # Validate the complete candidate before making it visible.
         verify(store, pointer)
@@ -189,10 +263,10 @@ def verify(store, pointer=None, destination=None):
     store = Path(store)
     safe_tree(store)
     pointer = pointer or json.loads((store / 'current.json').read_bytes())
-    if pointer.get('version') != 1:
-        raise ArchiveError('unsupported pointer version')
-    manifest = json.loads(unpack(store, pointer['generation'], MAX_INDEX, 'generations'))
-    if manifest.get('version') != 1 or not isinstance(manifest.get('files'), dict):
+    if sum(p.stat().st_size for p in store.rglob('*') if p.is_file()) > MAX_STORE:
+        raise ArchiveError('private Git store exceeds conservative size budget')
+    manifest = json.loads(manifest_bytes(store, pointer))
+    if manifest.get('version') != pointer['version'] or not isinstance(manifest.get('files'), dict):
         raise ArchiveError('invalid generation index')
     total = 0
     cache_members = {}
@@ -201,11 +275,13 @@ def verify(store, pointer=None, destination=None):
         if type(entry.get('bytes')) is not int or not 0 <= entry['bytes'] <= MAX_RESTORE:
             raise ArchiveError('invalid file size')
         total += entry['bytes']
-        if total > MAX_RESTORE or not isinstance(entry.get('chunks'), list):
+        if total > MAX_RESTORE:
             raise ArchiveError('restore exceeds limit')
-        if len(entry['chunks']) != (entry['bytes'] + CHUNK - 1) // CHUNK:
-            raise ArchiveError('invalid chunk count')
-        data = b''.join(unpack(store, sha, CHUNK) for sha in entry['chunks'])
+        if pointer['version'] == 2:
+            suffix = Path(name).suffix if Path(name).suffix in {'.json', '.csv'} else '.bin'
+            if entry.get('object') != f"objects/{entry['sha256'][:2]}/{entry['sha256']}{suffix}":
+                raise ArchiveError('plain member type or identity differs')
+        data = member_bytes(store, pointer, entry)
         if len(data) != entry['bytes'] or digest(data) != entry['sha256']:
             raise ArchiveError('file checksum mismatch')
         scan(data)
@@ -217,6 +293,13 @@ def verify(store, pointer=None, destination=None):
         nightly_cache.validate(cache_members)
     except (ValueError, TypeError, KeyError, OverflowError):
         raise ArchiveError('invalid nightly cache archive') from None
+    def read_member(name):
+        entry = manifest['files'][name]
+        return member_bytes(store, pointer, entry)
+    try:
+        validate_archive(manifest['files'], read_member)
+    except (ValueError, TypeError, KeyError, OSError):
+        raise ArchiveError('invalid retained J-Quants revision or page') from None
     if len(manifest['files']) != pointer['file_count'] or total != pointer['raw_bytes']:
         raise ArchiveError('generation totals mismatch')
     return {'verified': True, 'generation': pointer['generation'], 'file_count': len(manifest['files']), 'raw_bytes': total}
