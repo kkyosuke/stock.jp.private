@@ -213,7 +213,6 @@ def _fixture(root: Path) -> Path:
             "includes_corporate_actions": True,
             "includes_all_material_disclosures": True,
             "source_rights_reviewed": True,
-            "jquants_excluded": True,
             "unofficial_prices_excluded": True,
         },
         "datasets": [
@@ -253,12 +252,35 @@ class HistoricalReplayTest(unittest.TestCase):
         self.assertEqual(point["universe"]["required_count"], 2)
         self.assertEqual(point["quality"]["lookahead_violations"], 0)
 
-    def test_jquants_provider_is_rejected(self) -> None:
+    def test_official_jquants_provider_is_permitted(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             manifest_path = _fixture(root)
             manifest = json.loads(manifest_path.read_text())
             manifest["datasets"][0]["provider"] = "J Quants API v2"
+            prepare_write(manifest_path).write_text(json.dumps(manifest))
+            model, quality = validate_inputs(root=root, manifest_path=manifest_path)
+        self.assertEqual(model["manifest"]["datasets"][0]["provider"], "J Quants API v2")
+        self.assertEqual(quality["lookahead_violations"], 0)
+
+    def test_jquants_requires_source_authorization(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = _fixture(root)
+            manifest = json.loads(manifest_path.read_text())
+            manifest["datasets"][0]["provider"] = "J-Quants API v2"
+            manifest["datasets"][0]["replay_authorized"] = False
+            prepare_write(manifest_path).write_text(json.dumps(manifest))
+            with self.assertRaises(ReplayInputError) as caught:
+                validate_inputs(root=root, manifest_path=manifest_path)
+        self.assertTrue(any("replay_authorized must be true" in item for item in caught.exception.blockers))
+
+    def test_unofficial_provider_is_still_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = _fixture(root)
+            manifest = json.loads(manifest_path.read_text())
+            manifest["datasets"][0]["provider"] = "Yahoo Finance"
             prepare_write(manifest_path).write_text(json.dumps(manifest))
             with self.assertRaises(ReplayInputError) as caught:
                 validate_inputs(root=root, manifest_path=manifest_path)
@@ -493,7 +515,7 @@ class HistoricalReplayTest(unittest.TestCase):
                 )
         self.assertEqual(manifest["status"], "DRAFT")
         self.assertFalse(manifest["holdout_claimed"])
-        self.assertTrue(manifest["certifications"]["jquants_excluded"])
+        self.assertTrue(manifest["certifications"]["unofficial_prices_excluded"])
         self.assertTrue(all(item["official"] is False for item in manifest["datasets"]))
 
     def test_forward_holdout_is_bound_to_a_frozen_unobserved_plan(self) -> None:
@@ -542,7 +564,6 @@ class HistoricalReplayTest(unittest.TestCase):
                     "inputs_and_execution_rules_frozen": True,
                     "thresholds_frozen_before_results": True,
                     "changes_restart_the_holdout": True,
-                    "jquants_will_not_be_used": True,
                 },
             }
             plan_path = root / 'operations/evidence/v04-holdout-plan.json'

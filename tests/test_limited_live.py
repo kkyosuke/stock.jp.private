@@ -107,18 +107,14 @@ class LimitedLiveTest(unittest.TestCase):
                 return_value=self._eligible_gate("official"),
             ),
             patch(
-                'stock_jp.operation.limited_live.evaluate_repository_recovery',
-                return_value=self._eligible_gate("recovery"),
-            ),
-            patch(
                 'stock_jp.operation.limited_live.evaluate_personal_risk',
                 return_value=self._eligible_gate("personal"),
             ),
         )
 
-    def test_plan_binds_diagnostic_and_three_operational_gates(self) -> None:
+    def test_plan_binds_diagnostic_and_two_operational_gates(self) -> None:
         patches = self._gate_patches()
-        with patches[0], patches[1], patches[2]:
+        with patches[0], patches[1]:
             result = evaluate_limited_live_plan(root=self.root, plan_path=self.plan_path)
 
         self.assertTrue(result["eligible"])
@@ -137,7 +133,7 @@ class LimitedLiveTest(unittest.TestCase):
         with prepare_write(self.capital_path).open("w", encoding="utf-8", newline="") as destination:
             csv.writer(destination).writerows(rows)
         patches = self._gate_patches()
-        with patches[0], patches[1], patches[2]:
+        with patches[0], patches[1]:
             result = evaluate_limited_live_plan(root=self.root, plan_path=self.plan_path)
 
         self.assertFalse(result["eligible"])
@@ -148,7 +144,7 @@ class LimitedLiveTest(unittest.TestCase):
 
     def test_apply_is_atomic_and_plan_hash_is_revalidated(self) -> None:
         patches = self._gate_patches()
-        with patches[0], patches[1], patches[2]:
+        with patches[0], patches[1]:
             policy = apply_limited_live(root=self.root, plan_path=self.plan_path)
             self.assertEqual(
                 validate_applied_limited_live(root=self.root, policy=policy), []
@@ -166,7 +162,7 @@ class LimitedLiveTest(unittest.TestCase):
 
     def test_order_guard_enforces_cash_cap_no_add_and_loss_stop(self) -> None:
         patches = self._gate_patches()
-        with patches[0], patches[1], patches[2]:
+        with patches[0], patches[1]:
             policy = apply_limited_live(root=self.root, plan_path=self.plan_path)
             allowed = validate_limited_live_order(
                 root=self.root,

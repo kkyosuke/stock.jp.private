@@ -58,6 +58,7 @@ Pythonの依存関係とCLIのインストール定義は [`pyproject.toml`](../
 | 観測した財務・株数・予想・決算予定・企業行動 | `data/market/observations/` | 生応答から再生成する年別履歴と最新値 |
 | 手動取得の生応答 | `data/market/manual-dates/<date>/` | 結果PRで採用 |
 | 採用済みJ-Quants世代 | `data/market/jquants/current.json` と参照先 | 検証済みデータPR |
+| 企業IR・市場一次資料の原本 | `data/market/primary-sources/<SHA-256>.<拡張子>` | 実取得し、用途別の資料一覧で日時・出典・確認範囲を記録 |
 | 判断・承認の証拠 | `operations/decisions/`、`evidence/` | 証跡の追加 |
 | 実験 | `research/<experiment>/` | 入力固定・再計算 |
 | 初期化用の雛形 | `templates/` | 初期化時のみ参照 |

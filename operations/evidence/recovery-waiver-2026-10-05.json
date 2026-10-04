@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "status": "NOT_REQUIRED_BY_USER",
+  "recorded_at_jst": "2026-10-05T07:17:07+09:00",
+  "user_instruction": "実売買へ移る条件を満たす 過去検証行なってください 復旧試験はしなくていいです...",
+  "scope": [
+    "LIVE",
+    "LIMITED_LIVE"
+  ],
+  "removed_requirement": "private_repository_recovery",
+  "recovery_drill_performed": false,
+  "live_promotion_approved": false,
+  "other_requirements_waived": false,
+  "notes": "利用者の明示指示を記録する。復旧試験の成功証跡でも、最終LIVE承認でもない。任意診断の既存コマンドと過去の記録は保存する。"
+}

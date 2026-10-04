@@ -20,6 +20,8 @@ STATE_SCHEMA_VERSION = "2.1"
 RETIRED_LIVE_GATES = {
     "minimum_12_month_paper_trade",
     "twenty_day_shadow_run",
+    "backup_restore_drill",
+    "private_repository_recovery",
 }
 
 TEMPLATE_TO_PRIVATE = {
@@ -255,14 +257,6 @@ def _normalized_policy(
         **template.get("live_gate_evidence", {}),
         **(evidence if isinstance(evidence, dict) else {}),
     }
-    legacy_gate = "backup_restore_drill"
-    replacement_gate = "private_repository_recovery"
-    if isinstance(gates, dict) and legacy_gate in gates:
-        normalized["live_gates"][replacement_gate] = gates[legacy_gate]
-    if isinstance(evidence, dict) and legacy_gate in evidence:
-        normalized["live_gate_evidence"][replacement_gate] = evidence[legacy_gate]
-    normalized["live_gates"].pop(legacy_gate, None)
-    normalized["live_gate_evidence"].pop(legacy_gate, None)
     for retired_gate in RETIRED_LIVE_GATES:
         normalized["live_gates"].pop(retired_gate, None)
         normalized["live_gate_evidence"].pop(retired_gate, None)

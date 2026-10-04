@@ -15,7 +15,7 @@ import tempfile
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from stock_jp.operation.evidence import evaluate_official_coverage, evaluate_personal_risk, evaluate_repository_recovery
+from stock_jp.operation.evidence import evaluate_official_coverage, evaluate_personal_risk
 
 
 PROJECT_ROOT = project_root()
@@ -251,11 +251,9 @@ def evaluate_limited_live_plan(
             blockers.append(f"limited live acknowledgement {name} must be true")
 
     official = evaluate_official_coverage(root=root)
-    recovery = evaluate_repository_recovery(root=root, at=reference_time)
     personal = evaluate_personal_risk(root=root, at=reference_time)
     for name, result in (
         ("official_source_coverage", official),
-        ("private_repository_recovery", recovery),
         ("personal_risk_and_broker_check", personal),
     ):
         if result.get("eligible") is not True:

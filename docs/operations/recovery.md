@@ -18,9 +18,12 @@ python3 -m venv .venv
 python -m stock_jp operation recovery --help
 ```
 
-復旧訓練は実際にcloneしたcommit、コードツリー、台帳のハッシュ、採用済み世代、
+復旧試験は[利用者の指示](../../operations/evidence/recovery-waiver-2026-10-05.json)で
+LIVE・LIMITED_LIVEの必須条件から除外した。この手順は任意の診断用に残す。
+
+実施する場合は、実際にcloneしたcommit、コードツリー、台帳のハッシュ、採用済み世代、
 復元データ、選択したrunの検証結果を記録する。正本は
 `operations/evidence/recovery-drill.json`。配置版は `workspace.py` が定義する。
 
-過去の復旧証跡は当時の記録として残す。配置変更後の条件を満たすには、新しい配置で
-訓練を行う必要がある。過去の成功フラグやハッシュを新しいコードに書き換えない。
+過去の復旧証跡は当時の記録として残す。過去の成功フラグやハッシュを
+新しいコードに書き換えない。

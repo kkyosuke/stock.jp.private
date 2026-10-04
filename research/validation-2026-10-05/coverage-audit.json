@@ -1,0 +1,179 @@
+{
+  "status": "FORMAL_STRATEGY_REPLAY_BLOCKED",
+  "price_files": 565,
+  "replay_sessions": 404,
+  "price_source_hashes_verified": true,
+  "full_universe_point_in_time_certified": false,
+  "monthly_price_observed_universe": [
+    {
+      "month": "2024-12",
+      "evaluation_date": "2024-12-30",
+      "price_observed_domestic_issues": 3840
+    },
+    {
+      "month": "2025-01",
+      "evaluation_date": "2025-01-31",
+      "price_observed_domestic_issues": 3829
+    },
+    {
+      "month": "2025-02",
+      "evaluation_date": "2025-02-28",
+      "price_observed_domestic_issues": 3825
+    },
+    {
+      "month": "2025-03",
+      "evaluation_date": "2025-03-31",
+      "price_observed_domestic_issues": 3824
+    },
+    {
+      "month": "2025-04",
+      "evaluation_date": "2025-04-30",
+      "price_observed_domestic_issues": 3823
+    },
+    {
+      "month": "2025-05",
+      "evaluation_date": "2025-05-30",
+      "price_observed_domestic_issues": 3814
+    },
+    {
+      "month": "2025-06",
+      "evaluation_date": "2025-06-30",
+      "price_observed_domestic_issues": 3807
+    },
+    {
+      "month": "2025-07",
+      "evaluation_date": "2025-07-31",
+      "price_observed_domestic_issues": 3802
+    },
+    {
+      "month": "2025-08",
+      "evaluation_date": "2025-08-29",
+      "price_observed_domestic_issues": 3796
+    },
+    {
+      "month": "2025-09",
+      "evaluation_date": "2025-09-30",
+      "price_observed_domestic_issues": 3782
+    },
+    {
+      "month": "2025-10",
+      "evaluation_date": "2025-10-31",
+      "price_observed_domestic_issues": 3786
+    },
+    {
+      "month": "2025-11",
+      "evaluation_date": "2025-11-28",
+      "price_observed_domestic_issues": 3778
+    },
+    {
+      "month": "2025-12",
+      "evaluation_date": "2025-12-30",
+      "price_observed_domestic_issues": 3783
+    },
+    {
+      "month": "2026-01",
+      "evaluation_date": "2026-01-30",
+      "price_observed_domestic_issues": 3771
+    },
+    {
+      "month": "2026-02",
+      "evaluation_date": "2026-02-27",
+      "price_observed_domestic_issues": 3768
+    },
+    {
+      "month": "2026-03",
+      "evaluation_date": "2026-03-31",
+      "price_observed_domestic_issues": 3745
+    },
+    {
+      "month": "2026-04",
+      "evaluation_date": "2026-04-30",
+      "price_observed_domestic_issues": 3747
+    },
+    {
+      "month": "2026-05",
+      "evaluation_date": "2026-05-29",
+      "price_observed_domestic_issues": 3734
+    },
+    {
+      "month": "2026-06",
+      "evaluation_date": "2026-06-30",
+      "price_observed_domestic_issues": 3709
+    },
+    {
+      "month": "2026-07",
+      "evaluation_date": "2026-07-31",
+      "price_observed_domestic_issues": 3706
+    },
+    {
+      "month": "2026-08",
+      "evaluation_date": "2026-08-31",
+      "price_observed_domestic_issues": 3700
+    }
+  ],
+  "monthly_price_observed_issue_evaluations": 79369,
+  "full_rule_assessments_provided": 0,
+  "historical_tables": {
+    "financial": {
+      "by_year": {
+        "2021": 4913,
+        "2022": 19035,
+        "2023": 19139,
+        "2024": 19035,
+        "2025": 18889,
+        "2026": 13971
+      },
+      "total": 94982
+    },
+    "share-count": {
+      "by_year": {
+        "2021": 3934,
+        "2022": 15998,
+        "2023": 16204,
+        "2024": 16318,
+        "2025": 16364,
+        "2026": 12123
+      },
+      "total": 80941
+    },
+    "forecast": {
+      "by_year": {
+        "2021": 4913,
+        "2022": 19035,
+        "2023": 19139,
+        "2024": 19035,
+        "2025": 18889,
+        "2026": 13971
+      },
+      "total": 94982
+    },
+    "earnings-calendar": {
+      "by_year": {
+        "2021": 3682,
+        "2022": 15620,
+        "2023": 15953,
+        "2024": 15827,
+        "2025": 15744,
+        "2026": 11858
+      },
+      "total": 78684
+    }
+  },
+  "company_documents_collected": 49,
+  "company_document_pages": 1086,
+  "market_sources_collected": 30,
+  "unique_primary_blobs": 79,
+  "market_sources_original_historical_vintage_verified": false,
+  "outstanding_inputs": [
+    "当時の全銘柄security masterと廃止・合併の確定記録。日足に登場しない銘柄も必要。",
+    "全月末・全母集団のハードゲート、100点採点、SAM/SOM、競合比較、10倍逆算。",
+    "公表当時の財務原本・訂正履歴、潜在株式、粗利益、非定常損益・CFの調整。",
+    "全社の重要開示、四半期・即時判定、未約定・停止・部分利確・出口条件。",
+    "過去月末で公表済みのMRS全入力。月次PDFの当月値は翌月公開でその月末には使えない。",
+    "2025年初のVI算定に必要な2022年系列と、各月末当時公表済みのCI vintage。",
+    "v0.4発効後に事前固定した未観測期間のholdoutと本人の承認。"
+  ],
+  "recovery_drill_required": false,
+  "recovery_drill_performed": false,
+  "live_promotion_approved": false
+}

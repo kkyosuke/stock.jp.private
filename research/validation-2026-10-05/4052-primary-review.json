@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "issuer_code": "4052",
+  "company": "フィーチャ",
+  "status": "PARTIAL_PRIMARY_SOURCE_REVIEW",
+  "reviewed_at_jst": "2026-10-05T07:20:32+09:00",
+  "current_order_eligible": false,
+  "historical_assessment_created": false,
+  "source_register": "company-primary-sources.json",
+  "facts": [
+    {
+      "kind": "FACT",
+      "source_id": "company-4052-yuho_3016416",
+      "pdf_pages": [
+        44,
+        45,
+        48
+      ],
+      "fiscal_period": {
+        "from": "2025-07-01",
+        "through": "2026-06-30"
+      },
+      "accounting_scope": "NON_CONSOLIDATED",
+      "units": "JPY",
+      "sales": 543871000,
+      "gross_profit": 390584000,
+      "operating_profit": 41119000,
+      "net_profit": 42530000,
+      "operating_cash_flow": -77337000,
+      "cash": 528738000,
+      "trade_receivables": 180801000,
+      "prior_year_nonconsolidated_trade_receivables": 79593000,
+      "prior_year_nonconsolidated_sales": 497614000,
+      "tangible_asset_purchase_cash_outflow": 1566000,
+      "interest_bearing_debt_observed_on_balance_sheet": 0,
+      "notes": "千円表示を円へ換算。CFは年度値。直近6か月の資金余命判定に年度CFを流用しない。無借金という観測は期末の貸借対照表の確認範囲。"
+    },
+    {
+      "kind": "FACT",
+      "source_id": "company-4052-yuho_3016416",
+      "pdf_pages": [
+        23,
+        26,
+        29,
+        31,
+        32
+      ],
+      "share_reference_date": "2026-08-31",
+      "issued_shares": 5856107,
+      "treasury_shares_disclosed": 8572,
+      "post_2026_09_01_odd_lot_treasury_acquisitions_included": false,
+      "outstanding_options": [
+        {
+          "series": "第2回",
+          "potential_shares": 6573,
+          "exercise_price_jpy_per_share": 1000,
+          "exercise_period_from": "2021-01-26",
+          "exercise_period_through": "2029-01-25"
+        },
+        {
+          "series": "第3回",
+          "potential_shares": 16047,
+          "exercise_price_jpy_per_share": 1000,
+          "exercise_period_from": "2021-06-22",
+          "exercise_period_through": "2029-06-21"
+        }
+      ],
+      "notes": "期末と8月末で新株予約権の内容に変更なし。9月以降の株式数・自己株式・新規希薄化を全件確認した証拠ではない。希薄化後EPSの省略から潜在株式ゼロと推定しない。"
+    },
+    {
+      "kind": "CALCULATION",
+      "source_id": "company-4052-yuho_3016416",
+      "pdf_pages": [
+        23,
+        26
+      ],
+      "potential_shares_total": 22620,
+      "maximum_option_exercise_cash_jpy": 22620000,
+      "formula": "6573 + 16047; (6573 + 16047) * 1000",
+      "notes": "報告された予約権を全数行使した場合の上限。将来の新規発行や権利失効は含まない。"
+    },
+    {
+      "kind": "CALCULATION",
+      "source_id": "company-4052-yuho_3016416",
+      "pdf_pages": [
+        48
+      ],
+      "annual_fcf_jpy": -78903000,
+      "formula": "operating_cash_flow - tangible_asset_purchase_cash_outflow = -77337000 - 1566000",
+      "notes": "当該非連結年度の単純FCF。連結から非連結への移行と非定常要因を調整した8四半期のFCF判定は未完了。"
+    },
+    {
+      "kind": "FACT",
+      "source_id": "company-4052-yuho_3016416",
+      "pdf_pages": [
+        75,
+        78
+      ],
+      "audit_date": "2026-09-28",
+      "audit_firm": "EY新日本有限責任監査法人",
+      "financial_audit_opinion": "UNQUALIFIED",
+      "internal_control_audit_opinion": "UNQUALIFIED",
+      "notes": "年度末財務と内部統制の監査意見。後発のサイバー事象を解決済みとする証拠ではない。"
+    },
+    {
+      "kind": "FACT",
+      "source_id": "company-4052-press_2886384",
+      "pdf_pages": [
+        28,
+        32,
+        43,
+        45
+      ],
+      "top_three_customer_sales_share_pct": 78.8,
+      "mobility_target_autonomy_levels": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "company_dx_ai_mid_long_term_sales_share_target_pct": 50,
+      "company_quantified_sam_som_jpy": null,
+      "notes": "対象は自動運転レベル0〜3。会社の広域市場予測を自社が獲得可能なSAM/SOMへ置換しない。市場成長率・構成比の計画を実績として扱わない。"
+    }
+  ],
+  "unresolved": [
+    "直近価格日に有効な完全希薄化後株式数と9月以降の希薄化計画・自己株式。",
+    "8四半期の公表当時の財務と非定常損益・キャッシュフロー調整。",
+    "獲得可能SAM/SOM、競合の直近採用比較、10倍逆算に必要な3年後株式数と利益率。",
+    "サイバー事象と創業者保有比率変更の追跡、全重要開示の漏れ確認。",
+    "直近月末の利用可能なMRS全入力。"
+  ],
+  "judgment": {
+    "decision": "WAIT",
+    "basis": "入口の必須入力未確認。今回の部分レビューからスコア・購入可否を推定しない。"
+  }
+}

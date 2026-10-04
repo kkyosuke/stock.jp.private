@@ -21,7 +21,6 @@ REQUIRED_LIVE_GATES = {
     "point_in_time_full_universe_validation",
     "historical_replay_2025_2026_accepted",
     "official_source_coverage",
-    "private_repository_recovery",
     "personal_risk_and_broker_check",
 }
 VALID_RULE_VERSIONS = {"v0.2", "v0.3", "v0.4"}

@@ -1070,7 +1070,7 @@ class FinalLivePromotionTest(unittest.TestCase):
             evaluate.return_value = fresh
             result = evaluate_live_promotion(root=root)
         self.assertTrue(result["eligible"], result["blockers"])
-        self.assertEqual(result["metrics"]["eligible_requirement_count"], 6)
+        self.assertEqual(result["metrics"]["eligible_requirement_count"], 5)
 
     @patch('stock_jp.operation.evidence.evaluate_all_live_requirements')
     def test_tampered_stored_evidence_is_rejected(self, evaluate) -> None:
