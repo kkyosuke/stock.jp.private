@@ -14,6 +14,7 @@ COMMANDS = {
         "collect": "market_data.jquants.ingest",
         "daily": "market_data.jquants.daily",
         "history": "market_data.jquants.history",
+        "backfill": "market_data.jquants.backfill",
         "catalog": "market_data.jquants.ingest",
         "sample": "market_data.jquants.size_sample",
         "verify": "market_data.storage",
