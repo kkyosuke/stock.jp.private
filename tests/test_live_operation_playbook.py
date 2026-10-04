@@ -47,10 +47,11 @@ class LiveOperationPlaybookTest(unittest.TestCase):
         ):
             self.assertIn(phrase, self.text)
 
-    def test_private_operation_data_is_ignored(self) -> None:
+    def test_operation_records_are_tracked_and_local_workspace_is_ignored(self) -> None:
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
 
-        self.assertIn('operations/', gitignore.splitlines())
+        self.assertNotIn('operations/', gitignore.splitlines())
+        self.assertIn('.work/', gitignore.splitlines())
         self.assertIn(".usagi/", gitignore.splitlines())
 
 

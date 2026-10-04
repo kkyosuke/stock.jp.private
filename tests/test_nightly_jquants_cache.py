@@ -28,7 +28,7 @@ class NightlyCacheTest(unittest.TestCase):
         self.temp.cleanup()
 
     def client(self, transport, **kwargs):
-        return NightlyClient(private=self.root, cutoff=kwargs.pop('cutoff', self.cutoff),
+        return NightlyClient(private=self.root / 'operations', cutoff=kwargs.pop('cutoff', self.cutoff),
                              retrieved=kwargs.pop('retrieved', self.cutoff), plan='light',
                              transport=transport, sleep=lambda _: None, **kwargs)
 
@@ -120,7 +120,7 @@ class NightlyCacheTest(unittest.TestCase):
         self.assertEqual(container, before)
 
     def test_missing_credentials_block_enabled_but_not_disabled_datasets(self):
-        private = self.root / 'private'
+        private = self.root / 'operations'
         config = {'jpx_listed_master': {'enabled': False}, 'jquants': {
             'enabled': True, 'api_key_env': 'JQUANTS_API_KEY', 'plan': 'light',
             'listed_master_enabled': False, 'daily_bars_enabled': False,

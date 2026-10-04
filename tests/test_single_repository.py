@@ -28,7 +28,7 @@ class SingleRepositoryTest(unittest.TestCase):
             self.assertIn('!/data/market/jquants/', text)
             self.assertIn('!/data/market/legacy-prices/', text)
             self.assertIn('pip install -e', text)
-        for retired in ('stock.jp', 'scripts', 'cloudflare', '.gitmodules'):
+        for retired in ('stock.jp', 'scripts', 'cloudflare', 'operations/private', '.gitmodules'):
             self.assertFalse((ROOT / retired).exists(), retired)
         self.assertEqual(list(ROOT.glob('**/pyproject.toml'))[:1], [ROOT / 'pyproject.toml'])
 

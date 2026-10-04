@@ -293,7 +293,7 @@ class SingleRepositoryBoundaryTest(unittest.TestCase):
     def test_market_and_personal_paths_cannot_mix_or_use_the_old_root(self):
         pointer = {'path': 'data/market/jquants/current.json', 'status': 'M'}
         p.classify('market', '2026-10-02', [pointer])
-        for path in ('data/market/jquants/current.json', 'stockXjp/data/market/jquants/current.json',
+        for path in ('stock.jp/data/market/jquants/current.json', 'stockXjp/data/market/jquants/current.json',
                      'operations/state.json', 'src/stock_jp/automation/pr_validation.py'):
             with self.subTest(path=path), self.assertRaises(p.Blocked):
                 p.classify('market', '2026-10-02', [pointer, {'path': path, 'status': 'M'}])

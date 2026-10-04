@@ -14,7 +14,7 @@ src/stock_jp/
   cli.py                   操作用の入口
   workspace.py             ルートと保存先
 config/                    sources.json / policy.json / automation.json / acquisition.json
-data/market/              jquants / manual-dates / legacy-prices / observations
+data/market/              採用済み応答・履歴価格・観測記録
 operations/                state.json / source-watermarks.json / run-history.csv
   ledgers/                 資金・保有・売買・ルールレビュー
   inputs/                  watchlist・日次判断入力
@@ -67,6 +67,6 @@ Pythonの依存関係とCLIのインストール定義は [`pyproject.toml`](../
 雛形の変更は既存の設定や台帳を上書きしない。過去の証跡のcommit、URL、ハッシュは
 当時の観測値として保管し、現在のコードへの承認として読み替えない。
 
-`data/market/legacy-prices/` は過去のYahoo取得記録。実運用の価格入力は
+`data/market/legacy-prices/` は過去の日足と取得記録。実運用の価格入力は
 `config/sources.json` が明示する `.work/market-data/` の復元済みデータに限定する。
 取得不能時に過去の価格を自動で代用しない。
