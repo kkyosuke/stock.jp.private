@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   nightly-market-data:
-    if: ${{ github.repository == 'kkyosuke/stock.jp.private' && github.event.repository.private == true && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && (github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.preview)) }}
+    if: ${{ github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && (github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.preview)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
