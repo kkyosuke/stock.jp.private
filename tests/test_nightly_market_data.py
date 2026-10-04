@@ -459,10 +459,25 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(report["status"], "ADOPTED")
         before, after = self.repo.tree(old), self.repo.tree(self.repo.refs["main"])
         changed = {p for p in before.keys() | after.keys() if before.get(p) != after.get(p)}
-        self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) for p in changed))
+        self.assertTrue(all(p.startswith(("data/market/jquants/", n.RECORDS)) or n.observations.publication_path(p)
+                            for p in changed))
         operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1]
                       or c[1].endswith(("/dispatches", "/merge"))]
         self.assertEqual(operations, ["POST", "GET", "PUT"])
+
+    def test_installation_token_proves_write_permission_once_before_collection(self):
+        def request(method, path, body=None):
+            result = self.repo(method, path, body)
+            if method == 'GET' and path == n.PREFIX:
+                result.pop('permissions')
+            return result
+        git = n.Git(request)
+        self.assertTrue(git.private_metadata()['permissions']['push'])
+        self.assertTrue(git.private_metadata()['permissions']['push'])
+        probes = [call for call in self.repo.calls if call[0] == 'POST']
+        self.assertEqual(len(probes), 1)
+        self.assertTrue(probes[0][1].endswith('/git/blobs'))
+        self.assertFalse(self.fixture.calls)
 
     def test_adopted_checkpoint_bytes_are_not_downloaded_each_night(self):
         result = self.run_preview()

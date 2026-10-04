@@ -55,7 +55,7 @@ Pythonの依存関係とCLIのインストール定義は [`pyproject.toml`](../
 | 対象日別の予約・消費枠 | `operations/acquisition/date-grants.json` | mainへ採用した予約。返金しない |
 | 運用の現在値・日次履歴 | `operations/state.json`、`source-watermarks.json`、`run-history.csv` | 運用コマンド |
 | 資金・保有・売買の事実 | `operations/ledgers/` | 台帳更新・照合 |
-| 観測した開示・株数・企業行動 | `data/market/observations/` | 出典付きの観測記録 |
+| 観測した財務・株数・予想・決算予定・企業行動 | `data/market/observations/` | 生応答から再生成する年別履歴と最新値 |
 | 手動取得の生応答 | `data/market/manual-dates/<date>/` | 結果PRで採用 |
 | 採用済みJ-Quants世代 | `data/market/jquants/current.json` と参照先 | 検証済みデータPR |
 | 判断・承認の証拠 | `operations/decisions/`、`evidence/` | 証跡の追加 |

@@ -24,6 +24,7 @@ COMMANDS = {
         "edinet": "market_data.edinet",
         "scan": "market_data.disclosures",
         "prices": "market_data.validate_prices",
+        "observations": "market_data.observations",
     },
     "strategy": {
         "regime": "strategy.regime",
@@ -54,6 +55,7 @@ COMMANDS = {
     },
     "automation": {
         "nightly": "automation.nightly",
+        "financial-history": "automation.financial_history",
         "acquire": "automation.date_driver",
         "readiness": "automation.readiness",
         "health": "automation.health",

@@ -15,6 +15,7 @@ from stock_jp.workspace import project_root
 from stock_jp.automation import http, rate, publication
 from stock_jp.automation.daily_remote import REPO, RemoteStop, git_blob, require, sha
 from stock_jp.market_data import storage
+from stock_jp.market_data import observations
 from stock_jp.market_data.jquants import daily, ingest
 
 PREFIX = "/repos/" + REPO
@@ -25,6 +26,9 @@ WORKFLOW = ".github/workflows/market-data-manual.yml"
 CI_WORKFLOW = ".github/workflows/ci.yml"
 RECORDS = "operations/acquisition/nightly/"
 CHECKS = {"format", "test", "guardrail"}
+FINANCIAL_CHECKPOINT = "automation/financial-history"
+FINANCIAL_JOURNAL = "operations/acquisition/financial-history-checkpoint.json"
+FINANCIAL_RAW_PREFIX = "financial-history-checkpoint/"
 
 
 class Incomplete(RemoteStop):
@@ -38,6 +42,7 @@ class Git:
         self.request = request
         self.blobs = set()
         self.modes = {}
+        self.write_permission_verified = False
 
     def api(self, method, path, body=None):
         return self.request(method, PREFIX + path, body)
@@ -68,21 +73,23 @@ class Git:
         return raw
 
     def write(self, branch, parent, files, *, exists):
-        require(branch == CHECKPOINT or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
+        require(branch in {CHECKPOINT, FINANCIAL_CHECKPOINT} or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
                 "unexpected publication branch")
         if exists:
             require(self.ref(branch) == parent, "checkpoint or data branch moved")
         tree = self.api("GET", "/git/commits/" + parent)["tree"]["sha"]
         entries = []
         for path, raw in sorted(files.items()):
-            if branch == CHECKPOINT:
-                require(path == JOURNAL or path.startswith(RAW_PREFIX), "unexpected checkpoint path")
-                if path != JOURNAL:
-                    storage.safe_name(path.removeprefix(RAW_PREFIX))
+            if branch in {CHECKPOINT, FINANCIAL_CHECKPOINT}:
+                journal, prefix = (JOURNAL, RAW_PREFIX) if branch == CHECKPOINT else (FINANCIAL_JOURNAL, FINANCIAL_RAW_PREFIX)
+                require(path == journal or path.startswith(prefix), "unexpected checkpoint path")
+                if path != journal:
+                    storage.safe_name(path.removeprefix(prefix))
             else:
                 require(path == "data/market/jquants/current.json" or re.fullmatch(
                     r"data/market/jquants/(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.(?:json|csv|bin|chunk)", path)
-                    or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path),
+                    or re.fullmatch(RECORDS + r"\d{4}-\d{2}-\d{2}\.json", path)
+                    or observations.publication_path(path),
                     "unexpected data publication path")
             storage.scan(raw)
             blob = git_blob(raw)
@@ -106,9 +113,18 @@ class Git:
 
     def private_metadata(self):
         value = self.api("GET", "")
-        require(value.get("private") is True and value["owner"]["login"].lower() == "kkyosuke"
-                and value.get("permissions", {}).get("push") is True,
-                "private owner repository with push access required")
+        require(value.get("private") is True and value["owner"]["login"].lower() == "kkyosuke",
+                "private owner repository required")
+        # Installation tokens (including GITHUB_TOKEN) omit user permissions.
+        # Exercise Contents write before provider I/O instead of inventing a flag.
+        if value.get("permissions", {}).get("push") is not True and not self.write_permission_verified:
+            raw = ingest.encoded({"version": 1, "purpose": "market-data contents-write preflight"})
+            blob = self.api("POST", "/git/blobs", {
+                "encoding": "base64", "content": base64.b64encode(raw).decode(),
+            })
+            require(blob.get("sha") == git_blob(raw), "Contents write permission unverified")
+            self.blobs.add(blob["sha"])
+            self.write_permission_verified = True
         return {"repository_full_name": REPO, "visibility": "private",
                 "owner": {"login": "kkyosuke"}, "permissions": {"push": True},
                 "checked_at": datetime.now(timezone.utc).isoformat()}
@@ -334,8 +350,10 @@ def trusted_context(root, context, preview):
 
 def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
+    observation_report = observations.rebuild(root)
     candidate = storage.stage(root, checkpoint.git.private_metadata())
     report = {**result, "generation": candidate["generation"], "store_bytes": candidate["store_bytes"],
+              "observations": observation_report,
               "analysis_readiness": "NOT_EVALUATED", "preview": checkpoint.preview}
     git = checkpoint.git
     base = git.tree(checkpoint.main)
@@ -357,6 +375,12 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
         name = RECORDS + day + ".json"
         if base.get(name) != git_blob(raw):
             files[name] = raw
+    for member in observations.publication_files(root):
+        path = member.relative_to(root).as_posix()
+        raw = member.read_bytes()
+        require(len(raw) <= storage.MAX_SHARD, "observation table exceeds the Git shard limit")
+        if base.get(path) != git_blob(raw):
+            files[path] = raw
     if not files:
         return {**report, "status": "ALREADY_ADOPTED"}
     branch = "daily/market/" + result["run_date"] + ("-preview" if checkpoint.preview else "")
@@ -448,6 +472,8 @@ def execute(root, context, request, *, target=None, preview=False, at=None, tran
     git.api("GET", "/commits/" + context["sha"] + "/check-runs?per_page=1")
     main = git.ref("main")
     require(preview or main == context["sha"], "workflow does not use current main")
+    if preview and main != context["sha"]:
+        git.tree(context["sha"])  # Reuse verified blobs already present in the preview commit.
     checkpoint = Checkpoint(root, git, main, day, context, preview=preview)
     if context["event"] == "schedule" and target is None:
         checkpoint.bind_schedule(now)

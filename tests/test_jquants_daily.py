@@ -29,7 +29,7 @@ class DailyTests(unittest.TestCase):
         elif endpoint=='/equities/master':rows=[{'Date':day,'Code':'12340','ProdCat':'011','Mkt':'0111','CoName':'Fixture'}]
         elif endpoint=='/equities/bars/daily':rows=[{'Date':day,'Code':'12340','O':100,'H':101,'L':99,'C':100,'Vo':100,'Va':10000}]
         elif endpoint in ('/indices/bars/daily/topix','/equities/valuation'):rows=[{'Date':day}]
-        elif endpoint=='/fins/summary':rows=[{'DiscDate':day}]
+        elif endpoint=='/fins/summary':rows=[{'DiscDate':day,'DiscTime':'15:30:00','Code':'12340','DiscNo':day.replace('-','')+'123456'}]
         else:rows=[]
         return {'data':rows}
 
