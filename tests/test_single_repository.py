@@ -16,7 +16,7 @@ class SingleRepositoryTest(unittest.TestCase):
             text = file.read_text()
             for forbidden in ('repository: kkyosuke/stock.jp', 'submodules:', 'git submodule'):
                 self.assertNotIn(forbidden, text)
-            if file.name not in {'daily-collector-disabled.yml','history-once-disabled.yml'}:
+            if file.name not in {'daily-collector-disabled.yml','history-once-disabled.yml','manual-date-acquisition.yml'}:
                 self.assertNotIn('AUTOMATION_PAT',text)
             if 'actions/checkout@' in text:
                 self.assertEqual(text.count('actions/checkout@'), 1)

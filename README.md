@@ -8,7 +8,6 @@
 stock.jp.private/
 ├── docs/                         # private固有の設計、GO/NO-GO、レビュー
 ├── .github/workflows/             # PR検証・read-only運用監視
-├── cloudflare/                    # 旧schedulerの停止用互換Worker
 ├── operations/private/           # 状態、台帳、run、判断証跡の正本
 ├── scripts/live-gate-status.sh    # 全LIVE条件のread-only確認
 ├── scripts/setup-workspace.sh     # 単一repo内のsymlink初期化
@@ -19,7 +18,9 @@ public/private の境界は[全体構成](docs/repository-layout.md)、実行順
 
 日次処理の主体は、この会話のアシスタントです。許可された株価収集、一次資料調査、入力の検証・採用、
 PAPER判定、private結果保存を一つのrunとして担当します。GitHub ActionsはPR検証と
-read-only監視だけを担当し、収集、更新PR作成、auto-merge、夜間run開始を行いません。
+read-only監視を担当します。所有者が指定日の取得を依頼する場合は、
+[手動日付取得Action](docs/operations/manual-date-acquisition.md)を別途承認して使用します。
+このActionは予約と結果のdraft PRを作成し、auto-mergeや夜間run開始は行いません。
 
 目標時刻は毎晩21:00（Asia/Tokyo）です。**この変更だけでは定期実行は設定されません。**
 実行環境・権限・永続保存・スケジュールの確認後に有効化します。

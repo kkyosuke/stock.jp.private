@@ -48,9 +48,6 @@ jobs:
       - name: Test operation guardrails
         run: python3 -m unittest discover -s tests -v
 
-      - name: Test Cloudflare scheduler
-        run: node --test cloudflare/operations-scheduler/worker.test.mjs
-
       - name: Check YAML syntax
         run: |
           ruby -e '
