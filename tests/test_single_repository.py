@@ -17,16 +17,17 @@ class SingleRepositoryTest(unittest.TestCase):
     def test_one_package_and_explicit_workflow_responsibilities(self):
         workflows = ROOT / '.github/workflows'
         self.assertEqual({p.name for p in workflows.glob('*.yml')},
-                         {'ci.yml', 'market-data-manual.yml', 'operation-health.yml'})
+                         {'ci.yml', 'market-data-manual.yml', 'operation-health.yml', 'forward-holdout.yml'})
         for file in workflows.glob('*.yml'):
             text = file.read_text()
             for forbidden in ('submodules:', 'git submodule', 'working-directory: stock.jp'):
                 self.assertNotIn(forbidden, text)
             if file.name != 'market-data-manual.yml':
                 self.assertNotIn('AUTOMATION_PAT', text)
-                self.assertIn('!/data/market/jquants/', text)
-            else:
+            if file.name in {'market-data-manual.yml', 'forward-holdout.yml'}:
                 self.assertNotIn('!/data/market/jquants/', text)
+            else:
+                self.assertIn('!/data/market/jquants/', text)
             self.assertIn('persist-credentials: false', text)
             self.assertIn('!/data/market/legacy-prices/', text)
             self.assertIn('pip install -e', text)
