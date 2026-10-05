@@ -1,0 +1,105 @@
+{
+  "schema_version": "2.0",
+  "run_id": "2026-10-06",
+  "status": "failed",
+  "started_at_jst": "2026-10-06T06:24:17+09:00",
+  "completed_at_jst": "2026-10-06T06:43:45+09:00",
+  "previous_run_id": "2026-09-14",
+  "previous_disclosure_cutoff_jst": "2026-09-14T06:20:00+09:00",
+  "operation_mode": "PAPER",
+  "active_rule_version": "v0.4",
+  "source_cutoff_jst": null,
+  "price_date": null,
+  "pending_reviews": [
+    "4052-fy2026-annual-review-2026-09-29",
+    "2026-09-14-carried-4052-fy2026-annual-review-2026-09-29",
+    "2026-09-14-investment-case-4052"
+  ],
+  "pending_orders": [],
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-03-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-03公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-04-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-04公式終値を確認できない。非公式archiveの740円は参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-14-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面がメンテナンス応答で2026-09-11公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-edinet",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "edinet",
+      "impact": "statutory filings could be missing; all actions remain unverified",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-nightly_jquants_scan",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "nightly_jquants_scan",
+      "impact": "J-Quants query coverage is incomplete; partial pages are not completed evidence",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-official_market_data",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "official_market_data",
+      "impact": "official price inputs are incomplete; new and additional buys are blocked",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-tdnet",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "tdnet",
+      "impact": "material timely disclosures could be missing; trade decisions are blocked",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-trading_calendar",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "trading_calendar",
+      "impact": "the next trading date is unconfirmed; order tickets are blocked",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    }
+  ],
+  "next_run_at_jst": "2026-09-15T18:30:00+09:00",
+  "summary": "PAPER research started with adopted official prices; EDINET/J-Quants source queries unavailable locally; formal MRS and issuer inputs missing; WAIT and zero orders; cutoff unchanged",
+  "attempt": 1,
+  "attempt_started_at_jst": "2026-10-06T06:24:17+09:00"
+}

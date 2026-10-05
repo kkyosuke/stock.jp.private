@@ -236,6 +236,34 @@ class Checkpoint:
                 state["status"] = "PAUSED"
                 ingest.atomic_json(path, state)
                 self.document["runs"][state["run_date"]] = copy.deepcopy(state)
+            # An owner retry can bind an unused pre-publication placeholder to
+            # current configuration. Charged or partially collected runs retain
+            # their original contract. Both durable copies must prove zero I/O.
+            current_sha = ingest.digest((self.root / "config/sources.json").read_bytes())
+            started = daily.aware(state["started_at"])
+            entry = self.document["files"].get(path.relative_to(source).as_posix())
+            raw = path.read_bytes()
+            unused = (state["status"] == "WAIT_PUBLICATION" and not state["requests"]
+                      and not state["tasks"] and self.old_charged == 0
+                      and all(state[k] is None for k in ("data_date", "error", "http_status", "retry_not_before"))
+                      and started.date() == self.target_day and started.hour < 21
+                      and self.document["runs"].get(state["run_date"]) == state
+                      and entry and storage.digest(raw) == entry["sha256"]
+                      and git_blob(raw) == entry["blob"])
+            if state["config_sha256"] != current_sha and unused:
+                configured_budget = ingest.read_json(self.root / "config/sources.json")["jquants"]["ingestion"]["max_requests_per_run"]
+                require(state["budget"] == configured_budget, "unused placeholder budget cannot change")
+                previous = copy.deepcopy(state)
+                state["config_sha256"] = current_sha
+                receipt = {"version": 1, "reason": "owner retry of verified unused publication placeholder",
+                           "action_run_id": self.context["run_id"], "previous_state": previous,
+                           "new_config_sha256": current_sha, "requests_preserved": 0}
+                audit = source / "jquants/rebindings" / (state["run_date"] + "-" + current_sha + "-" + str(self.context["run_id"]) + ".json")
+                require(not audit.exists() or audit.read_bytes() == ingest.encoded(receipt), "configuration audit changed")
+                ingest.atomic_json(audit, receipt)
+                ingest.atomic_json(path, state)
+                self.document["runs"][state["run_date"]] = copy.deepcopy(state)
+                self.sync(state)  # Persist the audit before any provider request.
 
     def can_defer(self, state):
         # Keep a legacy future WAIT journal intact, and defer only when both

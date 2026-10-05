@@ -7,7 +7,7 @@ GitHub Actionsの入口は `.github/workflows/`、取得設定は
 | Workflow | 責務 |
 | --- | --- |
 | `ci.yml` | `format`、`test`、`guardrail`。静的検証と合成データのテスト |
-| `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。手動再実行も同じ入口 |
+| `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。21:20に再試行。取得後に一次資料収集とPAPER調査準備 |
 | `operation-health.yml` | 保存済みPAPER runメタデータの監視結果をartifactへ保存 |
 | `forward-holdout.yml` | 22:30 JSTに凍結したPAPER研究と採用済みデータを読み取り、不足・実装変更をartifactへ保存 |
 
@@ -62,10 +62,42 @@ Actionsの「Nightly market data」で対象日を指定する。未指定なら
 `JQUANTS_API_KEY` を修正し、GitHubの権限不足はworkflowのpermissionsとrepositoryの
 PR作成許可を確認してから、対象日を指定して手動実行する。消費記録を消して再試行しない。
 
+ownerの手動再実行では、公開前に作った`WAIT_PUBLICATION`について、復元したjournalと
+checkpointがともに要求0・task0・過去消費0である場合だけ現行設定へ接続できる。
+予算は変えず、旧状態と新設定のハッシュを`jquants/rebindings/`へ保存する。
+要求・取得結果があるrunや定時実行は設定変更を越えて再開しない。
+
 `preview=true` は取得・checkpoint保存・世代の検証後に、検証用draftデータPRを作って
 CIを確認する。mainへ採用しない。修正branchでもownerが手動実行できる。
 検証用branchは `daily/market/<日付>-preview`。確認後、draft PRを閉じる。
 previewでも実際の通信は消費として残り、本番の再実行で完了済み取得を再利用する。
+
+## 一次資料とPAPER調査準備
+
+市場データjobが成功した後、読み取り権限の`paper-research` jobが最新mainを復元する。
+企業IR・VI・景気統計の取得元は`operations/inputs/primary-sources.json`、原本保存は
+`market_data/primary_sources.py`、取得記録は`research/forward_collection.py`が管理する。
+公開資料も直列・最低1.05秒間隔、1回最大60要求。J-Quantsの取得とは別の消費記録である。
+J-Quantsを使うsource scanは既存の最低1.05秒間隔・最大12要求とpage checkpointを使う。
+同じworkflowのconcurrencyで市場データ取得と調査準備の同時実行を防ぐ。
+
+```bash
+python -m stock_jp.research.forward_collection --output .work/paper-research/collection.json
+python -m stock_jp.operation.paper_preparation --output .work/paper-research/preparation.json
+```
+
+`paper_research=true`の手動実行は市場データ取得を省略して、この2処理だけを実行する。
+PR branchでの確認は`preview=true`も指定する。Secretsは既存の`JQUANTS_API_KEY`と
+`EDINET_API_KEY`を使う。PAPER/HUMAN_ONLYを必須とし、本人の承認は生成しない。
+
+準備処理は`operation run start`と同じ入口で実データを調べ、未完了のレビューを
+保存する。`REVIEW_REQUIRED`はexit 1であり、成功した開示cutoffやholdout回数を進めない。
+調査・判断が終わるまで`run finalize`を呼ばない。取得job成功と研究jobの未完了は
+Actionsのjobごとに確認する。
+
+`paper-research-<run ID>` artifactはレビュー用の受け取り口で、400日保存する。
+run・原本・forward記録・J-Quants page checkpointを含む。取り込み後に再検証し、
+privateのPRで採用したGitの入力と結果を正本にする。artifactの保存だけで採用済みにはしない。
 
 ## 財務履歴の初回補完
 

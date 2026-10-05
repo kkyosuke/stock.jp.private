@@ -347,6 +347,37 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(self.repo.journal()["runs"]["2026-10-04"], old)
         self.assertFalse(self.fixture.calls)
 
+    def test_owner_retry_can_rebind_verified_unused_publication_placeholder(self):
+        self.fixture.at = datetime.fromisoformat("2026-10-02T20:59:00+09:00")
+        with self.assertRaises(n.Incomplete):
+            self.run_preview()
+        old = copy.deepcopy(self.repo.journal()["runs"]["2026-10-02"])
+        self.fixture.config["extra"] = "changed before any request"
+        self.fixture.save_config()
+        self.fixture.at = datetime.fromisoformat("2026-10-02T22:00:00+09:00")
+        result = self.run_preview()
+        self.assertEqual(result["status"], "PREVIEW_COMPLETE")
+        state = self.repo.journal()["runs"]["2026-10-02"]
+        self.assertEqual(state["budget"], old["budget"])
+        self.assertEqual(len(state["requests"]), 9)
+        audits = list((self.fixture.archive / "rebindings").glob("*.json"))
+        self.assertEqual(len(audits), 1)
+        self.assertEqual(json.loads(audits[0].read_text())["previous_state"], old)
+
+    def test_owner_retry_cannot_rebind_a_placeholder_with_prior_charges(self):
+        self.fixture.at = datetime.fromisoformat("2026-10-02T20:59:00+09:00")
+        with self.assertRaises(n.Incomplete):
+            self.run_preview()
+        old = copy.deepcopy(self.repo.journal()["runs"]["2026-10-02"])
+        ingest.atomic_json(self.root / "operations/acquisition/date-grants.json", {"prior_charges": {"2026-10-02": 1}})
+        self.fixture.config["extra"] = "changed"
+        self.fixture.save_config()
+        self.fixture.at = datetime.fromisoformat("2026-10-02T22:00:00+09:00")
+        with self.assertRaisesRegex(ingest.IngestionError, "run configuration changed"):
+            self.run_preview()
+        self.assertEqual(self.repo.journal()["runs"]["2026-10-02"], old)
+        self.assertFalse(self.fixture.calls)
+
     def test_collect_verify_duplicate_without_more_provider_requests(self):
         result = self.run_preview()
         self.assertEqual(result["status"], "PREVIEW_COMPLETE")

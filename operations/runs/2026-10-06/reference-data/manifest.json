@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-10-06",
+  "cutoff_at_jst": "2026-10-06T06:24:17+09:00",
+  "retrieved_at_jst": "2026-10-06T06:24:17+09:00",
+  "datasets": {
+    "jpx_listed_master": {
+      "path": "reference-data/jpx-listed-master.csv.gz",
+      "sha256": "1e6dc0988613e90c6d00052b9c977d523d34258b2c16488b211de8c72356c79c",
+      "row_count": 3702,
+      "source_url": "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xlsx",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jpx-listed-2026-10-06.xlsx",
+      "raw_sha256": "a26fdf4420cb6a152a1811ce0c6e293e642c8a99f1cc2ad9c47a5d55f2722c82",
+      "point_in_time": true
+    }
+  },
+  "notes": [
+    "All data files are private-only; public redistribution is prohibited.",
+    "Calculated fields are identified separately from official source fields."
+  ]
+}

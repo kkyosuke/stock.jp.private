@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "max_requests": 60,
+  "allowed_hosts": ["ssl4.eir-parts.net", "indexes.nikkei.co.jp", "www.esri.cao.go.jp"],
+  "issuers": [
+    {
+      "code": "4052",
+      "feed_url": "https://ssl4.eir-parts.net/V4Public/eir/4052/ja/announcement/announcement_0.js",
+      "from_at_jst": "2026-09-14T06:20:00+09:00"
+    }
+  ],
+  "public_series": [
+    {
+      "id": "nikkei_vi",
+      "title": "Nikkei Stock Average Volatility Index daily CSV",
+      "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+      "suffix": ".csv"
+    },
+    {
+      "id": "leading_ci_publication_index",
+      "title": "Cabinet Office leading CI publication index",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+      "suffix": ".html"
+    }
+  ]
+}
