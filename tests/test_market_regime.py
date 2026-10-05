@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from stock_jp.strategy.regime import MarketRegimeInput, calculate_breadth, derive_market_regime, evaluate_market_regime
+from stock_jp.strategy.regime import MarketRegimeInput, calculate_breadth, derive_market_regime, evaluate_market_regime, nikkei_vi_window
 
 
 def inputs(**overrides) -> MarketRegimeInput:
@@ -26,6 +26,22 @@ def inputs(**overrides) -> MarketRegimeInput:
 
 
 class MarketRegimeTest(unittest.TestCase):
+    def test_vi_rejects_recent_only_duplicates_gaps_and_stale_end(self):
+        end = date(2026, 9, 30)
+        full = [(end - timedelta(days=1095 - n), 20) for n in range(1096)]
+        cases = [(full[-600:], "complete three-year"), (full + [full[-1]], "duplicate"),
+                 (full[:100] + full[120:], "gap"), (full[:-1], "does not match")]
+        for points, message in cases:
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                nikkei_vi_window(points, as_of=end)
+
+    def test_vi_filters_future_values_and_handles_leap_day(self):
+        end = date(2028, 2, 29)
+        points = [(end - timedelta(days=1095 - n), 20) for n in range(1096)]
+        selected = nikkei_vi_window(points + [(end + timedelta(days=1), 999)], as_of=end)
+        self.assertEqual(selected[-1], (end, 20))
+        self.assertEqual(len(selected), 1096)
+
     def test_five_positive_components_are_normal(self) -> None:
         result = evaluate_market_regime(inputs())
 
@@ -180,10 +196,10 @@ class MarketRegimeTest(unittest.TestCase):
                     "nikkei_vi": {
                         "points": [
                             {
-                                "date": (start + timedelta(days=offset)).isoformat(),
+                                "date": (as_of - timedelta(days=1095 - offset)).isoformat(),
                                 "value": 20,
                             }
-                            for offset in range(600)
+                            for offset in range(1096)
                         ]
                     },
                     "leading_ci": {

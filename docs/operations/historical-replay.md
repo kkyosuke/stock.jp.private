@@ -8,6 +8,8 @@
 最新の結果と不足は[2026年10月5日の検証](../../research/validation-2026-10-05/README.md)にある。
 財務の開示日時による入力再構成と次の確認一覧は
 [財務入力](../../research/financial-inputs-2026-10-05/README.md)を参照する。
+正式採点・MRS・出口検証の実行結果と将来のholdout計画は
+[正式検証の記録](../../research/formal-validation-2026-10-05/README.md)にまとめている。
 価格・流動性による資金配分診断と、ルール全体の履歴再生を区別する。
 診断の好成績や一次資料の保存件数だけではLIVE条件を通過しない。
 
@@ -64,3 +66,9 @@ holdoutは `operations/evidence/v04-holdout-plan.json` に期間・基準・入�
 利用者が結果と集中損失を確認する。事後的に基準や凍結日を変更しない。
 本人のリスク確認と最終LIVE承認は[有効な条件](live-gates.md)に従う。
 復旧試験は必須条件に含めない。
+
+PAPER研究の期間・方法は`research holdout freeze`で未観測期間に固定する。
+固定後は上書きせず、凍結した実装変更を無効として検出する。
+`research holdout observe --output .work/forward-holdout/observation.json`は原本を変更せず、
+入力不足を記録する。期間終了後に正式入力の検証と再生を通過するまで、
+snapshot件数を正式な月末評価や取引へ加算しない。

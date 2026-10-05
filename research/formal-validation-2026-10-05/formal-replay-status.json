@@ -1,0 +1,33 @@
+{
+  "valid": false,
+  "blockers": [
+    "input manifest status must be READY",
+    "certifications.point_in_time_security_master must be true",
+    "certifications.includes_delisted must be true",
+    "certifications.includes_mergers must be true",
+    "certifications.includes_corporate_actions must be true",
+    "certifications.includes_all_material_disclosures must be true",
+    "certifications.source_rights_reviewed must be true",
+    "datasets[0].official must be true",
+    "datasets[0].replay_authorized must be true",
+    "datasets[1].official must be true",
+    "datasets[1].replay_authorized must be true",
+    "datasets[2].official must be true",
+    "datasets[2].replay_authorized must be true",
+    "datasets[3].official must be true",
+    "datasets[3].replay_authorized must be true",
+    "datasets[4].official must be true",
+    "datasets[4].replay_authorized must be true",
+    "datasets[5].official must be true",
+    "datasets[5].replay_authorized must be true",
+    "datasets[6].official must be true",
+    "datasets[6].replay_authorized must be true",
+    "datasets[7].official must be true",
+    "datasets[7].replay_authorized must be true",
+    "datasets[8].official must be true",
+    "datasets[8].replay_authorized must be true",
+    "trading calendar is incomplete: 2025-01-01, 2025-01-02, 2025-01-03, 2025-01-04, 2025-01-05, 2025-01-06, 2025-01-07, 2025-01-08, 2025-01-09, 2025-01-10",
+    "trading calendar does not define replay sessions",
+    "at least one full-universe MONTHLY assessment is required"
+  ]
+}

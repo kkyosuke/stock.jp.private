@@ -125,7 +125,8 @@ def month_end_indexes(prices: list[Price], start_index: int) -> set[int]:
     for index in range(start_index, len(prices)):
         current = prices[index].day
         if index + 1 == len(prices):
-            result.add(index)
+            # A truncated archive does not prove that its final quote is a
+            # month end. Require the following month's session as evidence.
             continue
         following = prices[index + 1].day
         if (current.year, current.month) != (following.year, following.month):

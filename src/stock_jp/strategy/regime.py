@@ -7,7 +7,7 @@ import csv
 import json
 import math
 from dataclasses import asdict, dataclass
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
@@ -238,6 +238,26 @@ def _subtract_months(value: date, months: int) -> tuple[int, int]:
     return month_index // 12, month_index % 12 + 1
 
 
+def nikkei_vi_window(points, *, as_of: date, minimum_observations: int = 500):
+    """Validate the full three-year VI window before computing its percentile."""
+    try:
+        beginning = as_of.replace(year=as_of.year - 3)
+    except ValueError:
+        beginning = as_of.replace(year=as_of.year - 3, day=28)
+    selected = sorted((day, value) for day, value in points if beginning < day <= as_of)
+    if selected and selected[0][0] > beginning + timedelta(days=10):
+        raise ValueError("nikkei_vi requires a complete three-year window, not only 500 recent observations")
+    if len({day for day, _ in selected}) != len(selected):
+        raise ValueError("nikkei_vi contains duplicate dates")
+    if any((following[0] - current[0]).days > 10 for current, following in zip(selected, selected[1:])):
+        raise ValueError("nikkei_vi has an unexplained gap in the three-year window")
+    if len(selected) < minimum_observations:
+        raise ValueError(f"nikkei_vi requires at least {minimum_observations} three-year observations")
+    if selected[-1][0] != as_of:
+        raise ValueError(f"nikkei_vi latest value {selected[-1][0]} does not match MRS as_of {as_of}")
+    return selected
+
+
 def derive_market_regime(
     document: dict[str, Any], *, archive_root: Path
 ) -> tuple[MarketRegimeInput, MarketRegimeResult, dict[str, Any]]:
@@ -293,26 +313,11 @@ def derive_market_regime(
         )
     derived["breadth"] = asdict(breadth)
 
-    vi_start_year = as_of.year - 3
-    try:
-        vi_start = as_of.replace(year=vi_start_year)
-    except ValueError:
-        vi_start = as_of.replace(year=vi_start_year, day=28)
-    vi_points = [
-        (day, value)
-        for day, value in _points(series.get("nikkei_vi", {}))
-        if vi_start < day <= as_of
-    ]
-    minimum_vi = int(document.get("minimum_vi_observations", 500))
-    if len(vi_points) < minimum_vi:
-        raise ValueError(
-            f"nikkei_vi requires at least {minimum_vi} three-year observations"
-        )
+    vi_points = nikkei_vi_window(
+        _points(series.get("nikkei_vi", {})), as_of=as_of,
+        minimum_observations=int(document.get("minimum_vi_observations", 500)),
+    )
     vi_latest = vi_points[-1][1]
-    if vi_points[-1][0] != as_of:
-        raise ValueError(
-            f"nikkei_vi latest value {vi_points[-1][0]} does not match MRS as_of {as_of}"
-        )
     vi_p80 = percentile([value for _, value in vi_points], 80)
     derived["nikkei_vi"] = {
         "last_date": vi_points[-1][0].isoformat(),

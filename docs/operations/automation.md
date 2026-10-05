@@ -9,9 +9,13 @@ GitHub Actionsの入口は `.github/workflows/`、取得設定は
 | `ci.yml` | `format`、`test`、`guardrail`。静的検証と合成データのテスト |
 | `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。手動再実行も同じ入口 |
 | `operation-health.yml` | 保存済みPAPER runメタデータの監視結果をartifactへ保存 |
+| `forward-holdout.yml` | 22:30 JSTに凍結したPAPER研究と採用済みデータを読み取り、不足・実装変更をartifactへ保存 |
 
 依存関係は `pyproject.toml` を参照する。夜間取得は実行commitと採用済み市場データを
-checkoutする。CIと監視は市場データをcheckoutせず、実データの準備完了を判定しない。
+checkoutする。CIと運用監視は市場データをcheckoutせず、実データの準備完了を判定しない。
+forward holdoutの観測は採用済みデータもcheckoutする。正式入力が不足した開始日以降は
+失敗として記録するが、市場データの取得・保存・本人のLIVE承認は行わない。
+固定した条件と現時点の不足は[正式検証の記録](../../research/formal-validation-2026-10-05/README.md)を参照する。
 
 ## 夜間取得
 

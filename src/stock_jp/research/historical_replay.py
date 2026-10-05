@@ -443,6 +443,15 @@ def validate_inputs(
                 blockers.append("holdout plan declared_by is required")
             if holdout_plan.get("period") != period:
                 blockers.append("holdout plan period does not match the input manifest")
+            bindings = holdout_plan.get("frozen_files")
+            if bindings is not None:
+                if not isinstance(bindings, dict) or not bindings:
+                    blockers.append("holdout frozen_files must bind the rules and execution code")
+                else:
+                    for name, digest in bindings.items():
+                        bound = (root / name).resolve()
+                        if not bound.is_relative_to(root.resolve()) or not bound.is_file() or _sha256(bound) != digest:
+                            blockers.append(f"holdout frozen file changed or missing: {name}")
             try:
                 frozen_at = _aware_datetime(
                     holdout_plan.get("frozen_at_jst"), "holdout plan frozen_at_jst"
@@ -1795,6 +1804,27 @@ def _monthly_returns(run: ReplayRun) -> list[dict[str, Any]]:
     return result
 
 
+def evaluate_holdout(*, plan: dict[str, Any], quality: dict[str, Any], v04: dict[str, Any]) -> dict[str, Any]:
+    """Evaluate the frozen criteria only against a validated formal replay."""
+    criteria = plan.get("acceptance_criteria", {})
+    observations = {"monthly_evaluation_count": quality["monthly_evaluation_count"],
+                    "trade_count": v04["trade_count"]}
+    failures = []
+    for observed, required in (("monthly_evaluation_count", "minimum_monthly_evaluation_count"),
+                               ("trade_count", "minimum_trade_count")):
+        if observations[observed] < criteria.get(required, math.inf):
+            failures.append(required)
+    for metric, threshold in (("maximum_drawdown_pct", "maximum_drawdown_floor_pct"),
+                              ("maximum_single_name_loss_contribution_pct", "maximum_single_name_loss_floor_pct"),
+                              ("maximum_industry_loss_contribution_pct", "maximum_industry_loss_floor_pct")):
+        if v04[metric] < criteria.get(threshold, math.inf):
+            failures.append(threshold)
+    insufficient = any(name in failures for name in ("minimum_monthly_evaluation_count", "minimum_trade_count"))
+    return {"acceptance_criteria": criteria, "observations": observations,
+            "criteria_met": not failures, "criterion_failures": failures,
+            "outcome": "INCONCLUSIVE" if insufficient else "FAIL" if failures else "PASS"}
+
+
 def write_replay(*, root: Path, manifest_path: Path, output_dir: Path) -> dict[str, Any]:
     model, quality = validate_inputs(root=root, manifest_path=manifest_path)
     private = _research_root(root)
@@ -1902,26 +1932,6 @@ def write_replay(*, root: Path, manifest_path: Path, output_dir: Path) -> dict[s
     }
     if model["manifest"]["evaluation_kind"] == "FORWARD_HOLDOUT":
         plan = model["holdout_plan"] or {}
-        criteria = plan.get("acceptance_criteria", {})
-        v04 = comparisons["v0.4"]
-        observations = {
-            "monthly_evaluation_count": quality["monthly_evaluation_count"],
-            "trade_count": v04["trade_count"],
-        }
-        failures: list[str] = []
-        if observations["monthly_evaluation_count"] < criteria.get(
-            "minimum_monthly_evaluation_count", math.inf
-        ):
-            failures.append("minimum_monthly_evaluation_count")
-        if observations["trade_count"] < criteria.get("minimum_trade_count", math.inf):
-            failures.append("minimum_trade_count")
-        for metric_name, criterion_name in (
-            ("maximum_drawdown_pct", "maximum_drawdown_floor_pct"),
-            ("maximum_single_name_loss_contribution_pct", "maximum_single_name_loss_floor_pct"),
-            ("maximum_industry_loss_contribution_pct", "maximum_industry_loss_floor_pct"),
-        ):
-            if v04[metric_name] < criteria.get(criterion_name, math.inf):
-                failures.append(criterion_name)
         result["holdout"] = {
             **model["manifest"].get("holdout", {}),
             "plan_path": (
@@ -1931,10 +1941,7 @@ def write_replay(*, root: Path, manifest_path: Path, output_dir: Path) -> dict[s
             "retuning_count": model["manifest"].get("holdout", {}).get("retuning_count"),
             "plan_frozen_at_jst": plan.get("frozen_at_jst"),
             "rule_frozen_at_jst": plan.get("rule_frozen_at_jst"),
-            "acceptance_criteria": criteria,
-            "observations": observations,
-            "criteria_met": not failures,
-            "criterion_failures": failures,
+            **evaluate_holdout(plan=plan, quality=quality, v04=comparisons["v0.4"]),
         }
     _write_json(result_path, result)
     return {"point_in_time_manifest": point_manifest_path, "replay_result": result_path, "result": result}

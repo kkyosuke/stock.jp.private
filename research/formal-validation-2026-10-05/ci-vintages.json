@@ -1,0 +1,1556 @@
+[
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202411report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202411report.pdf",
+    "path": "data/market/primary-sources/e664dba3b825fc8eba38a4394039883337069b5e2b77647f8bfe08e3184a44ae.pdf",
+    "sha256": "e664dba3b825fc8eba38a4394039883337069b5e2b77647f8bfe08e3184a44ae",
+    "retrieved_at_jst": "2026-10-05T12:14:13+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-06",
+        "value": 109.1
+      },
+      {
+        "period": "2024-07",
+        "value": 109.1
+      },
+      {
+        "period": "2024-08",
+        "value": 107.0
+      },
+      {
+        "period": "2024-09",
+        "value": 108.9
+      },
+      {
+        "period": "2024-10",
+        "value": 109.1
+      },
+      {
+        "period": "2024-11",
+        "value": 107.0
+      }
+    ],
+    "published_at_jst": "2025-01-10T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202411rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202411rsummary.pdf",
+    "path": "data/market/primary-sources/1589378d50ee0a5949c12de26dc36dd0b427e2234a8c07a1899631518ee96057.pdf",
+    "sha256": "1589378d50ee0a5949c12de26dc36dd0b427e2234a8c07a1899631518ee96057",
+    "retrieved_at_jst": "2026-10-05T12:14:15+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-06",
+        "value": 109.1
+      },
+      {
+        "period": "2024-07",
+        "value": 109.1
+      },
+      {
+        "period": "2024-08",
+        "value": 107.0
+      },
+      {
+        "period": "2024-09",
+        "value": 108.9
+      },
+      {
+        "period": "2024-10",
+        "value": 109.1
+      },
+      {
+        "period": "2024-11",
+        "value": 107.5
+      }
+    ],
+    "published_at_jst": "2025-01-27T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202412report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202412report.pdf",
+    "path": "data/market/primary-sources/7acad58ae4e30d7ceac284b54f55b2b278a7a72bf70ed70ef4e8c72de88964c4.pdf",
+    "sha256": "7acad58ae4e30d7ceac284b54f55b2b278a7a72bf70ed70ef4e8c72de88964c4",
+    "retrieved_at_jst": "2026-10-05T12:14:17+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-07",
+        "value": 109.3
+      },
+      {
+        "period": "2024-08",
+        "value": 107.2
+      },
+      {
+        "period": "2024-09",
+        "value": 109.0
+      },
+      {
+        "period": "2024-10",
+        "value": 109.2
+      },
+      {
+        "period": "2024-11",
+        "value": 107.8
+      },
+      {
+        "period": "2024-12",
+        "value": 108.9
+      }
+    ],
+    "published_at_jst": "2025-02-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202412rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202412rsummary.pdf",
+    "path": "data/market/primary-sources/a0fba650b1c7d651beeb24c806e9e5a2310fee648e9178d790e744786cc66bff.pdf",
+    "sha256": "a0fba650b1c7d651beeb24c806e9e5a2310fee648e9178d790e744786cc66bff",
+    "retrieved_at_jst": "2026-10-05T12:14:18+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-07",
+        "value": 109.3
+      },
+      {
+        "period": "2024-08",
+        "value": 107.2
+      },
+      {
+        "period": "2024-09",
+        "value": 109.0
+      },
+      {
+        "period": "2024-10",
+        "value": 109.2
+      },
+      {
+        "period": "2024-11",
+        "value": 107.8
+      },
+      {
+        "period": "2024-12",
+        "value": 108.3
+      }
+    ],
+    "published_at_jst": "2025-02-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202501report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202501report.pdf",
+    "path": "data/market/primary-sources/67c9ea17225503cbad93fde5326bb06893417929efc45c8ad83571ac908fbf12.pdf",
+    "sha256": "67c9ea17225503cbad93fde5326bb06893417929efc45c8ad83571ac908fbf12",
+    "retrieved_at_jst": "2026-10-05T12:14:21+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-08",
+        "value": 106.9
+      },
+      {
+        "period": "2024-09",
+        "value": 108.6
+      },
+      {
+        "period": "2024-10",
+        "value": 108.9
+      },
+      {
+        "period": "2024-11",
+        "value": 107.6
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.0
+      }
+    ],
+    "published_at_jst": "2025-03-10T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202501rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202501rsummary.pdf",
+    "path": "data/market/primary-sources/84211de3f6c768e048adaeb37d71b5c343014a0d3f074001d22940519dbe993e.pdf",
+    "sha256": "84211de3f6c768e048adaeb37d71b5c343014a0d3f074001d22940519dbe993e",
+    "retrieved_at_jst": "2026-10-05T12:14:23+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-08",
+        "value": 107.2
+      },
+      {
+        "period": "2024-09",
+        "value": 108.3
+      },
+      {
+        "period": "2024-10",
+        "value": 108.5
+      },
+      {
+        "period": "2024-11",
+        "value": 107.7
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.3
+      }
+    ],
+    "published_at_jst": "2025-03-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202502report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202502report.pdf",
+    "path": "data/market/primary-sources/f37b6a57c05796c30910f73a93453afd18e49611d74b5012e8418c0a8e3e93f1.pdf",
+    "sha256": "f37b6a57c05796c30910f73a93453afd18e49611d74b5012e8418c0a8e3e93f1",
+    "retrieved_at_jst": "2026-10-05T12:14:25+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-09",
+        "value": 108.3
+      },
+      {
+        "period": "2024-10",
+        "value": 108.5
+      },
+      {
+        "period": "2024-11",
+        "value": 107.7
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.2
+      },
+      {
+        "period": "2025-02",
+        "value": 107.9
+      }
+    ],
+    "published_at_jst": "2025-04-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202502rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202502rsummary.pdf",
+    "path": "data/market/primary-sources/9329a3da307bb8270091193b0ef42bc9d873c6b229134a6a1f52865bcd157811.pdf",
+    "sha256": "9329a3da307bb8270091193b0ef42bc9d873c6b229134a6a1f52865bcd157811",
+    "retrieved_at_jst": "2026-10-05T12:14:27+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-09",
+        "value": 108.3
+      },
+      {
+        "period": "2024-10",
+        "value": 108.4
+      },
+      {
+        "period": "2024-11",
+        "value": 107.5
+      },
+      {
+        "period": "2024-12",
+        "value": 107.7
+      },
+      {
+        "period": "2025-01",
+        "value": 108.2
+      },
+      {
+        "period": "2025-02",
+        "value": 107.9
+      }
+    ],
+    "published_at_jst": "2025-04-30T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202503report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202503report.pdf",
+    "path": "data/market/primary-sources/9ad5c4524614a569fe1e176c962c888f7f3e7090fb2e81b61207919270b65a38.pdf",
+    "sha256": "9ad5c4524614a569fe1e176c962c888f7f3e7090fb2e81b61207919270b65a38",
+    "retrieved_at_jst": "2026-10-05T12:14:29+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-10",
+        "value": 108.6
+      },
+      {
+        "period": "2024-11",
+        "value": 107.7
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.4
+      },
+      {
+        "period": "2025-02",
+        "value": 108.2
+      },
+      {
+        "period": "2025-03",
+        "value": 107.7
+      }
+    ],
+    "published_at_jst": "2025-05-09T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202503rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202503rsummary.pdf",
+    "path": "data/market/primary-sources/5aac93a7d991487abeb8305b13886d745bbe194e27d65078bfa85f204fa9a4df.pdf",
+    "sha256": "5aac93a7d991487abeb8305b13886d745bbe194e27d65078bfa85f204fa9a4df",
+    "retrieved_at_jst": "2026-10-05T12:14:30+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-10",
+        "value": 108.6
+      },
+      {
+        "period": "2024-11",
+        "value": 107.7
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.4
+      },
+      {
+        "period": "2025-02",
+        "value": 108.2
+      },
+      {
+        "period": "2025-03",
+        "value": 108.1
+      }
+    ],
+    "published_at_jst": "2025-05-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202504report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202504report.pdf",
+    "path": "data/market/primary-sources/979e4d400d21ef56251f44c7f5d43b36af4293605a47e74048e0828c3b340152.pdf",
+    "sha256": "979e4d400d21ef56251f44c7f5d43b36af4293605a47e74048e0828c3b340152",
+    "retrieved_at_jst": "2026-10-05T12:14:33+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-11",
+        "value": 107.7
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.1
+      },
+      {
+        "period": "2025-02",
+        "value": 107.8
+      },
+      {
+        "period": "2025-03",
+        "value": 107.6
+      },
+      {
+        "period": "2025-04",
+        "value": 103.4
+      }
+    ],
+    "published_at_jst": "2025-06-06T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202504rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202504rsummary.pdf",
+    "path": "data/market/primary-sources/8bc3ad28d4a997e83adb8612ddf85124e80665a55edf2c618a2bb63cd5977222.pdf",
+    "sha256": "8bc3ad28d4a997e83adb8612ddf85124e80665a55edf2c618a2bb63cd5977222",
+    "retrieved_at_jst": "2026-10-05T12:14:35+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-11",
+        "value": 107.7
+      },
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.1
+      },
+      {
+        "period": "2025-02",
+        "value": 107.8
+      },
+      {
+        "period": "2025-03",
+        "value": 107.6
+      },
+      {
+        "period": "2025-04",
+        "value": 104.2
+      }
+    ],
+    "published_at_jst": "2025-06-25T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202505report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202505report.pdf",
+    "path": "data/market/primary-sources/f9bc643ee9fc0a094b49710d614cb94ad06e7e45ae8ce74c38e07145bdb87eca.pdf",
+    "sha256": "f9bc643ee9fc0a094b49710d614cb94ad06e7e45ae8ce74c38e07145bdb87eca",
+    "retrieved_at_jst": "2026-10-05T12:14:37+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.1
+      },
+      {
+        "period": "2025-02",
+        "value": 107.8
+      },
+      {
+        "period": "2025-03",
+        "value": 107.6
+      },
+      {
+        "period": "2025-04",
+        "value": 104.2
+      },
+      {
+        "period": "2025-05",
+        "value": 105.3
+      }
+    ],
+    "published_at_jst": "2025-07-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202505rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202505rsummary.pdf",
+    "path": "data/market/primary-sources/59c4a425f0ea917de5b4f1cce33287682ff5ec8fdf84a52e0007a7ed8b06d212.pdf",
+    "sha256": "59c4a425f0ea917de5b4f1cce33287682ff5ec8fdf84a52e0007a7ed8b06d212",
+    "retrieved_at_jst": "2026-10-05T12:14:39+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2024-12",
+        "value": 107.9
+      },
+      {
+        "period": "2025-01",
+        "value": 108.1
+      },
+      {
+        "period": "2025-02",
+        "value": 107.8
+      },
+      {
+        "period": "2025-03",
+        "value": 107.6
+      },
+      {
+        "period": "2025-04",
+        "value": 104.2
+      },
+      {
+        "period": "2025-05",
+        "value": 104.8
+      }
+    ],
+    "published_at_jst": "2025-07-25T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202506report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202506report.pdf",
+    "path": "data/market/primary-sources/756abd98e0e5b6b80f9619b3a3cd826d6123ba3628af568304448dab6a52f4ed.pdf",
+    "sha256": "756abd98e0e5b6b80f9619b3a3cd826d6123ba3628af568304448dab6a52f4ed",
+    "retrieved_at_jst": "2026-10-05T12:14:41+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-01",
+        "value": 108.1
+      },
+      {
+        "period": "2025-02",
+        "value": 107.8
+      },
+      {
+        "period": "2025-03",
+        "value": 107.6
+      },
+      {
+        "period": "2025-04",
+        "value": 104.2
+      },
+      {
+        "period": "2025-05",
+        "value": 104.8
+      },
+      {
+        "period": "2025-06",
+        "value": 106.1
+      }
+    ],
+    "published_at_jst": "2025-08-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202506rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202506rsummary.pdf",
+    "path": "data/market/primary-sources/605c8b857b7550be52534faee1d081bbcbbde31c6319b9358041860f2930ad04.pdf",
+    "sha256": "605c8b857b7550be52534faee1d081bbcbbde31c6319b9358041860f2930ad04",
+    "retrieved_at_jst": "2026-10-05T12:14:43+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-01",
+        "value": 108.1
+      },
+      {
+        "period": "2025-02",
+        "value": 107.8
+      },
+      {
+        "period": "2025-03",
+        "value": 107.6
+      },
+      {
+        "period": "2025-04",
+        "value": 104.2
+      },
+      {
+        "period": "2025-05",
+        "value": 104.8
+      },
+      {
+        "period": "2025-06",
+        "value": 105.6
+      }
+    ],
+    "published_at_jst": "2025-08-25T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202507report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202507report.pdf",
+    "path": "data/market/primary-sources/ec1a0a8fe1abd9afbb0ba6e0f03d85af466231f4912bee4644acffb421ec3a85.pdf",
+    "sha256": "ec1a0a8fe1abd9afbb0ba6e0f03d85af466231f4912bee4644acffb421ec3a85",
+    "retrieved_at_jst": "2026-10-05T12:14:45+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-02",
+        "value": 107.7
+      },
+      {
+        "period": "2025-03",
+        "value": 107.4
+      },
+      {
+        "period": "2025-04",
+        "value": 104.4
+      },
+      {
+        "period": "2025-05",
+        "value": 104.5
+      },
+      {
+        "period": "2025-06",
+        "value": 105.1
+      },
+      {
+        "period": "2025-07",
+        "value": 105.9
+      }
+    ],
+    "published_at_jst": "2025-09-05T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202507rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202507rsummary.pdf",
+    "path": "data/market/primary-sources/418c8b6ddfcdda89f8ff82d21dc0f38c00fde8b725687977f47f17f440916169.pdf",
+    "sha256": "418c8b6ddfcdda89f8ff82d21dc0f38c00fde8b725687977f47f17f440916169",
+    "retrieved_at_jst": "2026-10-05T12:14:47+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-02",
+        "value": 107.7
+      },
+      {
+        "period": "2025-03",
+        "value": 107.4
+      },
+      {
+        "period": "2025-04",
+        "value": 104.4
+      },
+      {
+        "period": "2025-05",
+        "value": 104.5
+      },
+      {
+        "period": "2025-06",
+        "value": 105.0
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      }
+    ],
+    "published_at_jst": "2025-09-29T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202508report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202508report.pdf",
+    "path": "data/market/primary-sources/786202c97584f7ab71b13daaab64eae6a340d6f7aa34cd45c709ceed18154296.pdf",
+    "sha256": "786202c97584f7ab71b13daaab64eae6a340d6f7aa34cd45c709ceed18154296",
+    "retrieved_at_jst": "2026-10-05T12:14:49+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-03",
+        "value": 107.4
+      },
+      {
+        "period": "2025-04",
+        "value": 104.4
+      },
+      {
+        "period": "2025-05",
+        "value": 104.5
+      },
+      {
+        "period": "2025-06",
+        "value": 105.0
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 107.4
+      }
+    ],
+    "published_at_jst": "2025-10-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202508rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202508rsummary.pdf",
+    "path": "data/market/primary-sources/2fb3a5f2b8e5736053349fd67e3f40364f9f74278e454293347cc592ee0b8d2c.pdf",
+    "sha256": "2fb3a5f2b8e5736053349fd67e3f40364f9f74278e454293347cc592ee0b8d2c",
+    "retrieved_at_jst": "2026-10-05T12:14:50+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-03",
+        "value": 107.4
+      },
+      {
+        "period": "2025-04",
+        "value": 104.4
+      },
+      {
+        "period": "2025-05",
+        "value": 104.5
+      },
+      {
+        "period": "2025-06",
+        "value": 105.0
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 107.0
+      }
+    ],
+    "published_at_jst": "2025-10-24T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202509report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202509report.pdf",
+    "path": "data/market/primary-sources/b252ed08a30d69ecbb3e164f3eaa956dd14313d195ed284bd92836c22acadc54.pdf",
+    "sha256": "b252ed08a30d69ecbb3e164f3eaa956dd14313d195ed284bd92836c22acadc54",
+    "retrieved_at_jst": "2026-10-05T12:14:52+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-04",
+        "value": 104.4
+      },
+      {
+        "period": "2025-05",
+        "value": 104.5
+      },
+      {
+        "period": "2025-06",
+        "value": 105.0
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 107.0
+      },
+      {
+        "period": "2025-09",
+        "value": 108.0
+      }
+    ],
+    "published_at_jst": "2025-11-10T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202509rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202509rsummary.pdf",
+    "path": "data/market/primary-sources/cf6252ed763d12e303859851666958305badc12389aa0e44703af6ffc027be0c.pdf",
+    "sha256": "cf6252ed763d12e303859851666958305badc12389aa0e44703af6ffc027be0c",
+    "retrieved_at_jst": "2026-10-05T12:14:54+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-04",
+        "value": 104.4
+      },
+      {
+        "period": "2025-05",
+        "value": 104.5
+      },
+      {
+        "period": "2025-06",
+        "value": 105.0
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 107.0
+      },
+      {
+        "period": "2025-09",
+        "value": 108.6
+      }
+    ],
+    "published_at_jst": "2025-11-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202510report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202510report.pdf",
+    "path": "data/market/primary-sources/465f4c46dfdb5576dc6500d021e2a8d6a465a18da6470d1571a6bf098b5f2fb4.pdf",
+    "sha256": "465f4c46dfdb5576dc6500d021e2a8d6a465a18da6470d1571a6bf098b5f2fb4",
+    "retrieved_at_jst": "2026-10-05T12:14:56+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-05",
+        "value": 104.7
+      },
+      {
+        "period": "2025-06",
+        "value": 105.3
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 106.8
+      },
+      {
+        "period": "2025-09",
+        "value": 108.2
+      },
+      {
+        "period": "2025-10",
+        "value": 110.0
+      }
+    ],
+    "published_at_jst": "2025-12-05T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202510rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202510rsummary.pdf",
+    "path": "data/market/primary-sources/1dfd87a442a943074b0d56a7b7b5de0efdc13815abcb2adaa6e71007be184b27.pdf",
+    "sha256": "1dfd87a442a943074b0d56a7b7b5de0efdc13815abcb2adaa6e71007be184b27",
+    "retrieved_at_jst": "2026-10-05T12:14:58+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-05",
+        "value": 104.7
+      },
+      {
+        "period": "2025-06",
+        "value": 105.3
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 106.8
+      },
+      {
+        "period": "2025-09",
+        "value": 108.2
+      },
+      {
+        "period": "2025-10",
+        "value": 109.8
+      }
+    ],
+    "published_at_jst": "2025-12-24T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202511report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202511report.pdf",
+    "path": "data/market/primary-sources/0fd2154a4a6fa0680eae42344a157b8d67ecdfccb05ba274476f92cd66541c11.pdf",
+    "sha256": "0fd2154a4a6fa0680eae42344a157b8d67ecdfccb05ba274476f92cd66541c11",
+    "retrieved_at_jst": "2026-10-05T12:15:00+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-06",
+        "value": 105.3
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 106.8
+      },
+      {
+        "period": "2025-09",
+        "value": 108.2
+      },
+      {
+        "period": "2025-10",
+        "value": 109.8
+      },
+      {
+        "period": "2025-11",
+        "value": 110.5
+      }
+    ],
+    "published_at_jst": "2026-01-09T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202511rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202511rsummary.pdf",
+    "path": "data/market/primary-sources/f84412382d0ac33e63b289f8ebb4783387f5f28098ea901e08202c9dbdc77f78.pdf",
+    "sha256": "f84412382d0ac33e63b289f8ebb4783387f5f28098ea901e08202c9dbdc77f78",
+    "retrieved_at_jst": "2026-10-05T12:15:02+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-06",
+        "value": 105.3
+      },
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 106.8
+      },
+      {
+        "period": "2025-09",
+        "value": 108.2
+      },
+      {
+        "period": "2025-10",
+        "value": 109.8
+      },
+      {
+        "period": "2025-11",
+        "value": 109.9
+      }
+    ],
+    "published_at_jst": "2026-01-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202512report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202512report.pdf",
+    "path": "data/market/primary-sources/d20f5cb3a72764ef7545a5502297e48794badc6425253fae35b210b1dda1fd82.pdf",
+    "sha256": "d20f5cb3a72764ef7545a5502297e48794badc6425253fae35b210b1dda1fd82",
+    "retrieved_at_jst": "2026-10-05T12:15:04+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 106.8
+      },
+      {
+        "period": "2025-09",
+        "value": 108.0
+      },
+      {
+        "period": "2025-10",
+        "value": 109.7
+      },
+      {
+        "period": "2025-11",
+        "value": 109.9
+      },
+      {
+        "period": "2025-12",
+        "value": 110.2
+      }
+    ],
+    "published_at_jst": "2026-02-06T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202512rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202512rsummary.pdf",
+    "path": "data/market/primary-sources/d2c6da1fc9a28bce34abc183dc0afe1033078bfb792472399774f8c55b23426c.pdf",
+    "sha256": "d2c6da1fc9a28bce34abc183dc0afe1033078bfb792472399774f8c55b23426c",
+    "retrieved_at_jst": "2026-10-05T12:15:06+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-07",
+        "value": 106.1
+      },
+      {
+        "period": "2025-08",
+        "value": 106.8
+      },
+      {
+        "period": "2025-09",
+        "value": 108.0
+      },
+      {
+        "period": "2025-10",
+        "value": 109.7
+      },
+      {
+        "period": "2025-11",
+        "value": 109.9
+      },
+      {
+        "period": "2025-12",
+        "value": 111.0
+      }
+    ],
+    "published_at_jst": "2026-02-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202601report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202601report.pdf",
+    "path": "data/market/primary-sources/c93cd1bcc8ff7595b93c4ca700d2225b99d41ec3bc11ab3691accade141ee911.pdf",
+    "sha256": "c93cd1bcc8ff7595b93c4ca700d2225b99d41ec3bc11ab3691accade141ee911",
+    "retrieved_at_jst": "2026-10-05T12:15:08+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-08",
+        "value": 106.6
+      },
+      {
+        "period": "2025-09",
+        "value": 107.9
+      },
+      {
+        "period": "2025-10",
+        "value": 109.4
+      },
+      {
+        "period": "2025-11",
+        "value": 109.6
+      },
+      {
+        "period": "2025-12",
+        "value": 110.3
+      },
+      {
+        "period": "2026-01",
+        "value": 112.4
+      }
+    ],
+    "published_at_jst": "2026-03-09T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202601rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202601rsummary.pdf",
+    "path": "data/market/primary-sources/a9ceaeea947eb1cc11509bc64d849b9037232a2aad0c6d2be4f9cbc69e299b8f.pdf",
+    "sha256": "a9ceaeea947eb1cc11509bc64d849b9037232a2aad0c6d2be4f9cbc69e299b8f",
+    "retrieved_at_jst": "2026-10-05T12:15:10+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-08",
+        "value": 106.9
+      },
+      {
+        "period": "2025-09",
+        "value": 108.0
+      },
+      {
+        "period": "2025-10",
+        "value": 109.1
+      },
+      {
+        "period": "2025-11",
+        "value": 109.6
+      },
+      {
+        "period": "2025-12",
+        "value": 110.4
+      },
+      {
+        "period": "2026-01",
+        "value": 112.1
+      }
+    ],
+    "published_at_jst": "2026-03-25T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202602report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202602report.pdf",
+    "path": "data/market/primary-sources/7ce1a397defeab5277cc7331bc6122b123f7f4578d578b69a441288289d36121.pdf",
+    "sha256": "7ce1a397defeab5277cc7331bc6122b123f7f4578d578b69a441288289d36121",
+    "retrieved_at_jst": "2026-10-05T12:15:12+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-09",
+        "value": 108.0
+      },
+      {
+        "period": "2025-10",
+        "value": 109.1
+      },
+      {
+        "period": "2025-11",
+        "value": 109.6
+      },
+      {
+        "period": "2025-12",
+        "value": 110.5
+      },
+      {
+        "period": "2026-01",
+        "value": 112.1
+      },
+      {
+        "period": "2026-02",
+        "value": 112.4
+      }
+    ],
+    "published_at_jst": "2026-04-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202602rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202602rsummary.pdf",
+    "path": "data/market/primary-sources/e7166cd37e924ec13b6098dbc05658e2a5c766d1fae6a3d3a786b1591c2d0588.pdf",
+    "sha256": "e7166cd37e924ec13b6098dbc05658e2a5c766d1fae6a3d3a786b1591c2d0588",
+    "retrieved_at_jst": "2026-10-05T12:15:14+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-09",
+        "value": 108.0
+      },
+      {
+        "period": "2025-10",
+        "value": 109.2
+      },
+      {
+        "period": "2025-11",
+        "value": 109.5
+      },
+      {
+        "period": "2025-12",
+        "value": 110.4
+      },
+      {
+        "period": "2026-01",
+        "value": 112.0
+      },
+      {
+        "period": "2026-02",
+        "value": 113.3
+      }
+    ],
+    "published_at_jst": "2026-04-27T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202603report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202603report.pdf",
+    "path": "data/market/primary-sources/74ab89e0bca345905ea1320978a782f30bba10bbbdefb4356a59b8a1724c45a1.pdf",
+    "sha256": "74ab89e0bca345905ea1320978a782f30bba10bbbdefb4356a59b8a1724c45a1",
+    "retrieved_at_jst": "2026-10-05T12:15:16+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-10",
+        "value": 109.2
+      },
+      {
+        "period": "2025-11",
+        "value": 109.5
+      },
+      {
+        "period": "2025-12",
+        "value": 110.4
+      },
+      {
+        "period": "2026-01",
+        "value": 112.0
+      },
+      {
+        "period": "2026-02",
+        "value": 113.2
+      },
+      {
+        "period": "2026-03",
+        "value": 114.5
+      }
+    ],
+    "published_at_jst": "2026-05-12T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202603rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202603rsummary.pdf",
+    "path": "data/market/primary-sources/2cd76429b5566a097f4ce6c1f5cb98789ae753a386e457aaf99bf898b1f7e0f0.pdf",
+    "sha256": "2cd76429b5566a097f4ce6c1f5cb98789ae753a386e457aaf99bf898b1f7e0f0",
+    "retrieved_at_jst": "2026-10-05T12:15:18+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-10",
+        "value": 109.2
+      },
+      {
+        "period": "2025-11",
+        "value": 109.5
+      },
+      {
+        "period": "2025-12",
+        "value": 110.4
+      },
+      {
+        "period": "2026-01",
+        "value": 112.0
+      },
+      {
+        "period": "2026-02",
+        "value": 113.2
+      },
+      {
+        "period": "2026-03",
+        "value": 114.0
+      }
+    ],
+    "published_at_jst": "2026-05-26T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202604report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202604report.pdf",
+    "path": "data/market/primary-sources/e6cef736299992ed7e9a3d8272f4a9f76c17cab5f3031bc1315c6bbad1452ee8.pdf",
+    "sha256": "e6cef736299992ed7e9a3d8272f4a9f76c17cab5f3031bc1315c6bbad1452ee8",
+    "retrieved_at_jst": "2026-10-05T12:15:20+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-11",
+        "value": 109.6
+      },
+      {
+        "period": "2025-12",
+        "value": 110.5
+      },
+      {
+        "period": "2026-01",
+        "value": 112.5
+      },
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.4
+      },
+      {
+        "period": "2026-04",
+        "value": 115.9
+      }
+    ],
+    "published_at_jst": "2026-06-05T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202604rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202604rsummary.pdf",
+    "path": "data/market/primary-sources/c1d900616da66d0c89d54a25db2a207ce286c568d2e0738399a74be40b83e785.pdf",
+    "sha256": "c1d900616da66d0c89d54a25db2a207ce286c568d2e0738399a74be40b83e785",
+    "retrieved_at_jst": "2026-10-05T12:15:22+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-11",
+        "value": 109.6
+      },
+      {
+        "period": "2025-12",
+        "value": 110.5
+      },
+      {
+        "period": "2026-01",
+        "value": 112.5
+      },
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.4
+      },
+      {
+        "period": "2026-04",
+        "value": 116.1
+      }
+    ],
+    "published_at_jst": "2026-06-25T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202605report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202605report.pdf",
+    "path": "data/market/primary-sources/2caca2bb99e79c129551196b8f4e5e547f56da9cc87606d550267e644e1878ac.pdf",
+    "sha256": "2caca2bb99e79c129551196b8f4e5e547f56da9cc87606d550267e644e1878ac",
+    "retrieved_at_jst": "2026-10-05T12:15:24+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-12",
+        "value": 110.5
+      },
+      {
+        "period": "2026-01",
+        "value": 112.5
+      },
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.4
+      },
+      {
+        "period": "2026-04",
+        "value": 116.1
+      },
+      {
+        "period": "2026-05",
+        "value": 116.8
+      }
+    ],
+    "published_at_jst": "2026-07-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202605rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202605rsummary.pdf",
+    "path": "data/market/primary-sources/acdcd68d7bf3e97d29021c0497fa5a4bb64f35e8bb4ce9463f0d185863a2352d.pdf",
+    "sha256": "acdcd68d7bf3e97d29021c0497fa5a4bb64f35e8bb4ce9463f0d185863a2352d",
+    "retrieved_at_jst": "2026-10-05T12:15:26+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2025-12",
+        "value": 110.5
+      },
+      {
+        "period": "2026-01",
+        "value": 112.5
+      },
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.4
+      },
+      {
+        "period": "2026-04",
+        "value": 116.1
+      },
+      {
+        "period": "2026-05",
+        "value": 116.5
+      }
+    ],
+    "published_at_jst": "2026-07-27T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202606report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202606report.pdf",
+    "path": "data/market/primary-sources/7cc789a45337c847d8682092192d602404fe7b47c0ef0cda986834a5cd08a3e3.pdf",
+    "sha256": "7cc789a45337c847d8682092192d602404fe7b47c0ef0cda986834a5cd08a3e3",
+    "retrieved_at_jst": "2026-10-05T12:15:28+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2026-01",
+        "value": 112.5
+      },
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.4
+      },
+      {
+        "period": "2026-04",
+        "value": 116.1
+      },
+      {
+        "period": "2026-05",
+        "value": 116.4
+      },
+      {
+        "period": "2026-06",
+        "value": 116.4
+      }
+    ],
+    "published_at_jst": "2026-08-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202606rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202606rsummary.pdf",
+    "path": "data/market/primary-sources/e262831e97836ab9f8f4649766af695269521c956c5534c91e662660a6c53465.pdf",
+    "sha256": "e262831e97836ab9f8f4649766af695269521c956c5534c91e662660a6c53465",
+    "retrieved_at_jst": "2026-10-05T12:15:30+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2026-01",
+        "value": 112.5
+      },
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.4
+      },
+      {
+        "period": "2026-04",
+        "value": 116.1
+      },
+      {
+        "period": "2026-05",
+        "value": 116.5
+      },
+      {
+        "period": "2026-06",
+        "value": 116.5
+      }
+    ],
+    "published_at_jst": "2026-08-25T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202607report.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202607report.pdf",
+    "path": "data/market/primary-sources/2f56d50ef93ea7735cc2be93488646d013436c652144c703d7a2bfe83ff35a9e.pdf",
+    "sha256": "2f56d50ef93ea7735cc2be93488646d013436c652144c703d7a2bfe83ff35a9e",
+    "retrieved_at_jst": "2026-10-05T12:15:33+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.5
+      },
+      {
+        "period": "2026-04",
+        "value": 115.9
+      },
+      {
+        "period": "2026-05",
+        "value": 116.2
+      },
+      {
+        "period": "2026-06",
+        "value": 116.2
+      },
+      {
+        "period": "2026-07",
+        "value": 117.9
+      }
+    ],
+    "published_at_jst": "2026-09-07T14:00:00+09:00",
+    "status": "PARSED"
+  },
+  {
+    "requested_url": "https://www.esri.cao.go.jp/jp/stat/di/202607rsummary.pdf",
+    "url": "https://www.esri.cao.go.jp/jp/stat/di/202607rsummary.pdf",
+    "path": "data/market/primary-sources/dda89e565363544f241c820674f20cfc61ec5afb1292ab9ace820dfb3c94648d.pdf",
+    "sha256": "dda89e565363544f241c820674f20cfc61ec5afb1292ab9ace820dfb3c94648d",
+    "retrieved_at_jst": "2026-10-05T12:15:35+09:00",
+    "primary_source": true,
+    "original_historical_vintage_verified": false,
+    "points": [
+      {
+        "period": "2026-02",
+        "value": 114.3
+      },
+      {
+        "period": "2026-03",
+        "value": 115.5
+      },
+      {
+        "period": "2026-04",
+        "value": 115.9
+      },
+      {
+        "period": "2026-05",
+        "value": 116.2
+      },
+      {
+        "period": "2026-06",
+        "value": 116.2
+      },
+      {
+        "period": "2026-07",
+        "value": 117.7
+      }
+    ],
+    "published_at_jst": "2026-09-29T14:00:00+09:00",
+    "status": "PARSED"
+  }
+]

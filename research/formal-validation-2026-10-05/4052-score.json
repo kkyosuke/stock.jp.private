@@ -1,0 +1,354 @@
+{
+  "schema_version": "1.0",
+  "rule_version": "v0.2-score/v0.4-entry",
+  "code": "4052",
+  "information_cutoff_at_jst": "2026-09-30T15:30:00+09:00",
+  "status": "WAIT",
+  "primary_candidate": false,
+  "entry_ready": false,
+  "failed_hard_gates": [],
+  "missing_inputs": [
+    "HG1",
+    "HG2",
+    "HG4",
+    "HG5",
+    "HG6",
+    "HG7",
+    "4.1.1",
+    "4.1.2",
+    "4.1.3",
+    "4.2.1",
+    "4.2.2",
+    "4.3.1",
+    "4.3.2",
+    "4.3.3",
+    "4.4.2",
+    "4.4.3",
+    "4.6.1",
+    "4.6.2",
+    "4.6.3",
+    "4.7.1",
+    "4.7.2",
+    "4.8.1",
+    "4.8.3",
+    "4.8.4"
+  ],
+  "formal_total": null,
+  "sections": {
+    "4.1": null,
+    "4.2": null,
+    "4.3": null,
+    "4.4": null,
+    "4.5": 1,
+    "4.6": null,
+    "4.7": null,
+    "4.8": null
+  },
+  "items": [
+    {
+      "rule_id": "4.1.1",
+      "metric": "sales_per_fd_share_cagr_3y_pct",
+      "maximum": 8,
+      "status": "NA",
+      "value": null,
+      "reason": "3年の各期間平均完全希薄化後株式数が未再構成。期末発行済株数や潜在株式調整後EPSを代用しない。",
+      "points": null
+    },
+    {
+      "rule_id": "4.1.2",
+      "metric": "ttm_sales_per_fd_share_yoy_pct",
+      "maximum": 8,
+      "status": "NA",
+      "value": null,
+      "reason": "非連結への変更の8四半期接続と、期間平均完全希薄化後株式数が未確認。",
+      "points": null
+    },
+    {
+      "rule_id": "4.1.3",
+      "metric": "gross_profit_per_share_growth_less_sales_growth_pt",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "総額粗利益は開示あり。比較可能なTTM・希薄化後1株粗利益と売上成長率は未確定。",
+      "points": null
+    },
+    {
+      "rule_id": "4.2.1",
+      "metric": "sales_per_share_growth_acceleration_pt",
+      "maximum": 5,
+      "status": "NA",
+      "value": null,
+      "reason": "現在・1年前・2年前のTTMと各平均完全希薄化後株式数が不足。",
+      "points": null
+    },
+    {
+      "rule_id": "4.2.2",
+      "metric": "gross_profit_per_share_growth_acceleration_pt",
+      "maximum": 5,
+      "status": "NA",
+      "value": null,
+      "reason": "同一定義の3時点TTM粗利益と平均完全希薄化後株式数が不足。",
+      "points": null
+    },
+    {
+      "rule_id": "4.3.1",
+      "metric": "operating_margin_yoy_change_pt",
+      "maximum": 6,
+      "status": "NA",
+      "value": null,
+      "reason": "FY26非連結と旧連結四半期の接続を未確認。年度の非連結前年差をTTMの代用にしない。",
+      "points": null
+    },
+    {
+      "rule_id": "4.3.2",
+      "metric": "gross_profit_growth_less_sga_growth_pt",
+      "maximum": 5,
+      "status": "NA",
+      "value": null,
+      "reason": "比較可能なTTM粗利益・販管費の接続が未完了。",
+      "points": null
+    },
+    {
+      "rule_id": "4.3.3",
+      "metric": "normalized_fcf_margin",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "当年度の単純FCFは-78,903千円。正規化項目と前年同範囲FCFは未確認。",
+      "points": null
+    },
+    {
+      "rule_id": "4.4.1",
+      "metric": "sam_evidence",
+      "maximum": 3,
+      "status": "KNOWN",
+      "value": "UNVERIFIABLE",
+      "source_ids": [
+        "company-4052-press_2886384"
+      ],
+      "locator": "PDF pp.28-32",
+      "reason": "ADASセンサ等の将来市場の資料はあるが、対象地域・顧客・製品を3年SAMへ分解する前提は確認できない。",
+      "calculation": "SAMの根拠は検証不能=0。大きなTAMをSAMとして採用しない。",
+      "points": 0
+    },
+    {
+      "rule_id": "4.4.2",
+      "metric": "required_share_vs_leader",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "SAM・必要売上高・現在首位シェアが未確定。",
+      "points": null
+    },
+    {
+      "rule_id": "4.4.3",
+      "metric": "capacity_evidence",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "必要能力を逆算する必要売上高・SOMと、能力・資金の量的接続が未確定。",
+      "points": null
+    },
+    {
+      "rule_id": "4.4.4",
+      "metric": "market_and_share_growth",
+      "maximum": 4,
+      "status": "KNOWN",
+      "value": "NEITHER",
+      "source_ids": [
+        "company-4052-press_2886384"
+      ],
+      "locator": "PDF pp.20,28-32",
+      "reason": "量産実績105%増は自社数量の増加。対応市場の実績成長と同一市場のシェア獲得を確認できない。",
+      "calculation": "当該SAMにおける市場成長・シェア獲得の双方とも未確認=0。",
+      "points": 0
+    },
+    {
+      "rule_id": "4.5.1",
+      "metric": "retention",
+      "maximum": 4,
+      "status": "KNOWN",
+      "value": "UNDISCLOSED_OR_WORSENING",
+      "source_ids": [
+        "company-4052-press_2886384"
+      ],
+      "locator": "PDF pp.19-20,22-40,46-65",
+      "reason": "ライセンス収入と量産台数はあるが、継続率・解約率・反復購入率は開示されていない。",
+      "calculation": "ライセンス収入成長を継続率の代用にしない。未開示=0。",
+      "points": 0
+    },
+    {
+      "rule_id": "4.5.2",
+      "metric": "customer_unit_economics",
+      "maximum": 3,
+      "status": "KNOWN",
+      "value": "UNCONFIRMED",
+      "source_ids": [
+        "company-4052-press_2886384"
+      ],
+      "locator": "PDF pp.19,39-42",
+      "reason": "ライセンス粗利率100%という収入分類の説明は、顧客単位の採算や回収期間の改善を示していない。",
+      "calculation": "顧客単位の採算が未確認=0。",
+      "points": 0
+    },
+    {
+      "rule_id": "4.5.3",
+      "metric": "differentiation",
+      "maximum": 3,
+      "status": "KNOWN",
+      "value": "QUALITATIVE",
+      "source_ids": [
+        "company-4052-press_2886384"
+      ],
+      "locator": "PDF pp.22-26",
+      "reason": "エッジAIの技術と導入実績を説明。価格・継続率・市場シェアによる競争優位の定量比較はない。",
+      "calculation": "定性的な差別化の説明のみ=1。",
+      "points": 1
+    },
+    {
+      "rule_id": "4.6.1",
+      "metric": "funding_runway",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "年度営業CF・現金は開示あり。直近6か月の同一範囲現金減少と使途制限預金の確認が不足。",
+      "points": null
+    },
+    {
+      "rule_id": "4.6.2",
+      "metric": "fully_diluted_shares_cagr_3y_pct",
+      "maximum": 3,
+      "status": "NA",
+      "value": null,
+      "reason": "3年前と現在の平均完全希薄化後株式数を未再構成。",
+      "points": null
+    },
+    {
+      "rule_id": "4.6.3",
+      "metric": "cash_conversion_3y",
+      "maximum": 3,
+      "status": "NA",
+      "value": null,
+      "reason": "3年累計営業CFの連結/非連結接続と代替指標の同一範囲計算が不足。",
+      "points": null
+    },
+    {
+      "rule_id": "4.7.1",
+      "metric": "kpi_continuity",
+      "maximum": 2,
+      "status": "NA",
+      "value": null,
+      "reason": "量産台数KPIは開示されている。旧資料との定義を3年以上照合していないため未開示0点にはしない。",
+      "points": null
+    },
+    {
+      "rule_id": "4.7.2",
+      "metric": "initial_forecast_accuracy",
+      "maximum": 2,
+      "status": "NA",
+      "value": null,
+      "reason": "初期会社予想と同一範囲実績の直近3期比較が未完了。",
+      "points": null
+    },
+    {
+      "rule_id": "4.7.3",
+      "metric": "related_party_and_allocation",
+      "maximum": 1,
+      "status": "KNOWN",
+      "value": "VERIFIABLE",
+      "source_ids": [
+        "company-4052-yuho_3016416"
+      ],
+      "locator": "PDF p.66",
+      "reason": "ボッシュへの受託194,264千円、売掛55,651千円、子会社委託8,328千円・残余財産12,421千円を開示。条件は他の取引先と同様と明記。",
+      "calculation": "開示された重要関連当事者取引の金額・条件・関係を検証可能=1。将来の資本配分の優良性を意味しない。",
+      "points": 1
+    },
+    {
+      "rule_id": "4.8.1",
+      "metric": "n3_completeness",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "潜在株22,620株は確認。3年後の基本・悪化シナリオの追加調達見通しが不足。",
+      "points": null
+    },
+    {
+      "rule_id": "4.8.2",
+      "metric": "kpi_decomposition",
+      "maximum": 4,
+      "status": "KNOWN",
+      "value": "PARTIAL",
+      "source_ids": [
+        "company-4052-press_2886384"
+      ],
+      "locator": "PDF pp.19-20,40-43",
+      "reason": "受託開発収入＋量産台数×ライセンス単価に部分接続。3年必要売上を顧客数・単価・能力・利益率へ完全に接続する数値モデルはない。",
+      "calculation": "KPI分解は一部接続=2。逆算成立や将来単価を仮定しない。",
+      "points": 2
+    },
+    {
+      "rule_id": "4.8.3",
+      "metric": "exit_multiple_vs_peers",
+      "maximum": 4,
+      "status": "NA",
+      "value": null,
+      "reason": "T0で固定した直接競合3〜5社の中央値・75%点と、正規化出口倍率が未確定。",
+      "points": null
+    },
+    {
+      "rule_id": "4.8.4",
+      "metric": "competitor_scale",
+      "maximum": 3,
+      "status": "NA",
+      "value": null,
+      "reason": "必要売上・利益が未確定で競合規模との量的整合を検証できない。",
+      "points": null
+    }
+  ],
+  "hard_gates": {
+    "HG1": {
+      "status": "NA",
+      "reason": "年度現金・負債・8月末株数・潜在株は確認。T0株数へ9月の単元未満株買付等を更新していない。"
+    },
+    "HG2": {
+      "status": "NA",
+      "reason": "2020年6月上場。旧連結から非連結への変更の8四半期の同一範囲接続が未完了。会社の「影響軽微」だけでは接続を認定しない。",
+      "source_ids": [
+        "company-4052-press_2863580"
+      ]
+    },
+    "HG3": {
+      "status": "PASS",
+      "source_ids": [
+        "company-4052-yuho_3016416"
+      ],
+      "locator": "PDF pp.44-45,75-77",
+      "reason": "直近の監査済み財務で純資産727,642千円。監査報告書に継続企業の重要な不確実性の注記なし。"
+    },
+    "HG4": {
+      "status": "NA",
+      "reason": "9月28日の無限定適正は確認。全法定開示の重大遅延・訂正の追跡は未完了。"
+    },
+    "HG5": {
+      "status": "NA",
+      "reason": "FCF赤字。年度CFから12か月資金余力を推測せず、直近6か月同一範囲の現金を要確認。"
+    },
+    "HG6": {
+      "status": "NA",
+      "reason": "年度有報で固定行使価格1,000円の2系列は確認。T0までの資金調達の全件照合が未完了。"
+    },
+    "HG7": {
+      "status": "NA",
+      "reason": "価格原本はあるが、経済持分・企業行動の全件照合が未完了。"
+    }
+  },
+  "reviewed_item_count": 7,
+  "raw_reviewed_points": 4,
+  "raw_reviewed_points_are_a_total_score": false,
+  "source_sha256": {
+    "company-4052-yuho_3016416": "99979de24d62737da6ec93897f1a19a80b31bb36e982479c030d2fded13db569",
+    "company-4052-press_2886384": "1b6131810973ebb215790c6289d0525d6cc71976bd9a1a4935a471fec8641dd8",
+    "company-4052-press_2863580": "4ea7b51dbcdfcec3e5d9a319b11c5a9768a2d3c97edbbf5fc71dfce82d5ee8ef"
+  }
+}
