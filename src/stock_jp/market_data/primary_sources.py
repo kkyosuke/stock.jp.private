@@ -112,6 +112,8 @@ def collect(root: Path, *, cutoff: datetime, download=None):
     cutoff = cutoff.astimezone(JST)
     config_path = confined(root, CONFIG)
     config = json.loads(config_path.read_text())
+    source_config_path = confined(root, "config/sources.json")
+    market_regime = json.loads(source_config_path.read_text())["market_regime"]
     fetch = download or Download(config["allowed_hosts"], limit=config["max_requests"])
     sources, blockers = [], []
     observed = datetime.now(JST).isoformat(timespec="seconds")
@@ -146,16 +148,18 @@ def collect(root: Path, *, cutoff: datetime, download=None):
             blockers.append({"source": f"company_ir:{code}", "error": str(error)})
     for series in config["public_series"]:
         try:
-            url = checked_url(series["url"], config["allowed_hosts"])
+            url = checked_url(market_regime[series["config_key"]], config["allowed_hosts"])
+            raw = fetch(url)
             sources.append({"series": series["id"], "title": series["title"], "url": url,
                             "retrieved_at_jst": datetime.now(JST).isoformat(timespec="seconds"), "review_status": "COLLECTED_NOT_REVIEWED",
                             "original_historical_vintage_verified": False,
-                            **preserve(root, fetch(url), series["suffix"])})
+                            **preserve(root, raw, series["suffix"])})
         except (OSError, ValueError, KeyError, TypeError) as error:
             blockers.append({"source": series["id"], "error": str(error)})
     return {"schema_version": "1.0", "scope": "CONFIGURED_ACTIVE_TARGETS_AND_MACRO_SOURCES",
             "cutoff_at_jst": cutoff.isoformat(timespec="seconds"), "retrieved_at_jst": observed,
             "config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest(),
+            "source_config_sha256": hashlib.sha256(source_config_path.read_bytes()).hexdigest(),
             "sources": sources, "blockers": blockers,
             "request_count": getattr(fetch, "requests", None),
             "full_universe_disclosure_coverage_certified": False,

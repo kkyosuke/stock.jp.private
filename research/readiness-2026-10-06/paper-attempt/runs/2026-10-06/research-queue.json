@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "run_id": "2026-10-06",
-  "generated_at_jst": "2026-10-06T06:24:17+09:00",
+  "generated_at_jst": "2026-10-06T07:40:34+09:00",
   "tasks": [
     {
       "task_id": "manual-company-ir-2026-10-06-4052",
@@ -70,6 +70,62 @@
       "code": "",
       "reason": "Confirm the next cash-equity trading date with JPX calendar evidence",
       "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z1RU",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z1RU"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z2DY",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z2DY"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z2DZ",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z2DZ"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z4ZF",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z4ZF"
+      ],
       "status": "PENDING",
       "evidence_source_ids": [],
       "decision_log_path": null,

@@ -95,9 +95,13 @@ class GitHubTransport:
                         '/git/refs/heads/automation/daily-checkpoint-v1',
                         '/git/refs/heads/automation/nightly-market-data',
                         '/git/refs/heads/automation/financial-history',
+                        '/git/refs/heads/automation/paper-source-inbox',
                     }
+                    or method == 'POST' and re.fullmatch(r'/actions/runs/[1-9][0-9]*/approve', suffix)
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
+            if suffix.endswith('/approve') and (path != prefix + suffix or body is not None):
+                raise RemoteStop('unreviewed workflow approval')
             if suffix == '/actions/workflows/ci.yml/dispatches':
                 if (path != prefix + suffix or not isinstance(body, dict)
                         or set(body) != {'ref', 'return_run_details'}
@@ -111,6 +115,7 @@ class GitHubTransport:
                         'refs/heads/automation/daily-checkpoint-v1',
                         'refs/heads/automation/nightly-market-data',
                         'refs/heads/automation/financial-history',
+                        'refs/heads/automation/paper-source-inbox',
                         }
                         or re.fullmatch(r'refs/heads/daily/market/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-preview)?',ref)):
                     raise RemoteStop('unreviewed writable ref')

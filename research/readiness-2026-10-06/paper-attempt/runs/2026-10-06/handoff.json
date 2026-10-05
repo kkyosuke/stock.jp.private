@@ -3,7 +3,7 @@
   "run_id": "2026-10-06",
   "status": "failed",
   "started_at_jst": "2026-10-06T06:24:17+09:00",
-  "completed_at_jst": "2026-10-06T06:43:45+09:00",
+  "completed_at_jst": "2026-10-06T07:41:21+09:00",
   "previous_run_id": "2026-09-14",
   "previous_disclosure_cutoff_jst": "2026-09-14T06:20:00+09:00",
   "operation_mode": "PAPER",
@@ -49,13 +49,13 @@
     },
     {
       "gap_id": "2026-10-06-edinet",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "CRITICAL",
       "source": "edinet",
       "impact": "statutory filings could be missing; all actions remain unverified",
       "retry_after_jst": "2026-10-07T21:00:00+09:00",
-      "resolved_at_jst": null,
-      "resolution_evidence": null
+      "resolved_at_jst": "2026-10-06T07:40:34+09:00",
+      "resolution_evidence": "official source scan succeeded"
     },
     {
       "gap_id": "2026-10-06-nightly_jquants_scan",
@@ -89,17 +89,18 @@
     },
     {
       "gap_id": "2026-10-06-trading_calendar",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "CRITICAL",
       "source": "trading_calendar",
       "impact": "the next trading date is unconfirmed; order tickets are blocked",
       "retry_after_jst": "2026-10-07T21:00:00+09:00",
-      "resolved_at_jst": null,
-      "resolution_evidence": null
+      "resolved_at_jst": "2026-10-06T07:40:34+09:00",
+      "resolution_evidence": "official source scan succeeded"
     }
   ],
   "next_run_at_jst": "2026-09-15T18:30:00+09:00",
-  "summary": "PAPER research started with adopted official prices; EDINET/J-Quants source queries unavailable locally; formal MRS and issuer inputs missing; WAIT and zero orders; cutoff unchanged",
-  "attempt": 1,
-  "attempt_started_at_jst": "2026-10-06T06:24:17+09:00"
+  "summary": "PAPER research prepared; primary-source and due-review completion required; no orders proposed",
+  "attempt": 2,
+  "attempt_started_at_jst": "2026-10-06T07:40:34+09:00",
+  "resumed_at_jst": "2026-10-06T07:40:34+09:00"
 }

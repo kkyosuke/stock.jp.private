@@ -3,58 +3,75 @@
 2026年10月6日、mainのPR71マージ後に実データで確認した記録。
 運用はPAPER/HUMAN_ONLY。正式検証とLIVE昇格は未完了である。
 
-## 定時取得
+## 市場データ
 
-[直近の定時run](https://github.com/kkyosuke/stock.jp.private/actions/runs/37365841728)は
-GitHubのhosted runner未割り当てで停止していた。
-[手動再実行](https://github.com/kkyosuke/stock.jp.private/actions/runs/37375360101)は処理を開始できたが、
-`run configuration changed`で停止した。J-Quants通信前の停止である。
+[定時run](https://github.com/kkyosuke/stock.jp.private/actions/runs/37365841728)は
+hosted runner未割り当て、[mainでの再実行](https://github.com/kkyosuke/stock.jp.private/actions/runs/37375360101)は
+`run configuration changed`でJ-Quants通信前に停止した。
+公開前に作られた要求0・task0・過去消費0のjournalだけをownerの手動実行で接続し直し、
+旧設定と新設定の原本を保存する。消費済み記録や別予算は接続し直さない。
+21:00 JSTに加え21:20の再試行を追加する。runner割り当て自体はGitHubに依存する。
 
-checkpointの10月5日記録は公開前の`WAIT_PUBLICATION`、要求0件、task0件。
-復元journal、checkpoint、過去消費を照合できる未使用記録だけを、ownerの手動再実行で
-現行設定へ接続する修正を加えた。旧状態と新設定ハッシュを原本と同じ保存世代へ残す。
-消費済み記録、別予算、定時実行の設定不一致は停止を維持する。
-21:20の再試行を追加したが、GitHubのrunner割り当てを保証するものではない。
+[修正後のpreview](https://github.com/kkyosuke/stock.jp.private/actions/runs/37378244594)は成功した。
+10月5日分を9/12要求・9taskで収集し、42ファイルのデータ差分だけを作成した。
+保存世代は`97318547b32f134618a0230140630af3260fd608c1c214ad8b5581d28541c712`。
+保存storeは791506147 bytes（約0.737 GiB）、追加は4309988 bytesで2 GiB上限内。
+同じheadの[dispatch CI](https://github.com/kkyosuke/stock.jp.private/actions/runs/37382523185)は3項目とも成功した。
+
+[本番での再利用](https://github.com/kkyosuke/stock.jp.private/actions/runs/37384010782)は
+追加J-Quants通信なしで[データPR74](https://github.com/kkyosuke/stock.jp.private/pull/74)を作成した。
+独立したdispatch CIは成功したが、PR側の承認待ちCIにmainの必須`format`が紐づかず、
+merge APIが405で停止した。保存世代・消費記録は維持されている。
+修正後は検証済みデータ差分の同じhead・同じPRのbot起動CIだけを承認し、
+そのCIも3項目成功した後に採用する。保護ルールとコードPRの人によるレビューは維持する。
 
 ## 一次資料とforward入力
 
 企業IR feed、4件のPDF、VI CSV、内閣府公表一覧の計7件を実際に収集した。
 公表日時が日付のみの資料は23:59:59 JST以後に利用可能として扱う。
-原本をSHA-256名で保存し、同じ文書の内容変更は黙って置換しない。
+原本をSHA-256名で保存し、内容変更を黙って置換しない。
+VI・景気統計のURLは`config/sources.json`の正本から読み、取得記録にその設定ハッシュも残す。
 
-収集結果と採用済みJ-Quants世代は
-[forwardの収集記録](../historical-replay/v04-forward/collection/)に保存した。
-初回のTLS設定・feed件数型の不一致も失敗した記録として残し、成功記録へ上書きしない。
-[入力manifest](../historical-replay/v04-forward/input-manifest.json)は、凍結済み計画の
-期間・ハッシュへ接続したDRAFT。9役割の経路とハッシュを用意し、公表時刻のある
-4件のIR資料をsource registerに追加した。利用権と全母集団網羅性は未承認のままである。
+収集結果と採用済みJ-Quants世代は[forwardの収集記録](../historical-replay/v04-forward/collection/)に保存した。
+TLS設定・feed件数型の初回失敗も記録として残し、成功記録へ上書きしない。
+[入力manifest](../historical-replay/v04-forward/input-manifest.json)は凍結済み計画へ接続したDRAFT。
+9役割の経路とハッシュ、公表時刻のある4件のIR資料を登録した。
+利用権と全母集団網羅性は未承認である。
 
-採用済み価格の最終日は10月2日で、forward開始前のwarmup資料。
-正式な月末評価0回、取引0件を維持する。宣言済み契約はLightで、
-日次Growth250は保存されていない。プラン変更や代替指数は行っていない。
+初回の収集記録の価格は10月2日までで、開始前のwarmup資料。
+[開始日の観測](holdout-observation.json)は`OBSERVING`、正式入力未完了、評価0回・取引0件。
+日次snapshotを正式な月末評価や取引へ数えない。宣言済み契約はLightで、
+日次Growth250は未保存。プラン変更や代替指数は行わない。
 
-## 実際のPAPER run
+## PAPERの実ネットワーク試行
 
-[10月6日のrun](../../operations/runs/2026-10-06/report.md)を
-`operation run start`で開始した。JPXマスターを実ネットワークで取得し、
-採用済み公式価格は3659銘柄と監視対象4052を確認した。
+[GitHubでの試行](https://github.com/kkyosuke/stock.jp.private/actions/runs/37378893292)は
+既存Secretsで`operation run start`と同じ入口を実行した。
+[provider health](paper-attempt/runs/2026-10-06/provider-health.json)により
+EDINET 23日分・4147件、JPX master 3702件、J-Quants master 4442件、カレンダー82件を確認した。
+翌営業日は10月7日。財務9ページ・160件でJ-Quants 12要求に達し、決算予定は未取得。
+朝の試行では当日未公表の日足を満たせず、MRSはUNAVAILABLE、4052はINCOMPLETE。
+WAIT・注文0件、`REVIEW_REQUIRED`で終了し、成功した開示cutoffを進めなかった。
 
-4052はWAIT、注文0件。正式MRSはUNAVAILABLE、銘柄入力はINCOMPLETE。
-ローカルのEDINET・J-Quants照会と必須開示レビューが未完了であるため、
-runをfailedで保存し、成功した開示cutoffを9月14日から進めなかった。
-run tokenのleaseは解放した。次回は同じcutoffで再開できる。
+朝のrun・state・原本・履歴は[試行資料](paper-attempt/)へ保存する。
+当日のcanonical runへ朝のcutoffを採用せず、今夜は21:00以後の公開窓で開始する。
+新しい準備処理は同じcutoffと検証済みページで、予算停止だけを最大3回再開する。
+1回12要求、各要求1.05秒以上の間隔、各回の実消費とcache hitを保存する。
+EDINETも直列1.05秒以上の間隔とする。
 
-追加した`paper-research` jobは既存GitHub Secretsでsource scanを行い、
-原本、run、未完了work plan、checkpointを400日保持するレビュー用artifactへ保存する。
-artifactから取り込み、再検証してprivateのPRで採用した入力・結果をGitの正本とする。
-自動準備は開示レビュー、正式採点、PAPER run完了を代行しない。
+Actionsのartifactは400日指定でも実際には90日に制限された。
+原本・未完了run・forward記録・query pageは`automation/paper-source-inbox`へ追記snapshotとして
+保存し、期限なしのprivate Gitを長期保管先とする。次回はquery cacheだけを復元し、
+運用state・cutoff・判断・承認は復元しない。artifactは受け取り口として90日保持する。
+保存はレビュー完了や正式入力への採用を意味せず、本人のLIVE承認も生成しない。
 
 ## 残る条件
 
-- 利用権のある日次指数と、過去検証に必要な2022年VI・訂正履歴の確認。
+- 利用権のある日次指数、2022年VI・訂正履歴の確認。
 - 全母集団の採点、株式数、資金余力、企業行動、全重要開示の確認。
-- 9役割の正式再生と、財務・開示を含む出口検証。
-- 2027年4月1日までのforward観測、正式月末評価6回・取引10件などの既存基準。
-- 条件を確認した本人によるリスク・証券口座の確認と最終LIVE承認。
+- 9役割の正式再生と財務・開示を含む出口検証。
+- 2027年4月1日までのforward観測と既存の回数・損失基準。
+- 本人による証券口座・リスクの確認と最終LIVE承認。
 
-凍結済み23ファイルと計画は変更していない。復旧試験は要求しない。
+凍結済み23ファイルと計画は変更しない。復旧試験は要求しない。
+実行リンクと最新CI結果はこの変更のPRへ記録する。

@@ -98,7 +98,7 @@ jobs:
     needs: nightly-market-data
     if: ${{ always() && !cancelled() && !inputs.financial_history && github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && ((needs.nightly-market-data.result == 'success' && !inputs.preview) || (github.event_name == 'workflow_dispatch' && inputs.paper_research && (github.ref == 'refs/heads/main' || inputs.preview))) }}
     permissions:
-      contents: read
+      contents: write
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -116,6 +116,14 @@ jobs:
       - run: python -m pip install -e .
       - name: Restore adopted official data
         run: python -m stock_jp data restore
+      - name: Restore durable query pages
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          STOCK_PREVIEW: ${{ inputs.preview }}
+        run: |
+          args=()
+          if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--preview); fi
+          python -m stock_jp.automation.paper_checkpoint restore "${args[@]}" --output .work/paper-research/restored.json
       - name: Preserve primary sources and the forward input receipt
         run: python -m stock_jp.research.forward_collection --output .work/paper-research/collection.json
       - name: Start real PAPER research and preserve its review queue
@@ -123,10 +131,24 @@ jobs:
         env:
           EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
-        run: python -m stock_jp.operation.paper_preparation --output .work/paper-research/preparation.json
+          STOCK_PREVIEW: ${{ inputs.preview }}
+        run: |
+          args=()
+          if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--allow-before-publication); fi
+          python -m stock_jp.operation.paper_preparation "${args[@]}" --output .work/paper-research/preparation.json
       - name: Verify frozen rules and approvals were preserved
+        id: frozen
         if: always()
         run: git diff --exit-code -- config docs/rules operations/evidence src
+      - name: Save the unreviewed source inbox in private Git
+        if: ${{ !cancelled() && steps.frozen.outcome == 'success' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          STOCK_PREVIEW: ${{ inputs.preview }}
+        run: |
+          args=()
+          if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--preview); fi
+          python -m stock_jp.automation.paper_checkpoint save "${args[@]}" --output .work/paper-research/checkpoint.json
       - name: Preserve the review inbox and licensed-source checkpoints
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -141,5 +163,5 @@ jobs:
             research/historical-replay/v04-forward/
             data/market/primary-sources/
           include-hidden-files: true
-          retention-days: 400
+          retention-days: 90
           if-no-files-found: error

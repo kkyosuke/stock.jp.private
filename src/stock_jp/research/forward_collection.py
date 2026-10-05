@@ -60,7 +60,7 @@ def capture(root: Path, *, cutoff: datetime, download=None):
     for role in ("equities_master", "equities_daily", "financial_summary", "trading_calendar", "topix_daily", "indices_daily"):
         names = sorted(n for n in store.files if n.startswith(f"jquants/datasets/{role}/") and n.endswith("/latest.json"))
         partitions[role] = [{"path": n, **store.files[n]} for n in names]
-    # Validate the latest dated price and master, not merely the presence of a manifest entry.
+    # Verify the latest dated price metadata; other entries remain an input inventory.
     price_dates = [n["path"].split("/")[-2] for n in partitions["equities_daily"]]
     latest = max(price_dates) if price_dates else None
     latest_metadata = None

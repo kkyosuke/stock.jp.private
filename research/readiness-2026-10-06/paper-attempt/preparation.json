@@ -1,0 +1,70 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "completed_run": false,
+  "run": {
+    "run_id": "2026-10-06",
+    "resumed": true,
+    "status": "in_progress",
+    "previous_disclosure_cutoff_jst": "2026-09-14T06:20:00+09:00",
+    "run_dir": "operations/runs/2026-10-06",
+    "report": "operations/runs/2026-10-06/report.md",
+    "orders": "operations/runs/2026-10-06/orders.csv",
+    "sources": "operations/runs/2026-10-06/sources.csv",
+    "coverage": "operations/runs/2026-10-06/coverage.json",
+    "provider_health": "operations/runs/2026-10-06/provider-health.json",
+    "research_queue": "operations/runs/2026-10-06/research-queue.json",
+    "work_plan": "operations/runs/2026-10-06/work-plan.json",
+    "research_results": "operations/runs/2026-10-06/research-results.md",
+    "next_day_actions": "operations/runs/2026-10-06/next-day-actions.csv",
+    "handoff": "operations/runs/2026-10-06/handoff.json",
+    "lease": "operations/runs/2026-10-06/lease.json",
+    "lease_expires_at_jst": "2026-10-06T13:40:34+09:00",
+    "readiness_status": "READY_WITH_WARNINGS",
+    "paper_go": true,
+    "live_go": false,
+    "watchdog_before_start": {
+      "status": "MISSED",
+      "checked_at_jst": "2026-10-06T07:40:34+09:00",
+      "last_run_id": "2026-09-14",
+      "last_successful_run_at_jst": "2026-09-14T06:45:00+09:00",
+      "next_run_at_jst": "2026-09-15T18:30:00+09:00",
+      "active_runs": [],
+      "stale_runs": [],
+      "alerts": [
+        "nightly run overdue since 2026-09-15T18:30:00+09:00",
+        "3 data gap(s) carried forward"
+      ],
+      "requires_attention": true
+    },
+    "source_scan_status": "PARTIAL",
+    "blocking_gap_count": 3,
+    "research_task_count": 10,
+    "assessment_status": "operations/runs/2026-10-06/assessment-status.json",
+    "market_regime_status": "UNAVAILABLE",
+    "market_regime_state": "UNAVAILABLE",
+    "assessment_target_count": 1,
+    "assessment_blocker_count": 2,
+    "entry_ready_codes": [],
+    "global_risk": "operations/runs/2026-10-06/global-risk.md",
+    "next_trading_date": "2026-10-07",
+    "trading_calendar_confirmed": true,
+    "due_task_ids": [
+      "2026-10-06-carried-2026-09-14-carried-4052-fy2026-annual-review-2026-09-29",
+      "2026-10-06-carried-2026-09-14-investment-case-4052",
+      "2026-10-06-carried-4052-fy2026-annual-review-2026-09-29",
+      "2026-10-06-daily-event",
+      "2026-10-06-global-risk",
+      "2026-10-06-investment-case-4052",
+      "2026-10-06-market-regime"
+    ],
+    "next_step": "resolve blocking source gaps before making decisions",
+    "broker_submission": "HUMAN_ONLY"
+  },
+  "attempt": {
+    "run_id": "2026-10-06",
+    "status": "failed",
+    "already_closed": false
+  },
+  "source_cutoff_preserved": true,
+  "interpretation": "Review and finalize the saved work plan. Preparation is not a completed PAPER run or a holdout evaluation."
+}

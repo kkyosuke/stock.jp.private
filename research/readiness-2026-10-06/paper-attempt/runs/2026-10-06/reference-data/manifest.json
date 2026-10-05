@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-10-06",
+  "cutoff_at_jst": "2026-10-06T06:24:17+09:00",
+  "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+  "datasets": {
+    "jpx_listed_master": {
+      "path": "reference-data/jpx-listed-master.csv.gz",
+      "sha256": "8be3f80948132fe7596e84bbf739042d3b0bdf838041d194af28360eaae263af",
+      "row_count": 3702,
+      "source_url": "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xlsx",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jpx-listed-2026-10-06.xlsx",
+      "raw_sha256": "a26fdf4420cb6a152a1811ce0c6e293e642c8a99f1cc2ad9c47a5d55f2722c82",
+      "point_in_time": true
+    },
+    "jquants_security_master": {
+      "path": "reference-data/jquants-security-master.csv.gz",
+      "sha256": "7a12e2962fea387ef69d70d697623d22f4f1d070e6f4944a04e66dd511232aad",
+      "row_count": 4442,
+      "source_url": "https://api.jquants.com/v2/equities/master",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jquants-master-2026-10-06.json",
+      "raw_sha256": "b725bb664e01184031397e50ce7dce6a072d5d1ce8d21c1f274679d349e0b370",
+      "point_in_time": true
+    },
+    "trading_calendar": {
+      "path": "trading-calendar.json",
+      "sha256": "869716bdca297bf7c91d01a7c6871fd1ab24e8b13e810d3155555d9c26fd9129",
+      "row_count": 82,
+      "source_url": "https://api.jquants.com/v2/markets/calendar",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jquants-calendar-2026-10-06.json",
+      "raw_sha256": "f95eae96454741f8f8eebb707952977e7d6b9515fadccd358ab2ec74f31f004a"
+    },
+    "jquants_daily_bars": {
+      "path": "reference-data/jquants-daily-bars.csv.gz",
+      "sha256": "ff4de04c27ce4d2bb5a1c3bbf5ce68d74b97d88ed3e0de5246ce442adb3c5ba0",
+      "row_count": 28,
+      "source_url": "https://api.jquants.com/v2/equities/bars/daily",
+      "storage": "PRIVATE_ONLY"
+    },
+    "liquidity_20d": {
+      "path": "reference-data/liquidity-20d.csv",
+      "sha256": "f18f3ed174c7758a6f6827c01d1b0176a841392f5ee0d70b78f4169917cfc0e0",
+      "row_count": 0,
+      "source_url": "https://api.jquants.com/v2/equities/bars/daily",
+      "storage": "PRIVATE_ONLY",
+      "calculation": "last 20 consecutive official cash-equity sessions; explicit no-execution value is zero; missing or invalid fails"
+    }
+  },
+  "notes": [
+    "All data files are private-only; public redistribution is prohibited.",
+    "Calculated fields are identified separately from official source fields."
+  ],
+  "jquants_checkpoint": {
+    "request_count": 12,
+    "cache_hits": 0,
+    "pages": [
+      {
+        "query_id": "c9403975d07e40ca4ad1db0474fcf92acbbaf43253d5e21e14935444cf9499c5",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "fe8a507b425f1c0a591707a5320a6e07fa34c05805adefaef7fd4dc73056a7a3"
+      },
+      {
+        "query_id": "5f2d43b8b6083a058f9312e8093f6b4ff7fc54c16b9d74348edbe6c6c7eaa769",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "7365334b087caed7efc8e0db8f73f97117f9720ff11c4cb2d09d542eda9b208f"
+      },
+      {
+        "query_id": "ab16f884273889dfe5d1a754f164fd3252e4e7adaa2fb4f7503cf4d1b9652b14",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "a6ea9fe928b0b95ad6afde833dfc8d55018ade61feb0b43dde5450de94701a39"
+      },
+      {
+        "query_id": "10c30b7ddc6eadc7f8ab1809c8258406c3fcf5b3fadf612996ee76b0d8ccfea2",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "01dddcd22e38c14308df59b941cbf1ce87819eac64b84131cdbc6739d969a198"
+      },
+      {
+        "query_id": "641fcf24badcff15dab8da4d2e6aba0cd52857093575f5e3ab2f59df32620379",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "f61ee7a6fa24ff4b6007b6e11bedda2b9116bd8cbc00ca737427cadedca1dd3c"
+      },
+      {
+        "query_id": "87522d3e83c7aae5366762682b66d8ddbc6c6c34ea96a61be18755a76b96786c",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "2e18fcca8694d51ab0352f094c1a1bbc592b993c5af23fab5624eef5e6b64e4c"
+      },
+      {
+        "query_id": "1deca8727c136cb66175b717a9ee81d8a7c86ac81f05940becb0d0b275a21579",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "fa1fe96cbbb907ff4190938d6fe0df4070de277ec7d3f4e2480f4fe0d74701c0"
+      },
+      {
+        "query_id": "b2b6a9664b30fa54a4d865cd9556861f1190edbbdfeec385c2c2b8f6261dd17b",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "c116185c9e312e5e3719d89c060f87ddd10dcb65479adb901d56eabdd9de55fc"
+      },
+      {
+        "query_id": "a0dc4e0f159cc1c54a93b2839ec54cff5068becc7743a861e5bdc8b1de9f3126",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "e890f904dd92494e7a58245436b20a7182d82f1c9d3bb15ba666dd1ac1932cb9",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "9e90af563d49824526f37ad4f2e5ccb7a6e2ca7e775fc4fc520d52c7633d48e3",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "d72274e9799508dae8049e221e9a1686a4885c4c9c953d82e27392a1532aa3f7",
+        "retrieved_at_jst": "2026-10-06T07:40:34+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      }
+    ],
+    "notes": "Dataset retrieval timestamps describe materialization; page receipts preserve actual origin retrieval times. Reuse requires the exact cutoff and query."
+  }
+}

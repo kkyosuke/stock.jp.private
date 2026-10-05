@@ -13,13 +13,13 @@
     {
       "id": "nikkei_vi",
       "title": "Nikkei Stock Average Volatility Index daily CSV",
-      "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+      "config_key": "nikkei_vi_csv_url",
       "suffix": ".csv"
     },
     {
       "id": "leading_ci_publication_index",
       "title": "Cabinet Office leading CI publication index",
-      "url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+      "config_key": "leading_ci_page_url",
       "suffix": ".html"
     }
   ]

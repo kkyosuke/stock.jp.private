@@ -66,9 +66,13 @@ class PrimarySourceTest(unittest.TestCase):
             root = Path(temporary)
             path = root / "operations/inputs/primary-sources.json"
             path.parent.mkdir(parents=True)
+            canonical = root / "config/sources.json"
+            canonical.parent.mkdir(parents=True)
+            canonical.write_text(json.dumps({"market_regime": {"nikkei_vi_csv_url": "https://allowed/vi",
+                                                                 "leading_ci_page_url": "https://allowed/ci"}}))
             path.write_text(json.dumps({"max_requests": 5, "allowed_hosts": ["allowed"], "issuers": [],
-                                       "public_series": [{"id": "vi", "title": "VI", "url": "https://allowed/vi", "suffix": ".csv"},
-                                                         {"id": "ci", "title": "CI", "url": "https://allowed/ci", "suffix": ".html"}]}))
+                                       "public_series": [{"id": "vi", "title": "VI", "config_key": "nikkei_vi_csv_url", "suffix": ".csv"},
+                                                         {"id": "ci", "title": "CI", "config_key": "leading_ci_page_url", "suffix": ".html"}]}))
             def download(url):
                 if url.endswith("ci"):
                     raise OSError("unavailable")

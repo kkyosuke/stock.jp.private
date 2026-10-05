@@ -1,6 +1,6 @@
 {
   "schema_version": "2.1",
-  "state_revision": 6,
+  "state_revision": 5,
   "timezone": "Asia/Tokyo",
   "schedule": "weekdays 18:30",
   "last_successful_run_at_jst": "2026-09-14T06:45:00+09:00",
@@ -48,7 +48,7 @@
   "next_run_at_jst": "2026-09-15T18:30:00+09:00",
   "unreconciled_ticket_ids": [],
   "last_ledger_reconciliation_at_jst": null,
-  "consecutive_successful_runs": 0,
+  "consecutive_successful_runs": 1,
   "last_rule_reviews": {
     "monthly_operations": null,
     "quarterly_performance": null,
