@@ -27,6 +27,7 @@ COMMANDS = {
         "observations": "market_data.observations",
     },
     "strategy": {
+        "score": "strategy.scoring",
         "regime": "strategy.regime",
         "company": "strategy.company",
         "sizing": "strategy.sizing",
@@ -48,6 +49,9 @@ COMMANDS = {
         "smoke": "operation.smoke",
     },
     "research": {
+        "exit-validation": "research.exit_validation",
+        "mrs-validation": "research.mrs_validation",
+        "holdout": "research.forward_holdout",
         "financial-inputs": "research.financial_inputs",
         "replay": "research.historical_replay",
         "allocation": "research.allocation",

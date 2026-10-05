@@ -136,9 +136,17 @@ class ArchiveTests(unittest.TestCase):
         repo = project_root()
         for path in (repo / '.github/workflows').glob('*.yml'):
             text = path.read_text()
-            if 'actions/checkout@' in text and path.name != 'market-data-manual.yml':
+            if 'actions/checkout@' in text and path.name not in {'market-data-manual.yml', 'forward-holdout.yml'}:
                 self.assertIn('!/data/market/jquants/', text)
                 self.assertNotIn('market_data_git.py restore', text)
+            if path.name == 'forward-holdout.yml':
+                # This private, read-only observer needs the adopted licensed
+                # store, but only its derived observation leaves the checkout.
+                self.assertNotIn('!/data/market/jquants/', text)
+                self.assertIn('--output .work/forward-holdout/observation.json', text)
+                self.assertIn('path: .work/forward-holdout/observation.json', text)
+                self.assertNotIn('path: data/', text)
+                self.assertNotIn('JQUANTS_API_KEY', text)
 
     def test_stage_requires_owner_confirmation(self):
         private = self.root / 'operations'

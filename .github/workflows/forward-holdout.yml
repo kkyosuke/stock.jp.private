@@ -1,0 +1,49 @@
+name: PAPER forward holdout observations
+
+on:
+  schedule:
+    - cron: '30 22 * * *'
+      timezone: Asia/Tokyo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paper-forward-holdout
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    if: ${{ github.repository == 'kkyosuke/stock.jp.private' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: main
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/market/legacy-prices/
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -e .
+      - name: Observe adopted data and the frozen PAPER study
+        run: python -m stock_jp research holdout observe --output .work/forward-holdout/observation.json
+      - name: Verify the observer changed no canonical input or owner approval
+        if: always()
+        run: |
+          git diff --exit-code -- config operations research data
+          test -z "$(git ls-files --others --exclude-standard -- config operations research data)"
+      - name: Preserve the derived observation for the study period
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paper-forward-holdout-${{ github.run_id }}
+          path: .work/forward-holdout/observation.json
+          include-hidden-files: true
+          retention-days: 400
+          if-no-files-found: error

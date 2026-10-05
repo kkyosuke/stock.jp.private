@@ -38,11 +38,22 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 if "actions/checkout@" in content:
                     self.assertIn("persist-credentials: false", content)
 
-    def test_only_health_and_market_data_have_schedules(self):
+    def test_only_acquisition_and_readonly_monitors_have_schedules(self):
+        scheduled = {"operation-health.yml", "market-data-manual.yml", "forward-holdout.yml"}
         for path in (ROOT / ".github/workflows").glob("*.yml"):
-            if path.name not in {"operation-health.yml", "market-data-manual.yml"}:
+            if path.name not in scheduled:
                 self.assertNotIn("  schedule:", path.read_text())
-        self.assertIn("  schedule:", (ROOT / ".github/workflows/operation-health.yml").read_text())
+            else:
+                self.assertIn("  schedule:", path.read_text())
+        holdout = (ROOT / ".github/workflows/forward-holdout.yml").read_text()
+        document = yaml.safe_load(holdout)
+        self.assertEqual(document['permissions'], {'contents': 'read'})
+        self.assertTrue(all('permissions' not in job for job in document['jobs'].values()))
+        self.assertIn("github.ref == 'refs/heads/main'", holdout)
+        self.assertIn("cron: '30 22 * * *'", holdout)
+        self.assertIn('timezone: Asia/Tokyo', holdout)
+        self.assertNotIn('secrets.', holdout)
+        self.assertIn('git diff --exit-code -- config operations research data', holdout)
 
     def test_retired_worker_is_removed(self):
         self.assertFalse((ROOT / 'cloudflare').exists())

@@ -19,4 +19,5 @@
 - [資金配分再生 2025](../research/allocation-replay-2025/README.md)
 - [2026年10月5日の一次資料・過去検証](../research/validation-2026-10-05/README.md)
 - [開示日時による財務入力と確認一覧](../research/financial-inputs-2026-10-05/README.md)
+- [正式採点・MRS・出口検証とforward holdout](../research/formal-validation-2026-10-05/README.md)
 - [履歴再生 2025–2026](../research/historical-replay-2025-2026/README.md)

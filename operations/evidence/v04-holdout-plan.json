@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
-  "status": "NOT_DECIDED",
-  "decision": "NOT_DECIDED",
+  "status": "FROZEN",
+  "decision": "START_FORWARD_HOLDOUT",
   "rule_version": "v0.4",
   "rule_frozen_at_jst": "2026-09-01T22:21:26+09:00",
-  "frozen_at_jst": null,
-  "declared_by": null,
+  "frozen_at_jst": "2026-10-05T12:50:53+09:00",
+  "declared_by": "Codex: user-requested PAPER research; no owner LIVE approval",
   "period": {
-    "from": null,
-    "through": null
+    "from": "2026-10-06",
+    "through": "2027-04-01"
   },
   "acceptance_criteria": {
     "minimum_monthly_evaluation_count": 6,
@@ -18,9 +18,73 @@
     "maximum_industry_loss_floor_pct": -20.0
   },
   "acknowledgements": {
-    "period_was_unobserved_when_frozen": false,
-    "inputs_and_execution_rules_frozen": false,
-    "thresholds_frozen_before_results": false,
-    "changes_restart_the_holdout": false
+    "period_was_unobserved_when_frozen": true,
+    "inputs_and_execution_rules_frozen": true,
+    "thresholds_frozen_before_results": true,
+    "changes_restart_the_holdout": true
+  },
+  "authorization": {
+    "instruction": "正式採点・MRS・出口検証・forward holdout も行なってください",
+    "scope": "PAPER_RESEARCH_ONLY",
+    "owner_risk_acceptance": false,
+    "live_promotion_approved": false
+  },
+  "frozen_files": {
+    "docs/rules/tenbagger-rule-v0.2.md": "eca788a10ef7ddbf377edc6aa3a35f6f3510a714b4c1a61a9e4424d8d5a068b8",
+    "docs/rules/tenbagger-rule-v0.3.md": "9029155586ece654293390dccfc13c61be1f2d689566739550b71d66ace3f483",
+    "docs/rules/tenbagger-rule-v0.4.md": "018e407499ae22bea233a1f5c64db71489d2ed76489698d5e1d2dd7796b8f5df",
+    "src/stock_jp/strategy/scoring.py": "e92dad48924bd8721b6b20220aa254271f21e9d28617e3430ff8e3d707921813",
+    "src/stock_jp/strategy/company.py": "82d9bc04feadf3e3e8fdd2edf90e5aff7669386fc520509003c201be506521ce",
+    "src/stock_jp/strategy/regime.py": "62df9002cd2d08d364386d0c0f25f26af5988b4498f74738f22aaa205769ab62",
+    "src/stock_jp/strategy/sizing.py": "88f38f47dae4f567444b6791508f124bca63c0437e6d905758975f5a56b502b0",
+    "src/stock_jp/strategy/price_rules.py": "328f488cd9d31d64eea550f70af4620698dc81e2dfeddc109c516af3a5cc5a9b",
+    "src/stock_jp/research/historical_replay.py": "1b14e8719d6921d346db92ee2050b0e20a82ea2bfe4a3fb69b326fe337cc2b83",
+    "src/stock_jp/research/price_exit.py": "015f06e6ef31e88191ce179b0233a6143194484dab98cfaf9f6e2f4c371dd5f8",
+    "src/stock_jp/research/mrs_validation.py": "8ae576915cbf67aa3e7af05fc081981ce89ef76a12bf41ef8621b5acd05c00c4",
+    "src/stock_jp/research/forward_holdout.py": "22bee401c115a243f5e9efb7fb8e43b6395c2d9cd1ac0404bc34b7e8b47b1192",
+    "src/stock_jp/research/financial_inputs.py": "06d060e965ba50f43c52903dde8f42e3588c5b91543ff942610adc6999b62afd",
+    "src/stock_jp/market_data/storage.py": "18a3d0271e01beef5b9eec89f0a2993ed5ac7409f6c9dec79f5a563d7e1533d3",
+    "src/stock_jp/market_data/observations.py": "ad231301db8c3c8b74284b3983e1d593fa1377b30093833143012d564059b3ee",
+    "src/stock_jp/market_data/prices.py": "b9069b48d3facf961c03dac1c14686d28b6214999150076a3da7f804bc3dbfd6",
+    "src/stock_jp/market_data/jquants/snapshot.py": "779712efdc249819a83d9c8e1b541c9ccf3d202d5d83239909f832c6e7672e93",
+    "src/stock_jp/market_data/jquants/financial_history.py": "ca55f6f4b32ea38efeb544378a01fd81292f81cd754e97fbf501ad6932b39c44",
+    "src/stock_jp/market_data/regime_sources.py": "041f94dee6844de5fbee7457068dfc6c1dd5395e872d35d58327811ca16bc717",
+    "src/stock_jp/market_data/jpx.py": "26976c5874b69f2a0e04868e76ef837a8a52eeffb1349a0fbdd03ce0441ab13d",
+    "src/stock_jp/research/allocation.py": "2eb5504e720fab19102a642737db1586bbccd3b0ca82014684e72e470c333823",
+    "src/stock_jp/cli.py": "8b1f1e8eff1cf847795e338fd078cd26db2b6bdf068be5f5deba960db6749d6a",
+    ".github/workflows/forward-holdout.yml": "b79522326be41360f104a9ff46109dcc6e4d719b2c093e056da512e25e0b1c37"
+  },
+  "inputs_and_execution_contract": {
+    "universe": "T0 dated TSE domestic common stocks; excludes PRO/foreign/funds; separate v0.2 section 2 tracks",
+    "price_and_master": "J-Quants V2 raw dated master, unadjusted daily bars, and corporate-action records; preserve original generations",
+    "fundamental_sources": "Issuer IR/TDnet/EDINET disclosures public by T0 close; all 7 hard gates and 25 score items; NA stops selection",
+    "market_regime": "MRS-v0.1: official daily TOPIX/Growth250 (J-Quants), adjusted native breadth, full three-year Nikkei VI and latest Cabinet Office CI vintage available by T0",
+    "index_access": "indices_daily entitlement and replay rights must be verified before use; no paid upgrade or substitute index is authorized by this plan",
+    "material_disclosures": "All-universe material-disclosure coverage must be certified; absence of a collected document is not proof of no event",
+    "input_roles": [
+      "source_register",
+      "security_master",
+      "trading_calendar",
+      "daily_prices",
+      "corporate_actions",
+      "review_events",
+      "market_regime",
+      "benchmark",
+      "assessments"
+    ],
+    "source_rate_limit_per_minute": 60,
+    "evaluation_cutoff": "Final TSE trading close at every completed month end; no same-close model fills",
+    "model_execution": "Buy at the next eligible session open with T0 close +15% limit; sell at the next eligible session close; board lot 100; participation normal 5%/immediate 10%; fee 0.15%, slippage 0.10% separately; taxes excluded",
+    "model_initial_capital_jpy": 10000000,
+    "portfolio_comparison": [
+      "v0.2",
+      "v0.4"
+    ],
+    "shadow_price_comparison": "v0.3",
+    "retuning_count": 0,
+    "missing_data": "WAIT; no forced trades; no synthetic run or retrospective proxy counts",
+    "period_closure": "Do not extend dates or relax the 10-trade requirement after seeing outcomes; insufficient observations are INCONCLUSIVE",
+    "recovery_drill_required": false,
+    "broker_submission": "HUMAN_ONLY; this plan creates no broker order"
   }
 }
