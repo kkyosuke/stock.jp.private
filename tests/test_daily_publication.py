@@ -240,7 +240,10 @@ class GeneratedMarketRegimeTest(PersonalStateTransitionTest):
         raw = {'schema_version': '1.0', 'as_of': target.isoformat(), 'series': {
             'topix': {'points': points, 'source_url': 'https://example.test/topix'},
             'growth250': {'points': points, 'source_url': 'https://example.test/growth'},
-            'nikkei_vi': {'points': [dict(point, value=20) for point in points], 'source_url': 'https://example.test/vi'},
+            'nikkei_vi': {'points': [
+                {'date': (target - timedelta(days=1095-offset)).isoformat(), 'value': 20}
+                for offset in range(1096)
+            ], 'source_url': 'https://example.test/vi'},
             'leading_ci': {'available_at_jst': '2026-09-01T08:50:00+09:00',
                            'points': [{'period':'2026-05','value':99},{'period':'2026-08','value':100}],
                            'source_url': 'https://example.test/ci'}}}
