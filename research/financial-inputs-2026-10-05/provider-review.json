@@ -1,0 +1,39 @@
+{
+  "status": "PARTIAL_PROVIDER_VINTAGE_REVIEW",
+  "sources": [
+    {
+      "id": "jquants-provider-fin-summary",
+      "url": "https://jpx-jquants.com/ja/spec/fin-summary",
+      "reviewed_at_jst": "2026-10-05T09:03:01+09:00",
+      "document_copy_saved": false,
+      "published_at_jst": null,
+      "kind": "CURRENT_PROVIDER_DOCUMENTATION"
+    },
+    {
+      "id": "jquants-provider-fix-data-info",
+      "url": "https://jpx-jquants.com/ja/spec/fix-data-info",
+      "reviewed_at_jst": "2026-10-05T09:23:59+09:00",
+      "document_copy_saved": false,
+      "published_at_jst": null,
+      "kind": "CURRENT_PROVIDER_DOCUMENTATION"
+    }
+  ],
+  "facts": [
+    {
+      "source_id": "jquants-provider-fin-summary",
+      "finding": "Issuer correcting disclosures receive a new disclosure number; earlier records remain. Sort by disclosure date and time, not number. Amounts are reported XBRL values in JPY; missing items stay empty."
+    },
+    {
+      "source_id": "jquants-provider-fix-data-info",
+      "correction_date": "2025-05-02",
+      "target_api": "Financial Data (Summary only)",
+      "affected_period": null,
+      "finding": "The notice reports a correction to the data overall. It does not identify the affected issues or periods."
+    }
+  ],
+  "historical_original_values_certified": false,
+  "unresolved": [
+    "Provider correction scope and original values need evidence; retained issuer correction versions alone do not certify them."
+  ],
+  "decision": "Extract disclosure-time financial inputs; generate no COMPLETE_PASS or COMPLETE_FAIL assessment."
+}

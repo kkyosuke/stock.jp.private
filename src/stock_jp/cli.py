@@ -48,6 +48,7 @@ COMMANDS = {
         "smoke": "operation.smoke",
     },
     "research": {
+        "financial-inputs": "research.financial_inputs",
         "replay": "research.historical_replay",
         "allocation": "research.allocation",
         "episodes": "research.price_episodes",

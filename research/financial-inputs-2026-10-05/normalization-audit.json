@@ -1,0 +1,32 @@
+{
+  "status": "MATCHED",
+  "audited_at_jst": "2026-10-05T09:36:16+09:00",
+  "adopted_generation": "7de87dce283a1cd8ae488767cec934158c3d4a598e97fc8e6d269c59dc4b23a4",
+  "checks": {
+    "financial-history.csv": {
+      "rows": 94982,
+      "equal_to_adopted_observations": true,
+      "observations_sha256": {
+        "data/market/observations/financial-history/2021.csv": "ff6149d57cfa34d72aec3d0a4522cdca8028258d1174a59af93c053f18c25d6d",
+        "data/market/observations/financial-history/2022.csv": "a8681bdb5d0819b40ddbc0b7e2c5354c3e038e4ca3ac65b6136f9d96b81cfdc1",
+        "data/market/observations/financial-history/2023.csv": "98b6c6243cb7594dae5fa343198b634e52603c18e8587bb6fbaad3b45a999454",
+        "data/market/observations/financial-history/2024.csv": "bbaea71ea6924f23307bb2dd84d8657a7a405c858963a6a7ba12789b210becd8",
+        "data/market/observations/financial-history/2025.csv": "8118aeb412c9fb2c25356fdf97b6dd92ef2443325d1f9edb5145fc2031fa68da",
+        "data/market/observations/financial-history/2026.csv": "f5a7d2781f6467d804aa9edad3dd4e5a384a41dd0d953131f86600e61deee7f3"
+      }
+    },
+    "share-count-history.csv": {
+      "rows": 80941,
+      "equal_to_adopted_observations": true,
+      "observations_sha256": {
+        "data/market/observations/share-count-history/2021.csv": "ff484f889a011ba949f083decc99f5a736439e271fa1e2024ac2fef2f3da19e1",
+        "data/market/observations/share-count-history/2022.csv": "a9db4be79db04a266f890a8a3992d697fea2565a8d0e86a833cc8a4acf0534da",
+        "data/market/observations/share-count-history/2023.csv": "f508f3ede1fe171d1b3ff9540ac31e1a7b236db3aaae5d955d25dcc4655e2eab",
+        "data/market/observations/share-count-history/2024.csv": "ddf4061d34bbeb28db088e27ef6576866784456ce9206720a2741caef11341f1",
+        "data/market/observations/share-count-history/2025.csv": "84c436d89fce9dd28798bf7c35796e9c78b3fbe0f916ab893770156b04583916",
+        "data/market/observations/share-count-history/2026.csv": "e04dda1f29f048f750ff7c3f57369d5b45f99c245fa9682542f0a8b0bbacfffb"
+      }
+    }
+  },
+  "observation_files_are_reproduction_dependencies": false
+}
