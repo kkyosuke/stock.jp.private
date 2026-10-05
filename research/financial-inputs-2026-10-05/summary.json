@@ -1,0 +1,808 @@
+{
+  "schema_version": "1.0",
+  "status": "FINANCIAL_INPUTS_ONLY_FORMAL_REPLAY_BLOCKED",
+  "period": {
+    "from": "2024-12-30",
+    "through": "2026-08-31"
+  },
+  "cutoff": "TSE_CLOSE_15_30_JST",
+  "currency": "JPY",
+  "source_amounts": "XBRL_AS_REPORTED_NO_ADDITIONAL_ROUNDING",
+  "financial_observations_verified_against_raw": 94982,
+  "share_observations_verified_against_raw": 80941,
+  "adopted_generation": "7de87dce283a1cd8ae488767cec934158c3d4a598e97fc8e6d269c59dc4b23a4",
+  "monthly": [
+    {
+      "evaluation_date": "2024-12-30",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3840,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 27,
+        "SUMMARY_INPUTS_EXTRACTED": 514,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3299
+      },
+      "ttm_sales_available": 1264,
+      "eight_summary_quarters": 514,
+      "price_not_ok": 13,
+      "negative_reported_equity": 8,
+      "price_input": {
+        "date": "2024-12-30",
+        "path": "data/market/legacy-prices/2024/2024-12-30.csv",
+        "sha256": "00b1cc06aa806ebac3fac46062c88003d2b29d831accd980c698c77c9a7f38a9",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-01-31",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3829,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 21,
+        "SUMMARY_INPUTS_EXTRACTED": 524,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3284
+      },
+      "ttm_sales_available": 1242,
+      "eight_summary_quarters": 524,
+      "price_not_ok": 29,
+      "negative_reported_equity": 6,
+      "price_input": {
+        "date": "2025-01-31",
+        "path": "data/market/legacy-prices/2025/2025-01-31.csv",
+        "sha256": "ef971b8547f7f420cab6893492c2646e510009da209ae060d555f62e102efedc",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-02-28",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3825,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 7,
+        "SUMMARY_INPUTS_EXTRACTED": 597,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3221
+      },
+      "ttm_sales_available": 1353,
+      "eight_summary_quarters": 597,
+      "price_not_ok": 16,
+      "negative_reported_equity": 11,
+      "price_input": {
+        "date": "2025-02-28",
+        "path": "data/market/legacy-prices/2025/2025-02-28.csv",
+        "sha256": "39a7f32acfd9699d0a84821a3adaff3c9ea550b3fe423cd4d71e4d3163f1857f",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-03-31",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3824,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 16,
+        "SUMMARY_INPUTS_EXTRACTED": 606,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3202
+      },
+      "ttm_sales_available": 1340,
+      "eight_summary_quarters": 606,
+      "price_not_ok": 20,
+      "negative_reported_equity": 10,
+      "price_input": {
+        "date": "2025-03-31",
+        "path": "data/market/legacy-prices/2025/2025-03-31.csv",
+        "sha256": "b11c66f0a33a594dfcdfe771000e6b5b65bec856ed4e21c52c4a0394fb5713ad",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-04-30",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3823,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 16,
+        "SUMMARY_INPUTS_EXTRACTED": 670,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3137
+      },
+      "ttm_sales_available": 1377,
+      "eight_summary_quarters": 670,
+      "price_not_ok": 29,
+      "negative_reported_equity": 9,
+      "price_input": {
+        "date": "2025-04-30",
+        "path": "data/market/legacy-prices/2025/2025-04-30.csv",
+        "sha256": "9b2550d96141d4224e23513727df9f64e0ac50655e2359dba47d063ac8849090",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-05-30",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3814,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 5,
+        "SUMMARY_INPUTS_EXTRACTED": 812,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 2997
+      },
+      "ttm_sales_available": 1252,
+      "eight_summary_quarters": 812,
+      "price_not_ok": 20,
+      "negative_reported_equity": 8,
+      "price_input": {
+        "date": "2025-05-30",
+        "path": "data/market/legacy-prices/2025/2025-05-30.csv",
+        "sha256": "953a212334bf6ec29e1c4913639eb3005c2cdf39c01b50ad4f95c2fa22c6215d",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-06-30",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3807,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 11,
+        "SUMMARY_INPUTS_EXTRACTED": 791,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3005
+      },
+      "ttm_sales_available": 1214,
+      "eight_summary_quarters": 791,
+      "price_not_ok": 14,
+      "negative_reported_equity": 9,
+      "price_input": {
+        "date": "2025-06-30",
+        "path": "data/market/legacy-prices/2025/2025-06-30.csv",
+        "sha256": "6e42e535f9714c9e05a6a67aed5d576ee9c8c28292a434bb011983bb41b921d3",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-07-31",
+      "universe_basis": "PRICE_OBSERVED_UNIVERSE_NOT_CERTIFIED",
+      "rows": 3802,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 9,
+        "SUMMARY_INPUTS_EXTRACTED": 751,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3042
+      },
+      "ttm_sales_available": 1127,
+      "eight_summary_quarters": 751,
+      "price_not_ok": 27,
+      "negative_reported_equity": 8,
+      "price_input": {
+        "date": "2025-07-31",
+        "path": "data/market/legacy-prices/2025/2025-07-31.csv",
+        "sha256": "4445347e12b8ee1bea112f29ddfb23bee734d6d2c678b0d8966b292e22b2d9da",
+        "provider": "J-Quants legacy official archive",
+        "role": "PRICE_DIAGNOSTIC_ONLY"
+      }
+    },
+    {
+      "evaluation_date": "2025-08-29",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3792,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 1,
+        "SUMMARY_INPUTS_EXTRACTED": 714,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3077
+      },
+      "ttm_sales_available": 1051,
+      "eight_summary_quarters": 714,
+      "price_not_ok": 23,
+      "negative_reported_equity": 7,
+      "price_input": {
+        "date": "2025-08-29",
+        "path": ".work/market-data/daily-prices/2025/2025-08-29.csv",
+        "sha256": "51792a1c660b3b2583c37118bcdc251c488848d1a5a5d17532baefbbfaa092a5",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2025-08-29",
+          "path": "data/market/legacy-prices/2025/2025-08-29.csv",
+          "sha256": "cac368e713da50b420db80449a5e137c633823fe7b45825621f14c9a8fd3deb4",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2025-09-30",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3778,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 5,
+        "SUMMARY_INPUTS_EXTRACTED": 711,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3062
+      },
+      "ttm_sales_available": 1047,
+      "eight_summary_quarters": 711,
+      "price_not_ok": 20,
+      "negative_reported_equity": 5,
+      "price_input": {
+        "date": "2025-09-30",
+        "path": ".work/market-data/daily-prices/2025/2025-09-30.csv",
+        "sha256": "6b9ffa3d612b76b84bfea9c5c19850e70aad72aaaeaf0b861488dca0249c7662",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2025-09-30",
+          "path": "data/market/legacy-prices/2025/2025-09-30.csv",
+          "sha256": "481faa4b017ee87d33680286f7dcfc36392e0f4b06575088554c7ff879e1b3bf",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2025-10-31",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3781,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 13,
+        "SUMMARY_INPUTS_EXTRACTED": 716,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3052
+      },
+      "ttm_sales_available": 1033,
+      "eight_summary_quarters": 716,
+      "price_not_ok": 17,
+      "negative_reported_equity": 7,
+      "price_input": {
+        "date": "2025-10-31",
+        "path": ".work/market-data/daily-prices/2025/2025-10-31.csv",
+        "sha256": "807343d362dcd90b43ce92ee7ee9301a146936f85ae03c4c85f3379d38127251",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2025-10-31",
+          "path": "data/market/legacy-prices/2025/2025-10-31.csv",
+          "sha256": "19e9fae7760b6bfbbb634f92c46f42acfe069403da1963e560f14fe4965dcd4d",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2025-11-28",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3773,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 8,
+        "SUMMARY_INPUTS_EXTRACTED": 702,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3063
+      },
+      "ttm_sales_available": 992,
+      "eight_summary_quarters": 702,
+      "price_not_ok": 10,
+      "negative_reported_equity": 6,
+      "price_input": {
+        "date": "2025-11-28",
+        "path": ".work/market-data/daily-prices/2025/2025-11-28.csv",
+        "sha256": "9bfe40c9248f01c32ebc13c4ac3fd0acba564c0d42b1a885e31ddcd098a22b0d",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2025-11-28",
+          "path": "data/market/legacy-prices/2025/2025-11-28.csv",
+          "sha256": "87a6acdd20b912f26ffd8af27d6fcb37b771cb2a56f171fda6238a630866dd2a",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2025-12-30",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3777,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 17,
+        "SUMMARY_INPUTS_EXTRACTED": 703,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3057
+      },
+      "ttm_sales_available": 986,
+      "eight_summary_quarters": 703,
+      "price_not_ok": 7,
+      "negative_reported_equity": 6,
+      "price_input": {
+        "date": "2025-12-30",
+        "path": ".work/market-data/daily-prices/2025/2025-12-30.csv",
+        "sha256": "de920993e012c19d327889e2eb840a7a2c11077ae9acae42c737c3022c26b7d3",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2025-12-30",
+          "path": "data/market/legacy-prices/2025/2025-12-30.csv",
+          "sha256": "54c9ae2827a0d27b921f2c4c0cb52cc5830a8cb8a23b6387849871b7eb4d6868",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-01-30",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3765,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 16,
+        "SUMMARY_INPUTS_EXTRACTED": 702,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3047
+      },
+      "ttm_sales_available": 978,
+      "eight_summary_quarters": 702,
+      "price_not_ok": 13,
+      "negative_reported_equity": 7,
+      "price_input": {
+        "date": "2026-01-30",
+        "path": ".work/market-data/daily-prices/2026/2026-01-30.csv",
+        "sha256": "2a8a50d888c4cc0f22dff5e2f85f1cb20bf53df093bc335edce8e1ccc57c0ab8",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-01-30",
+          "path": "data/market/legacy-prices/2026/2026-01-30.csv",
+          "sha256": "c2c2e2aec2307c32b50c05e623fd8a9c84c33c0c734d23a8c9adcb0c59b621ed",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-02-27",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3762,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 5,
+        "SUMMARY_INPUTS_EXTRACTED": 728,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3029
+      },
+      "ttm_sales_available": 979,
+      "eight_summary_quarters": 728,
+      "price_not_ok": 4,
+      "negative_reported_equity": 6,
+      "price_input": {
+        "date": "2026-02-27",
+        "path": ".work/market-data/daily-prices/2026/2026-02-27.csv",
+        "sha256": "8aed441a39df91eac223ccf414583c23eadb27259d865589eadbed75195ce1a5",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-02-27",
+          "path": "data/market/legacy-prices/2026/2026-02-27.csv",
+          "sha256": "9972291583be7e5cb300726bf28cc5cd2d4bf46ce30e9de8c72dd4824cb04bf7",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-03-31",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3739,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 7,
+        "SUMMARY_INPUTS_EXTRACTED": 723,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 3009
+      },
+      "ttm_sales_available": 969,
+      "eight_summary_quarters": 723,
+      "price_not_ok": 30,
+      "negative_reported_equity": 6,
+      "price_input": {
+        "date": "2026-03-31",
+        "path": ".work/market-data/daily-prices/2026/2026-03-31.csv",
+        "sha256": "cc1824f74a08d8a2022ce5f0f0177aee84bcc5eda782a50d266571de3e9a68a7",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-03-31",
+          "path": "data/market/legacy-prices/2026/2026-03-31.csv",
+          "sha256": "e7cace9a99aff262fafdb4060449afcf50cab2f0a0f3c618bd050b60211c387d",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-04-30",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3741,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 15,
+        "SUMMARY_INPUTS_EXTRACTED": 746,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 2980
+      },
+      "ttm_sales_available": 1031,
+      "eight_summary_quarters": 746,
+      "price_not_ok": 22,
+      "negative_reported_equity": 7,
+      "price_input": {
+        "date": "2026-04-30",
+        "path": ".work/market-data/daily-prices/2026/2026-04-30.csv",
+        "sha256": "65aec15cc1b252e1d8912c8d102d8888822fefa2b765069115ad659d4a194e23",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-04-30",
+          "path": "data/market/legacy-prices/2026/2026-04-30.csv",
+          "sha256": "491d11ebd19d71cd0fba3efbbe27b0ca6deed58fc0ed2d40a217a86d9216387a",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-05-29",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3728,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 6,
+        "SUMMARY_INPUTS_EXTRACTED": 776,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 2946
+      },
+      "ttm_sales_available": 1663,
+      "eight_summary_quarters": 776,
+      "price_not_ok": 28,
+      "negative_reported_equity": 9,
+      "price_input": {
+        "date": "2026-05-29",
+        "path": ".work/market-data/daily-prices/2026/2026-05-29.csv",
+        "sha256": "a63e1fb661c4409d1702604a1475e61cfea4e8869cc67ba127335d4555e9bb8a",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-05-29",
+          "path": "data/market/legacy-prices/2026/2026-05-29.csv",
+          "sha256": "dcaad9bfe9fe3222c0abf93a5d7163f80494a6df856a84d609cf77eb53a98f7d",
+          "provider": "J-Quants legacy official archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-06-30",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3709,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 9,
+        "SUMMARY_INPUTS_EXTRACTED": 768,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 2932
+      },
+      "ttm_sales_available": 1662,
+      "eight_summary_quarters": 768,
+      "price_not_ok": 29,
+      "negative_reported_equity": 8,
+      "price_input": {
+        "date": "2026-06-30",
+        "path": ".work/market-data/daily-prices/2026/2026-06-30.csv",
+        "sha256": "2015fd716d19b41fd8a5c7185e6e706123baaf30c3f90e1bbe8bdbb2bc571c26",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-06-30",
+          "path": ".work/market-data/daily-prices/2026/2026-06-30.csv",
+          "sha256": "2015fd716d19b41fd8a5c7185e6e706123baaf30c3f90e1bbe8bdbb2bc571c26",
+          "provider": "J-Quants API v2 adopted archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-07-31",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3706,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 12,
+        "SUMMARY_INPUTS_EXTRACTED": 750,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 2944
+      },
+      "ttm_sales_available": 1652,
+      "eight_summary_quarters": 750,
+      "price_not_ok": 32,
+      "negative_reported_equity": 7,
+      "price_input": {
+        "date": "2026-07-31",
+        "path": ".work/market-data/daily-prices/2026/2026-07-31.csv",
+        "sha256": "1c958708423147518cb07a2290398d19e4856ccff70222e9529977f727e632d1",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-07-31",
+          "path": ".work/market-data/daily-prices/2026/2026-07-31.csv",
+          "sha256": "1c958708423147518cb07a2290398d19e4856ccff70222e9529977f727e632d1",
+          "provider": "J-Quants API v2 adopted archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "evaluation_date": "2026-08-31",
+      "universe_basis": "DATED_MASTER_DOMESTIC_COMMON",
+      "rows": 3700,
+      "input_status_counts": {
+        "NO_FINANCIAL_STATEMENT": 3,
+        "SUMMARY_INPUTS_EXTRACTED": 715,
+        "SUMMARY_SERIES_NEEDS_REVIEW": 2982
+      },
+      "ttm_sales_available": 1550,
+      "eight_summary_quarters": 715,
+      "price_not_ok": 21,
+      "negative_reported_equity": 11,
+      "price_input": {
+        "date": "2026-08-31",
+        "path": ".work/market-data/daily-prices/2026/2026-08-31.csv",
+        "sha256": "ce5b2fdb7f270f292f8818d47add1b93cc22f8541bb994d49ad84e77aa23fa0d",
+        "provider": "J-Quants V2 adopted dated export",
+        "registered_session_reference": {
+          "date": "2026-08-31",
+          "path": ".work/market-data/daily-prices/2026/2026-08-31.csv",
+          "sha256": "ce5b2fdb7f270f292f8818d47add1b93cc22f8541bb994d49ad84e77aa23fa0d",
+          "provider": "J-Quants API v2 adopted archive",
+          "role": "PRICE_DIAGNOSTIC_ONLY"
+        }
+      }
+    }
+  ],
+  "issue_month_rows": 79315,
+  "unique_codes": 3934,
+  "dated_master_months": 13,
+  "ttm_sales_available": 25762,
+  "eight_summary_quarters": 14719,
+  "reported_metadata_anomalies": 14,
+  "review_queue_groups": {
+    "ACCOUNTING_SCOPE_POLICY_CORRECTION_BRIDGE": 3008,
+    "EIGHT_QUARTER_SUMMARY_RECONSTRUCTION": 158,
+    "EQUITY_AND_GOING_CONCERN_PRIMARY_REVIEW": 6,
+    "FINANCIAL_DISCLOSURE_IDENTITY_AND_MISSING_REPORTS": 7,
+    "PRIMARY_HARD_GATES_GROSS_PROFIT_DILUTION_SAM_AND_SCORE": 755
+  },
+  "historical_original_values_certified": false,
+  "permanent_issue_identity_verified": false,
+  "full_rule_assessments_generated": 0,
+  "full_strategy_backtest": false,
+  "live_gate_satisfied": false,
+  "network_requests": 0,
+  "jquants_requests": 0,
+  "common_outstanding_inputs": [
+    "PROVIDER_DATA_CORRECTION_HISTORY_AND_ORIGINAL_VINTAGE",
+    "PERMANENT_ISSUE_ID_LISTING_DELISTING_AND_CORPORATE_ACTIONS",
+    "FULLY_DILUTED_SHARES_CASH_RESTRICTIONS_DEBT_AUDIT_GOING_CONCERN_AND_RUNWAY",
+    "GROSS_PROFIT_KPI_NORMALIZATION_SAM_SOM_COMPETITORS_AND_100_POINT_SCORE",
+    "MATERIAL_DISCLOSURES_EXIT_REVIEWS_POINT_IN_TIME_MRS_AND_FORWARD_HOLDOUT"
+  ],
+  "inputs": {
+    "price_register": {
+      "path": "research/validation-2026-10-05/price-input-register.json",
+      "sha256": "d437e6462409aebe9b34e021b411c73126b8272d9b0d42e2f3cc3df413bef0d3"
+    },
+    "adopted_members": {
+      "daily-prices/2025/2025-08-29.csv": "51792a1c660b3b2583c37118bcdc251c488848d1a5a5d17532baefbbfaa092a5",
+      "daily-prices/2025/2025-09-30.csv": "6b9ffa3d612b76b84bfea9c5c19850e70aad72aaaeaf0b861488dca0249c7662",
+      "daily-prices/2025/2025-10-31.csv": "807343d362dcd90b43ce92ee7ee9301a146936f85ae03c4c85f3379d38127251",
+      "daily-prices/2025/2025-11-28.csv": "9bfe40c9248f01c32ebc13c4ac3fd0acba564c0d42b1a885e31ddcd098a22b0d",
+      "daily-prices/2025/2025-12-30.csv": "de920993e012c19d327889e2eb840a7a2c11077ae9acae42c737c3022c26b7d3",
+      "daily-prices/2026/2026-01-30.csv": "2a8a50d888c4cc0f22dff5e2f85f1cb20bf53df093bc335edce8e1ccc57c0ab8",
+      "daily-prices/2026/2026-02-27.csv": "8aed441a39df91eac223ccf414583c23eadb27259d865589eadbed75195ce1a5",
+      "daily-prices/2026/2026-03-31.csv": "cc1824f74a08d8a2022ce5f0f0177aee84bcc5eda782a50d266571de3e9a68a7",
+      "daily-prices/2026/2026-04-30.csv": "65aec15cc1b252e1d8912c8d102d8888822fefa2b765069115ad659d4a194e23",
+      "daily-prices/2026/2026-05-29.csv": "a63e1fb661c4409d1702604a1475e61cfea4e8869cc67ba127335d4555e9bb8a",
+      "daily-prices/2026/2026-06-30.csv": "2015fd716d19b41fd8a5c7185e6e706123baaf30c3f90e1bbe8bdbb2bc571c26",
+      "daily-prices/2026/2026-07-31.csv": "1c958708423147518cb07a2290398d19e4856ccff70222e9529977f727e632d1",
+      "daily-prices/2026/2026-08-31.csv": "ce5b2fdb7f270f292f8818d47add1b93cc22f8541bb994d49ad84e77aa23fa0d",
+      "jquants/datasets/equities_master/2025-08-29/latest.json": "a00b964e29ab515fbfc47f0467a597fde09b2b96b6c695e3e5655625ee90a1b9",
+      "jquants/datasets/equities_master/2025-09-30/latest.json": "b58ea9d6c2e16236ef66e742d85ac4166b9746e12f49bed8adeeff719b06ae28",
+      "jquants/datasets/equities_master/2025-10-31/latest.json": "f0f7020bf1cc36541b24aa9880e048e3178c79641a1da6927b3ae703fc66ae46",
+      "jquants/datasets/equities_master/2025-11-28/latest.json": "1b0f58a3ce3ce19e983251b58e19ccb2ab90a0db8ca8cf9dc00b7e5920b8baf2",
+      "jquants/datasets/equities_master/2025-12-30/latest.json": "ce13b8c6c69f7121ce7fe59925267afbb634119ea1a6e8a47bcb216b2eb3740b",
+      "jquants/datasets/equities_master/2026-01-30/latest.json": "0e34d5ad04158562b716e0b2ae5f3238e3b13471b868d78b072e9813f1070eb6",
+      "jquants/datasets/equities_master/2026-02-27/latest.json": "6e815d0049c24aef7456ce3cf02f65dc795bffecab54f70482d36ef869e0335d",
+      "jquants/datasets/equities_master/2026-03-31/latest.json": "774151c08f0a67c9e71ef535e320b79e13807e68b57967a5be5c74bf8b95908d",
+      "jquants/datasets/equities_master/2026-04-30/latest.json": "f8c7312af69d0e7d8d0094e0bb95245b8d95ae03670df8f52e62ca1b85c4b20e",
+      "jquants/datasets/equities_master/2026-05-29/latest.json": "eb826703355dd28d08f5aa46e7da4401ed2d8a8783d2ea301df0f8699118d028",
+      "jquants/datasets/equities_master/2026-06-30/latest.json": "84779d8ed28cdf14cc7dc84d0b799b32e7df734d9db573ed6faedf720ca177c8",
+      "jquants/datasets/equities_master/2026-07-31/latest.json": "73835ba4c4aa7671a28be51c2d73970c84ed09bdb189b30e81032cf9bc6052e5",
+      "jquants/datasets/equities_master/2026-08-31/latest.json": "225876c4293c6a8aaf56830d780a0edce447741a5b34aa325f7c913a99b96165",
+      "jquants/datasets/financial_summary/2026-10-02/latest.json": "fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59",
+      "jquants/financial-history/2026-10-02.json": "1225cecb87c22b3ee62edbc195bd8114d1f9985bcadf64820ea839cda3ddbbd1",
+      "jquants/financial-history/blobs/00/00285508cc659548875a61ddce16c3034c000c252a800c86b079b6212b6fdba7.csv.gz": "00285508cc659548875a61ddce16c3034c000c252a800c86b079b6212b6fdba7",
+      "jquants/financial-history/blobs/01/012930352d86824e176d762b29f5b58f1e30f3b07b163a4d0ecf1e4a6878d40c.csv.gz": "012930352d86824e176d762b29f5b58f1e30f3b07b163a4d0ecf1e4a6878d40c",
+      "jquants/financial-history/blobs/02/02484f31c6e89fe4d889a3399192841908a59eee6ab8c421163e33aaa8c31d87.csv.gz": "02484f31c6e89fe4d889a3399192841908a59eee6ab8c421163e33aaa8c31d87",
+      "jquants/financial-history/blobs/02/02d636c78f933388ddfdc77d2d607c69a99e19004e6f1d4434ebce50ee440f80.csv.gz": "02d636c78f933388ddfdc77d2d607c69a99e19004e6f1d4434ebce50ee440f80",
+      "jquants/financial-history/blobs/03/03e81861997c315ce0445a2d0cd2cb0f52c3a73e2cc795577895df1601f5695e.csv.gz": "03e81861997c315ce0445a2d0cd2cb0f52c3a73e2cc795577895df1601f5695e",
+      "jquants/financial-history/blobs/06/0613c3f06fbbd9d06c429d234523e5df6fc2572552cf20c0a4f059d7ffdba208.csv.gz": "0613c3f06fbbd9d06c429d234523e5df6fc2572552cf20c0a4f059d7ffdba208",
+      "jquants/financial-history/blobs/06/063fc929f7fcb0c9d0f6a7a4224fd79ad9bfc92d5d24b1d83f9c7c145fb52f8e.csv.gz": "063fc929f7fcb0c9d0f6a7a4224fd79ad9bfc92d5d24b1d83f9c7c145fb52f8e",
+      "jquants/financial-history/blobs/06/06ea59cc6cf19a717921f775327135dcea27e066d8ccdab43fcea11649589836.csv.gz": "06ea59cc6cf19a717921f775327135dcea27e066d8ccdab43fcea11649589836",
+      "jquants/financial-history/blobs/09/09e5ce9261d533cd2fa2a66cd39cedbc1e0b7906bd53cc53426af3f53b87a6e8.csv.gz": "09e5ce9261d533cd2fa2a66cd39cedbc1e0b7906bd53cc53426af3f53b87a6e8",
+      "jquants/financial-history/blobs/0e/0eb952c31de18756d11834fb0c908679b54d58be4a866eb5f4c830355f4fc9af.csv.gz": "0eb952c31de18756d11834fb0c908679b54d58be4a866eb5f4c830355f4fc9af",
+      "jquants/financial-history/blobs/10/104728309a26e13322e723835da15e67a6023fb20bcd4d74f634b4c15ce43718.csv.gz": "104728309a26e13322e723835da15e67a6023fb20bcd4d74f634b4c15ce43718",
+      "jquants/financial-history/blobs/10/109fde8a5dafcd785ab935a2cd60e3919d000ce319b57a74edab92198b28fce5.csv.gz": "109fde8a5dafcd785ab935a2cd60e3919d000ce319b57a74edab92198b28fce5",
+      "jquants/financial-history/blobs/11/1112d4e6cb2c8f193b2b12c01186409f7a2a105d80aa6fd0e76c265fb47882fe.csv.gz": "1112d4e6cb2c8f193b2b12c01186409f7a2a105d80aa6fd0e76c265fb47882fe",
+      "jquants/financial-history/blobs/12/12afb57e38d38cf891fbc42e92aeda991a0c0a627dc609f5f592e46b9a002e7e.csv.gz": "12afb57e38d38cf891fbc42e92aeda991a0c0a627dc609f5f592e46b9a002e7e",
+      "jquants/financial-history/blobs/13/13814a81698d43b443c074a821213e42b79bf0c4e87c69c11bc3819cbb9c199d.csv.gz": "13814a81698d43b443c074a821213e42b79bf0c4e87c69c11bc3819cbb9c199d",
+      "jquants/financial-history/blobs/16/16e241731fa6a5218fe897647a94ac511f17ce7eb0a5105048e0c7d5727f3e45.csv.gz": "16e241731fa6a5218fe897647a94ac511f17ce7eb0a5105048e0c7d5727f3e45",
+      "jquants/financial-history/blobs/1c/1c5d0e506d94cbc32ef07978e3286e6b5ad6be4bbe4d0a35157c94c20fbc02b3.csv.gz": "1c5d0e506d94cbc32ef07978e3286e6b5ad6be4bbe4d0a35157c94c20fbc02b3",
+      "jquants/financial-history/blobs/1c/1cf3326f921a96cbdbb20637fe0ad9a8b6c49319391dd14fe914a88c14ef9a2b.csv.gz": "1cf3326f921a96cbdbb20637fe0ad9a8b6c49319391dd14fe914a88c14ef9a2b",
+      "jquants/financial-history/blobs/1c/1cf689ed9d5b811b3e7fa1b884cedf6bfe59eaebf8a33029acc4ae02037d38b0.csv.gz": "1cf689ed9d5b811b3e7fa1b884cedf6bfe59eaebf8a33029acc4ae02037d38b0",
+      "jquants/financial-history/blobs/1d/1d9f6739a9444ba4324169cbe9ffd17a94774fc626866c3493e28def52210990.csv.gz": "1d9f6739a9444ba4324169cbe9ffd17a94774fc626866c3493e28def52210990",
+      "jquants/financial-history/blobs/1f/1f73293db1a6eeb5b7d811cbbc86f31d141bb492cdaac6d5f876bf951543d248.csv.gz": "1f73293db1a6eeb5b7d811cbbc86f31d141bb492cdaac6d5f876bf951543d248",
+      "jquants/financial-history/blobs/20/2060cd1b8ce80c99c7d5c4ed68220ef9e0f361d3421fdbbc7bcc2511990a5414.csv.gz": "2060cd1b8ce80c99c7d5c4ed68220ef9e0f361d3421fdbbc7bcc2511990a5414",
+      "jquants/financial-history/blobs/20/208c69a6aa0fece8796efaabcc414f0c4029efc14226c42211d8d35e90779db7.csv.gz": "208c69a6aa0fece8796efaabcc414f0c4029efc14226c42211d8d35e90779db7",
+      "jquants/financial-history/blobs/21/2109fd4edfbaab2a9feee2c22d477b6464092c6980df975b2cd26f9b02e6ef74.csv.gz": "2109fd4edfbaab2a9feee2c22d477b6464092c6980df975b2cd26f9b02e6ef74",
+      "jquants/financial-history/blobs/22/2290a0d3d22fc88a794a8adfd81befdc7855b66b16e1ebc74b00ddc65362f187.csv.gz": "2290a0d3d22fc88a794a8adfd81befdc7855b66b16e1ebc74b00ddc65362f187",
+      "jquants/financial-history/blobs/23/2399c4141ea23ee0099a843550ffd427e3a616581af890315613cc91259ff726.csv.gz": "2399c4141ea23ee0099a843550ffd427e3a616581af890315613cc91259ff726",
+      "jquants/financial-history/blobs/23/23cbea5f175d0668a53df423978556bf205f077f13c6a2f2bf8a4fef7fcabbfd.csv.gz": "23cbea5f175d0668a53df423978556bf205f077f13c6a2f2bf8a4fef7fcabbfd",
+      "jquants/financial-history/blobs/25/25b3772ddb4a287d49807fcd2ce4ca458150e2391401a562f5b36faaba3aef37.csv.gz": "25b3772ddb4a287d49807fcd2ce4ca458150e2391401a562f5b36faaba3aef37",
+      "jquants/financial-history/blobs/27/270cb57c76b09731d1d50a47b7199a2d56d72c8de122d9ae0c838931e129a049.csv.gz": "270cb57c76b09731d1d50a47b7199a2d56d72c8de122d9ae0c838931e129a049",
+      "jquants/financial-history/blobs/27/276cc5aae277c297ee22e7ac40b65181061967c58df26a7c825185dfe492309d.csv.gz": "276cc5aae277c297ee22e7ac40b65181061967c58df26a7c825185dfe492309d",
+      "jquants/financial-history/blobs/29/2904257c04ed23e795dd681a639ab4ad745f5e392e391a4c3bc2e2f4f06a2306.csv.gz": "2904257c04ed23e795dd681a639ab4ad745f5e392e391a4c3bc2e2f4f06a2306",
+      "jquants/financial-history/blobs/29/29b3f49f2b4e4efc9691d5709341d90f5514539179632a321f3454e91c48cc7d.csv.gz": "29b3f49f2b4e4efc9691d5709341d90f5514539179632a321f3454e91c48cc7d",
+      "jquants/financial-history/blobs/2a/2af9f4fc3ea499115639f5bb2106bc9ec344346f545bc23ea45a66245e9625c4.csv.gz": "2af9f4fc3ea499115639f5bb2106bc9ec344346f545bc23ea45a66245e9625c4",
+      "jquants/financial-history/blobs/2c/2c166c91b27b4f598fddfb0f8193025863ff91d4db946f171332e11e4650dc11.csv.gz": "2c166c91b27b4f598fddfb0f8193025863ff91d4db946f171332e11e4650dc11",
+      "jquants/financial-history/blobs/2c/2c6353e1b4a65c07f86228cbc63974b20efd35b0d4859daba8702990893aad46.csv.gz": "2c6353e1b4a65c07f86228cbc63974b20efd35b0d4859daba8702990893aad46",
+      "jquants/financial-history/blobs/2f/2fcae312c4d24e88fd1e3513a5cb4e22599c8bdc63ff954b47dbc711016abce5.csv.gz": "2fcae312c4d24e88fd1e3513a5cb4e22599c8bdc63ff954b47dbc711016abce5",
+      "jquants/financial-history/blobs/32/328b75c7a8e4aa32bce00893cff21fec5054b76155a0325fe442b6e014d5574d.csv.gz": "328b75c7a8e4aa32bce00893cff21fec5054b76155a0325fe442b6e014d5574d",
+      "jquants/financial-history/blobs/33/33e4596fedc10baf3846f42e15f0d035c0efe5b559946f022d4a0a6d77ba1294.csv.gz": "33e4596fedc10baf3846f42e15f0d035c0efe5b559946f022d4a0a6d77ba1294",
+      "jquants/financial-history/blobs/37/37019dfef725d5afdea8c5929edb5a87b1c4fda7c8938ed1fc45e842aa638308.csv.gz": "37019dfef725d5afdea8c5929edb5a87b1c4fda7c8938ed1fc45e842aa638308",
+      "jquants/financial-history/blobs/37/3766cd1e03676ea946e42f41b7974138f345d05149aee0cb25c2f210d5cfa3ed.csv.gz": "3766cd1e03676ea946e42f41b7974138f345d05149aee0cb25c2f210d5cfa3ed",
+      "jquants/financial-history/blobs/37/37d050676512177c42f91bc7def722b8baf378fffee6928420c61bfd1e23f4fd.csv.gz": "37d050676512177c42f91bc7def722b8baf378fffee6928420c61bfd1e23f4fd",
+      "jquants/financial-history/blobs/38/38ac693eccac3fbd6b5efb9763179b68878b3824d598265053a0fc16c303ff8a.csv.gz": "38ac693eccac3fbd6b5efb9763179b68878b3824d598265053a0fc16c303ff8a",
+      "jquants/financial-history/blobs/3b/3ba12933919269c6f06a812b86b56e2376468544a7a12d3b6f4b4cdc37985093.csv.gz": "3ba12933919269c6f06a812b86b56e2376468544a7a12d3b6f4b4cdc37985093",
+      "jquants/financial-history/blobs/3f/3f506835d6681915812483754dfd0de7105914b8fa69fd940f12bc58a4281fad.csv.gz": "3f506835d6681915812483754dfd0de7105914b8fa69fd940f12bc58a4281fad",
+      "jquants/financial-history/blobs/40/40a4793811651799f888b8ae11b5e0e340c55b653b083b00f4e8337fcd88a496.csv.gz": "40a4793811651799f888b8ae11b5e0e340c55b653b083b00f4e8337fcd88a496",
+      "jquants/financial-history/blobs/40/40a6585dd8e16bce7840412a58d7ffbfe5bda43915123d277a4c164fab92aab2.csv.gz": "40a6585dd8e16bce7840412a58d7ffbfe5bda43915123d277a4c164fab92aab2",
+      "jquants/financial-history/blobs/41/411ce9cc131c309e8e99f7135b295d0e954752ba79e58ff49a3584834d7fb9e3.csv.gz": "411ce9cc131c309e8e99f7135b295d0e954752ba79e58ff49a3584834d7fb9e3",
+      "jquants/financial-history/blobs/41/417fb416187e25bdda147709564db331c79253c93949a9e58985125e1b970de4.csv.gz": "417fb416187e25bdda147709564db331c79253c93949a9e58985125e1b970de4",
+      "jquants/financial-history/blobs/41/41de4040d9d866499e4c5f138b8ce7cf60f29249a1449b228c95ce067e1370e9.csv.gz": "41de4040d9d866499e4c5f138b8ce7cf60f29249a1449b228c95ce067e1370e9",
+      "jquants/financial-history/blobs/43/438b3a030d86f22110ec5b93cfa01414f08f324d4944e65222b8fcb60a8798f9.csv.gz": "438b3a030d86f22110ec5b93cfa01414f08f324d4944e65222b8fcb60a8798f9",
+      "jquants/financial-history/blobs/44/447544db4860e4b4092f6f6a259fda945757c0fc6fa4835109542e84ffa28fbc.csv.gz": "447544db4860e4b4092f6f6a259fda945757c0fc6fa4835109542e84ffa28fbc",
+      "jquants/financial-history/blobs/47/4796de1202155e517eb94f7c662f1f2b679da58ce58484a5bb6a25638406b96b.csv.gz": "4796de1202155e517eb94f7c662f1f2b679da58ce58484a5bb6a25638406b96b",
+      "jquants/financial-history/blobs/4a/4a4021e65222672668177c7ca4e23a006c53f72a9e7d403ef740aa880c0fa6e5.csv.gz": "4a4021e65222672668177c7ca4e23a006c53f72a9e7d403ef740aa880c0fa6e5",
+      "jquants/financial-history/blobs/4b/4bc14cc7bb68a2e83eaa5d24828033703c5098ada91782045f176f77617272cc.csv.gz": "4bc14cc7bb68a2e83eaa5d24828033703c5098ada91782045f176f77617272cc",
+      "jquants/financial-history/blobs/4d/4d39400410de727bcd6083796930df0f553880479e1961c29ec5d07304232ab9.csv.gz": "4d39400410de727bcd6083796930df0f553880479e1961c29ec5d07304232ab9",
+      "jquants/financial-history/blobs/4d/4d65562f4393adec6d0347b8dc9b705e3609b2cd8c2f14bc26ed090a8b4e47b2.csv.gz": "4d65562f4393adec6d0347b8dc9b705e3609b2cd8c2f14bc26ed090a8b4e47b2",
+      "jquants/financial-history/blobs/4d/4defb957aebaea7337befd7dbf630d308025dbb0cd38aa0cf2a9b37bf5a89c2f.csv.gz": "4defb957aebaea7337befd7dbf630d308025dbb0cd38aa0cf2a9b37bf5a89c2f",
+      "jquants/financial-history/blobs/4f/4f1ea5ff79986ad322a849362b8ac19aa097d5c798f8fafde44ab963bbf603e7.csv.gz": "4f1ea5ff79986ad322a849362b8ac19aa097d5c798f8fafde44ab963bbf603e7",
+      "jquants/financial-history/blobs/50/50f56fd927a2eb3ccaa51c8a671c7991f47b1a9265952d492d299b6af6bc8abb.csv.gz": "50f56fd927a2eb3ccaa51c8a671c7991f47b1a9265952d492d299b6af6bc8abb",
+      "jquants/financial-history/blobs/53/53456a4ab3b5a3204f473605d67e9f5e2d86809217c3509f1218a12e0bc9455e.csv.gz": "53456a4ab3b5a3204f473605d67e9f5e2d86809217c3509f1218a12e0bc9455e",
+      "jquants/financial-history/blobs/56/56cf57008a752113012423c5c15c0bd1ff4620bda4555c0690d8d10132a36b6c.csv.gz": "56cf57008a752113012423c5c15c0bd1ff4620bda4555c0690d8d10132a36b6c",
+      "jquants/financial-history/blobs/58/583021cb73b4f0aeff7447b8c53ff6f45dfcafe33a5cb8776e18c687b8c28c4b.csv.gz": "583021cb73b4f0aeff7447b8c53ff6f45dfcafe33a5cb8776e18c687b8c28c4b",
+      "jquants/financial-history/blobs/5b/5bc90035be5ef691e5c9b63480962eb633e704f4d174e2551209dca037221ce9.csv.gz": "5bc90035be5ef691e5c9b63480962eb633e704f4d174e2551209dca037221ce9",
+      "jquants/financial-history/blobs/5c/5cda1cae5d8ac252c10e53403bc81ab2f183878445147e8bee42ea26ba8d4d26.csv.gz": "5cda1cae5d8ac252c10e53403bc81ab2f183878445147e8bee42ea26ba8d4d26",
+      "jquants/financial-history/blobs/5d/5dfe62d98401bec7b32ba2058e4e1ed91d984a987615c36dd4aaaead3745887c.csv.gz": "5dfe62d98401bec7b32ba2058e4e1ed91d984a987615c36dd4aaaead3745887c",
+      "jquants/financial-history/blobs/5e/5ee8e6848d71c0491592bb82dc257dea46eac481cf6fd70794f34db366e709fc.csv.gz": "5ee8e6848d71c0491592bb82dc257dea46eac481cf6fd70794f34db366e709fc",
+      "jquants/financial-history/blobs/60/60d0fbc620ad077aae371eb09e90fde4844548572fea83605ee7490e6a43e801.csv.gz": "60d0fbc620ad077aae371eb09e90fde4844548572fea83605ee7490e6a43e801",
+      "jquants/financial-history/blobs/60/60dd311ea6e40a9e2d586cd9ab823e63bb057e04652b5838dd70187a0ebda194.csv.gz": "60dd311ea6e40a9e2d586cd9ab823e63bb057e04652b5838dd70187a0ebda194",
+      "jquants/financial-history/blobs/67/67181b5b62f8dc42d2fe2563e1f75bb5f510e11d799c93c35a770457a0054c9a.csv.gz": "67181b5b62f8dc42d2fe2563e1f75bb5f510e11d799c93c35a770457a0054c9a",
+      "jquants/financial-history/blobs/67/67cb390235b055ce43073340df37d16c4aa034d95587dd9368575d7f98f3144e.csv.gz": "67cb390235b055ce43073340df37d16c4aa034d95587dd9368575d7f98f3144e",
+      "jquants/financial-history/blobs/68/6820a51fefd1f083de35bf5d78dc523d8bcea53bd00807999289c5f3966f7bb7.csv.gz": "6820a51fefd1f083de35bf5d78dc523d8bcea53bd00807999289c5f3966f7bb7",
+      "jquants/financial-history/blobs/68/68fed85121b80e21914149783a473cf1455295cadf1821dfdc28881602e5c202.csv.gz": "68fed85121b80e21914149783a473cf1455295cadf1821dfdc28881602e5c202",
+      "jquants/financial-history/blobs/6d/6d51d889ba7655ae68e1d62fb6b9e10ff69a21585fe4c0c520cadc7908a85eb5.csv.gz": "6d51d889ba7655ae68e1d62fb6b9e10ff69a21585fe4c0c520cadc7908a85eb5",
+      "jquants/financial-history/blobs/6d/6ded6c21eba560ab2cb901d9ee5a6b1ddc4d0cdd530576c81af42354a55e73fa.csv.gz": "6ded6c21eba560ab2cb901d9ee5a6b1ddc4d0cdd530576c81af42354a55e73fa",
+      "jquants/financial-history/blobs/6f/6fafd65cf142fb36f45ce4eceb1c41aa214517f761f679fcb26cdbcf636473ab.csv.gz": "6fafd65cf142fb36f45ce4eceb1c41aa214517f761f679fcb26cdbcf636473ab",
+      "jquants/financial-history/blobs/6f/6fd99461d10f9da46c6e12d41a5303b578baf79ed58b483ba5a7a1e8d6c884c0.csv.gz": "6fd99461d10f9da46c6e12d41a5303b578baf79ed58b483ba5a7a1e8d6c884c0",
+      "jquants/financial-history/blobs/70/70d857ffc460d150d06c3040efe9851d126c709e619710b1e8d9f70cc319991d.csv.gz": "70d857ffc460d150d06c3040efe9851d126c709e619710b1e8d9f70cc319991d",
+      "jquants/financial-history/blobs/71/714b2009ffcd86d07cfb61f9cd55ec131d3a869f35559d65c837807c946311f6.csv.gz": "714b2009ffcd86d07cfb61f9cd55ec131d3a869f35559d65c837807c946311f6",
+      "jquants/financial-history/blobs/73/7388dc4b444cc493208598810e659782d8e86c6c67f0fe26263606d9cdbef93b.csv.gz": "7388dc4b444cc493208598810e659782d8e86c6c67f0fe26263606d9cdbef93b",
+      "jquants/financial-history/blobs/73/73e592c4de404b833272c2f2338a6afb5ed7e17bd1355bab32e51eadb2d2ff39.csv.gz": "73e592c4de404b833272c2f2338a6afb5ed7e17bd1355bab32e51eadb2d2ff39",
+      "jquants/financial-history/blobs/76/76ccc4555d4199063ae65750c5a038757b18b7370ff35d133e46afb71f791061.csv.gz": "76ccc4555d4199063ae65750c5a038757b18b7370ff35d133e46afb71f791061",
+      "jquants/financial-history/blobs/77/7719b23dd60abe3ef5bf61a753b1d306d0370f5b30c955dda92f5c3382c8e7c7.csv.gz": "7719b23dd60abe3ef5bf61a753b1d306d0370f5b30c955dda92f5c3382c8e7c7",
+      "jquants/financial-history/blobs/7c/7c345432422f2453ca7cbe97c9aba46002e16a40bf10ebc8e1617792053a32c8.csv.gz": "7c345432422f2453ca7cbe97c9aba46002e16a40bf10ebc8e1617792053a32c8",
+      "jquants/financial-history/blobs/7c/7cb4cc5844dcc81b70a07db0073491fc88f25209f19b7c259f0501ca9c45cc31.csv.gz": "7cb4cc5844dcc81b70a07db0073491fc88f25209f19b7c259f0501ca9c45cc31",
+      "jquants/financial-history/blobs/7d/7dfe02cdb30d46b1faf31b50e83078a4149afb125617940ad3b6d2141920f64c.csv.gz": "7dfe02cdb30d46b1faf31b50e83078a4149afb125617940ad3b6d2141920f64c",
+      "jquants/financial-history/blobs/82/8299f022c95858407971ddad2e52c585829a501a9821e1cc37b71ac83c68ac92.csv.gz": "8299f022c95858407971ddad2e52c585829a501a9821e1cc37b71ac83c68ac92",
+      "jquants/financial-history/blobs/83/83119b8a711ac6d7c0bea62d0fa64afba81f378e179d5177d6d54f0122298eb5.csv.gz": "83119b8a711ac6d7c0bea62d0fa64afba81f378e179d5177d6d54f0122298eb5",
+      "jquants/financial-history/blobs/84/84772e72d8caa271daf8a427a892c14b5c8a09eb0994bc7407980b2e229c1e96.csv.gz": "84772e72d8caa271daf8a427a892c14b5c8a09eb0994bc7407980b2e229c1e96",
+      "jquants/financial-history/blobs/85/85d6c2716381f3927a7a3eda0dc9500038d00351ef28685f523187a9140f9884.csv.gz": "85d6c2716381f3927a7a3eda0dc9500038d00351ef28685f523187a9140f9884",
+      "jquants/financial-history/blobs/8d/8dcfa6774c95a20c13776abaff62ed6342175b64079ed17171e16435ef82a6aa.csv.gz": "8dcfa6774c95a20c13776abaff62ed6342175b64079ed17171e16435ef82a6aa",
+      "jquants/financial-history/blobs/90/9086cf30f7de7c391a9def5975d6c8b920635e961427e1a91f4362f4373b2c4b.csv.gz": "9086cf30f7de7c391a9def5975d6c8b920635e961427e1a91f4362f4373b2c4b",
+      "jquants/financial-history/blobs/91/91c724ded156efbe76ccc2b80f454fa82ab914454d77e0f5edcae339cd8ae692.csv.gz": "91c724ded156efbe76ccc2b80f454fa82ab914454d77e0f5edcae339cd8ae692",
+      "jquants/financial-history/blobs/98/98eb5ab3aa42a3da126673c98c1ee7b3af6a9ec45cce3d48dcd62e594ba61771.csv.gz": "98eb5ab3aa42a3da126673c98c1ee7b3af6a9ec45cce3d48dcd62e594ba61771",
+      "jquants/financial-history/blobs/99/998b1065bf24da6a4ff90141df47226479db8e0144b45591556345820233ec49.csv.gz": "998b1065bf24da6a4ff90141df47226479db8e0144b45591556345820233ec49",
+      "jquants/financial-history/blobs/9a/9a12f1a03c866c96ad0d5a1a74640c4d96607552145fb0c4ffbf15de2ccec37a.csv.gz": "9a12f1a03c866c96ad0d5a1a74640c4d96607552145fb0c4ffbf15de2ccec37a",
+      "jquants/financial-history/blobs/9a/9ac56739ff2814827148e8b732b2b1fd2f1316ce3ff90ab0b19794674b3666c7.csv.gz": "9ac56739ff2814827148e8b732b2b1fd2f1316ce3ff90ab0b19794674b3666c7",
+      "jquants/financial-history/blobs/9c/9ca1357e0c1099c3729de4aac26a7d257149dd9c21f74c7a671d6e441ed24f07.csv.gz": "9ca1357e0c1099c3729de4aac26a7d257149dd9c21f74c7a671d6e441ed24f07",
+      "jquants/financial-history/blobs/9d/9d23b0b218ed267e620c6fe46b83b7ec676ca9e0d7fd6f4527b90e32581e934d.csv.gz": "9d23b0b218ed267e620c6fe46b83b7ec676ca9e0d7fd6f4527b90e32581e934d",
+      "jquants/financial-history/blobs/a0/a00b9a9016bb25f1f12c49a7d3afcf2b676934b80baa3de7e23c4f86c840fdb3.csv.gz": "a00b9a9016bb25f1f12c49a7d3afcf2b676934b80baa3de7e23c4f86c840fdb3",
+      "jquants/financial-history/blobs/a0/a043f67900af83b04542629a1546ba9d61b5dcb2a5d13565951e788af8773bfc.csv.gz": "a043f67900af83b04542629a1546ba9d61b5dcb2a5d13565951e788af8773bfc",
+      "jquants/financial-history/blobs/a0/a0dd87ca835f6b03ae4a19530a4c1122877ffbb10e1edea85af7a0e9b318684d.csv.gz": "a0dd87ca835f6b03ae4a19530a4c1122877ffbb10e1edea85af7a0e9b318684d",
+      "jquants/financial-history/blobs/a1/a15cc1fd68a18c1d18f211f60212527064b7574e44ab57ad0e153b0e4764202f.csv.gz": "a15cc1fd68a18c1d18f211f60212527064b7574e44ab57ad0e153b0e4764202f",
+      "jquants/financial-history/blobs/a2/a2f1881ea3acd9a18163270d63507707f7f1433d34524023611b57a358bbc865.csv.gz": "a2f1881ea3acd9a18163270d63507707f7f1433d34524023611b57a358bbc865",
+      "jquants/financial-history/blobs/a4/a4bdf7a4dc8f338edec000cf3882822dd2829331c4221a964a592f3915e6ca36.csv.gz": "a4bdf7a4dc8f338edec000cf3882822dd2829331c4221a964a592f3915e6ca36",
+      "jquants/financial-history/blobs/a4/a4d006abfd55d03bc9b1e4a0696f8933b1d0c41a05ecf66892b9c5a90410640f.csv.gz": "a4d006abfd55d03bc9b1e4a0696f8933b1d0c41a05ecf66892b9c5a90410640f",
+      "jquants/financial-history/blobs/a5/a54dfdd0c5f9eabd16928e65c716c46310328af052d4279bda49fe95180deb0c.csv.gz": "a54dfdd0c5f9eabd16928e65c716c46310328af052d4279bda49fe95180deb0c",
+      "jquants/financial-history/blobs/a5/a59934adf9eaf8d0cd972f03bfee07e972655dcc2bf3d9ed1b80850fd28d239c.csv.gz": "a59934adf9eaf8d0cd972f03bfee07e972655dcc2bf3d9ed1b80850fd28d239c",
+      "jquants/financial-history/blobs/a6/a6184a8fd0f86489767853049d4cfdbe85825556ea8cb8c77f3cf998f035261e.csv.gz": "a6184a8fd0f86489767853049d4cfdbe85825556ea8cb8c77f3cf998f035261e",
+      "jquants/financial-history/blobs/a8/a8c9ff6b0976ac9886e45a3cae45a0f11b06d7b8ea322c8f7e2e28b86be4f62a.csv.gz": "a8c9ff6b0976ac9886e45a3cae45a0f11b06d7b8ea322c8f7e2e28b86be4f62a",
+      "jquants/financial-history/blobs/ac/ac24240db9989ad90e3f2a065b88eb9e5b913eefeb47cb796de12d9a548e58aa.csv.gz": "ac24240db9989ad90e3f2a065b88eb9e5b913eefeb47cb796de12d9a548e58aa",
+      "jquants/financial-history/blobs/ae/aea2f5ad92af027b1c7477becea492e15f86e74e2a6d1e350e7bf8d570062c27.csv.gz": "aea2f5ad92af027b1c7477becea492e15f86e74e2a6d1e350e7bf8d570062c27",
+      "jquants/financial-history/blobs/b0/b037196bd9234449055097a3037d611c1ee37cc8da9132bbe0c838f1b093e202.csv.gz": "b037196bd9234449055097a3037d611c1ee37cc8da9132bbe0c838f1b093e202",
+      "jquants/financial-history/blobs/b1/b14b7a2e263a7d7c7f8aef0376f5d0f9267ef18eaa265e1eca8fb3fca42318ab.csv.gz": "b14b7a2e263a7d7c7f8aef0376f5d0f9267ef18eaa265e1eca8fb3fca42318ab",
+      "jquants/financial-history/blobs/b2/b2237b3dad41dbe297622bd71b93fe5127a1fbafd8d46268d2e1d37452fa940a.csv.gz": "b2237b3dad41dbe297622bd71b93fe5127a1fbafd8d46268d2e1d37452fa940a",
+      "jquants/financial-history/blobs/b5/b5236c5deec3dee345e17e524c2e5c70337b630997495cf41626c438896d3e58.csv.gz": "b5236c5deec3dee345e17e524c2e5c70337b630997495cf41626c438896d3e58",
+      "jquants/financial-history/blobs/b6/b64c8c7fa0386d2a2ad04f9e972de2018221ffaf746de6f922f35a40e6a220ff.csv.gz": "b64c8c7fa0386d2a2ad04f9e972de2018221ffaf746de6f922f35a40e6a220ff",
+      "jquants/financial-history/blobs/b7/b7bb07c819711979529bb9ab57054294565a79ac28a1b7fb1736301112c09f20.csv.gz": "b7bb07c819711979529bb9ab57054294565a79ac28a1b7fb1736301112c09f20",
+      "jquants/financial-history/blobs/bb/bb9521b2ffc187b735904670e18268db01d655e09469f5ed20d2cb545b15e6ee.csv.gz": "bb9521b2ffc187b735904670e18268db01d655e09469f5ed20d2cb545b15e6ee",
+      "jquants/financial-history/blobs/bc/bc22c9ebfb71080752a6e5db250c2d1a1530fb84cdf6f20480c526096e802d32.csv.gz": "bc22c9ebfb71080752a6e5db250c2d1a1530fb84cdf6f20480c526096e802d32",
+      "jquants/financial-history/blobs/c1/c170328197b5c00ebf9cae3240fd8ca54271d294f97b21b9c14a4bfdab83f6fa.csv.gz": "c170328197b5c00ebf9cae3240fd8ca54271d294f97b21b9c14a4bfdab83f6fa",
+      "jquants/financial-history/blobs/c2/c24bb2f5f9ec3c55a929e0c7118e7e9a58f00943e6eb4bb292ecd1853abe90d1.csv.gz": "c24bb2f5f9ec3c55a929e0c7118e7e9a58f00943e6eb4bb292ecd1853abe90d1",
+      "jquants/financial-history/blobs/c9/c9d6533c11e3191d0f671bf1946a43cd88abff581063250215521affa3cd2947.csv.gz": "c9d6533c11e3191d0f671bf1946a43cd88abff581063250215521affa3cd2947",
+      "jquants/financial-history/blobs/c9/c9e8dcaa7ad184eb68fe3dcb0b80ec61a2cd42b1753f46f450161af8b540cc22.csv.gz": "c9e8dcaa7ad184eb68fe3dcb0b80ec61a2cd42b1753f46f450161af8b540cc22",
+      "jquants/financial-history/blobs/ca/ca856db881ab0bf19b7716c20fdc103456ca2a59e44d722fd4a3d7cf1e02e2bf.csv.gz": "ca856db881ab0bf19b7716c20fdc103456ca2a59e44d722fd4a3d7cf1e02e2bf",
+      "jquants/financial-history/blobs/cc/cc29c82148e1c363d442693233231ec8517bde4cdb96972ce622b3e09135efdf.csv.gz": "cc29c82148e1c363d442693233231ec8517bde4cdb96972ce622b3e09135efdf",
+      "jquants/financial-history/blobs/cc/cc66ebddb44dcc36139e9eaa387f1215a622e45a64d770e4df187bfed5ffe36d.csv.gz": "cc66ebddb44dcc36139e9eaa387f1215a622e45a64d770e4df187bfed5ffe36d",
+      "jquants/financial-history/blobs/cc/ccd7543d9439ecf8026b3bec5444926844c4def160252906bf8fa37bbe92a4cc.csv.gz": "ccd7543d9439ecf8026b3bec5444926844c4def160252906bf8fa37bbe92a4cc",
+      "jquants/financial-history/blobs/ce/ce63819b9e029669638adc02c90725ec7b8e55d1122e5cf4fa2de6beec80d13a.csv.gz": "ce63819b9e029669638adc02c90725ec7b8e55d1122e5cf4fa2de6beec80d13a",
+      "jquants/financial-history/blobs/d0/d0bec474c694654687f05b6f1705144c4857ebe6bb7483d51b57c59f82b16598.csv.gz": "d0bec474c694654687f05b6f1705144c4857ebe6bb7483d51b57c59f82b16598",
+      "jquants/financial-history/blobs/d3/d31fba45bfe1d670dbe266ae8a29c072949bb57dd4b9300aaabce804d5b1fc93.csv.gz": "d31fba45bfe1d670dbe266ae8a29c072949bb57dd4b9300aaabce804d5b1fc93",
+      "jquants/financial-history/blobs/d6/d6b4e11adada14837a789672c58aae313d3c3856dce234404a14006b120223d2.csv.gz": "d6b4e11adada14837a789672c58aae313d3c3856dce234404a14006b120223d2",
+      "jquants/financial-history/blobs/d7/d7b0affe28cca0d52e899cb8e58456fa46a1cf26836ad08de9eb1abeffc81ec3.csv.gz": "d7b0affe28cca0d52e899cb8e58456fa46a1cf26836ad08de9eb1abeffc81ec3",
+      "jquants/financial-history/blobs/d7/d7f945217f34b6d975974fc03a1be9f846d086e62bb8c7545fff3e1482b52cf8.csv.gz": "d7f945217f34b6d975974fc03a1be9f846d086e62bb8c7545fff3e1482b52cf8",
+      "jquants/financial-history/blobs/d9/d91acfb8ec780758e8c722aa9ba663c7857bcfd8186c37976a5f64841156c454.csv.gz": "d91acfb8ec780758e8c722aa9ba663c7857bcfd8186c37976a5f64841156c454",
+      "jquants/financial-history/blobs/d9/d9ca07ed4a2c4c89ba9d10edde13b25257554c7c6985f9aaca665edbdfdec9df.csv.gz": "d9ca07ed4a2c4c89ba9d10edde13b25257554c7c6985f9aaca665edbdfdec9df",
+      "jquants/financial-history/blobs/da/da33b0053d0ad7314944a4fb5884dfc7d78ad4763ad77249528be6e0c49dcc0a.csv.gz": "da33b0053d0ad7314944a4fb5884dfc7d78ad4763ad77249528be6e0c49dcc0a",
+      "jquants/financial-history/blobs/da/da462e49a9a7462d7988a6a5502f6633c8b96beaa0a0a451f60f27626d24923b.csv.gz": "da462e49a9a7462d7988a6a5502f6633c8b96beaa0a0a451f60f27626d24923b",
+      "jquants/financial-history/blobs/dc/dc4dd2296c0f91a77f2b5379cb8839ffa2bbc7717e5a86079894af8af9d9ad7a.csv.gz": "dc4dd2296c0f91a77f2b5379cb8839ffa2bbc7717e5a86079894af8af9d9ad7a",
+      "jquants/financial-history/blobs/de/decefb1cd495df4e1a846bd1dee6750ec8f65fc816967b5743dd4d160b992979.csv.gz": "decefb1cd495df4e1a846bd1dee6750ec8f65fc816967b5743dd4d160b992979",
+      "jquants/financial-history/blobs/e2/e2d2d7d30bc595b79de0016a36f380ae51fb48455f4a95d818423f9136d603a9.csv.gz": "e2d2d7d30bc595b79de0016a36f380ae51fb48455f4a95d818423f9136d603a9",
+      "jquants/financial-history/blobs/e5/e5219656c384dda182f2404bfdbbcf2776acb4d8b40d5b53e33d371c3fd809c5.csv.gz": "e5219656c384dda182f2404bfdbbcf2776acb4d8b40d5b53e33d371c3fd809c5",
+      "jquants/financial-history/blobs/e5/e57b5bf5429b2512820ba68088e27d49ce3ea08391d430e39ccefeb24372585a.csv.gz": "e57b5bf5429b2512820ba68088e27d49ce3ea08391d430e39ccefeb24372585a",
+      "jquants/financial-history/blobs/e9/e9695b1c6b4f7d483f7c1eb10bd691ca07ed7d9f42a5cbb8812177a20e4a12cd.csv.gz": "e9695b1c6b4f7d483f7c1eb10bd691ca07ed7d9f42a5cbb8812177a20e4a12cd",
+      "jquants/financial-history/blobs/e9/e995344a1b4569157c56c2adc287a118dcd14cfa91c7cb713eb64b061bab1b6f.csv.gz": "e995344a1b4569157c56c2adc287a118dcd14cfa91c7cb713eb64b061bab1b6f",
+      "jquants/financial-history/blobs/ea/ea47114eea03e8e63069fd44532b1810a6512ddf57ab59a77b3c69d8eb142b18.csv.gz": "ea47114eea03e8e63069fd44532b1810a6512ddf57ab59a77b3c69d8eb142b18",
+      "jquants/financial-history/blobs/eb/ebbb32f9cabb3ffac9271b0729501ea6b420c41626d3be9208b27aa4778dd08e.csv.gz": "ebbb32f9cabb3ffac9271b0729501ea6b420c41626d3be9208b27aa4778dd08e",
+      "jquants/financial-history/blobs/ef/ef80caf0ce348fd7fe34d18b1ffc4c09ef5638b1395dc5f7d0e7373c468f7e4b.csv.gz": "ef80caf0ce348fd7fe34d18b1ffc4c09ef5638b1395dc5f7d0e7373c468f7e4b",
+      "jquants/financial-history/blobs/ef/efe83da6702e368411acc55e2f99a4579167295b5afdd933b93be8486c5092c7.csv.gz": "efe83da6702e368411acc55e2f99a4579167295b5afdd933b93be8486c5092c7",
+      "jquants/financial-history/blobs/f0/f084d1c803b2f57836b68264ba10540e706d014c3a943651a5770c64db3be5ac.csv.gz": "f084d1c803b2f57836b68264ba10540e706d014c3a943651a5770c64db3be5ac",
+      "jquants/financial-history/blobs/f1/f16be8ad116753c402b2dab952dc91aded42eba87364661c77e033ef36a3f742.csv.gz": "f16be8ad116753c402b2dab952dc91aded42eba87364661c77e033ef36a3f742",
+      "jquants/financial-history/blobs/f2/f25a23d32d30cdce9d2c778cc720a60dced6bcb7dbfb5ef04f1c7220f701c0ef.csv.gz": "f25a23d32d30cdce9d2c778cc720a60dced6bcb7dbfb5ef04f1c7220f701c0ef",
+      "jquants/financial-history/blobs/f3/f38dfc1fb868ce711a13bedab9bdb13ff77f97119c026b3b2a2ecc1b450b83bb.csv.gz": "f38dfc1fb868ce711a13bedab9bdb13ff77f97119c026b3b2a2ecc1b450b83bb",
+      "jquants/financial-history/blobs/f5/f5008feae686fe6511b013bdf634198ac537923e0cdd5b3039bbd5442be100b1.csv.gz": "f5008feae686fe6511b013bdf634198ac537923e0cdd5b3039bbd5442be100b1",
+      "jquants/financial-history/blobs/f5/f548195fc62d3b34a75e69538164b8b4b49ea28e9e2343034145488107503932.csv.gz": "f548195fc62d3b34a75e69538164b8b4b49ea28e9e2343034145488107503932",
+      "jquants/financial-history/blobs/f6/f6a49fb3524d2d5f7d89f91ee854b5b64fe271911ad870b76c02ded4f5e0bb23.csv.gz": "f6a49fb3524d2d5f7d89f91ee854b5b64fe271911ad870b76c02ded4f5e0bb23",
+      "jquants/financial-history/blobs/f7/f7fe2fec34a8869fa502f890e4f13b2fa14207df2cfd25a694643c0687c2cbd5.csv.gz": "f7fe2fec34a8869fa502f890e4f13b2fa14207df2cfd25a694643c0687c2cbd5",
+      "jquants/financial-history/blobs/f9/f94a7936dab110b993f1983c35db36ff36e70402362dbf8b9a8582a11ac30b1d.csv.gz": "f94a7936dab110b993f1983c35db36ff36e70402362dbf8b9a8582a11ac30b1d",
+      "jquants/financial-history/blobs/fb/fb69070d641f21660f2b43ec837516861f7543b9e4798126052fffc3c5fc9c8e.csv.gz": "fb69070d641f21660f2b43ec837516861f7543b9e4798126052fffc3c5fc9c8e",
+      "jquants/financial-history/blobs/fd/fd5c179be07312f7cdefe1d100cafd06925fd2de4d4cb7a178f8c372abf4b571.csv.gz": "fd5c179be07312f7cdefe1d100cafd06925fd2de4d4cb7a178f8c372abf4b571",
+      "jquants/financial-history/blobs/ff/ffd79556758c46fa1f0235fb792df8884d66e2992cf24baee534830ca581bb9d.csv.gz": "ffd79556758c46fa1f0235fb792df8884d66e2992cf24baee534830ca581bb9d",
+      "jquants/financial-history/calendar.json": "b54e768b2ba0e91bd3c8870cdc1a180df500bb7d68abed6f9a86e9b6795e0e6c",
+      "jquants/objects/05/05c185525c6472168984286393c1147ec9e1c5a1ce7b8d878536c2d6bb00b13f.json": "05c185525c6472168984286393c1147ec9e1c5a1ce7b8d878536c2d6bb00b13f",
+      "jquants/objects/0e/0e56b949158f679a92349ffe4b17b176e66f62d1d65b9b871631f27d71c530ce.json": "0e56b949158f679a92349ffe4b17b176e66f62d1d65b9b871631f27d71c530ce",
+      "jquants/objects/18/182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d.json": "182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d",
+      "jquants/objects/4f/4f29fcfbcff959be6c617cff0792f55dff04d488ef11ed20c82b99e61cd149ea.json": "4f29fcfbcff959be6c617cff0792f55dff04d488ef11ed20c82b99e61cd149ea",
+      "jquants/objects/56/56eb22fd2637484a38fa10715f219994f4803f4a5244482608fd1e981fa5c5d3.json": "56eb22fd2637484a38fa10715f219994f4803f4a5244482608fd1e981fa5c5d3",
+      "jquants/objects/83/836418f92b25127d8b8844b4f4fe9a20c479e4398645212c7c9f64309d016984.json": "836418f92b25127d8b8844b4f4fe9a20c479e4398645212c7c9f64309d016984",
+      "jquants/objects/97/97709263f42888bbe58c2ad83642dfa65163bb975b2d1ff11a94d52b3309ecb6.json": "97709263f42888bbe58c2ad83642dfa65163bb975b2d1ff11a94d52b3309ecb6",
+      "jquants/objects/b3/b3cb33c63c9d95a1cb39061fa393d21024a91cccbca171c9aea39b742814f5ca.json": "b3cb33c63c9d95a1cb39061fa393d21024a91cccbca171c9aea39b742814f5ca",
+      "jquants/objects/c8/c8d6ae0cea27aa4c2dc990fc76eb83290edbbc08aec50f2f5db3963a70b1dad2.json": "c8d6ae0cea27aa4c2dc990fc76eb83290edbbc08aec50f2f5db3963a70b1dad2",
+      "jquants/objects/c9/c9e6a29837955596298f9b8e98607418872aec37532080bb1593c72926ee6bd2.json": "c9e6a29837955596298f9b8e98607418872aec37532080bb1593c72926ee6bd2",
+      "jquants/objects/d9/d923b570ae16cd4473d8821b5875dc429c1c8e347ff2ca144b92d3fbed4c17fd.json": "d923b570ae16cd4473d8821b5875dc429c1c8e347ff2ca144b92d3fbed4c17fd",
+      "jquants/objects/dd/dd58f53d84fe7484ce6089a7e454246697e5e18c51d0ec33e50d6d691f1af94d.json": "dd58f53d84fe7484ce6089a7e454246697e5e18c51d0ec33e50d6d691f1af94d",
+      "jquants/objects/ec/ece64f99714a46529ad835ffb14f1cf46212aebf41e5223e5d3b082b77840e12.json": "ece64f99714a46529ad835ffb14f1cf46212aebf41e5223e5d3b082b77840e12",
+      "jquants/objects/f3/f33991483d9282955d2cb49723830e4da36f20b71ebcd3d01ff97b53fbeb8e04.json": "f33991483d9282955d2cb49723830e4da36f20b71ebcd3d01ff97b53fbeb8e04"
+    }
+  },
+  "code": {
+    "src/stock_jp/research/financial_inputs.py": "06d060e965ba50f43c52903dde8f42e3588c5b91543ff942610adc6999b62afd",
+    "src/stock_jp/market_data/observations.py": "ad231301db8c3c8b74284b3983e1d593fa1377b30093833143012d564059b3ee",
+    "src/stock_jp/market_data/jquants/snapshot.py": "779712efdc249819a83d9c8e1b541c9ccf3d202d5d83239909f832c6e7672e93",
+    "src/stock_jp/market_data/jquants/financial_history.py": "ca55f6f4b32ea38efeb544378a01fd81292f81cd754e97fbf501ad6932b39c44",
+    "src/stock_jp/market_data/storage.py": "18a3d0271e01beef5b9eec89f0a2993ed5ac7409f6c9dec79f5a563d7e1533d3",
+    "src/stock_jp/market_data/jpx.py": "26976c5874b69f2a0e04868e76ef837a8a52eeffb1349a0fbdd03ce0441ab13d",
+    "src/stock_jp/market_data/prices.py": "b9069b48d3facf961c03dac1c14686d28b6214999150076a3da7f804bc3dbfd6",
+    "src/stock_jp/research/allocation.py": "2eb5504e720fab19102a642737db1586bbccd3b0ca82014684e72e470c333823"
+  },
+  "outputs": {
+    "monthly/2024-12-30.csv": "cdf3b399d4435636e9f8574d307068e58d803ba216e1e955315f0c7540f7d277",
+    "monthly/2025-01-31.csv": "883e4c755c03e0c79bdd45e1ad23fd49410d03d5a38db6559b1c39ef4cc054af",
+    "monthly/2025-02-28.csv": "be4ae8171c7c31fde5b5e2e21e98852982005f69ae8d8c09215457bdfede448b",
+    "monthly/2025-03-31.csv": "d34a1e6fa04e63e36e2e5394ce6880ac14ecb70ff36d66ad335c6aa27e713954",
+    "monthly/2025-04-30.csv": "a237f014b2d8de7b66d3c89c15a4e93be8bf3ed43dd42b59945e58c8d3a319f8",
+    "monthly/2025-05-30.csv": "ccc16ac121320eccf973858d5ae5d3d73f9992cc5125dd3be7445b01a7f43552",
+    "monthly/2025-06-30.csv": "841eca499822337645e4b9ff719bbde074b304bf2c6015f23b1ed2ef2645e3b8",
+    "monthly/2025-07-31.csv": "f661a817dd5d18bdf17940a9fd5cf50a4a07c96652d77108ed682c850ad844b8",
+    "monthly/2025-08-29.csv": "6bdbdc619b0101c0aacdfbd02722cec33fe0a31d0d2f3956cd6e15a3167c7471",
+    "monthly/2025-09-30.csv": "eeef523e437b7d78d601f992294b8e72af302aecaaad46c81e73e2964e743d73",
+    "monthly/2025-10-31.csv": "26708f0153a8a2de3aeb92bc01a9371b93063b7ef009d19590940ffc40614f5b",
+    "monthly/2025-11-28.csv": "d383ff73808dd48887548b1c09a7493910350097e1b7234d2234259ff5d5bd72",
+    "monthly/2025-12-30.csv": "4c66db7aa2518479f5cfa6169c88e558bf396e08fd2b8fc37ea0c0fcee2e5745",
+    "monthly/2026-01-30.csv": "46c90f7aacf49e2f98e4ec836dcb32d877795aca7a79ecd60390624382b5b6b1",
+    "monthly/2026-02-27.csv": "1993eb93855352f97b1f3b3962c75c190ca300d4620a5e67a06fb569b606d182",
+    "monthly/2026-03-31.csv": "1712ba05c77ce5cfba25d8ce45d1f0d0e42a834fcdacdf29628458a028afe7a0",
+    "monthly/2026-04-30.csv": "76c96d53e50cb777d016c0fe9d7c2bffe16757596770409f062b43a8b151a443",
+    "monthly/2026-05-29.csv": "ef0f7678b6238d8f152aafe2e369f1227f8e7215b941f9bdfbd83be9cf5e97ed",
+    "monthly/2026-06-30.csv": "2742d7cc74fa8c7b6ad14c9bd9f162bc6a91dba5617483fd7a48eae9e576a663",
+    "monthly/2026-07-31.csv": "53ffddc8cc8d6830aba2a0ae6703f2001eee65aa5e3ba9e0a86ceb43f1ee70c9",
+    "monthly/2026-08-31.csv": "181031fd47f8e72fb9c453b82d240e63afbaa35e9e2453581414424605b972a4",
+    "review-queue.csv": "bbc60da0cdf54650a5f2350952834f0e7be648c592efa3ce24e894f81e3082da",
+    "source-anomalies.csv": "900638f361dcc618e61eca6a8f84098579cbbec076c10a605deec4feb9657391"
+  }
+}

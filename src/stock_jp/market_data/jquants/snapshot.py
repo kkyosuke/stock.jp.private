@@ -137,36 +137,10 @@ def _atomic_bytes(archive: Path, relative: Path, content: bytes, *, immutable: b
             temporary_path.unlink(missing_ok=True)
 
 
-def export_daily_snapshot(
-    root: Path,
-    day: str,
-    master_rows: list[dict[str, Any]],
-    bar_rows: list[dict[str, Any]],
-    retrieved_at: str,
-    *,
-    raw_provenance: Any = None,
-) -> dict[str, Any]:
-    """Export one complete date query and return its manifest.
-
-    ``master_rows`` must be the full paginated master for ``day``, and
-    ``bar_rows`` the full paginated daily-bars query for that same date.
-    Missing quotes remain in the universe and reduce readiness coverage.
-    Canonical year/date CSVs serve legacy readers; immutable revision paths
-    retain prior content and anchor checksum-verified readiness evidence.
-    A historical backfill never replaces a newer J-Quants latest manifest.
-    """
-    if not isinstance(day, str) or date.fromisoformat(day).isoformat() != day:
-        raise JQuantsSnapshotError("day must be YYYY-MM-DD")
-    timestamp = datetime.fromisoformat(retrieved_at.replace("Z", "+00:00"))
-    if timestamp.tzinfo is None:
-        raise JQuantsSnapshotError("retrieved_at must include a UTC offset")
-    archive = resolve_archive_root(root)
-    config = json.loads((root / 'config/sources.json').read_text(encoding="utf-8"))
-    if config.get("price_source", {}).get("provider") != "jquants_v2_private_archive":
-        raise JQuantsSnapshotError("J-Quants snapshot requires its explicit private price provider")
-    if not isinstance(master_rows, list) or not isinstance(bar_rows, list):
-        raise JQuantsSnapshotError("master and bar rows must be lists")
-
+def domestic_common_master(day: str, master_rows: list[dict[str, Any]]):
+    """Select the dated domestic common-stock universe, keeping unquoted issues."""
+    if date.fromisoformat(day).isoformat() != day or not isinstance(master_rows, list):
+        raise JQuantsSnapshotError("master needs a date and a complete row list")
     issues: dict[str, dict[str, Any]] = {}
     master_codes: set[str] = set()
     excluded_pro_count = 0
@@ -197,6 +171,41 @@ def export_daily_snapshot(
         issues[code] = row
     if not issues:
         raise JQuantsSnapshotError("point-in-time domestic stock universe is empty")
+
+    return issues, master_codes, excluded_pro_count
+
+
+def export_daily_snapshot(
+    root: Path,
+    day: str,
+    master_rows: list[dict[str, Any]],
+    bar_rows: list[dict[str, Any]],
+    retrieved_at: str,
+    *,
+    raw_provenance: Any = None,
+) -> dict[str, Any]:
+    """Export one complete date query and return its manifest.
+
+    ``master_rows`` must be the full paginated master for ``day``, and
+    ``bar_rows`` the full paginated daily-bars query for that same date.
+    Missing quotes remain in the universe and reduce readiness coverage.
+    Canonical year/date CSVs serve legacy readers; immutable revision paths
+    retain prior content and anchor checksum-verified readiness evidence.
+    A historical backfill never replaces a newer J-Quants latest manifest.
+    """
+    if not isinstance(day, str) or date.fromisoformat(day).isoformat() != day:
+        raise JQuantsSnapshotError("day must be YYYY-MM-DD")
+    timestamp = datetime.fromisoformat(retrieved_at.replace("Z", "+00:00"))
+    if timestamp.tzinfo is None:
+        raise JQuantsSnapshotError("retrieved_at must include a UTC offset")
+    archive = resolve_archive_root(root)
+    config = json.loads((root / 'config/sources.json').read_text(encoding="utf-8"))
+    if config.get("price_source", {}).get("provider") != "jquants_v2_private_archive":
+        raise JQuantsSnapshotError("J-Quants snapshot requires its explicit private price provider")
+    if not isinstance(master_rows, list) or not isinstance(bar_rows, list):
+        raise JQuantsSnapshotError("master and bar rows must be lists")
+
+    issues, master_codes, excluded_pro_count = domestic_common_master(day, master_rows)
 
     bars: dict[str, dict[str, Any]] = {}
     for row in bar_rows:

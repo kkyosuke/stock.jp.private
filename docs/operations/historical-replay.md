@@ -6,6 +6,8 @@
 採用済みJ-Quants原本は[市場データ](market-data.md)の世代管理を使う。
 
 最新の結果と不足は[2026年10月5日の検証](../../research/validation-2026-10-05/README.md)にある。
+財務の開示日時による入力再構成と次の確認一覧は
+[財務入力](../../research/financial-inputs-2026-10-05/README.md)を参照する。
 価格・流動性による資金配分診断と、ルール全体の履歴再生を区別する。
 診断の好成績や一次資料の保存件数だけではLIVE条件を通過しない。
 
@@ -39,6 +41,21 @@ python -m stock_jp research replay --manifest research/historical-replay-2025-20
 `validate`が合格した入力だけを`run`へ渡す。年別と連続ポートフォリオの損益、
 費用、最大下落率、ベンチマーク、母集団網羅率、未約定・欠損を確認する。
 不足時は合格証跡を生成しない。
+
+## 保存済み財務から入力を作る
+
+```bash
+python -m stock_jp research financial-inputs \
+  --price-register research/validation-2026-10-05/price-input-register.json \
+  --from 2024-12-30 --through 2026-08-31 \
+  --output research/financial-inputs-2026-10-05
+```
+
+原本の採用済み世代を固定し、通信せずに月末の開示cutoff、四半期・TTM、
+原本参照と欠損を出力する。更新される観測CSVを入力の正本にしない。
+日付別マスターがある評価日は国内普通株全体を使い、価格欠損を除外しない。
+入力不備や会計範囲変更を採点0点・正式不合格へ置き換えない。
+この準備コマンドの成功は、9役割を検証する`replay validate`の成功とは別である。
 
 ## 実売買への扱い
 
