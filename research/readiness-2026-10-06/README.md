@@ -22,8 +22,12 @@ hosted runner未割り当て、[mainでの再実行](https://github.com/kkyosuke
 追加J-Quants通信なしで[データPR74](https://github.com/kkyosuke/stock.jp.private/pull/74)を作成した。
 独立したdispatch CIは成功したが、PR側の承認待ちCIにmainの必須`format`が紐づかず、
 merge APIが405で停止した。保存世代・消費記録は維持されている。
-修正後は検証済みデータ差分の同じhead・同じPRのbot起動CIだけを承認し、
-そのCIも3項目成功した後に採用する。保護ルールとコードPRの人によるレビューは維持する。
+[修正後の同一経路](https://github.com/kkyosuke/stock.jp.private/actions/runs/37388208152)は成功した。
+同じheadのdispatch CIと、GITHUB_TOKENで起動したPR側CIが3項目とも成功し、
+[結果原本](nightly-preview.json)に両run IDを保存した。API消費は9/12のままである。
+その後PR74を同じ検証済みheadでsquash採用し、mainは`c80f9daad89c719370d76536f67163e5ff31cc56`。
+保護ルールとコードPRの人によるレビューは維持した。財務観測は95000行、株数80957行、
+決算予定78727行などを保存済みだが、取得時点の履歴を過去の原本vintageへ換算しない。
 
 ## 一次資料とforward入力
 

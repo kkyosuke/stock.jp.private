@@ -36,6 +36,8 @@ def run(root, context, git, *, save, preview=False):
     main = git.ref("main")
     revision = git.ref(n.PAPER_CHECKPOINT, optional=True)
     tree = git.tree(revision or main)
+    if preview and context["sha"] != main:
+        git.tree(context["sha"])  # Reuse source blobs already present in the verified execution commit.
     day = datetime.now(JST).date().isoformat()
     config_sha = storage.digest((root / "config/sources.json").read_bytes())
     previous = json.loads(git.read(tree[n.PAPER_JOURNAL])) if revision else None
