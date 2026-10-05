@@ -99,6 +99,7 @@ jobs:
     if: ${{ always() && !cancelled() && !inputs.financial_history && github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && ((needs.nightly-market-data.result == 'success' && !inputs.preview) || (github.event_name == 'workflow_dispatch' && inputs.paper_research && (github.ref == 'refs/heads/main' || inputs.preview))) }}
     permissions:
       contents: write
+      actions: read
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:

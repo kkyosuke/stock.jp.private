@@ -18,6 +18,10 @@ class ProvenanceTest(unittest.TestCase):
         self.root=Path(self.temp.name)/'source';self.root.mkdir(parents=True)
         self.recovered=Path(self.temp.name)/'recovered'
         self.git('init','-q');self.git('config','user.name','Synthetic Test');self.git('config','user.email','test@example.invalid')
+        # The fixture copies .git immediately; background maintenance can
+        # remove its transient lock while copytree is reading that directory.
+        self.git('config','maintenance.auto','false')
+        self.git('config','gc.auto','0')
         private=self.root / 'operations';private.mkdir(parents=True)
         (prepare_write(record_path(private.parent, 'state.json'))).write_text('{}')
         (prepare_write(record_path(private.parent, 'capital-ledger.csv'))).write_text('event_id\n')
