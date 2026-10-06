@@ -125,6 +125,13 @@ class Repository:
                       "draft": body["draft"],
                       "head": {"sha": self.refs[body["head"]], "ref": body["head"]}}
                 self.pulls.append(pr)
+                run_id = 3000 + len(self.pulls)
+                run = {"id": run_id, "path": n.CI_WORKFLOW, "event": "pull_request",
+                       "head_sha": pr["head"]["sha"], "head_branch": body["head"],
+                       "status": "completed", "conclusion": "success", "check_suite_id": run_id + 1000,
+                       "pull_requests": [{"number": pr["number"], "head": {"sha": pr["head"]["sha"]}}]}
+                self.pull_ci_runs.append(run)
+                self.ci_runs[run_id] = copy.deepcopy(run)
                 return copy.deepcopy(pr)
         if method == "PATCH":
             if self.fail_patch:
@@ -501,7 +508,7 @@ class NightlyMarketDataTest(unittest.TestCase):
                             for p in changed))
         operations = [c[0] for c in self.repo.calls if "/check-runs" in c[1]
                       or c[1].endswith(("/dispatches", "/merge"))]
-        self.assertEqual(operations, ["POST", "GET", "PUT"])
+        self.assertEqual(operations, ["POST", "GET", "GET", "PUT"])
 
     def test_installation_token_proves_write_permission_once_before_collection(self):
         def request(method, path, body=None):
@@ -531,8 +538,10 @@ class NightlyMarketDataTest(unittest.TestCase):
         self.assertEqual(len([c for c in self.repo.calls if c[1].endswith("/approve")]), 1)
         self.assertTrue(any("/check-suites/1900/check-runs" in c[1] for c in self.repo.calls))
         self.repo.calls.clear()
-        self.assertIsNone(n.approve_data_ci(n.Git(self.repo), {"number": 8}, branch, head,
-                                           timeout=60, sleep=lambda _: None, monotonic=lambda: 0))
+        ticks = iter([0, 0, 90])
+        with self.assertRaisesRegex(n.RemoteStop, "CI missing or unmatched"):
+            n.approve_data_ci(n.Git(self.repo), {"number": 8}, branch, head,
+                             timeout=60, sleep=lambda _: None, monotonic=lambda: next(ticks))
         self.assertFalse(any(c[0] != "GET" for c in self.repo.calls))
 
     def test_failed_pull_request_ci_cannot_be_replaced_by_dispatched_success(self):
@@ -546,6 +555,52 @@ class NightlyMarketDataTest(unittest.TestCase):
             n.approve_data_ci(n.Git(self.repo), {"number": 7}, branch, head,
                               timeout=60, sleep=lambda _: None, monotonic=lambda: 0)
         self.assertFalse(any(c[0] != "GET" for c in self.repo.calls))
+
+    def test_delayed_exact_pull_ci_waits_for_association(self):
+        head, branch = self.repo.refs['main'], 'daily/market/2026-10-02'
+        run = {'id':900,'path':n.CI_WORKFLOW,'event':'pull_request','head_sha':head,
+               'head_branch':branch,'status':'completed','conclusion':'success','check_suite_id':1900,
+               'pull_requests':[{'number':7,'head':{'sha':head}}]}
+        self.repo.ci_runs[900]=copy.deepcopy(run)
+        tick=[0]; sleeps=[]
+        def sleep(seconds):
+            tick[0]+=seconds; sleeps.append(seconds)
+            self.repo.pull_ci_runs=[copy.deepcopy(run)]
+        result=n.approve_data_ci(n.Git(self.repo),{'number':7},branch,head,
+                                 timeout=60,sleep=sleep,monotonic=lambda:tick[0])
+        self.assertEqual(result,900);self.assertEqual(sleeps,[30])
+
+    def test_unmatched_pull_ci_is_not_approved(self):
+        head, branch = self.repo.refs['main'], 'daily/market/2026-10-02'
+        good={'id':900,'path':n.CI_WORKFLOW,'event':'pull_request','head_sha':head,
+              'head_branch':branch,'status':'completed','conclusion':'action_required',
+              'actor':{'login':'github-actions[bot]'},
+              'pull_requests':[{'number':7,'head':{'sha':head}}]}
+        for change in ({'head_sha':'f'*40},{'head_branch':'other'}, {'pull_requests':[]},
+                       {'pull_requests':[{'number':7,'head':{'sha':'f'*40}}]}):
+            with self.subTest(change=change):
+                self.repo.pull_ci_runs=[{**good,**change}];self.repo.calls.clear()
+                tick=[0]
+                def sleep(seconds):tick[0]+=seconds
+                with self.assertRaisesRegex(n.RemoteStop,'CI missing or unmatched'):
+                    n.approve_data_ci(n.Git(self.repo),{'number':7},branch,head,
+                                     timeout=60,sleep=sleep,monotonic=lambda:tick[0])
+                self.assertFalse(any(c[0]!='GET' for c in self.repo.calls))
+
+    def test_missing_pull_ci_blocks_publish_after_successful_dispatch(self):
+        result=self.run_preview();old=self.repo.refs['main'];tick=[0]
+        def request(method,path,body=None):
+            value=self.repo(method,path,body)
+            if '/actions/workflows/ci.yml/runs?' in path:return {'workflow_runs':[]}
+            return value
+        checkpoint=self.checkpoint();checkpoint.git=n.Git(request)
+        def sleep(seconds):tick[0]+=seconds
+        with self.assertRaisesRegex(n.RemoteStop,'CI missing or unmatched'):
+            n.publish(self.root,checkpoint,result,timeout=60,sleep=sleep,monotonic=lambda:tick[0])
+        self.assertEqual(self.repo.refs['main'],old)
+        self.assertFalse(any(c[0]=='PUT' for c in self.repo.calls))
+        self.assertTrue(any(r['event']=='workflow_dispatch' and r['conclusion']=='success'
+                            for r in self.repo.ci_runs.values()))
 
     def test_adopted_checkpoint_bytes_are_not_downloaded_each_night(self):
         result = self.run_preview()

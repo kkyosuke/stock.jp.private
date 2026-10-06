@@ -42,7 +42,8 @@ def run(root, context, git, *, save, preview=False):
         git.tree(context["sha"])  # Reuse source blobs already present in the verified execution commit.
     now = datetime.now(JST)
     day = now.date().isoformat()
-    config_sha = storage.digest((root / "config/sources.json").read_bytes())
+    config_raw = (root / "config/sources.json").read_bytes()
+    config_sha = storage.digest(config_raw)
     previous = json.loads(git.read(tree[n.PAPER_JOURNAL])) if revision else None
     if previous:
         n.require(previous.get("version") == 1 and previous.get("operation_mode") == "PAPER"
@@ -65,7 +66,8 @@ def run(root, context, git, *, save, preview=False):
                 if cutoff.date().isoformat() == day and cutoff <= now and (cutoff.hour >= 21 or preview):
                     resume_cutoff = cutoff.isoformat(timespec="seconds")
             if resume_cutoff:
-                scope = ingest.digest(ingest.encoded(cache_identity(plan="light", cutoff=resume_cutoff)))
+                plan = json.loads(config_raw)["jquants"]["plan"]
+                scope = ingest.digest(ingest.encoded(cache_identity(plan=plan, cutoff=resume_cutoff)))
                 prefix = cache_archive.PREFIX + scope + "/"
                 for name, item in previous["files"].items():
                     if not name.startswith(prefix):

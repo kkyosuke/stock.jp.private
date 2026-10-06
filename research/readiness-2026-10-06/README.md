@@ -1,7 +1,10 @@
 # 定時実行と正式入力の整備
 
 2026年10月6日、mainのPR71マージ後に実データで確認した記録。
-PR76採用後のmain `21a9fad5fbd1c5b430c76771e463bb3f2c9686e8`を統合済み。
+10月7日にmain `8424e11b69000cd9b81c38fd9bc1f0c32d4c2738`を統合した。
+PR77・78の公式指数取得と厳格なデータPR CI、PR79の10月6日データ、
+PR80のMRS原本再検証、PR81のStandard cache検証を引き継ぐ。
+以下の10月6日の件数・世代・試行結果は当時の実測である。
 運用はPAPER/HUMAN_ONLY。正式検証とLIVE昇格は未完了である。
 
 ## 市場データ
@@ -45,8 +48,10 @@ TLS設定・feed件数型の初回失敗も記録として残し、成功記録�
 
 初回の収集記録の価格は10月2日までで、開始前のwarmup資料。
 [開始日の観測](holdout-observation.json)は`OBSERVING`、正式入力未完了、評価0回・取引0件。
-日次snapshotを正式な月末評価や取引へ数えない。宣言済み契約はLightで、
-日次Growth250は未保存。プラン変更や代替指数は行わない。
+日次snapshotを正式な月末評価や取引へ数えない。開始日の試行設定はLightだった。
+その後、別PRでStandardの[公式日次指数](../index-introduction-2026-10-06/README.md)を導入し、
+mainの設定はStandardとなった。後日取得した原本を過去cutoffのPIT証拠にせず、
+[MRSの原本検証](../mrs-publication-2026-10-07/README.md)と保留条件を引き継ぐ。
 
 ## PAPERの実ネットワーク試行
 
@@ -59,9 +64,11 @@ EDINET 23日分・4147件、JPX master 3702件、J-Quants master 4442件、カ�
 WAIT・注文0件、`REVIEW_REQUIRED`で終了し、成功した開示cutoffを進めなかった。
 
 朝のrun・state・原本・履歴は[試行資料](paper-attempt/)へ保存する。
-当日のcanonical runへ朝のcutoffを採用せず、今夜は21:00以後の公開窓で開始する。
-新しい準備処理は同じcutoffと検証済みページで、予算停止だけを最大5回再開する。
-1回12要求、各要求1.05秒以上の間隔、各回の実消費とcache hitを保存する。
+10月6日のcanonical runへ朝のcutoffを採用せず、正式runは21:00以後の公開窓で開始する。
+準備処理は同じcutoffと検証済みページを使って1回だけscannerを実行する。
+planと取得予算は`config/sources.json`が正本で、1回最大12要求。
+予算停止を理由にscannerを作り直さず、未完了の資料と実消費・cache hitを保存する。
+各要求1.05秒以上の間隔を保つ。
 EDINETも直列1.05秒以上の間隔とする。
 
 Actionsのartifactは400日指定でも実際には90日に制限された。
@@ -69,11 +76,12 @@ Actionsのartifactは400日指定でも実際には90日に制限された。
 保存し、期限なしのprivate Gitを長期保管先とする。次回はquery cacheだけを復元し、
 運用state・判断・承認は復元しない。同日の公開後cutoffは再開メタデータとして使い、
 朝のcutoffはownerの明示previewだけで再利用する。artifactは受け取り口として90日保持する。
-同夜に再利用できるcutoffのscopeだけを復元する。過去のscopeはGitのsnapshotに残し、
+同じ設定・plan・同夜に再利用できるcutoffのscopeだけを復元する。
+Standard設定でLightのscopeを選ばない。過去のscopeはGitのsnapshotに残し、
 翌夜のcacheへ累積させない。
 保存はレビュー完了や正式入力への採用を意味せず、本人のLIVE承認も生成しない。
 
-[ページ再開の実行](https://github.com/kkyosuke/stock.jp.private/actions/runs/37394147163)では
+[旧準備処理でのページ再開](https://github.com/kkyosuke/stock.jp.private/actions/runs/37394147163)では
 36照会を再利用し、新規12+1要求で計49照会を完了した。財務23日分314件、
 決算予定23日分1253件を取得した。58 cache membersを復元し、79 membersを検証した。
 [Git保存記録](https://github.com/kkyosuke/stock.jp.private/blob/ecd2ae91e5ca004aa5bdfb698d1c57a2470c6556/operations/acquisition/paper-source-inbox.json)の

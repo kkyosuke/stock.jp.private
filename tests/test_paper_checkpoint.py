@@ -15,10 +15,11 @@ from tests.test_nightly_market_data import Repository
 
 
 class PaperCheckpointTest(unittest.TestCase):
-    def root_and_context(self, root):
+    def root_and_context(self, root, *, plan="light"):
         (root / "config").mkdir()
         ingest.atomic_json(root / "config/policy.json", {"operation_mode": "PAPER", "broker_submission": "HUMAN_ONLY"})
-        ingest.atomic_json(root / "config/sources.json", {"market_data_git": {"automatic_upload": True}})
+        ingest.atomic_json(root / "config/sources.json", {"market_data_git": {"automatic_upload": True},
+                                                        "jquants": {"plan": plan}})
         (root / "operations").mkdir()
         ingest.atomic_json(root / "operations/state.json", {"last_successful_run_at_jst": "unchanged"})
         (root / "operations/run-history.csv").write_text("status\nfailed\n")
@@ -80,6 +81,45 @@ class PaperCheckpointTest(unittest.TestCase):
                                    sleep=lambda _: None)
             self.assertEqual(replay.get("/equities/master", {"date": "2026-10-06"}), expected)
             self.assertEqual((replay.requests, replay.cache_hits), (0, 1))
+            self.assertFalse(cutoff_path.exists())
+
+    def test_standard_restores_its_scope_and_keeps_other_plan_originals_in_git(self):
+        with TemporaryDirectory() as temporary, patch("stock_jp.automation.paper_checkpoint.datetime") as clock:
+            clock.now.return_value = datetime(2026, 10, 6, 21, 20, tzinfo=JST)
+            root = Path(temporary).resolve()
+            repo, context = self.root_and_context(root, plan="standard")
+            cutoff = "2026-10-06T21:00:00+09:00"
+            cutoff_path = root / "operations/runs/2026-10-06/source-scan-cutoff.json"
+            ingest.atomic_json(cutoff_path, {"cutoff_at_jst": cutoff})
+            originals, cache_roots, expected = {}, {}, {}
+            for plan in ("light", "standard"):
+                client = NightlyClient(private=root / "operations", cutoff=cutoff, retrieved=cutoff,
+                                       plan=plan, transport=lambda *_, plan=plan: {"data": [{"plan": plan}]},
+                                       sleep=lambda _: None)
+                expected[plan] = client.get("/equities/master", {"date": "2026-10-06"})
+                cache_roots[plan] = client.root
+                originals[plan] = {p.relative_to(root): p.read_bytes() for p in client.root.rglob("*.json")}
+            saved = run(root, context, n.Git(repo), save=True)
+            saved_tree = repo.tree(saved["commit"])
+            snapshot = json.loads(n.Git(repo).read(saved_tree[n.PAPER_JOURNAL]))
+            for original in originals.values():
+                for name, raw in original.items():
+                    member = name.as_posix().removeprefix(".work/market-data/")
+                    self.assertEqual(n.Git(repo).read(snapshot["files"][member]["blob"]), raw)
+            shutil.rmtree(root / ".work/market-data/nightly-source-cache")
+            cutoff_path.unlink()
+            restored = run(root, context, n.Git(repo), save=False)
+            self.assertEqual(restored["file_count"], len(originals["standard"]))
+            self.assertEqual(restored["resume_cutoff_at_jst"], cutoff)
+            self.assertFalse(cache_roots["light"].exists())
+            for name, raw in originals["standard"].items():
+                self.assertEqual((root / name).read_bytes(), raw)
+            replay = NightlyClient(private=root / "operations", cutoff=cutoff, retrieved=cutoff,
+                                   plan="standard", transport=lambda *_: self.fail("unexpected provider call"),
+                                   sleep=lambda _: None)
+            self.assertEqual(replay.get("/equities/master", {"date": "2026-10-06"}), expected["standard"])
+            self.assertEqual((replay.requests, replay.cache_hits), (0, 1))
+            self.assertEqual(repo.tree(repo.refs[n.PAPER_CHECKPOINT]), saved_tree)
             self.assertFalse(cutoff_path.exists())
 
     def test_writer_rejects_a_path_that_escapes_the_inbox(self):

@@ -64,34 +64,24 @@ def prepare(root: Path, *, at: datetime | None = None, allow_before_publication=
     selected = selected.astimezone(JST)
     if selected.date() != at.date() or selected > at or selected.hour < 21 and not allow_before_publication:
         raise ValueError("PAPER resume cutoff must be from this publication night or an explicit preview")
-    passes = []
-    # The existing scanner spends at most 12 requests per invocation. Resume
-    # Financials and earnings each use one query per date. Five bounded
-    # passes cover the 23-day gap without increasing the SDK's 12-call limit.
-    for _ in range(5):
-        pass_at = max(at, datetime.now(JST)) if passes else at
-        started = start_nightly_run(root=root, at=pass_at.isoformat(timespec="seconds"), cutoff=cutoff)
-        public = {k: v for k, v in started.items() if k != "run_token"}
-        if started["status"] == "completed":
-            return {"status": "ALREADY_COMPLETED", "completed_run": True, "run": public}
-        if started["status"] == "locked":
-            return {"status": "LOCKED", "completed_run": False, "run": public}
-        # A source scan cannot approve manual checks or stock judgements.
-        closed = fail_run(root=root, run_id=started["run_id"], run_token=started["run_token"],
-                          completed_at=datetime.now(JST).isoformat(timespec="seconds"),
-                          summary="PAPER research prepared; primary-source and due-review completion required; no orders proposed")
-        public["status"] = closed["status"]
-        manifest = run_dir / "reference-data/manifest.json"
-        checkpoint = json.loads(manifest.read_text()).get("jquants_checkpoint", {}) if manifest.exists() else {}
-        health_path = run_dir / "provider-health.json"
-        health = json.loads(health_path.read_text()) if health_path.exists() else {}
-        budget_pause = any("request budget reached" in p.get("error", "") for p in health.get("providers", {}).values())
-        requests = checkpoint.get("request_count", 0)
-        passes.append({"attempt": closed, "request_count": requests, "cache_hits": checkpoint.get("cache_hits", 0)})
-        if not budget_pause or requests == 0:
-            break
+    # One scan uses the configured invocation budget, including retries.
+    # Recreating its client after a budget pause would multiply that allowance.
+    started = start_nightly_run(root=root, at=at.isoformat(timespec="seconds"), cutoff=cutoff)
+    public = {k: v for k, v in started.items() if k != "run_token"}
+    if started["status"] == "completed":
+        return {"status": "ALREADY_COMPLETED", "completed_run": True, "run": public}
+    if started["status"] == "locked":
+        return {"status": "LOCKED", "completed_run": False, "run": public}
+    # A source scan cannot approve manual checks or stock judgements.
+    closed = fail_run(root=root, run_id=started["run_id"], run_token=started["run_token"],
+                      completed_at=datetime.now(JST).isoformat(timespec="seconds"),
+                      summary="PAPER research prepared; primary-source and due-review completion required; no orders proposed")
+    public["status"] = closed["status"]
+    manifest = run_dir / "reference-data/manifest.json"
+    checkpoint = json.loads(manifest.read_text()).get("jquants_checkpoint", {}) if manifest.exists() else {}
     return {"status": "REVIEW_REQUIRED", "completed_run": False, "run": public,
-            "attempt": closed, "passes": passes, "source_cutoff_preserved": True,
+            "attempt": closed, "jquants_checkpoint": {"request_count": checkpoint.get("request_count", 0),
+                "cache_hits": checkpoint.get("cache_hits", 0)}, "source_cutoff_preserved": True,
             "interpretation": "Review and finalize the saved work plan. Preparation is not a completed PAPER run or a holdout evaluation."}
 
 

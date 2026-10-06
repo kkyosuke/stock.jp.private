@@ -421,7 +421,7 @@ class TargetDriverTests(unittest.TestCase):
         def failed(*args): raise ingest.ApiError(503, 'known')
         self.execute(provider=failed)
         self.next_run()
-        # Mutate the valid fixture approval, not the historical provider clock.
+        # Preserve a valid approval while testing the changed manifest identity.
         self.scope['expires_at'] = (datetime.fromisoformat(self.scope['expires_at'])+timedelta(days=3)).isoformat()
         self.save_scope()
         with self.assertRaisesRegex(r.RemoteStop, 'manifest'): self.execute()

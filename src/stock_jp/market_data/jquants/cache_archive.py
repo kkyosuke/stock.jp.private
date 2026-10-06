@@ -98,7 +98,8 @@ def validate(members):
         identity = receipt['identity']
         require(isinstance(identity, dict) and set(identity) == {'version', 'origin', 'plan', 'cutoff', 'endpoint', 'params'})
         require(type(identity['version']) is int and identity['version'] == 1
-                and identity['origin'] == 'https://api.jquants.com/v2' and identity['plan'] == 'light')
+                and identity['origin'] == 'https://api.jquants.com/v2'
+                and isinstance(identity['plan'], str) and identity['plan'] in {'light', 'standard'})
         require(aware(receipt['retrieved_at_jst']) >= aware(identity['cutoff']))
         validate_query(identity['endpoint'], identity['params'])
         scope = {k: identity[k] for k in ('version', 'origin', 'plan', 'cutoff')}

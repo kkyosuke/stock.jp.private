@@ -83,8 +83,9 @@ previewでも実際の通信は消費として残り、本番の再実行で完�
 `market_data/primary_sources.py`、取得記録は`research/forward_collection.py`が管理する。
 公開資料も直列・最低1.05秒間隔、1回最大60要求。J-Quantsの取得とは別の消費記録である。
 EDINETも直列・最低1.05秒間隔。J-Quantsを使うsource scanは既存の最低1.05秒間隔・
-1回最大12要求とpage checkpointを使う。予算による停止だけを同じcutoffで最大5回まで
-再開し、取得済みページは再照会しない。各回の要求数とcache hitを結果に残す。
+`config/sources.json`のplanと1回の取得予算（最大12要求）を使う。
+予算停止時は未完了として保存し、scannerを作り直して取得枠を増やさない。
+同夜の同じplan・cutoffの検証済みページは再照会せず、要求数とcache hitを結果に残す。
 同じworkflowのconcurrencyで市場データ取得と調査準備の同時実行を防ぐ。
 
 ```bash

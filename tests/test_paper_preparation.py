@@ -49,7 +49,7 @@ class PaperPreparationTest(unittest.TestCase):
             self.assertEqual(result["status"], "WAIT_PUBLICATION")
             start.assert_not_called()
 
-    def test_budget_pauses_resume_same_cutoff_and_are_bounded_to_five_passes(self):
+    def test_budget_pause_does_not_restart_the_scan_or_multiply_its_allowance(self):
         started = {"status": "in_progress", "run_token": "private-test-token", "run_id": "2026-10-06"}
         with TemporaryDirectory() as temporary, patch("stock_jp.operation.paper_preparation.check_readiness", return_value={"paper_go": True}), \
                 patch("stock_jp.operation.paper_preparation.start_nightly_run", return_value=started) as start, \
@@ -60,10 +60,10 @@ class PaperPreparationTest(unittest.TestCase):
             (run_dir / "reference-data/manifest.json").write_text(json.dumps({"jquants_checkpoint": {"request_count": 12, "cache_hits": 12}}))
             (run_dir / "provider-health.json").write_text(json.dumps({"providers": {"financials": {"error": "request budget reached; resume this archive"}}}))
             result = prepare(root, at=datetime(2026, 10, 6, 21, tzinfo=JST))
-            self.assertEqual(start.call_count, 5)
-            self.assertEqual(close.call_count, 5)
+            self.assertEqual(start.call_count, 1)
+            self.assertEqual(close.call_count, 1)
             self.assertEqual({c.kwargs["cutoff"] for c in start.call_args_list}, {"2026-10-06T21:00:00+09:00"})
-            self.assertEqual(sum(p["request_count"] for p in result["passes"]), 60)
+            self.assertEqual(result["jquants_checkpoint"], {"request_count": 12, "cache_hits": 12})
             self.assertFalse(result["completed_run"])
 
     def test_evening_resume_keeps_its_original_cutoff_and_rejects_morning_input(self):

@@ -73,7 +73,7 @@ def classify(kind, run_id, entries):
                 allowed = name in ARTIFACTS or bool(re.fullmatch(r'investment-cases/[0-9A-Z]{4,5}\.json', name))
             if re.fullmatch('operations/decisions/' + run_id + '-[0-9A-Z]{4,5}-[a-z0-9-]+\\.md', path):
                 allowed = status == 'A'
-            if re.fullmatch('operations/inputs/market-regime/[0-9]{4}-[0-9]{2}-[0-9]{2}\\.json', path):
+            if re.fullmatch('operations/inputs/market-regime/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-jquants)?\\.json', path):
                 allowed = status == 'A'
             require(allowed, 'unexpected personal path; config, code, policy, financial ledgers and prior runs require review')
     if kind == 'market':
@@ -173,7 +173,7 @@ def market_semantics(root, head, scratch, entries):
                 require(Path(name).name == value['run_date'].replace('-', '') + 'T120000Z.json',
                         'daily journal filename does not match run date')
     report = json.loads((scratch / 'restored/jquants/latest.json').read_text())
-    require(report.get('provider') == 'J-Quants API V2' and report.get('declared_plan') == 'light'
+    require(report.get('provider') == 'J-Quants API V2' and report.get('declared_plan') in {'light', 'standard'}
             and report.get('declared_addons') == [], 'unexpected subscription/provider')
     rows = report.get('datasets', {})
     required = {'equities_master', 'equities_daily', 'equities_valuation', 'financial_summary',
@@ -181,7 +181,9 @@ def market_semantics(root, head, scratch, entries):
     require(required <= rows.keys(), 'missing entitled dataset status')
     require(all(rows[n].get('status') == 'supported' and rows[n].get('collection_status') in
                 {'complete', 'pending_resume', 'pending'} for n in required), 'dataset error or unclassified state')
-    complete = all(rows[n]['collection_status'] == 'complete' for n in required)
+    if report['declared_plan'] != 'light':
+        require('indices_daily' in rows and rows['indices_daily'].get('status') == 'supported', 'missing official indices status')
+    complete = all(v.get('collection_status') == 'complete' for v in rows.values() if v.get('status') == 'supported')
     require(report.get('all_entitled_complete') is complete, 'inconsistent completeness claim')
     history_path = scratch / 'restored/jquants/history/state.json'
     history_status = json.loads(history_path.read_text())['status'] if history_path.exists() else None
@@ -225,9 +227,27 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
     log_name = 'operations/ledgers/market-regime-log.csv'
     added_inputs = [x['path'] for x in entries if x['path'].startswith(prefix)]
     log_changed = any(x['path'] == log_name for x in entries)
-    if not added_inputs and not log_changed:
-        return None
-    require(len(added_inputs) == 1 and log_changed, 'one generated MRS input and log append must publish together')
+    assessment_path = scratch / f'operations/runs/{run_id}/assessment-status.json'
+    require(assessment_path.is_file(), 'MRS assessment evidence missing')
+    assessment = strict_metadata(assessment_path.read_bytes())
+    status = assessment.get('market_regime')
+    require(isinstance(status, dict), 'MRS assessment status missing')
+    calculated_at = assessment['calculated_at_jst']
+    require(datetime.fromisoformat(handoff['started_at_jst']) <= datetime.fromisoformat(calculated_at)
+            <= datetime.fromisoformat(handoff['completed_at_jst']), 'MRS calculation outside current run')
+    reuse = not added_inputs and not log_changed
+    if status.get('status') == 'UNAVAILABLE':
+        require(reuse and set(status) == {'status', 'state', 'entry_multiplier', 'error', 'log_recorded'}
+                and status['state'] == 'UNAVAILABLE' and type(status['entry_multiplier']) in (int, float)
+                and status['entry_multiplier'] == 0 and status['log_recorded'] is False
+                and isinstance(status['error'], str) and bool(status['error']),
+                'UNAVAILABLE MRS must not claim a current score, input or log append')
+        return {'status': 'UNAVAILABLE', 'investment_readiness': 'NOT_EVALUATED'}
+    require(status.get('status') == 'CURRENT' and status.get('log_recorded') is True
+            and type(status.get('score')) is int and type(status.get('entry_multiplier')) in (int, float),
+            'invalid CURRENT MRS claim')
+    require(reuse or len(added_inputs) == 1 and log_changed,
+            'one generated MRS input and log append must publish together')
     from stock_jp.market_data.paths import resolve_archive_root
     from stock_jp.strategy.regime import derive_market_regime
     from stock_jp.operation.assessment import _append_mrs_log, _existing_mrs
@@ -246,12 +266,49 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
     sessions.sort()
     require(sessions, 'MRS price evidence missing')
     target = sessions[-1][0].isoformat()
-    require(added_inputs == [prefix + target + '.json'], 'MRS input must target latest archived prior-month session')
-    raw = strict_metadata((scratch / added_inputs[0]).read_bytes())
+    official = config.get('market_regime', {}).get('index_provider') == 'jquants_archive'
+    suffix = '-jquants.json' if official else '.json'
+    input_path = prefix + target + suffix
+    require(reuse or added_inputs == [input_path], 'MRS input must match configured provider and latest archived prior-month session')
+    require((scratch / input_path).is_file(), 'CURRENT MRS referenced input missing')
+    if reuse:
+        require(git(root, 'show', f'{base}:{input_path}') == (scratch / input_path).read_bytes(),
+                'reused MRS input must already exist unchanged in base')
+    raw = strict_metadata((scratch / input_path).read_bytes())
     require(raw.get('as_of') == target, 'MRS input date mismatch')
     defaults = {'minimum_vi_observations': 500, 'minimum_breadth_coverage': 0.98,
                 'breadth_lookback_sessions': 280, 'maximum_breadth_close_age_days': 7}
-    require(set(raw) <= {'schema_version', 'as_of', 'series'} | defaults.keys(), 'unexpected MRS input field')
+    require(set(raw) <= {'schema_version', 'as_of', 'series', 'information_cutoff_at_jst'} | defaults.keys(), 'unexpected MRS input field')
+    cutoff = datetime.fromisoformat(target + 'T23:59:59.999999+09:00')
+    cutoff_text = raw.get('information_cutoff_at_jst')
+    require(not official or 'information_cutoff_at_jst' in raw, 'official MRS cutoff required')
+    if 'information_cutoff_at_jst' in raw:
+        from zoneinfo import ZoneInfo
+        require(isinstance(cutoff_text, str) and bool(cutoff_text), 'invalid MRS cutoff type')
+        try:
+            cutoff = datetime.fromisoformat(cutoff_text)
+        except ValueError:
+            raise Blocked('invalid MRS cutoff timestamp') from None
+        require(cutoff.tzinfo is not None and cutoff.utcoffset() is not None
+                and cutoff.astimezone(ZoneInfo('Asia/Tokyo')).date().isoformat() == target,
+                'MRS cutoff must be aware and on the input date in JST')
+    index_evidence = None
+    if official:
+        from stock_jp.market_data.official_indices import load_index_series
+        from stock_jp.market_data.regime_sources import MarketRegimeSourceError
+        try:
+            indices = load_index_series(root, as_of=date.fromisoformat(target), cutoff=cutoff)
+        except (OSError, ValueError, KeyError, TypeError, MarketRegimeSourceError) as error:
+            raise Blocked('official MRS originals unavailable: ' + str(error)) from None
+        require(isinstance(raw.get('series'), dict)
+                and all(isinstance(raw['series'].get(k), dict)
+                        and raw['series'][k].get('primary_source') is True
+                        and raw['series'][k].get('point_in_time_verified') is True
+                        and raw['series'][k] == v
+                        and all(type(point['value']) in (int, float) for point in raw['series'][k]['points'])
+                        for k, v in indices.items()),
+                'official MRS series differ from verified originals')
+        index_evidence = hashlib.sha256(codec.encoded(indices)).hexdigest()
     for key, default in defaults.items():
         require(raw.get(key, default) == config.get('market_regime', {}).get(key, default),
                 'MRS evidence may not override configured risk thresholds')
@@ -267,26 +324,39 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
         codec.atomic(snapshot / relative, data)
         hashes[relative.as_posix()] = hashlib.sha256(data).hexdigest()
     values, result, derived = derive_market_regime(raw, archive_root=snapshot)
-    assessment = json.loads((scratch / f'operations/runs/{run_id}/assessment-status.json').read_text())
-    calculated_at = assessment['calculated_at_jst']
-    require(datetime.fromisoformat(handoff['started_at_jst']) <= datetime.fromisoformat(calculated_at)
-            <= datetime.fromisoformat(handoff['completed_at_jst']), 'MRS calculation outside current run')
     expected_status = {'status': 'CURRENT', 'as_of': target, 'state': result.state,
                        'score': result.score, 'entry_multiplier': result.entry_multiplier,
                        'components': result.components, 'derived': derived,
-                       'input_path': added_inputs[0], 'log_recorded': True}
-    require(assessment['market_regime'] == expected_status, 'MRS assessment differs from recalculation')
+                       'input_path': input_path, 'log_recorded': True}
+    compact = {key:expected_status[key] for key in ('status', 'as_of', 'state', 'score', 'entry_multiplier', 'log_recorded')}
+    require(status == expected_status or reuse and status == compact, 'MRS assessment differs from recalculation')
     before = git(root, 'show', f'{base}:{log_name}')
     actual = (scratch / log_name).read_bytes()
     require(actual.startswith(before), 'MRS risk history rewrite rejected')
     expected = scratch / 'expected-mrs-log.csv'
-    expected.write_bytes(before)
-    require(_existing_mrs(expected, target) is None, 'MRS historical correction requires review')
     urls = list(dict.fromkeys(str(series['source_url']) for series in raw['series'].values()
                              if isinstance(series, dict) and series.get('source_url')))
-    _append_mrs_log(expected, values=values, result=result, source_urls=urls, calculated_at=calculated_at)
-    require(actual == expected.read_bytes(), 'MRS log differs from canonical append')
-    return {'as_of': target, 'price_evidence_sha256': hashlib.sha256(codec.encoded(hashes)).hexdigest()}
+    if reuse:
+        require(actual == before, 'reused MRS log changed')
+        rows = list(csv.DictReader(io.StringIO(before.decode())))
+        matching = [row for row in rows if row['as_of_jst'] == target and row['rule_version'] == 'MRS-v0.1']
+        require(len(matching) == 1, 'reused CURRENT MRS log missing or ambiguous')
+        recorded_at = datetime.fromisoformat(matching[0]['calculated_at_jst'])
+        require(recorded_at.tzinfo is not None and cutoff <= recorded_at <= datetime.fromisoformat(calculated_at),
+                'reused MRS log calculation is outside evidenced chronology')
+        _append_mrs_log(expected, values=values, result=result, source_urls=urls,
+                        calculated_at=matching[0]['calculated_at_jst'])
+        require(list(csv.DictReader(io.StringIO(expected.read_text()))) == matching,
+                'reused MRS log differs from recalculation')
+    else:
+        expected.write_bytes(before)
+        require(_existing_mrs(expected, target) is None, 'MRS historical correction requires review')
+        _append_mrs_log(expected, values=values, result=result, source_urls=urls, calculated_at=calculated_at)
+        require(actual == expected.read_bytes(), 'MRS log differs from canonical append')
+    proof = {'as_of': target, 'price_evidence_sha256': hashlib.sha256(codec.encoded(hashes)).hexdigest()}
+    if index_evidence is not None:
+        proof['index_evidence_sha256'] = index_evidence
+    return proof
 
 
 def personal_semantics(root, base, head, run_id, scratch, entries):

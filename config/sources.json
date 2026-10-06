@@ -36,7 +36,7 @@
     "minimum_liquidity_sessions": 20,
     "maximum_official_price_age_days": 7,
     "calendar_forward_days": 21,
-    "plan": "light",
+    "plan": "standard",
     "addons": [],
     "ingestion": {
       "enabled": true,
@@ -48,9 +48,16 @@
       "download_hosts": [
         "450d912298d9da685fb5742a5ec56b76.r2.cloudflarestorage.com"
       ]
+    },
+    "index_bootstrap": {
+      "from": "2025-08-07",
+      "through": "2026-10-05",
+      "run_date": "2026-10-06",
+      "max_requests": 3
     }
   },
   "market_regime": {
+    "index_provider": "jquants_archive",
     "enabled": true,
     "jpx_monthly_statistics_pages": [
       "https://www.jpx.co.jp/markets/statistics-equities/monthly/index.html",
