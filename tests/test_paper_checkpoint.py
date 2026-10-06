@@ -56,10 +56,13 @@ class PaperCheckpointTest(unittest.TestCase):
             self.assertNotIn(n.PAPER_CHECKPOINT, repo.refs)
 
     def test_query_pages_restore_with_original_cutoff_and_no_provider_call(self):
-        with TemporaryDirectory() as temporary:
+        with TemporaryDirectory() as temporary, patch("stock_jp.automation.paper_checkpoint.datetime") as clock:
+            clock.now.return_value = datetime(2026, 10, 6, 21, 20, tzinfo=JST)
             root = Path(temporary).resolve()
             repo, context = self.root_and_context(root)
             cutoff = "2026-10-06T21:00:00+09:00"
+            cutoff_path = root / "operations/runs/2026-10-06/source-scan-cutoff.json"
+            ingest.atomic_json(cutoff_path, {"cutoff_at_jst": cutoff})
             client = NightlyClient(private=root / "operations", cutoff=cutoff, retrieved=cutoff,
                                    plan="light", transport=lambda *_: {"data": [{"synthetic": True}]},
                                    sleep=lambda _: None)
@@ -67,6 +70,7 @@ class PaperCheckpointTest(unittest.TestCase):
             original = {p.relative_to(root).as_posix(): p.read_bytes() for p in client.root.rglob("*.json")}
             run(root, context, n.Git(repo), save=True)
             shutil.rmtree(root / ".work/market-data/nightly-source-cache")
+            cutoff_path.unlink()
             restored = run(root, context, n.Git(repo), save=False)
             self.assertEqual(restored["file_count"], len(original))
             for name, raw in original.items():
@@ -76,6 +80,7 @@ class PaperCheckpointTest(unittest.TestCase):
                                    sleep=lambda _: None)
             self.assertEqual(replay.get("/equities/master", {"date": "2026-10-06"}), expected)
             self.assertEqual((replay.requests, replay.cache_hits), (0, 1))
+            self.assertFalse(cutoff_path.exists())
 
     def test_writer_rejects_a_path_that_escapes_the_inbox(self):
         with TemporaryDirectory() as temporary:
@@ -95,12 +100,37 @@ class PaperCheckpointTest(unittest.TestCase):
                 path = root / "operations/runs/2026-10-06/source-scan-cutoff.json"
                 cutoff = datetime(2026, 10, 6, hour, tzinfo=JST).isoformat(timespec="seconds")
                 ingest.atomic_json(path, {"cutoff_at_jst": cutoff})
+                client = NightlyClient(private=root / "operations", cutoff=cutoff, retrieved=cutoff,
+                                       plan="light", transport=lambda *_: {"data": []}, sleep=lambda _: None)
+                client.get("/equities/master", {"date": "2026-10-06"})
                 run(root, context, n.Git(repo), save=True)
                 path.unlink()
+                shutil.rmtree(root / ".work/market-data/nightly-source-cache")
                 restored = run(root, context, n.Git(repo), save=False, preview=preview)
                 self.assertEqual(restored["resume_cutoff_at_jst"], cutoff if expected else None)
+                self.assertEqual(restored["file_count"], 2 if expected else 0)
                 self.assertFalse(path.exists())
                 self.assertFalse(restored["canonical_state_restored"])
+
+    def test_past_cache_stays_in_git_without_accumulating_in_the_next_night(self):
+        with TemporaryDirectory() as temporary, patch("stock_jp.automation.paper_checkpoint.datetime") as clock:
+            clock.now.return_value = datetime(2026, 10, 6, 21, 20, tzinfo=JST)
+            root = Path(temporary).resolve()
+            repo, context = self.root_and_context(root)
+            cutoff = "2026-10-06T21:00:00+09:00"
+            ingest.atomic_json(root / "operations/runs/2026-10-06/source-scan-cutoff.json", {"cutoff_at_jst": cutoff})
+            client = NightlyClient(private=root / "operations", cutoff=cutoff, retrieved=cutoff,
+                                   plan="light", transport=lambda *_: {"data": []}, sleep=lambda _: None)
+            client.get("/equities/master", {"date": "2026-10-06"})
+            saved = run(root, context, n.Git(repo), save=True)
+            previous_tree = repo.tree(saved["commit"])
+            shutil.rmtree(root / ".work/market-data/nightly-source-cache")
+            clock.now.return_value = datetime(2026, 10, 7, 21, 20, tzinfo=JST)
+            restored = run(root, context, n.Git(repo), save=False)
+            self.assertEqual(restored["file_count"], 0)
+            self.assertIsNone(restored["resume_cutoff_at_jst"])
+            self.assertFalse((root / ".work/market-data/nightly-source-cache").exists())
+            self.assertEqual(repo.tree(repo.refs[n.PAPER_CHECKPOINT]), previous_tree)
 
     def test_snapshot_names_are_relative_to_the_resolved_workspace(self):
         with TemporaryDirectory() as temporary:

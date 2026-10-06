@@ -113,6 +113,8 @@ Actionsのjobごとに確認する。
 内容ハッシュ付きの追記snapshotとして保存する。期限のあるartifactに長期保存を依存しない。
 このjobの`contents: write`はこの未レビューの保管先に使い、mainを更新しない。
 次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheだけを復元する。
+復元対象は同夜に再開できるcutoffのscopeだけ。過去分はGitのsnapshotへ残し、
+翌夜のcacheや取得・復元量へ累積させない。
 運用state、判断、注文、承認は復元しない。同日の21:00以後の検証済みcutoffだけを
 再開メタデータとして返し、21:20の再試行でquery pageを再利用する。朝のcutoffは
 ownerの明示previewでしか再利用しない。checkpoint branchを削除しない。

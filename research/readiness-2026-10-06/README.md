@@ -69,6 +69,8 @@ Actionsのartifactは400日指定でも実際には90日に制限された。
 保存し、期限なしのprivate Gitを長期保管先とする。次回はquery cacheだけを復元し、
 運用state・判断・承認は復元しない。同日の公開後cutoffは再開メタデータとして使い、
 朝のcutoffはownerの明示previewだけで再利用する。artifactは受け取り口として90日保持する。
+同夜に再利用できるcutoffのscopeだけを復元する。過去のscopeはGitのsnapshotに残し、
+翌夜のcacheへ累積させない。
 保存はレビュー完了や正式入力への採用を意味せず、本人のLIVE承認も生成しない。
 
 [ページ再開の実行](https://github.com/kkyosuke/stock.jp.private/actions/runs/37394147163)では

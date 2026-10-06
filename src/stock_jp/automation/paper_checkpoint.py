@@ -10,6 +10,7 @@ from pathlib import Path
 from stock_jp.automation import http, nightly as n, rate
 from stock_jp.market_data import storage
 from stock_jp.market_data.jquants import cache_archive, ingest
+from stock_jp.market_data.jquants.cache import cache_identity
 from stock_jp.market_data.primary_sources import confined, JST
 from stock_jp.workspace import project_root
 
@@ -55,13 +56,6 @@ def run(root, context, git, *, save, preview=False):
         cached = {}
         resume_cutoff = None
         if previous and previous["config_sha256"] == config_sha:
-            for name, item in previous["files"].items():
-                if not cache_archive.valid_name(name):
-                    continue
-                raw = git.read(item["blob"])
-                n.require(len(raw) == item["bytes"] and storage.digest(raw) == item["sha256"], "PAPER cache checksum mismatch")
-                cached[name] = raw
-            cache_archive.validate(cached)
             cutoff_name = f"operations/runs/{day}/source-scan-cutoff.json"
             if previous["day"] == day and cutoff_name in previous["files"]:
                 item = previous["files"][cutoff_name]
@@ -70,6 +64,16 @@ def run(root, context, git, *, save, preview=False):
                 cutoff = n.daily.aware(json.loads(raw)["cutoff_at_jst"]).astimezone(JST)
                 if cutoff.date().isoformat() == day and cutoff <= now and (cutoff.hour >= 21 or preview):
                     resume_cutoff = cutoff.isoformat(timespec="seconds")
+            if resume_cutoff:
+                scope = ingest.digest(ingest.encoded(cache_identity(plan="light", cutoff=resume_cutoff)))
+                prefix = cache_archive.PREFIX + scope + "/"
+                for name, item in previous["files"].items():
+                    if not name.startswith(prefix):
+                        continue
+                    raw = git.read(item["blob"])
+                    n.require(len(raw) == item["bytes"] and storage.digest(raw) == item["sha256"], "PAPER cache checksum mismatch")
+                    cached[name] = raw
+                cache_archive.validate(cached)
             observe(git, context, main, revision)
             for name, raw in cached.items():
                 path = confined(root, ".work/market-data/" + name)
