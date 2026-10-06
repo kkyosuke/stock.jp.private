@@ -173,7 +173,7 @@ def market_semantics(root, head, scratch, entries):
                 require(Path(name).name == value['run_date'].replace('-', '') + 'T120000Z.json',
                         'daily journal filename does not match run date')
     report = json.loads((scratch / 'restored/jquants/latest.json').read_text())
-    require(report.get('provider') == 'J-Quants API V2' and report.get('declared_plan') == 'light'
+    require(report.get('provider') == 'J-Quants API V2' and report.get('declared_plan') in {'light', 'standard'}
             and report.get('declared_addons') == [], 'unexpected subscription/provider')
     rows = report.get('datasets', {})
     required = {'equities_master', 'equities_daily', 'equities_valuation', 'financial_summary',
@@ -181,7 +181,9 @@ def market_semantics(root, head, scratch, entries):
     require(required <= rows.keys(), 'missing entitled dataset status')
     require(all(rows[n].get('status') == 'supported' and rows[n].get('collection_status') in
                 {'complete', 'pending_resume', 'pending'} for n in required), 'dataset error or unclassified state')
-    complete = all(rows[n]['collection_status'] == 'complete' for n in required)
+    if report['declared_plan'] != 'light':
+        require('indices_daily' in rows and rows['indices_daily'].get('status') == 'supported', 'missing official indices status')
+    complete = all(v.get('collection_status') == 'complete' for v in rows.values() if v.get('status') == 'supported')
     require(report.get('all_entitled_complete') is complete, 'inconsistent completeness claim')
     history_path = scratch / 'restored/jquants/history/state.json'
     history_status = json.loads(history_path.read_text())['status'] if history_path.exists() else None

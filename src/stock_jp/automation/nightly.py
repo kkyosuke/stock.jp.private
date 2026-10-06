@@ -348,6 +348,53 @@ def trusted_context(root, context, preview):
             "automatic market-data publication is disabled")
 
 
+def wait_ci(git, run_id, head, branch, *, event, timeout, sleep, monotonic):
+    deadline = monotonic() + timeout
+    while monotonic() < deadline:
+        run = git.api("GET", "/actions/runs/" + str(run_id))
+        require(run.get("id") == run_id and run.get("path") == CI_WORKFLOW
+                and run.get("event") == event and run.get("head_sha") == head
+                and run.get("head_branch") == branch, "nightly CI run identity or head changed")
+        if run.get("status") != "completed":
+            sleep(30)
+            continue
+        require(run.get("conclusion") == "success", "nightly data PR CI failed; data and budget remain saved")
+        suite_id = run.get("check_suite_id")
+        require(type(suite_id) is int and suite_id > 0, "nightly CI check suite unavailable")
+        checks = publication.pages(git.request, "/check-suites/" + str(suite_id) + "/check-runs", "check_runs")
+        latest = {}
+        for check in checks:
+            if (check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions"
+                    and check.get("head_sha") == head and check.get("check_suite", {}).get("id") == suite_id):
+                if check["id"] > latest.get(check["name"], {}).get("id", 0):
+                    latest[check["name"]] = check
+        if set(latest) == CHECKS and all(c["status"] == "completed" for c in latest.values()):
+            require(all(c["conclusion"] == "success" for c in latest.values()),
+                    "nightly data PR CI failed; data and budget remain saved")
+            return
+        sleep(30)
+    raise RemoteStop("nightly data PR CI pending; data and budget remain saved")
+
+
+def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
+    # A token-created PR has a separate approval-required CI run. Only approve
+    # that exact data-only candidate after its independent dispatch passed.
+    runs = publication.pages(git.request, "/actions/workflows/ci.yml/runs?event=pull_request&head_sha=" + head,
+                             "workflow_runs")
+    matches = [run for run in runs if run.get("path") == CI_WORKFLOW and run.get("head_branch") == branch
+               and run.get("head_sha") == head and run.get("event") == "pull_request"
+               and any(p.get("number") == pr["number"] and p.get("head", {}).get("sha") == head
+                       for p in run.get("pull_requests", []))]
+    if not matches:
+        return None
+    run = max(matches, key=lambda item: item["id"])
+    if run.get("conclusion") == "action_required":
+        require(run.get("actor", {}).get("login") == "github-actions[bot]", "unexpected data CI approval actor")
+        git.api("POST", "/actions/runs/" + str(run["id"]) + "/approve")
+    wait_ci(git, run["id"], head, branch, event="pull_request", timeout=timeout, sleep=sleep, monotonic=monotonic)
+    return run["id"]
+
+
 def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
     observation_report = observations.rebuild(root)
@@ -410,37 +457,15 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
     checkpoint.observe()
     run_id = git.dispatch_ci(branch, head)
     report["ci_run_id"] = run_id
-    deadline = monotonic() + timeout
-    while monotonic() < deadline:
-        run = git.api("GET", "/actions/runs/" + str(run_id))
-        require(run.get("id") == run_id and run.get("path") == CI_WORKFLOW
-                and run.get("event") == "workflow_dispatch" and run.get("head_sha") == head
-                and run.get("head_branch") == branch, "nightly CI run identity or head changed")
-        if run.get("status") != "completed":
-            sleep(30)
-            continue
-        require(run.get("conclusion") == "success", "nightly data PR CI failed; data and budget remain saved")
-        suite_id = run.get("check_suite_id")
-        require(type(suite_id) is int and suite_id > 0, "nightly CI check suite unavailable")
-        checks = publication.pages(git.request, "/check-suites/" + str(suite_id) + "/check-runs", "check_runs")
-        latest = {}
-        for check in checks:
-            if (check["name"] in CHECKS and check.get("app", {}).get("slug") == "github-actions"
-                    and check.get("head_sha") == head and check.get("check_suite", {}).get("id") == suite_id):
-                if check["id"] > latest.get(check["name"], {}).get("id", 0):
-                    latest[check["name"]] = check
-        if set(latest) == CHECKS and all(c["status"] == "completed" for c in latest.values()):
-            require(all(c["conclusion"] == "success" for c in latest.values()),
-                    "nightly data PR CI failed; data and budget remain saved")
-            break
-        sleep(30)
-    else:
-        raise RemoteStop("nightly data PR CI pending; data and budget remain saved")
+    wait_ci(git, run_id, head, branch, event="workflow_dispatch", timeout=timeout, sleep=sleep, monotonic=monotonic)
     checkpoint.observe()
     current = git.api("GET", "/pulls/" + str(pr["number"]))
     require(current["head"]["sha"] == head and current["state"] == "open"
             and current["draft"] == checkpoint.preview,
             "nightly PR changed before adoption")
+    report["pull_request_ci_run_id"] = approve_data_ci(git, current, branch, head,
+                                                      timeout=timeout, sleep=sleep, monotonic=monotonic)
+    checkpoint.observe()
     reviews = publication.pages(git.request, "/pulls/" + str(pr["number"]) + "/reviews")
     http.reject_negative_reviews(reviews, head)
     if hasattr(git.request, "review_decision"):

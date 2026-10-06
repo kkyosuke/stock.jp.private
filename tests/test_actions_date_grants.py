@@ -38,9 +38,12 @@ class Server:
         self.seed = dict(version=1, legacy_debit=legacy['legacy_debit'], prior_charges={'2026-10-02':12}, prior_batches=1, grants=[])
         index = codec.encoded(dict(files={'daily-prices/2026/2026-10-02.csv':{}}))
         index_sha = codec.digest(index)
+        # This suite replays the separately frozen Light date-grant contract.
+        sources = json.loads((ROOT / 'config/sources.json').read_bytes())
+        sources['jquants']['plan'] = 'light'
         files = {g.LEDGER:codec.encoded(self.seed), old_auth.MANIFEST:previous,
                  'operations/evidence/automation-retirement.json':receipt,
-                 'config/sources.json':(ROOT / 'config/sources.json').read_bytes(),
+                 'config/sources.json':codec.encoded(sources),
                  'config/policy.json':codec.encoded(dict(operation_mode='PAPER',broker_submission='HUMAN_ONLY')),
                  'data/market/jquants/current.json':codec.encoded(dict(version=2,generation=index_sha)),
                  'data/market/jquants/generations/' + index_sha[:2] + '/' + index_sha + '.json':index}

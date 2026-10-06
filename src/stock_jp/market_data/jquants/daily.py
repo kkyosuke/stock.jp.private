@@ -1,4 +1,4 @@
-"""Bounded daily Light collection. No Git writes, publication, or PAPER runs."""
+"""Bounded daily Light/Standard index collection. No Git writes, publication, or PAPER runs."""
 from __future__ import annotations
 from stock_jp.workspace import project_root
 from stock_jp.workspace import record_path
@@ -20,8 +20,11 @@ import stock_jp.market_data.storage as codec
 from stock_jp.market_data.jquants.validation import validate_archive
 
 JST = ZoneInfo('Asia/Tokyo')
-NAMES = ('trading_calendar', 'equities_master', 'equities_daily', 'equities_valuation',
+BASE_NAMES = ('trading_calendar', 'equities_master', 'equities_daily', 'equities_valuation',
          'financial_summary', 'earnings_dates', 'earnings_calendar', 'investor_types', 'topix_daily')
+NAMES = BASE_NAMES + ('indices_daily',)
+
+
 class PublicationPending(ingest.IngestionError):
     """Expected nonempty daily input has not been published yet."""
 
@@ -187,10 +190,10 @@ def recover_published_checkpoint(archive, name, day):
 
 
 class DurableClient(ingest.Client):
-    def __init__(self, state, save, clock, remote=None, **kwargs):
+    def __init__(self, state, save, clock, remote=None, plan='light', **kwargs):
         self.state, self.save, self.clock = state, save, clock
         self.remote = remote
-        super().__init__(plan='light', max_requests=state['budget'], retries=0, **kwargs)
+        super().__init__(plan=plan, max_requests=state['budget'], retries=0, **kwargs)
         self.requests = len(state['requests'])
 
     def _request(self, endpoint, params):
@@ -225,10 +228,10 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
     config_path = root / 'config/sources.json'
     config = ingest.read_json(config_path)
     c = config['jquants']; settings = c['ingestion']
-    require(c['plan'] == 'light' and c.get('addons') == [] and c['enabled'] is True
+    require(c['plan'] in {'light', 'standard'} and c.get('addons') == [] and c['enabled'] is True
             and c['base_url'] == BASE_URL and c['api_key_env'] == 'JQUANTS_API_KEY'
             and settings['enabled'] is True and type(settings['max_requests_per_run']) is int
-            and 1 <= settings['max_requests_per_run'] <= 12, 'daily Light contract mismatch')
+            and 1 <= settings['max_requests_per_run'] <= 12, 'daily source contract mismatch')
     require(settings['archive_root'] == '.work/market-data/jquants'
             and config['price_source']['archive_root'] == '.work/market-data/daily-prices', 'unexpected daily storage')
     private = (root / 'operations').resolve()
@@ -318,7 +321,7 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
             def get_client():
                 nonlocal client
                 if client is None:
-                    kwargs = {'transport': transport}
+                    kwargs = {'transport': transport, 'plan': c['plan']}
                     if sleep is not None: kwargs['sleep'] = sleep
                     client = DurableClient(state, lambda: save(local_only=True),
                                            lambda: datetime.now(JST), remote=remote, **kwargs)
@@ -332,7 +335,7 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                 reusable = existing and (not final or aware(existing[0]['started_at']) >= final_after)
                 if (archive / 'datasets' / name / task_day.isoformat() / 'checkpoint.json').exists():
                     reusable = False
-                if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily') and existing and not existing[1]:
+                if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily', 'indices_daily') and existing and not existing[1]:
                     reusable = False
                 if not reusable:
                     validate_checkpoint(archive, name, task_day)
@@ -344,10 +347,15 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                                              page_saved=(lambda: remote.page_saved(state)) if remote is not None else None)
                     existing = partition(archive, name, task_day)
                 m, rows, digest = existing
-                if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily'):
+                if name in ('equities_master', 'equities_daily', 'equities_valuation', 'topix_daily', 'indices_daily'):
                     if not rows:
                         raise PublicationPending('daily data not yet available')
                     require(all(r.get('Date') == task_day.isoformat() for r in rows), 'daily data date mismatch')
+                if name == 'indices_daily':
+                    from stock_jp.market_data.jquants.index_history import valid_rows
+                    growth = [row for row in rows if row.get('Code') == '0070']
+                    valid_rows(growth, start=task_day, through=task_day)
+                    require(len(growth) == 1, 'Growth250 daily close is absent or duplicated')
                 timing = 'observed'
                 if name == 'financial_summary':
                     require(all(r.get('DiscDate') == task_day.isoformat() for r in rows), 'financial disclosure date mismatch')
@@ -376,8 +384,16 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
                         state['status'] = 'HOLIDAY'
                     else:
                         state['data_date'] = day.isoformat()
-                        for name in NAMES[1:]:
+                        for name in (NAMES if c['plan'] != 'light' else BASE_NAMES)[1:]:
                             fetch(name, day)
+                        if c['plan'] != 'light':
+                            from stock_jp.market_data.official_indices import observe_legacy
+                            observe_legacy(archive)
+                        bootstrap = c.get('index_bootstrap')
+                        if bootstrap and bootstrap['run_date'] == day.isoformat():
+                            from stock_jp.market_data.jquants import index_history
+                            index_history.collect(archive, get_client(), day=day, approval=bootstrap,
+                                                  persist=lambda: save())
                         ingest.publish_snapshot(root, archive, day)
                         state['status'] = 'COLLECTED'
             except PublicationPending:
@@ -395,7 +411,7 @@ def run(root, *, at=None, run_date=None, transport=None, sleep=None, remote=None
             finally:
                 save()
                 # Failures preserve a truthful partial archive, never full history completeness.
-                report = ingest.planned_status('light', (), day)
+                report = ingest.planned_status(c['plan'], (), day)
                 report.update(scope='daily_bounded', daily_run=result(), all_entitled_complete=False)
                 if target is not None:
                     report.update(scope='target_date_bounded', target_date=day.isoformat(),

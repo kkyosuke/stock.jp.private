@@ -242,7 +242,8 @@ def run_assessments(
         if existing:
             market_status = existing
         else:
-            raw_path = input_root / 'market-regime' / f'{target.isoformat()}.json'
+            official = _read_json(record_path(private.parent, 'sources.json')).get('market_regime', {}).get('index_provider') == 'jquants_archive'
+            raw_path = input_root / 'market-regime' / (f'{target.isoformat()}-jquants.json' if official else f'{target.isoformat()}.json')
             if not fixture_dir and raw_path.is_file():
                 prior = _read_json(raw_path)
                 if '03_sisu' in str(prior.get('series', {}).get('growth250', {}).get('source_url', '')):
@@ -254,8 +255,12 @@ def run_assessments(
             elif fixture_dir:
                 raise MarketRegimeSourceError('market-regime-series.json fixture is absent')
             else:
-                raw = collect_market_regime_series(as_of=target, config=_read_json(record_path(private.parent, 'sources.json')))
-            raw_path = input_root / 'market-regime' / f'{target.isoformat()}.json'
+                collector = collect_market_regime_series
+                options = {}
+                if official:
+                    from stock_jp.market_data.official_indices import collect_market_regime_series as collector
+                    options['root'] = root
+                raw = collector(as_of=target, config=_read_json(record_path(private.parent, 'sources.json')), **options)
             _atomic_json(raw_path, raw)
             values, result, derived = derive_market_regime(raw, archive_root=resolve_archive_root(root))
             urls = [str(series.get('source_url', '')) for series in raw['series'].values() if isinstance(series, dict) and series.get('source_url')]
