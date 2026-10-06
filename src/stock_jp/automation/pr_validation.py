@@ -73,7 +73,7 @@ def classify(kind, run_id, entries):
                 allowed = name in ARTIFACTS or bool(re.fullmatch(r'investment-cases/[0-9A-Z]{4,5}\.json', name))
             if re.fullmatch('operations/decisions/' + run_id + '-[0-9A-Z]{4,5}-[a-z0-9-]+\\.md', path):
                 allowed = status == 'A'
-            if re.fullmatch('operations/inputs/market-regime/[0-9]{4}-[0-9]{2}-[0-9]{2}\\.json', path):
+            if re.fullmatch('operations/inputs/market-regime/[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-jquants)?\\.json', path):
                 allowed = status == 'A'
             require(allowed, 'unexpected personal path; config, code, policy, financial ledgers and prior runs require review')
     if kind == 'market':
@@ -248,12 +248,38 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
     sessions.sort()
     require(sessions, 'MRS price evidence missing')
     target = sessions[-1][0].isoformat()
-    require(added_inputs == [prefix + target + '.json'], 'MRS input must target latest archived prior-month session')
+    official = config.get('market_regime', {}).get('index_provider') == 'jquants_archive'
+    suffix = '-jquants.json' if official else '.json'
+    require(added_inputs == [prefix + target + suffix], 'MRS input must match configured provider and latest archived prior-month session')
     raw = strict_metadata((scratch / added_inputs[0]).read_bytes())
     require(raw.get('as_of') == target, 'MRS input date mismatch')
     defaults = {'minimum_vi_observations': 500, 'minimum_breadth_coverage': 0.98,
                 'breadth_lookback_sessions': 280, 'maximum_breadth_close_age_days': 7}
-    require(set(raw) <= {'schema_version', 'as_of', 'series'} | defaults.keys(), 'unexpected MRS input field')
+    require(set(raw) <= {'schema_version', 'as_of', 'series', 'information_cutoff_at_jst'} | defaults.keys(), 'unexpected MRS input field')
+    cutoff_text = raw.get('information_cutoff_at_jst')
+    require(not official or 'information_cutoff_at_jst' in raw, 'official MRS cutoff required')
+    if 'information_cutoff_at_jst' in raw:
+        from zoneinfo import ZoneInfo
+        require(isinstance(cutoff_text, str) and bool(cutoff_text), 'invalid MRS cutoff type')
+        try:
+            cutoff = datetime.fromisoformat(cutoff_text)
+        except ValueError:
+            raise Blocked('invalid MRS cutoff timestamp') from None
+        require(cutoff.tzinfo is not None and cutoff.utcoffset() is not None
+                and cutoff.astimezone(ZoneInfo('Asia/Tokyo')).date().isoformat() == target,
+                'MRS cutoff must be aware and on the input date in JST')
+    index_evidence = None
+    if official:
+        from stock_jp.market_data.official_indices import load_index_series
+        from stock_jp.market_data.regime_sources import MarketRegimeSourceError
+        try:
+            indices = load_index_series(root, as_of=date.fromisoformat(target), cutoff=cutoff)
+        except (OSError, ValueError, KeyError, TypeError, MarketRegimeSourceError) as error:
+            raise Blocked('official MRS originals unavailable: ' + str(error)) from None
+        require(isinstance(raw.get('series'), dict)
+                and all(raw['series'].get(k) == v for k, v in indices.items()),
+                'official MRS series differ from verified originals')
+        index_evidence = hashlib.sha256(codec.encoded(indices)).hexdigest()
     for key, default in defaults.items():
         require(raw.get(key, default) == config.get('market_regime', {}).get(key, default),
                 'MRS evidence may not override configured risk thresholds')
@@ -288,7 +314,10 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
                              if isinstance(series, dict) and series.get('source_url')))
     _append_mrs_log(expected, values=values, result=result, source_urls=urls, calculated_at=calculated_at)
     require(actual == expected.read_bytes(), 'MRS log differs from canonical append')
-    return {'as_of': target, 'price_evidence_sha256': hashlib.sha256(codec.encoded(hashes)).hexdigest()}
+    proof = {'as_of': target, 'price_evidence_sha256': hashlib.sha256(codec.encoded(hashes)).hexdigest()}
+    if index_evidence is not None:
+        proof['index_evidence_sha256'] = index_evidence
+    return proof
 
 
 def personal_semantics(root, base, head, run_id, scratch, entries):
