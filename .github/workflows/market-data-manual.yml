@@ -126,17 +126,21 @@ jobs:
           if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--preview); fi
           python -m stock_jp.automation.paper_checkpoint restore "${args[@]}" --output .work/paper-research/restored.json
       - name: Preserve primary sources and the forward input receipt
-        run: python -m stock_jp.research.forward_collection --output .work/paper-research/collection.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          STOCK_PREVIEW: ${{ inputs.preview }}
+        run: python -m stock_jp.automation.provider_budget forward --output .work/paper-research/collection.json
       - name: Start real PAPER research and preserve its review queue
         if: ${{ !cancelled() }}
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
           STOCK_PREVIEW: ${{ inputs.preview }}
         run: |
           args=()
           if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--allow-before-publication); fi
-          python -m stock_jp.operation.paper_preparation "${args[@]}" --resume-receipt .work/paper-research/restored.json --output .work/paper-research/preparation.json
+          python -m stock_jp.automation.provider_budget prepare "${args[@]}" --resume-receipt .work/paper-research/restored.json --output .work/paper-research/preparation.json
       - name: Verify frozen rules and approvals were preserved
         id: frozen
         if: always()

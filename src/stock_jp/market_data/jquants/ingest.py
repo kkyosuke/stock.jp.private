@@ -174,7 +174,9 @@ class Client:
             raise ApiError(error.code, kind) from None
         except (URLError, TimeoutError, OSError):
             raise ApiError(0, "network_error") from None
-        except (ValueError, UnicodeDecodeError):
+        except (ValueError, UnicodeDecodeError) as error:
+            if isinstance(error, RequestBudgetExhausted):
+                raise  # Shared source-budget denial is not an invalid provider response.
             raise ApiError(200, "invalid_json") from None
 
     def get(self, endpoint: str, params: dict) -> dict:
