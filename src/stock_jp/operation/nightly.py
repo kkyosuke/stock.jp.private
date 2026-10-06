@@ -12,6 +12,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from stock_jp.operation.assessment import run_assessments
+from stock_jp.operation.integrity import require_run_lease, run_write_lock
 from stock_jp.operation.runs import complete_run, fail_run, prepare_run, read_status
 from stock_jp.operation.artifacts import create_nightly_artifacts
 from stock_jp.market_data.disclosures import scan_sources
@@ -124,6 +125,62 @@ def start_nightly_run(
     }
 
 
+def resume_nightly_review(
+    *, run_id: str, at: str, run_token: str | None = None,
+    root: Path = PROJECT_ROOT,
+) -> dict[str, Any]:
+    """Reacquire a saved PAPER run for review without fetching or regenerating inputs."""
+    if date.fromisoformat(run_id).isoformat() != run_id:
+        raise ValueError("run_id must be an ISO date")
+    now = _parse_jst(at)
+    policy = _read_json(root / "config/policy.json")
+    if (policy.get("operation_mode"), policy.get("broker_submission")) != (
+        "PAPER", "HUMAN_ONLY"
+    ):
+        raise PermissionError("offline review requires PAPER/HUMAN_ONLY")
+    errors = validate_workspace(root)
+    if errors:
+        raise ValueError("workspace validation failed: " + "; ".join(errors))
+    run_dir = root / "operations/runs" / run_id
+    required = (
+        "handoff.json", "source-scan-cutoff.json", "sources.csv", "coverage.json",
+        "provider-health.json", "research-queue.json", "assessment-status.json",
+        "work-plan.json", "research-results.md", "next-day-actions.csv",
+        "report.md", "orders.csv", "pretrade-check.md",
+    )
+    missing = [name for name in required if not (run_dir / name).is_file()]
+    if missing:
+        raise ValueError("offline review requires saved artifacts: " + ", ".join(missing))
+    handoff = _read_json(run_dir / "handoff.json")
+    if (handoff.get("run_id") != run_id
+            or handoff.get("operation_mode") != policy["operation_mode"]
+            or handoff.get("active_rule_version") != policy.get("active_rule_version")):
+        raise ValueError("saved run identity or policy differs from current PAPER policy")
+    cutoff = _parse_jst(_read_json(run_dir / "source-scan-cutoff.json")["cutoff_at_jst"])
+    if cutoff > now:
+        raise ValueError("saved source cutoff is in the future")
+    # prepare_run enforces the lease and latest-completed-run boundary. It only
+    # resumes an existing run here; source scans, assessments and review artifacts
+    # must not be refreshed merely to obtain a new review token.
+    prepared = prepare_run(
+        at=at, run_token=run_token, root=root, resume_run_id=run_id, existing_only=True
+    )
+    return {
+        **prepared,
+        "source_cutoff_jst": cutoff.isoformat(timespec="seconds"),
+        "review_only": True,
+        "investment_readiness": "NOT_EVALUATED",
+        "broker_submission": "HUMAN_ONLY",
+        "next_step": (
+            "wait for the active writer" if prepared["status"] == "locked"
+            else "run already completed; no further review"
+            if prepared["status"] == "completed"
+            else "review saved primary sources; record evidence and unresolved tasks; "
+                 "finalize with the returned token and original source cutoff only after validation"
+        ),
+    }
+
+
 def finalize_nightly_run(
     *,
     run_id: str,
@@ -135,42 +192,48 @@ def finalize_nightly_run(
     alert_count: int = 0,
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
+    if date.fromisoformat(run_id).isoformat() != run_id:
+        raise ValueError("run_id must be an ISO date")
     run_dir = root / 'operations/runs' / run_id
-    frozen_path = run_dir / "source-scan-cutoff.json"
-    if frozen_path.exists() and _read_json(frozen_path) != {
-        "cutoff_at_jst": _parse_jst(source_cutoff).isoformat(timespec="seconds")
-    }:
-        raise ValueError("finalize must preserve the original source-scan cutoff")
-    handoff_path = run_dir / "handoff.json"
-    handoff = _read_json(handoff_path)
-    previous_next_run = handoff.get("next_run_at_jst")
-    already_completed = handoff.get("status") == "completed"
-    next_run_at = previous_next_run
-    if not already_completed:
-        next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
-        handoff["next_run_at_jst"] = next_run_at
-        _atomic_json(handoff_path, handoff)
-    try:
-        result = complete_run(
-            run_id=run_id,
-            run_token=run_token,
-            completed_at=completed_at,
-            source_cutoff=source_cutoff,
-            price_date=price_date,
-            summary=summary,
-            alert_count=alert_count,
-            root=root,
-        )
-    except Exception:
+    with run_write_lock(run_dir):
+        frozen_path = run_dir / "source-scan-cutoff.json"
+        if frozen_path.exists() and _read_json(frozen_path) != {
+            "cutoff_at_jst": _parse_jst(source_cutoff).isoformat(timespec="seconds")
+        }:
+            raise ValueError("finalize must preserve the original source-scan cutoff")
+        handoff_path = run_dir / "handoff.json"
+        handoff = _read_json(handoff_path)
+        previous_next_run = handoff.get("next_run_at_jst")
+        already_completed = handoff.get("status") == "completed"
+        next_run_at = previous_next_run
         if not already_completed:
-            handoff["next_run_at_jst"] = previous_next_run
+            # Check ownership before writing even a provisional schedule. A rejected
+            # writer must not overwrite the current writer's handoff during rollback.
+            require_run_lease(run_dir=run_dir, run_token=run_token, at=completed_at)
+            next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
+            handoff["next_run_at_jst"] = next_run_at
             _atomic_json(handoff_path, handoff)
-        raise
-    return {
-        **result,
-        "next_run_at_jst": next_run_at,
-        "wait_instruction": "次回夜間実行まで待機。LIMITED_LIVE/LIVE注文候補だけ翌朝に人間が確認する。",
-    }
+        try:
+            result = complete_run(
+                run_id=run_id,
+                run_token=run_token,
+                completed_at=completed_at,
+                source_cutoff=source_cutoff,
+                price_date=price_date,
+                summary=summary,
+                alert_count=alert_count,
+                root=root,
+            )
+        except Exception:
+            if not already_completed:
+                handoff["next_run_at_jst"] = previous_next_run
+                _atomic_json(handoff_path, handoff)
+            raise
+        return {
+            **result,
+            "next_run_at_jst": next_run_at,
+            "wait_instruction": "次回夜間実行まで待機。LIMITED_LIVE/LIVE注文候補だけ翌朝に人間が確認する。",
+        }
 
 
 def nightly_status(root: Path = PROJECT_ROOT) -> dict[str, Any]:
@@ -200,6 +263,10 @@ def parse_args() -> argparse.Namespace:
     start.add_argument("--run-token")
     start.add_argument("--resume-run-id", help="resume an existing run, including after JST midnight")
     start.add_argument("--fixture-dir", type=Path)
+    review = commands.add_parser("resume-review", help="resume saved PAPER review without network or input refresh")
+    review.add_argument("--run-id", required=True)
+    review.add_argument("--at", required=True)
+    review.add_argument("--run-token")
     finalize = commands.add_parser("finalize")
     finalize.add_argument("--run-id", required=True)
     finalize.add_argument("--run-token", required=True)
@@ -226,6 +293,10 @@ def main() -> None:
             run_token=args.run_token,
             resume_run_id=args.resume_run_id,
             fixture_dir=args.fixture_dir,
+        )
+    elif args.command == "resume-review":
+        result = resume_nightly_review(
+            run_id=args.run_id, at=args.at, run_token=args.run_token,
         )
     elif args.command == "finalize":
         result = finalize_nightly_run(
