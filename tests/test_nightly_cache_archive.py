@@ -4,13 +4,14 @@ from stock_jp.workspace import record_path
 import copy
 import fcntl
 import subprocess
+import shutil
 import json
 from pathlib import Path
 import tempfile
 import unittest
 
 import stock_jp.market_data.storage as codec
-from stock_jp.market_data.jquants.ingest import digest, encoded
+from stock_jp.market_data.jquants.ingest import IngestionError, digest, encoded
 from stock_jp.market_data.jquants.cache import NightlyClient
 
 
@@ -85,6 +86,74 @@ class NightlyCacheArchiveTests(unittest.TestCase):
         for endpoint in ('/equities/master', '/fins/summary'):
             self.assertEqual(replay.get(endpoint, {'date': '2026-10-02'}), {'data': [{'synthetic': True}]})
         self.assertEqual((replay.requests, replay.cache_hits), (0, 2))
+
+    def test_light_and_standard_roundtrip_preserves_plan_and_offline_reuse(self):
+        standard = NightlyClient(
+            private=self.private, cutoff=self.cutoff, retrieved=self.cutoff,
+            plan='standard', transport=lambda *_: {'data': [{'synthetic': 'standard'}]},
+            sleep=lambda _: None)
+        standard.get('/equities/master', {'date': '2026-10-02'})
+        self.assertNotEqual(self.client.root, standard.root)
+        before = {p.relative_to(self.source): p.read_bytes()
+                  for p in self.source.rglob('*.json')}
+        codec.pack(self.source, self.store)
+        self.assertTrue(codec.verify(self.store)['verified'])
+        target = self.root / 'plans-restored/.work/market-data'
+        self.assertTrue(codec.restore(self.store, target)['verified'])
+        self.assertEqual(before, {p.relative_to(target): p.read_bytes()
+                                  for p in target.rglob('*.json')})
+        for plan, expected in [('light', True), ('standard', 'standard')]:
+            with self.subTest(plan=plan):
+                replay = NightlyClient(
+                    private=self.root / 'plans-restored/operations',
+                    cutoff=self.cutoff, retrieved='2026-10-03T21:00:00+09:00',
+                    plan=plan, transport=lambda *_: self.fail('unexpected provider call'),
+                    sleep=lambda _: None)
+                self.assertEqual(replay.get('/equities/master', {'date': '2026-10-02'}),
+                                 {'data': [{'synthetic': expected}]})
+                self.assertEqual((replay.requests, replay.cache_hits), (0, 1))
+                saved = next(iter(replay.receipts.values()))
+                self.assertEqual(saved['identity']['plan'], plan)
+                self.assertEqual(saved['retrieved_at_jst'], self.cutoff)
+        self.assertEqual(before, {p.relative_to(target): p.read_bytes()
+                                  for p in target.rglob('*.json')})
+
+    def test_plan_relabel_is_rejected_even_with_rekeyed_page(self):
+        # A Light receipt cannot be relabelled Standard in its existing scope.
+        receipt = copy.deepcopy(self.receipt)
+        receipt['identity']['plan'] = 'standard'
+        self.write_receipt(receipt, rekey=True)
+        with self.assertRaises(codec.ArchiveError):
+            codec.pack(self.source, self.store)
+        self.forge_store()
+        with self.assertRaises(codec.ArchiveError):
+            codec.verify(self.store)
+        target = self.root / 'relabel-rejected'
+        with self.assertRaises(codec.ArchiveError):
+            codec.restore(self.store, target)
+        self.assertFalse(target.exists())
+
+    def test_client_rejects_other_plan_receipt_without_provider_call(self):
+        for wanted, saved in [('standard', 'light'), ('light', 'standard')]:
+            with self.subTest(wanted=wanted):
+                private = self.root / wanted / 'operations'
+                client = NightlyClient(
+                    private=private, cutoff=self.cutoff, retrieved=self.cutoff,
+                    plan=wanted, transport=lambda *_: self.fail('unexpected provider call'),
+                    sleep=lambda _: None)
+                identity = {**client.identity, 'endpoint': '/equities/master',
+                            'params': {'date': '2026-10-02'}}
+                receipt = copy.deepcopy(self.receipt)
+                receipt['identity'] = {**identity, 'plan': saved}
+                page = client.root / 'pages' / (digest(encoded(identity)) + '.json')
+                prepare_write(page).write_bytes(encoded(receipt))
+                obj = client.root / receipt['object']['path']
+                obj.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(self.obj, obj)
+                with self.assertRaisesRegex(IngestionError, 'identity mismatch'):
+                    client.get('/equities/master', {'date': '2026-10-02'})
+                self.assertEqual((client.requests, client.cache_hits), (0, 0))
+                self.assertEqual(json.loads(page.read_bytes())['identity']['plan'], saved)
 
     def test_held_scope_lock_preserves_published_generation(self):
         codec.pack(self.source, self.store)
@@ -174,6 +243,8 @@ class NightlyCacheArchiveTests(unittest.TestCase):
 
     def test_rehashed_untrusted_identity_is_rejected(self):
         variants = [('origin', 'https://untrusted.example/v2'), ('plan', 'premium'),
+                    ('plan', 'free'), ('plan', 'Standard'), ('plan', ' standard'),
+                    ('plan', None), ('plan', 1), ('plan', []),
                     ('endpoint', '/equities/bars/daily/am'), ('cutoff', '2026-10-02T21:00:00'),
                     ('params', {'date': '2026-10-02', 'unreviewed': 'query'})]
         for key, value in variants:
