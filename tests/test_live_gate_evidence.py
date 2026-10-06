@@ -1030,6 +1030,7 @@ class FinalLivePromotionTest(unittest.TestCase):
         approval = {
             "schema_version": "1.0",
             "decision": "LIVE",
+            "start_conditions_version": "readiness-v2-2026-10-07",
             "rule_version": "v0.4",
             "broker_submission": "HUMAN_ONLY",
             "approved_by": "portfolio-owner",
@@ -1055,12 +1056,60 @@ class FinalLivePromotionTest(unittest.TestCase):
                     "pause_on_any_blocking_gap",
                     "no_automatic_order_submission",
                     "live_decision_is_not_a_profit_guarantee",
+                    "forward_performance_not_established_at_start",
                 )
             },
         }
         approval_path = record_path(private.parent, 'evidence/live-approval.json')
         _write(approval_path, json.dumps(approval))
         return fresh, approval_path, policy_path
+
+    def test_start_requirements_do_not_evaluate_forward_observation_counts(self):
+        import stock_jp.operation.evidence as module
+        with patch.object(module, 'evaluate_v04_promotion') as forward, \
+             patch.object(module, 'evaluate_point_in_time', return_value={'eligible': False}), \
+             patch.object(module, 'evaluate_historical_replay', return_value={'eligible': False}), \
+             patch.object(module, 'evaluate_official_coverage', return_value={'eligible': False}), \
+             patch.object(module, 'evaluate_personal_risk', return_value={'eligible': False}):
+            results = module.evaluate_all_live_requirements(root=Path('/synthetic'))
+        forward.assert_not_called()
+        self.assertEqual(set(results), {
+            'point_in_time_full_universe_validation', 'historical_replay_2025_2026_accepted',
+            'official_source_coverage', 'personal_risk_and_broker_check'})
+        self.assertTrue(all(item['eligible'] is False for item in results.values()))
+
+    @patch('stock_jp.operation.evidence.evaluate_all_live_requirements')
+    def test_old_approval_cannot_authorize_new_start_conditions(self, evaluate):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fresh, approval_path, policy_path = self._write_bundle(root)
+            evaluate.return_value = fresh
+            approval = json.loads(approval_path.read_text())
+            approval.pop('start_conditions_version')
+            _write(approval_path, json.dumps(approval))
+            before = policy_path.read_bytes()
+            result = evaluate_live_promotion(root=root)
+            self.assertFalse(result['eligible'])
+            self.assertIn('final approval start_conditions_version must match current start conditions',
+                          result['blockers'])
+            with self.assertRaises(ValueError):
+                apply_live_promotion(root=root, result=result, approval_path=approval_path,
+                                     policy_path=policy_path)
+            self.assertEqual(before, policy_path.read_bytes())
+
+    @patch('stock_jp.operation.evidence.evaluate_all_live_requirements')
+    def test_unproven_forward_performance_requires_explicit_acknowledgement(self, evaluate):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fresh, approval_path, _ = self._write_bundle(root)
+            evaluate.return_value = fresh
+            approval = json.loads(approval_path.read_text())
+            approval['acknowledgements']['forward_performance_not_established_at_start'] = False
+            _write(approval_path, json.dumps(approval))
+            result = evaluate_live_promotion(root=root)
+            self.assertFalse(result['eligible'])
+            self.assertIn('final approval acknowledgement forward_performance_not_established_at_start must be true',
+                          result['blockers'])
 
     @patch('stock_jp.operation.evidence.evaluate_all_live_requirements')
     def test_all_bound_requirements_and_live_decision_are_eligible(self, evaluate) -> None:
@@ -1070,7 +1119,7 @@ class FinalLivePromotionTest(unittest.TestCase):
             evaluate.return_value = fresh
             result = evaluate_live_promotion(root=root)
         self.assertTrue(result["eligible"], result["blockers"])
-        self.assertEqual(result["metrics"]["eligible_requirement_count"], 5)
+        self.assertEqual(result["metrics"]["eligible_requirement_count"], 4)
 
     @patch('stock_jp.operation.evidence.evaluate_all_live_requirements')
     def test_tampered_stored_evidence_is_rejected(self, evaluate) -> None:
@@ -1127,7 +1176,7 @@ class FinalLivePromotionTest(unittest.TestCase):
         self.assertEqual(promoted["operation_mode"], "LIVE")
         self.assertEqual(persisted["broker_submission"], "HUMAN_ONLY")
         self.assertTrue(all(persisted["live_gates"].values()))
-        self.assertTrue(persisted["v04_holdout_promotion"])
+        self.assertFalse(persisted["v04_holdout_promotion"])
         self.assertEqual(failures, [])
 
     @patch('stock_jp.operation.evidence.evaluate_all_live_requirements')

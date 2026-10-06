@@ -72,3 +72,6 @@ PAPER研究の期間・方法は`research holdout freeze`で未観測期間に�
 `research holdout observe --output .work/forward-holdout/observation.json`は原本を変更せず、
 入力不足を記録する。期間終了後に正式入力の検証と再生を通過するまで、
 snapshot件数を正式な月末評価や取引へ加算しない。
+
+将来のholdout期間・観測回数は[開始条件 v2](start-conditions-v2.md)では開始前ゲートにしない。
+旧研究の合否基準は保存し、未実施・不足を合格へ変更しない。

@@ -255,7 +255,7 @@ class OperationStateTest(unittest.TestCase):
         migrated = json.loads(policy_path.read_text(encoding="utf-8"))
 
         self.assertIn('config/policy.json', result["migrated"])
-        self.assertEqual(migrated["schema_version"], "1.4")
+        self.assertEqual(migrated["schema_version"], "1.5")
         self.assertNotIn("minimum_12_month_paper_trade", migrated["live_gates"])
         self.assertNotIn("twenty_day_shadow_run", migrated["live_gates"])
         self.assertNotIn(
@@ -281,7 +281,7 @@ class OperationStateTest(unittest.TestCase):
         migrated = json.loads(policy_path.read_text(encoding="utf-8"))
 
         self.assertIn('config/policy.json', result["migrated"])
-        self.assertEqual(migrated["schema_version"], "1.4")
+        self.assertEqual(migrated["schema_version"], "1.5")
         self.assertEqual(migrated["active_rule_version"], "v0.2")
         self.assertFalse(migrated["v04_holdout_promotion"])
         self.assertIsNone(migrated["limited_live"]["capital_limit_jpy"])
@@ -303,7 +303,7 @@ class OperationStateTest(unittest.TestCase):
         initialize_or_migrate_workspace(self.root)
         migrated = json.loads(policy_path.read_text(encoding="utf-8"))
 
-        self.assertEqual(migrated["schema_version"], "1.4")
+        self.assertEqual(migrated["schema_version"], "1.5")
         self.assertNotIn("private_repository_recovery", migrated["live_gates"])
         self.assertNotIn("private_repository_recovery", migrated["live_gate_evidence"])
         self.assertNotIn("backup_restore_drill", migrated["live_gates"])
