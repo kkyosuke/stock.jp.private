@@ -1,0 +1,335 @@
+{
+  "schema_version": "1.0",
+  "provider": "J-Quants API V2",
+  "retrieved_at_jst": "2026-10-06T09:32:39+09:00",
+  "rows": [
+    {
+      "date": "2026-08-07",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-08",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-09",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-10",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-11",
+      "holiday_division": "3"
+    },
+    {
+      "date": "2026-08-12",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-13",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-14",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-15",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-16",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-17",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-18",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-19",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-20",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-21",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-22",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-23",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-24",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-25",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-26",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-27",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-28",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-08-29",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-30",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-08-31",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-01",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-02",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-03",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-04",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-05",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-06",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-07",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-08",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-09",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-10",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-11",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-12",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-13",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-14",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-15",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-16",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-17",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-18",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-19",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-20",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-21",
+      "holiday_division": "3"
+    },
+    {
+      "date": "2026-09-22",
+      "holiday_division": "3"
+    },
+    {
+      "date": "2026-09-23",
+      "holiday_division": "3"
+    },
+    {
+      "date": "2026-09-24",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-25",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-26",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-27",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-09-28",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-29",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-09-30",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-01",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-02",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-03",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-04",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-05",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-06",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-07",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-08",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-09",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-10",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-11",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-12",
+      "holiday_division": "3"
+    },
+    {
+      "date": "2026-10-13",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-14",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-15",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-16",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-17",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-18",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-19",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-20",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-21",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-22",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-23",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-24",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-25",
+      "holiday_division": "0"
+    },
+    {
+      "date": "2026-10-26",
+      "holiday_division": "1"
+    },
+    {
+      "date": "2026-10-27",
+      "holiday_division": "1"
+    }
+  ]
+}

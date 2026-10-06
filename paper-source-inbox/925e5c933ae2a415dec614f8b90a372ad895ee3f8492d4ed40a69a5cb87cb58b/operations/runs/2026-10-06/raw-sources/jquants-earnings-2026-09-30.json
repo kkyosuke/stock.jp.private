@@ -1,0 +1,791 @@
+{
+  "pages": [
+    {
+      "data": [
+        {
+          "CoName": "清水建設",
+          "CoNameEn": "SHIMIZU CORPORATION",
+          "Code": "18030",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-09"
+        },
+        {
+          "CoName": "住友林業",
+          "CoNameEn": "Sumitomo Forestry Co.,Ltd.",
+          "Code": "19110",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-05"
+        },
+        {
+          "CoName": "ＭＦＳ",
+          "CoNameEn": "MFS,Inc.",
+          "Code": "196A0",
+          "FQName": "1Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "タイミー",
+          "CoNameEn": "Timee,Inc.",
+          "Code": "215A0",
+          "FQName": "2Q",
+          "FYE": "0430",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-10"
+        },
+        {
+          "CoName": "ＣＳＳホールディングス",
+          "CoNameEn": "CSS HOLDINGS,LTD.",
+          "Code": "23040",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-10"
+        },
+        {
+          "CoName": "ソフトフロントホールディングス",
+          "CoNameEn": "Softfront Holdings",
+          "Code": "23210",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-11"
+        },
+        {
+          "CoName": "オエノンホールディングス",
+          "CoNameEn": "Oenon Holdings,Inc.",
+          "Code": "25330",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-09"
+        },
+        {
+          "CoName": "ＥＴＳグループ",
+          "CoNameEn": "ETS Group Co.,Ltd.",
+          "Code": "253A0",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "伊藤園",
+          "CoNameEn": "ITO EN,LTD.",
+          "Code": "25930",
+          "FQName": "2Q",
+          "FYE": "0430",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-01"
+        },
+        {
+          "CoName": "ロック・フィールド",
+          "CoNameEn": "ROCK FIELD CO.,LTD.",
+          "Code": "29100",
+          "FQName": "2Q",
+          "FYE": "0430",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-04"
+        },
+        {
+          "CoName": "ストレージ王",
+          "CoNameEn": "STORAGE-OH Co.,Ltd.",
+          "Code": "29970",
+          "FQName": "3Q",
+          "FYE": "0131",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-15"
+        },
+        {
+          "CoName": "ソリトンシステムズ",
+          "CoNameEn": "SOLITON SYSTEMS K.K.",
+          "Code": "30400",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "セキュアヴェイル",
+          "CoNameEn": "SecuAvail Inc.",
+          "Code": "30420",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "物語コーポレーション",
+          "CoNameEn": "The Monogatari Corporation",
+          "Code": "30970",
+          "FQName": "2Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2027-02-10"
+        },
+        {
+          "CoName": "物語コーポレーション",
+          "CoNameEn": "The Monogatari Corporation",
+          "Code": "30970",
+          "FQName": "3Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2027-05-11"
+        },
+        {
+          "CoName": "物語コーポレーション",
+          "CoNameEn": "The Monogatari Corporation",
+          "Code": "30970",
+          "FQName": "1Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "夢展望",
+          "CoNameEn": "DREAM VISION CO.,LTD.",
+          "Code": "31850",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "イントランス",
+          "CoNameEn": "INTRANCE CO.,LTD.",
+          "Code": "32370",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-11"
+        },
+        {
+          "CoName": "菊池製作所",
+          "CoNameEn": "KIKUCHI SEISAKUSHO CO.,LTD.",
+          "Code": "34440",
+          "FQName": "2Q",
+          "FYE": "0430",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-11"
+        },
+        {
+          "CoName": "ジェイテックコーポレーション",
+          "CoNameEn": "JTEC CORPORATION",
+          "Code": "34460",
+          "FQName": "1Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": ""
+        },
+        {
+          "CoName": "ＧＲＯＷＴＨ　ＰＯＷＥＲ",
+          "CoNameEn": "GROWTH POWER CO.,LTD.",
+          "Code": "347A0",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "イチカワ",
+          "CoNameEn": "ICHIKAWA CO.,LTD.",
+          "Code": "35130",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "ビリングシステム",
+          "CoNameEn": "Billing System Corporation",
+          "Code": "36230",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-06"
+        },
+        {
+          "CoName": "コロプラ",
+          "CoNameEn": "COLOPL,Inc.",
+          "Code": "36680",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-04"
+        },
+        {
+          "CoName": "ソフトマックス",
+          "CoNameEn": "SOFTMAX CO.,LTD",
+          "Code": "36710",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-10"
+        },
+        {
+          "CoName": "システムズ・デザイン",
+          "CoNameEn": "SYSTEMS DESIGN Co.,Ltd.",
+          "Code": "37660",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-06"
+        },
+        {
+          "CoName": "大和コンピューター",
+          "CoNameEn": "DAIWA COMPUTER CO.,LTD.",
+          "Code": "38160",
+          "FQName": "1Q",
+          "FYE": "0731",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-04"
+        },
+        {
+          "CoName": "アドソル日進",
+          "CoNameEn": "Ad-Sol Nissin Corporation",
+          "Code": "38370",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-05"
+        },
+        {
+          "CoName": "三菱製紙",
+          "CoNameEn": "Mitsubishi Paper Mills Limited",
+          "Code": "38640",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "ニッポン高度紙工業",
+          "CoNameEn": "NIPPON KODOSHI CORPORATION",
+          "Code": "38910",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-29"
+        },
+        {
+          "CoName": "チエル",
+          "CoNameEn": "CHIeru Co.,Ltd.",
+          "Code": "39330",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "カナミックネットワーク",
+          "CoNameEn": "Kanamic Network Co.,LTD",
+          "Code": "39390",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "丸尾カルシウム",
+          "CoNameEn": "Maruo Calcium Co.,Ltd.",
+          "Code": "41020",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-10"
+        },
+        {
+          "CoName": "ステラ　ケミファ",
+          "CoNameEn": "STELLA CHEMIFA CORPORATION",
+          "Code": "41090",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "ジーネクスト",
+          "CoNameEn": "G-NEXT Inc.",
+          "Code": "41790",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "ニチバン",
+          "CoNameEn": "NICHIBAN CO.,LTD.",
+          "Code": "42180",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "ゼネテック",
+          "CoNameEn": "GENETEC CORPORATION",
+          "Code": "44920",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "大幸薬品",
+          "CoNameEn": "TAIKO PHARMACEUTICAL CO.,LTD.",
+          "Code": "45740",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "メドレックス",
+          "CoNameEn": "Medrx Co.,Ltd.",
+          "Code": "45860",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "フューチャー",
+          "CoNameEn": "Future Corporation",
+          "Code": "47220",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-28"
+        },
+        {
+          "CoName": "ビジネスエンジニアリング",
+          "CoNameEn": "Business Engineering Corporation",
+          "Code": "48280",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-11"
+        },
+        {
+          "CoName": "ＪＦＥシステムズ",
+          "CoNameEn": "JFE Systems, Inc.",
+          "Code": "48320",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-28"
+        },
+        {
+          "CoName": "ハーバー研究所",
+          "CoNameEn": "HABA LABORATORIES,INC.",
+          "Code": "49250",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "Ｗａｑｏｏ",
+          "CoNameEn": "Waqoo Inc.",
+          "Code": "49370",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "ファインズ",
+          "CoNameEn": "Fines inc.",
+          "Code": "51250",
+          "FQName": "1Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "石塚硝子",
+          "CoNameEn": "ISHIZUKA GLASS CO.,LTD.",
+          "Code": "52040",
+          "FQName": "2Q",
+          "FYE": "0320",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-22"
+        },
+        {
+          "CoName": "Ａｒｅｎｔ",
+          "CoNameEn": "Arent Inc.",
+          "Code": "52540",
+          "FQName": "1Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "大阪製鐵",
+          "CoNameEn": "OSAKA STEEL CO.,LTD.",
+          "Code": "54490",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-04"
+        },
+        {
+          "CoName": "イボキン",
+          "CoNameEn": "IBOKIN Co.,Ltd.",
+          "Code": "56990",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "高田機工",
+          "CoNameEn": "TAKADAKIKO(Steel Construction)CO.,LTD.",
+          "Code": "59230",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "三和ホールディングス",
+          "CoNameEn": "Sanwa Holdings Corporation",
+          "Code": "59290",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-30"
+        },
+        {
+          "CoName": "キャリア",
+          "CoNameEn": "CAREER CO.,LTD.",
+          "Code": "61980",
+          "FQName": "3Q",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2027-08-13"
+        },
+        {
+          "CoName": "キャリア",
+          "CoNameEn": "CAREER CO.,LTD.",
+          "Code": "61980",
+          "FQName": "2Q",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2027-05-14"
+        },
+        {
+          "CoName": "キャリア",
+          "CoNameEn": "CAREER CO.,LTD.",
+          "Code": "61980",
+          "FQName": "1Q",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2027-02-12"
+        },
+        {
+          "CoName": "キャリア",
+          "CoNameEn": "CAREER CO.,LTD.",
+          "Code": "61980",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "エンシュウ",
+          "CoNameEn": "ENSHU Limited",
+          "Code": "62180",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "テクノクラフト",
+          "CoNameEn": "Techno Craft Corporation",
+          "Code": "622A0",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "Ｓｋｙｆａｌｌ",
+          "CoNameEn": "Skyfall Inc.",
+          "Code": "625A0",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "プラコー",
+          "CoNameEn": "PLACO CO.,LTD.",
+          "Code": "63470",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "酒井重工業",
+          "CoNameEn": "SAKAI HEAVY INDUSTRIES,LTD.",
+          "Code": "63580",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "ＮＦＫホールディングス",
+          "CoNameEn": "NFK HOLDINGS CO.,Ltd",
+          "Code": "64940",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "東光高岳",
+          "CoNameEn": "TAKAOKA TOKO CO.,LTD.",
+          "Code": "66170",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-30"
+        },
+        {
+          "CoName": "ズーム",
+          "CoNameEn": "ZOOM CORPORATION",
+          "Code": "66940",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-11"
+        },
+        {
+          "CoName": "ピクセラ",
+          "CoNameEn": "PIXELA CORPORATION",
+          "Code": "67310",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "アオイ電子",
+          "CoNameEn": "AOI ELECTRONICS CO.,LTD.",
+          "Code": "68320",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-30"
+        },
+        {
+          "CoName": "ポート",
+          "CoNameEn": "PORT INC.",
+          "Code": "70470",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-16"
+        },
+        {
+          "CoName": "ギークス",
+          "CoNameEn": "geechs inc.",
+          "Code": "70600",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "あいちフィナンシャルグループ",
+          "CoNameEn": "Aichi Financial Group,Inc.",
+          "Code": "73890",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "アトム",
+          "CoNameEn": "ATOM CORPORATION",
+          "Code": "74120",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-05"
+        },
+        {
+          "CoName": "梅の花グループ",
+          "CoNameEn": "UMENOHANA GROUP CO.,LTD.",
+          "Code": "76040",
+          "FQName": "2Q",
+          "FYE": "0430",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-15"
+        },
+        {
+          "CoName": "スターツ出版",
+          "CoNameEn": "Starts Publishing Corporation",
+          "Code": "78490",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-11"
+        },
+        {
+          "CoName": "光・彩",
+          "CoNameEn": "Kohsai Co.,Ltd.",
+          "Code": "78780",
+          "FQName": "3Q",
+          "FYE": "0131",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-11"
+        },
+        {
+          "CoName": "ソノコム",
+          "CoNameEn": "SONOCOM CO.,LTD.",
+          "Code": "79020",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-12"
+        },
+        {
+          "CoName": "セーラー万年筆",
+          "CoNameEn": "The Sailor Pen Co.,Ltd.",
+          "Code": "79920",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "三菱商事",
+          "CoNameEn": "Mitsubishi Corporation",
+          "Code": "80580",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-04"
+        },
+        {
+          "CoName": "千葉銀行",
+          "CoNameEn": "The Chiba Bank,Ltd.",
+          "Code": "83310",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-09"
+        },
+        {
+          "CoName": "富山銀行",
+          "CoNameEn": "The Bank of Toyama,Ltd.",
+          "Code": "83650",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-06"
+        },
+        {
+          "CoName": "フィデアホールディングス",
+          "CoNameEn": "FIDEA Holdings Co.Ltd.",
+          "Code": "87130",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "京阪神ビルディング",
+          "CoNameEn": "Keihanshin Building Co.,Ltd.",
+          "Code": "88180",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-30"
+        },
+        {
+          "CoName": "ギックス",
+          "CoNameEn": "GiXo Ltd.",
+          "Code": "92190",
+          "FQName": "1Q",
+          "FYE": "0630",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-30"
+        },
+        {
+          "CoName": "メディア総研",
+          "CoNameEn": "Media Research Institute,Inc.",
+          "Code": "92420",
+          "FQName": "1Q",
+          "FYE": "0731",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-12-11"
+        },
+        {
+          "CoName": "ユーラシア旅行社",
+          "CoNameEn": "EURASIA TRAVEL Co.,Ltd.",
+          "Code": "93760",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-06"
+        },
+        {
+          "CoName": "マイクロアド",
+          "CoNameEn": "MicroAd,Inc.",
+          "Code": "95530",
+          "FQName": "FY",
+          "FYE": "0930",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-13"
+        },
+        {
+          "CoName": "ピー・シー・エー",
+          "CoNameEn": "PCA CORPORATION",
+          "Code": "96290",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-10-27"
+        },
+        {
+          "CoName": "藤田観光",
+          "CoNameEn": "FUJITA KANKO INC.",
+          "Code": "97220",
+          "FQName": "3Q",
+          "FYE": "1231",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-05"
+        },
+        {
+          "CoName": "ハリマビステム",
+          "CoNameEn": "HARIMA B.STEM CORPORATION",
+          "Code": "97800",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-11"
+        },
+        {
+          "CoName": "ジェコス",
+          "CoNameEn": "GECOSS CORPORATION",
+          "Code": "99910",
+          "FQName": "2Q",
+          "FYE": "0331",
+          "PubDate": "2026-09-30",
+          "SchDate": "2026-11-05"
+        }
+      ]
+    }
+  ]
+}

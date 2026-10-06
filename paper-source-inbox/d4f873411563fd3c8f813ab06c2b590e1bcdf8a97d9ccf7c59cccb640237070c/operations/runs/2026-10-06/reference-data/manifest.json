@@ -1,0 +1,330 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-10-06",
+  "cutoff_at_jst": "2026-10-06T08:56:01+09:00",
+  "retrieved_at_jst": "2026-10-06T09:32:39+09:00",
+  "datasets": {
+    "jpx_listed_master": {
+      "path": "reference-data/jpx-listed-master.csv.gz",
+      "sha256": "1847e3c2b1ffbd78940c9b6dd5a0b6391f2cf0befad3b11b00838fc6004b72e0",
+      "row_count": 3702,
+      "source_url": "https://www.jpx.co.jp/markets/statistics-equities/misc/tvdivq0000001vg2-att/data_j.xlsx",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jpx-listed-2026-10-06.xlsx",
+      "raw_sha256": "a26fdf4420cb6a152a1811ce0c6e293e642c8a99f1cc2ad9c47a5d55f2722c82",
+      "point_in_time": true
+    },
+    "jquants_security_master": {
+      "path": "reference-data/jquants-security-master.csv.gz",
+      "sha256": "8d1dd6f72eafb483ae2f25ad7c06fc4a6a1cfce1e1425dc93c068993eca39eee",
+      "row_count": 4442,
+      "source_url": "https://api.jquants.com/v2/equities/master",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jquants-master-2026-10-06.json",
+      "raw_sha256": "c2ce83502840e6bf460be3fd094faf739dc27bf590ef024e027b5cd1ac52d22e",
+      "point_in_time": true
+    },
+    "trading_calendar": {
+      "path": "trading-calendar.json",
+      "sha256": "a8af22b471fe781a2dc039f5d2ac9dfdf6c8b261c48cf159fadb1f490f3e92cb",
+      "row_count": 82,
+      "source_url": "https://api.jquants.com/v2/markets/calendar",
+      "storage": "PRIVATE_ONLY",
+      "raw_path": "raw-sources/jquants-calendar-2026-10-06.json",
+      "raw_sha256": "f95eae96454741f8f8eebb707952977e7d6b9515fadccd358ab2ec74f31f004a"
+    },
+    "jquants_daily_bars": {
+      "path": "reference-data/jquants-daily-bars.csv.gz",
+      "sha256": "ff4de04c27ce4d2bb5a1c3bbf5ce68d74b97d88ed3e0de5246ce442adb3c5ba0",
+      "row_count": 28,
+      "source_url": "https://api.jquants.com/v2/equities/bars/daily",
+      "storage": "PRIVATE_ONLY"
+    },
+    "liquidity_20d": {
+      "path": "reference-data/liquidity-20d.csv",
+      "sha256": "f18f3ed174c7758a6f6827c01d1b0176a841392f5ee0d70b78f4169917cfc0e0",
+      "row_count": 0,
+      "source_url": "https://api.jquants.com/v2/equities/bars/daily",
+      "storage": "PRIVATE_ONLY",
+      "calculation": "last 20 consecutive official cash-equity sessions; explicit no-execution value is zero; missing or invalid fails"
+    },
+    "forecast_revisions": {
+      "path": "reference-data/forecast-revisions.csv",
+      "sha256": "85608576e3127c639eaf982699a21c597a57d98ed40f04964247414768dcf630",
+      "row_count": 314,
+      "source_url": "https://api.jquants.com/v2/fins/summary",
+      "storage": "PRIVATE_ONLY"
+    },
+    "share_counts": {
+      "path": "reference-data/share-counts.csv",
+      "sha256": "cf73a0e210676b7a1f6ab2a7b5ccba8250eb4ccf8ea14142ab88db16b4b58ef7",
+      "row_count": 187,
+      "source_url": "https://api.jquants.com/v2/fins/summary",
+      "storage": "PRIVATE_ONLY",
+      "limitation": "reported fiscal-year values; current dilution securities still require company-IR review"
+    },
+    "earnings_calendar_changes": {
+      "path": "reference-data/earnings-calendar-changes.csv",
+      "sha256": "5d081368c3d6f3fbb8da90b5ab87798877fc729c0b7125e3c2149ec8c2dfe1d2",
+      "row_count": 1253,
+      "source_url": "https://api.jquants.com/v2/fins/earnings-date",
+      "storage": "PRIVATE_ONLY"
+    }
+  },
+  "notes": [
+    "All data files are private-only; public redistribution is prohibited.",
+    "Calculated fields are identified separately from official source fields."
+  ],
+  "jquants_checkpoint": {
+    "request_count": 1,
+    "cache_hits": 48,
+    "pages": [
+      {
+        "query_id": "833ec85984e605198a9dd5b86fbce1f30b0d46db5b6dbd0da2bcd86b04bd82b8",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "fe8a507b425f1c0a591707a5320a6e07fa34c05805adefaef7fd4dc73056a7a3"
+      },
+      {
+        "query_id": "63f55b71fbf0730ad902eb7da6de37782839b6b68d391683b6f5de11f9347b0e",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "7365334b087caed7efc8e0db8f73f97117f9720ff11c4cb2d09d542eda9b208f"
+      },
+      {
+        "query_id": "0f958287e63d59e0225e6e6cb36566fbaf0e8311801492b13a0da59443d96ae6",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "a6ea9fe928b0b95ad6afde833dfc8d55018ade61feb0b43dde5450de94701a39"
+      },
+      {
+        "query_id": "9adb3a68baa2783945798340b82e73e9b760537bb0ff02a5b3585ba5e70333db",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "01dddcd22e38c14308df59b941cbf1ce87819eac64b84131cdbc6739d969a198"
+      },
+      {
+        "query_id": "79cd6c50aac5e9541cb1207795adc12d02f09e8ffbb7f7bc0ae2a1ae542c2dfa",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "f61ee7a6fa24ff4b6007b6e11bedda2b9116bd8cbc00ca737427cadedca1dd3c"
+      },
+      {
+        "query_id": "eabad04d3a15bfa635d2b17c26a5b0a56adfea57218e56e1bbfb370122278f7d",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "2e18fcca8694d51ab0352f094c1a1bbc592b993c5af23fab5624eef5e6b64e4c"
+      },
+      {
+        "query_id": "e18ca6a940d6a41025c050b7fb9d4de3051daa0a26e8183808f5c2cd4821f8be",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "fa1fe96cbbb907ff4190938d6fe0df4070de277ec7d3f4e2480f4fe0d74701c0"
+      },
+      {
+        "query_id": "f4c41703ae019d0d35a9fdb3f0ccc9ea6f9470db3fbf0b7bf105a7d56e78b6bd",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "c116185c9e312e5e3719d89c060f87ddd10dcb65479adb901d56eabdd9de55fc"
+      },
+      {
+        "query_id": "e0e50fe96989181a6dc694d25e953e4079d4728d358fe0efbe42b40fdc9b7725",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "7da40520e49249ef635867a8495fecf45c995653830d118bebc50329dff303fc",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "7427ced9c76d56fcaa724b1df446d5dc3b95249a3a22aead7d5de498829c9a78",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "77737af4a82810c4752c64cfee5e13aabd022622000c08d9fbf7880a8fbe4d81",
+        "retrieved_at_jst": "2026-10-06T08:56:01+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "bfb6b0fc201754960a0a2128d150dca1f09c5161368d8707080c86ddfd16bdee",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "febf06a06dcfb68645f3a3a107577ec654b8b20197f1fedbc78fe92eb8841de7",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "f18f1aa9033e7538dca7bb2278b7eafef72a6d0f22e71ff0a968866f8efec5d5"
+      },
+      {
+        "query_id": "59c3e28716848c308b501d39cbd47f16ae52ecf4df6f4391bc402c493deb89a3",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "f2b0839ba85fae8c66c8f60f79797e86ef768d8cd8921c73deaeb734dd400454"
+      },
+      {
+        "query_id": "aafee109179854ea86d174eba78f477d61563ce27076fd7fac754cddd1856151",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "6d496dce7cbbf753209e44b05b3bdbbf9e772052aa2171481e50d2cd3d5d4471",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "c4770854ee5fac1e18fe9a1fba4996ea8120043214862720ffbfb5405e1e1d0b",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "cb957f54aa2932a762ad81290643e0352426837738e70ea00788d5a3060767e1"
+      },
+      {
+        "query_id": "fa4c84a5078fe0d17478a8dfc7ad96805381607c607893100999e173f99a3ca7",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "7ef2cea3c572d5898ad92777fcf1fbee7ab4b0a3f1da2b0939254cee0acb2cda"
+      },
+      {
+        "query_id": "2c18dc4b6a5de13b63250095f75b9d825f3b689bf41622382c0d487e418c045c",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "618346de63e47dae6dd5986a1cf87e1dea2c119296a95ef6ede01e36e9c2afb2"
+      },
+      {
+        "query_id": "6f77c7c9a5a5dba30d5a14e31baa613863577fa894e5eb29740c43d7c4117350",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "56f093015954eca123dbed78e45d4a289dcff43e5724fea82b693949a6216586"
+      },
+      {
+        "query_id": "f4f2b9c5ac6f9af6f6f5c8731b40574ef17c6b448b670eb612937778434bb7b6",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "182711d1bf9455f82e8c0dac2206611ed8c95edeb179a3f5c1acd850d816c87d"
+      },
+      {
+        "query_id": "65544c63d1fd98d8633880b237977935f78c7f0a442f071d7636cf927b2a44cd",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "51da80325fce92ff654f62e71a2d166d1ac85675531e8d5d7553d7a0bb18d498",
+        "retrieved_at_jst": "2026-10-06T08:57:20+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "948579b203cb4bcef8c6fe98936a8254ad5862920dd05d158ff68ad9bf493d05",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "bb202009329aad322d189f71726a4f0f9ff48c2fd9fee5b4b36a320865677920"
+      },
+      {
+        "query_id": "ad30a7a7120db6d75a26caafdb101ccd40ef6f972610661c8f4e81f060a9f06f",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "05ef7799dc5922e16fbb1adfebe5115fd8afc4b464c0949957bce57624d01236",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "9c7b9fb691e77fb13799670b98aa97af11217fa48781713174ef2853dbabbf0b"
+      },
+      {
+        "query_id": "0eb7201081003caa19aed5428e03e416cda9edeeedbe87ef521d32f9c798b29e",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "b83bbb1e4311dd7a205d3a04c6a3247f2fab8bfb7bd54b02126d126aead68c15"
+      },
+      {
+        "query_id": "ec4468e35e39a234aff0493206476cade2fe2efd08ed5bd0e7aff9a3cd34bbe8",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "704e822f187910246aaeba04866a42f10c152592b641d4c0ded2bc43c60d8c50"
+      },
+      {
+        "query_id": "448e1da2c552e51f6665c1c2d7290245f6998512c37749707237777c77c1a9b0",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "b4f77170b97436dadaa83c70f7327cc08142721f2d2536b2df25e131120099b2"
+      },
+      {
+        "query_id": "1ba66d03d81c00da53863bce0f90bc198a0b2fa1bf50978700eedd29c41e3cfb",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "d81820c6fc21b1ebe3730ee2d7fa6f585489357120cb55c9b69f6fc7cd36e230"
+      },
+      {
+        "query_id": "5b6bf749fee694e6ee7187dafa0a3e7096b9a822d23f412dd506b58553207c0c",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "7c1f738093ee792323e547d03d84d92fbe9f4abc07d8afe7357d5d063ea81a36",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "eb9dc2fb7973bbbacf86f38b7a8e7da50647cdcfe26c402ec2efad53a518e59c",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "9a43f6ea92ffbe54d41c9953d24cc1886967b73ffff5e82a9f74e8961a1168fb",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "ba9e7317a705c986dafa7fc7596db8ca1c5147c6d2723c0e7c2d6d9c85e42ba0",
+        "retrieved_at_jst": "2026-10-06T08:58:26+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "d51b423f8df58887137a4b47fdd96277b40bf67481abacff48cec4880aded3cc",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "233b254d3eced5ee5999c949c380bf76ec0549e9aabe0a83999a7a3a7110edfc"
+      },
+      {
+        "query_id": "9f6bda9a993064049e5a600aa9a316c7d05bfb7ff3dcf7d6988e5c1aec2c7228",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "2acabe8fcaf008e36520369211d2f5ff3ec0127867bf86ad685148813471e982"
+      },
+      {
+        "query_id": "eb28825822f80c569d2cbb07a384fa7306d69823945ddd27fdce0bdeabd8394b",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "1b1d8ecbdc40108546d6d368340702b2718069fb9aa2c9286fd95028c045af86",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "3600ec6c56a9ffea6079199d8852762db263c1c228abdab4134cd6b6c9f674f9",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "d80c890d92f95f9cf848265873e7506e902ae1ad21f9f4122a9dcf9f7ca8f19f"
+      },
+      {
+        "query_id": "534ea1e1f58934675d631f50495e2bba4443b01bfcc35041ad64ff7e7537bf3b",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "c3f69672b88cc6fc1001cc163085513d9628d4cb0aa6d982f0dfd532736be549"
+      },
+      {
+        "query_id": "5966ea0001f5490a5654dfdf049962a3f7485567d2c761c5b84357163c6f95de",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "e777db10bdabc98cbbcb678dcc24d2d8c1b9592309c0ddf6517f9850960c9beb"
+      },
+      {
+        "query_id": "6b7e2424137139be732f8cff79ccbfb476777914f4394d20ba87852632f72726",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "ad5f4c341551250a4a1944f03995502cf446cb33816ac67cd61b592257f978c6"
+      },
+      {
+        "query_id": "a2e3f1822dcb2b3708cd51bf78622f03e3cb9292ebb1b790316b5c9b68fffca8",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "acec6532b6475a665e75a1ee42f98a9c8b26947a3fa3c45fbcb2fc6fe8dd557a"
+      },
+      {
+        "query_id": "fe1b9acd525c54994d778b9663342b4e4eff897cc2da743360c4484ebff3272c",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "32116c52b4d2e1547e1976b76cb8c9af5ddfb19e42871ad154f60457994fc445",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      },
+      {
+        "query_id": "f45b73d2b23561f3e8d4f7d50ffd8a94561466e05c837971535156323005fcac",
+        "retrieved_at_jst": "2026-10-06T09:31:23+09:00",
+        "sha256": "3789ea6b9c0c0b986a90e9cb551a304f146725af49eebb56f56dc5076c46e266"
+      },
+      {
+        "query_id": "174185f1ef0abc2d7fa21dedac0dc87af67c3a7e962e7694a6c680264090418d",
+        "retrieved_at_jst": "2026-10-06T09:32:39+09:00",
+        "sha256": "25ac29823ea32c588d7536a57d86d5eca0f9a65b9f951dabc9de7e8c6560ad90"
+      }
+    ],
+    "notes": "Dataset retrieval timestamps describe materialization; page receipts preserve actual origin retrieval times. Reuse requires the exact cutoff and query."
+  }
+}

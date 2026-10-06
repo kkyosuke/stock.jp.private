@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-10-06",
+  "generated_at_jst": "2026-10-06T09:32:39+09:00",
+  "tasks": [
+    {
+      "task_id": "manual-company-ir-2026-10-06-4052",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "Check company IR through the cutoff and record query evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-jpx-notices-2026-10-06",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check JPX trading halts, supervision/delisting, and market notices",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-nightly_jquants_scan-2026-10-06",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Resume the same frozen cutoff using the private page checkpoints; verify every enabled dataset before completion",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-official_market_data-2026-10-06",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Confirm target prices and corporate actions with JPX, company IR, or brokerage evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "manual-tdnet-2026-10-06",
+      "task_type": "MANUAL_PRIMARY_SOURCE_CHECK",
+      "priority": "URGENT",
+      "code": "",
+      "reason": "Check TDnet disclosures through the cutoff and attach query evidence",
+      "source_ids": [],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z1RU",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z1RU"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z2DY",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z2DY"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z2DZ",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z2DZ"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    },
+    {
+      "task_id": "review-edinet-S100Z4ZF",
+      "task_type": "DISCLOSURE_REVIEW",
+      "priority": "HIGH",
+      "code": "4052",
+      "reason": "New EDINET filing for an active target",
+      "source_ids": [
+        "edinet-S100Z4ZF"
+      ],
+      "status": "PENDING",
+      "evidence_source_ids": [],
+      "decision_log_path": null,
+      "notes": ""
+    }
+  ]
+}
