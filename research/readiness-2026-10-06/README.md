@@ -1,6 +1,7 @@
 # 定時実行と正式入力の整備
 
 2026年10月6日、mainのPR71マージ後に実データで確認した記録。
+PR76採用後のmain `21a9fad5fbd1c5b430c76771e463bb3f2c9686e8`を統合済み。
 運用はPAPER/HUMAN_ONLY。正式検証とLIVE昇格は未完了である。
 
 ## 市場データ
@@ -70,9 +71,27 @@ Actionsのartifactは400日指定でも実際には90日に制限された。
 朝のcutoffはownerの明示previewだけで再利用する。artifactは受け取り口として90日保持する。
 保存はレビュー完了や正式入力への採用を意味せず、本人のLIVE承認も生成しない。
 
+[ページ再開の実行](https://github.com/kkyosuke/stock.jp.private/actions/runs/37394147163)では
+36照会を再利用し、新規12+1要求で計49照会を完了した。財務23日分314件、
+決算予定23日分1253件を取得した。58 cache membersを復元し、79 membersを検証した。
+[Git保存記録](https://github.com/kkyosuke/stock.jp.private/blob/ecd2ae91e5ca004aa5bdfb698d1c57a2470c6556/operations/acquisition/paper-source-inbox.json)の
+315ファイルはartifactとSHA-256・blobが一致し、前回の280ファイルも保持された。
+収集・復元・保存・凍結確認は成功し、レビュー未完了だけがexit 1として残った。
+
+PR76のオフライン再開と合わせ、canonical runが既にある場合は自動準備で
+再取得・再採点・成果物生成をせず、保存済みレビューを保持する。
+`REVIEW_REQUIRED`が返した`resume-review`引数と[runbook](../../docs/operations/runbook.md)で
+レビューへ進む。leaseも自動で取得・解放しない。完了済みrunは変更しない。
+
+[最新の監視](https://github.com/kkyosuke/stock.jp.private/actions/runs/37455607042)は
+保存済み日次runの最終成功が9月14日のため`MISSED`。原本保存を日次完了へ換算せず、
+内容と網羅性のレビューが揃ったrunだけをfinalizeする。
+指数不使用への移行案は[mainの調査記録](../offline-review-2026-10-06/README.md)を参照し、
+現行v0.4の凍結した再生・forward契約とは分けて管理する。
+
 ## 残る条件
 
-- 利用権のある日次指数、2022年VI・訂正履歴の確認。
+- 現行v0.4再生に必要な指数の利用権、2022年VI・訂正履歴の確認。
 - 全母集団の採点、株式数、資金余力、企業行動、全重要開示の確認。
 - 9役割の正式再生と財務・開示を含む出口検証。
 - 2027年4月1日までのforward観測と既存の回数・損失基準。

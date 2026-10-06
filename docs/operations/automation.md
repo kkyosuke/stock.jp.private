@@ -104,6 +104,11 @@ ownerの明示previewだけが公開前の試行を許可する。朝の試行�
 調査・判断が終わるまで`run finalize`を呼ばない。取得job成功と研究jobの未完了は
 Actionsのjobごとに確認する。
 
+当日のcanonical runが保存済みなら、自動準備は通信・再採点・lease取得を行わず、
+レビュー成果物をそのまま保持する。未完了は`REVIEW_REQUIRED`と`resume-review`の
+実行引数を返す。採用済み作業領域でのレビューと日次完了は[runbook](runbook.md)の
+オフライン再開手順に従う。完了済みrunは`ALREADY_COMPLETED`として扱う。
+
 `automation/paper-source-inbox` branchへ、原本・未完了run・forward記録・J-Quantsページを
 内容ハッシュ付きの追記snapshotとして保存する。期限のあるartifactに長期保存を依存しない。
 このjobの`contents: write`はこの未レビューの保管先に使い、mainを更新しない。

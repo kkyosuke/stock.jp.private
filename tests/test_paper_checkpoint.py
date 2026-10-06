@@ -29,7 +29,7 @@ class PaperCheckpointTest(unittest.TestCase):
 
     def test_raw_inbox_is_durable_and_never_replaces_main_or_canonical_state(self):
         with TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             repo, context = self.root_and_context(root)
             original = (root / "operations/state.json").read_bytes()
             main = repo.refs["main"]
@@ -45,7 +45,7 @@ class PaperCheckpointTest(unittest.TestCase):
 
     def test_a_stopped_actions_run_cannot_write_the_inbox(self):
         with TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             repo, context = self.root_and_context(root)
             def stopped(method, path, body=None):
                 if "/actions/runs/" in path:
@@ -57,7 +57,7 @@ class PaperCheckpointTest(unittest.TestCase):
 
     def test_query_pages_restore_with_original_cutoff_and_no_provider_call(self):
         with TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             repo, context = self.root_and_context(root)
             cutoff = "2026-10-06T21:00:00+09:00"
             client = NightlyClient(private=root / "operations", cutoff=cutoff, retrieved=cutoff,
@@ -79,7 +79,7 @@ class PaperCheckpointTest(unittest.TestCase):
 
     def test_writer_rejects_a_path_that_escapes_the_inbox(self):
         with TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             repo, context = self.root_and_context(root)
             for name in (n.PAPER_RAW_PREFIX + "../config/policy.json", n.PAPER_RAW_PREFIX + "a/.git/config"):
                 with self.assertRaisesRegex(n.RemoteStop, "unsafe PAPER"):
@@ -90,7 +90,7 @@ class PaperCheckpointTest(unittest.TestCase):
             with self.subTest(hour=hour, preview=preview), TemporaryDirectory() as temporary, \
                     patch("stock_jp.automation.paper_checkpoint.datetime") as clock:
                 clock.now.return_value = datetime(2026, 10, 6, 21, 20, tzinfo=JST)
-                root = Path(temporary)
+                root = Path(temporary).resolve()
                 repo, context = self.root_and_context(root)
                 path = root / "operations/runs/2026-10-06/source-scan-cutoff.json"
                 cutoff = datetime(2026, 10, 6, hour, tzinfo=JST).isoformat(timespec="seconds")
@@ -101,3 +101,17 @@ class PaperCheckpointTest(unittest.TestCase):
                 self.assertEqual(restored["resume_cutoff_at_jst"], cutoff if expected else None)
                 self.assertFalse(path.exists())
                 self.assertFalse(restored["canonical_state_restored"])
+
+    def test_snapshot_names_are_relative_to_the_resolved_workspace(self):
+        with TemporaryDirectory() as temporary:
+            folder = Path(temporary).resolve()
+            root = folder / "workspace"
+            root.mkdir()
+            repo, context = self.root_and_context(root)
+            ingest.atomic_json(root / "data/market/primary-sources/example.json", {"source": "example"})
+            alias = folder / "alias"
+            alias.symlink_to(root, target_is_directory=True)
+            result = run(alias, context, n.Git(repo), save=True)
+            self.assertEqual(result["status"], "UNREVIEWED_INBOX_SAVED")
+            journal = n.Git(repo).read(repo.tree(repo.refs[n.PAPER_CHECKPOINT])[n.PAPER_JOURNAL])
+            self.assertIn("data/market/primary-sources/example.json", json.loads(journal)["files"])

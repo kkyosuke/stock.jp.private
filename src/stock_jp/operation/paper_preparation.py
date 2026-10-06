@@ -24,13 +24,33 @@ def prepare(root: Path, *, at: datetime | None = None, allow_before_publication=
     policy = json.loads((root / "config/policy.json").read_text())
     if policy.get("operation_mode") != "PAPER" or policy.get("broker_submission") != "HUMAN_ONLY":
         raise ValueError("automatic research preparation requires PAPER/HUMAN_ONLY")
+    run_dir = root / "operations/runs" / at.date().isoformat()
+    handoff_path = run_dir / "handoff.json"
+    if handoff_path.is_file():
+        handoff = json.loads(handoff_path.read_text())
+        if (handoff.get("run_id") != run_dir.name
+                or handoff.get("operation_mode") != policy["operation_mode"]
+                or handoff.get("active_rule_version") != policy.get("active_rule_version")
+                or handoff.get("status") not in {"completed", "failed", "in_progress"}):
+            raise ValueError("saved run identity or policy differs from current PAPER policy")
+        completed = handoff["status"] == "completed"
+        # A retry must not regenerate canonical review work or acquire its lease.
+        # The operator resumes the saved artifacts using main's offline entry.
+        return {"status": "ALREADY_COMPLETED" if completed else "REVIEW_REQUIRED",
+                "completed_run": completed, "existing_run_preserved": True,
+                "source_cutoff_preserved": True,
+                "run": {"run_id": run_dir.name, "status": handoff["status"],
+                        "run_dir": run_dir.relative_to(root).as_posix()},
+                "review_command": None if completed else [
+                    "python", "-m", "stock_jp", "operation", "run", "resume-review",
+                    "--run-id", run_dir.name, "--at", at.isoformat(timespec="seconds")],
+                "interpretation": "Saved canonical work is unchanged. Resume its review offline; no provider calls or investment-readiness claim."}
     readiness = check_readiness(root=root, at=at.isoformat(timespec="seconds"))
     if not readiness["paper_go"]:
         return {"status": "INPUTS_BLOCKED", "readiness": readiness, "completed_run": False}
     if at.hour < 21 and not allow_before_publication:
         return {"status": "WAIT_PUBLICATION", "completed_run": False,
                 "interpretation": "Real nightly preparation starts after the declared 21:00 JST publication window."}
-    run_dir = root / "operations/runs" / at.date().isoformat()
     cutoff_path = run_dir / "source-scan-cutoff.json"
     if cutoff_path.exists():
         existing = json.loads(cutoff_path.read_text())["cutoff_at_jst"]

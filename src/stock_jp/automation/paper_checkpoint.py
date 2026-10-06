@@ -31,6 +31,7 @@ def observe(git, context, main, revision):
 
 
 def run(root, context, git, *, save, preview=False):
+    root = root.resolve()
     n.trusted_context(root, context, preview)
     git.private_metadata()
     main = git.ref("main")

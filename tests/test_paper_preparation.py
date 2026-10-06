@@ -79,3 +79,43 @@ class PaperPreparationTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "publication night"):
                 prepare(root, at=at, cutoff="2026-10-06T08:56:00+09:00")
             start.assert_not_called()
+
+    def test_canonical_review_retry_preserves_every_file_and_uses_offline_handoff(self):
+        from tests.test_nightly_operation import NightlyOperationTest
+
+        fixture = NightlyOperationTest()
+        fixture.setUp()
+        self.addCleanup(fixture.tearDown)
+        started = fixture._start()
+        root = fixture.root
+        run_dir = root / started["run_dir"]
+        (run_dir / "research-results.md").write_text("Reviewed primary-source evidence; preserve this work.\n")
+        for status in ("in_progress", "failed", "completed"):
+            with self.subTest(status=status):
+                path = run_dir / "handoff.json"
+                handoff = json.loads(path.read_text())
+                handoff["status"] = status
+                path.write_text(json.dumps(handoff))
+                before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                with patch("stock_jp.operation.paper_preparation.start_nightly_run", side_effect=AssertionError("provider scan")), \
+                        patch("stock_jp.operation.paper_preparation.check_readiness", side_effect=AssertionError("current inputs")), \
+                        patch("stock_jp.operation.paper_preparation.fail_run", side_effect=AssertionError("another writer's lease")):
+                    result = prepare(root, at=datetime(2026, 8, 31, 21, 20, tzinfo=JST))
+                self.assertEqual(result["status"], "ALREADY_COMPLETED" if status == "completed" else "REVIEW_REQUIRED")
+                self.assertEqual(result["completed_run"], status == "completed")
+                self.assertTrue(result["existing_run_preserved"])
+                if status != "completed":
+                    self.assertIn("resume-review", result["review_command"])
+                self.assertEqual(before, {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()})
+
+    def test_changed_canonical_rule_cannot_be_relabelled_as_current_review(self):
+        with TemporaryDirectory() as temporary:
+            root = self.root(temporary)
+            run_dir = root / "operations/runs/2026-10-06"
+            run_dir.mkdir(parents=True)
+            (run_dir / "handoff.json").write_text(json.dumps({"run_id": "2026-10-06", "status": "failed",
+                "operation_mode": "PAPER", "active_rule_version": "another-rule"}))
+            with patch("stock_jp.operation.paper_preparation.start_nightly_run") as start:
+                with self.assertRaisesRegex(ValueError, "identity or policy"):
+                    prepare(root, at=datetime(2026, 10, 6, 21, 20, tzinfo=JST))
+                start.assert_not_called()
