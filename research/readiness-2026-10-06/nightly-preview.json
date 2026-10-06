@@ -1,0 +1,93 @@
+{
+  "status": "PREVIEW_COMPLETE",
+  "run_date": "2026-10-05",
+  "data_date": "2026-10-05",
+  "requests_used": 9,
+  "budget": 12,
+  "tasks_completed": 9,
+  "error": null,
+  "http_status": null,
+  "retry_not_before": null,
+  "last_request_endpoint": "/indices/bars/daily/topix",
+  "checkpoint_saved": true,
+  "analysis_readiness": "NOT_EVALUATED",
+  "prior_requests_used": 0,
+  "requests_for_date": 9,
+  "generation": "97318547b32f134618a0230140630af3260fd608c1c214ad8b5581d28541c712",
+  "store_bytes": 791506147,
+  "observations": {
+    "status": "GENERATED",
+    "rows": {
+      "financial-history.csv": 95000,
+      "forecast-history.csv": 95000,
+      "share-count-history.csv": 80957,
+      "earnings-calendar-history.csv": 78727,
+      "corporate-actions.csv": 371
+    },
+    "analysis_readiness": "NOT_EVALUATED",
+    "views": {
+      "financial-history.csv": {
+        "history_rows": 95000,
+        "latest_rows": 4346,
+        "years": [
+          "2021",
+          "2022",
+          "2023",
+          "2024",
+          "2025",
+          "2026"
+        ]
+      },
+      "forecast-history.csv": {
+        "history_rows": 95000,
+        "latest_rows": 4346,
+        "years": [
+          "2021",
+          "2022",
+          "2023",
+          "2024",
+          "2025",
+          "2026"
+        ]
+      },
+      "share-count-history.csv": {
+        "history_rows": 80957,
+        "latest_rows": 4341,
+        "years": [
+          "2021",
+          "2022",
+          "2023",
+          "2024",
+          "2025",
+          "2026"
+        ]
+      },
+      "earnings-calendar-history.csv": {
+        "history_rows": 78727,
+        "latest_rows": 4391,
+        "years": [
+          "2021",
+          "2022",
+          "2023",
+          "2024",
+          "2025",
+          "2026"
+        ]
+      },
+      "corporate-actions.csv": {
+        "history_rows": 371,
+        "latest_rows": 371,
+        "years": [
+          "2025",
+          "2026"
+        ]
+      }
+    },
+    "corporate_action_confirmation": "REQUIRED",
+    "financial_history_knowledge": "RETRIEVED_NOW_NOT_POINT_IN_TIME"
+  },
+  "preview": true,
+  "pull_request": "https://github.com/kkyosuke/stock.jp.private/pull/75",
+  "ci_run_id": 37388832238,
+  "pull_request_ci_run_id": 37388819963
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "scope": "CONFIGURED_ACTIVE_TARGETS_AND_MACRO_SOURCES",
+  "cutoff_at_jst": "2026-10-06T06:41:18+09:00",
+  "retrieved_at_jst": "2026-10-06T06:41:18+09:00",
+  "config_sha256": "74860d3f3fd7a9cdc2b43b385d756c922f189ab986c97c63cda4042ae9a5be2d",
+  "sources": [
+    {
+      "code": "4052",
+      "title": "Official issuer IR announcement feed",
+      "url": "https://ssl4.eir-parts.net/V4Public/eir/4052/ja/announcement/announcement_0.js",
+      "retrieved_at_jst": "2026-10-06T06:41:18+09:00",
+      "item_count": 204,
+      "path": "data/market/primary-sources/5fa04b4213c01d7c899bc95709935287f0c9d2056a32e8c8b5017cc8cbf6c32e.js",
+      "sha256": "5fa04b4213c01d7c899bc95709935287f0c9d2056a32e8c8b5017cc8cbf6c32e",
+      "bytes": 151825
+    },
+    {
+      "code": "4052",
+      "source_id": "company-4052-press_2888886",
+      "title": "コーポレート・ガバナンスに関する報告書 2026/09/30",
+      "url": "https://ssl4.eir-parts.net/doc/4052/tdnet/2888886/00.pdf",
+      "published_at_jst": "2026-09-30T10:04:00+09:00",
+      "publication_precision": "SECOND",
+      "retrieved_at_jst": "2026-10-06T06:41:19+09:00",
+      "review_status": "COLLECTED_NOT_REVIEWED",
+      "original_historical_vintage_verified": false,
+      "path": "data/market/primary-sources/56c6bd63abbf464001d52f3ec812fb04d2947e7fa124ac3a2f77c843d40028f5.pdf",
+      "sha256": "56c6bd63abbf464001d52f3ec812fb04d2947e7fa124ac3a2f77c843d40028f5",
+      "bytes": 90993
+    },
+    {
+      "code": "4052",
+      "source_id": "company-4052-ir_material_286494",
+      "title": "第21回定時株主総会決議ご通知",
+      "url": "https://ssl4.eir-parts.net/doc/4052/ir_material/286494/00.pdf",
+      "published_at_jst": "2026-09-29T11:51:00+09:00",
+      "publication_precision": "SECOND",
+      "retrieved_at_jst": "2026-10-06T06:41:20+09:00",
+      "review_status": "COLLECTED_NOT_REVIEWED",
+      "original_historical_vintage_verified": false,
+      "path": "data/market/primary-sources/38290015dc6b030d50726dc41747050603d87baac7ccebae5171cc3865b26aa0.pdf",
+      "sha256": "38290015dc6b030d50726dc41747050603d87baac7ccebae5171cc3865b26aa0",
+      "bytes": 58204
+    },
+    {
+      "code": "4052",
+      "source_id": "company-4052-yuho_3016416",
+      "title": "2026年6月期 有価証券報告書",
+      "url": "https://ssl4.eir-parts.net/doc/4052/yuho_pdf/S100Z1RU/00.pdf",
+      "published_at_jst": "2026-09-28T23:59:59+09:00",
+      "publication_precision": "DATE_ONLY",
+      "retrieved_at_jst": "2026-10-06T06:41:22+09:00",
+      "review_status": "COLLECTED_NOT_REVIEWED",
+      "original_historical_vintage_verified": false,
+      "path": "data/market/primary-sources/99979de24d62737da6ec93897f1a19a80b31bb36e982479c030d2fded13db569.pdf",
+      "sha256": "99979de24d62737da6ec93897f1a19a80b31bb36e982479c030d2fded13db569",
+      "bytes": 511938
+    },
+    {
+      "code": "4052",
+      "source_id": "company-4052-press_2886384",
+      "title": "事業計画及び成長可能性に関する事項",
+      "url": "https://ssl4.eir-parts.net/doc/4052/tdnet/2886384/00.pdf",
+      "published_at_jst": "2026-09-18T15:30:00+09:00",
+      "publication_precision": "SECOND",
+      "retrieved_at_jst": "2026-10-06T06:41:23+09:00",
+      "review_status": "COLLECTED_NOT_REVIEWED",
+      "original_historical_vintage_verified": false,
+      "path": "data/market/primary-sources/1b6131810973ebb215790c6289d0525d6cc71976bd9a1a4935a471fec8641dd8.pdf",
+      "sha256": "1b6131810973ebb215790c6289d0525d6cc71976bd9a1a4935a471fec8641dd8",
+      "bytes": 2964051
+    },
+    {
+      "series": "nikkei_vi",
+      "title": "Nikkei Stock Average Volatility Index daily CSV",
+      "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+      "retrieved_at_jst": "2026-10-06T06:41:23+09:00",
+      "review_status": "COLLECTED_NOT_REVIEWED",
+      "original_historical_vintage_verified": false,
+      "path": "data/market/primary-sources/ef85b689b9a8769eb7252b9d6170d56925dce34bb2b8b8b4dcc1fed5f4b95dfb.csv",
+      "sha256": "ef85b689b9a8769eb7252b9d6170d56925dce34bb2b8b8b4dcc1fed5f4b95dfb",
+      "bytes": 42398
+    },
+    {
+      "series": "leading_ci_publication_index",
+      "title": "Cabinet Office leading CI publication index",
+      "url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+      "retrieved_at_jst": "2026-10-06T06:41:24+09:00",
+      "review_status": "COLLECTED_NOT_REVIEWED",
+      "original_historical_vintage_verified": false,
+      "path": "data/market/primary-sources/8b663dea9743dc72aea986f77a7e1d5d34940bcc91a5c9cc9e001a5dfed28137.html",
+      "sha256": "8b663dea9743dc72aea986f77a7e1d5d34940bcc91a5c9cc9e001a5dfed28137",
+      "bytes": 62949
+    }
+  ],
+  "blockers": [],
+  "request_count": 7,
+  "full_universe_disclosure_coverage_certified": false,
+  "interpretation": "Collection does not certify disclosure completeness, source rights, original historical vintages, or scores."
+}

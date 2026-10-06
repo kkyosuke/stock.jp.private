@@ -73,5 +73,20 @@ PAPER研究の期間・方法は`research holdout freeze`で未観測期間に�
 入力不足を記録する。期間終了後に正式入力の検証と再生を通過するまで、
 snapshot件数を正式な月末評価や取引へ加算しない。
 
+forward入力の正本は
+[`research/historical-replay/v04-forward/input-manifest.json`](../../research/historical-replay/v04-forward/input-manifest.json)。
+`research.forward_collection`は既存計画の期間・ハッシュへ接続し、9役割の入力領域を
+準備して、採用済み世代・日付別partition・公表時刻のあるIR原本を記録する。
+原本確認がない役割、利用権、全母集団の開示・採点は未承認のまま保存する。
+開始前の価格はwarmup資料であり、forwardの価格や月末評価へ数えない。
+収集記録は`collection/<取得日>/<SHA-256>.json`へ追加し、過去の記録を上書きしない。
+
+```bash
+python -m stock_jp research replay --manifest research/historical-replay/v04-forward/input-manifest.json validate
+```
+
 将来のholdout期間・観測回数は[開始条件 v2](start-conditions-v2.md)では開始前ゲートにしない。
-旧研究の合否基準は保存し、未実施・不足を合格へ変更しない。
+このforward研究の不足は研究未完了として保持し、旧研究の未実施・不足を合格へ変更しない。
+現在のPIT・データ整合性・必要な一次資料レビュー・リスク確認と本人の最終承認は引き続き必要で、
+現行の運用設定はPAPER / HUMAN_ONLYである。契約・権利が確認できない日次指数、
+全銘柄の採点、財務・開示による出口を、取得した件数だけで確認済みにしない。

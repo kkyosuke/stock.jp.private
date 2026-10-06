@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-10-06",
+  "input_mode": "LIVE_NETWORK",
+  "status": "PARTIAL",
+  "started_at_jst": "2026-10-06T07:40:34+09:00",
+  "completed_at_jst": "2026-10-06T07:40:34+09:00",
+  "providers": {
+    "yahoo_tracked_archive": {
+      "status": "OK",
+      "request_count": 0,
+      "record_count": 3659,
+      "error": ""
+    },
+    "edinet": {
+      "status": "OK",
+      "request_count": 23,
+      "record_count": 4147,
+      "error": ""
+    },
+    "jpx_listed_master": {
+      "status": "OK",
+      "request_count": 1,
+      "page_count": 1,
+      "record_count": 3702,
+      "error": ""
+    },
+    "jquants_security_master": {
+      "status": "OK",
+      "request_count": 1,
+      "page_count": 1,
+      "record_count": 4442,
+      "error": ""
+    },
+    "jquants_trading_calendar": {
+      "status": "OK",
+      "request_count": 1,
+      "page_count": 1,
+      "record_count": 82,
+      "error": ""
+    },
+    "jquants_market_data": {
+      "status": "INCOMPLETE",
+      "request_count": 1,
+      "page_count": 1,
+      "record_count": 28,
+      "error": "4052: missing or invalid bar in fixed liquidity window"
+    },
+    "jquants_financials": {
+      "status": "ERROR",
+      "request_count": 9,
+      "page_count": 9,
+      "record_count": 160,
+      "error": "request budget reached; resume this archive"
+    },
+    "jquants_earnings_calendar": {
+      "status": "ERROR",
+      "request_count": 0,
+      "page_count": 0,
+      "record_count": 0,
+      "error": "request budget reached; resume this archive"
+    },
+    "first_party_public_checks": {
+      "status": "PENDING",
+      "request_count": 0,
+      "record_count": 0,
+      "error": "research evidence is required before decisions can be completed"
+    }
+  },
+  "blocking_gaps": [
+    "2026-10-06-nightly_jquants_scan",
+    "2026-10-06-official_market_data",
+    "2026-10-06-tdnet"
+  ],
+  "notes": []
+}

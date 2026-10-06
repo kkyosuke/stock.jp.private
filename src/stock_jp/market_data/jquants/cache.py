@@ -9,6 +9,11 @@ from datetime import datetime
 from stock_jp.market_data.jquants.ingest import Client, IngestionError, archive_lock, atomic_json, checked_payload, confined, digest, encoded, read_json, save_object
 
 
+def cache_identity(*, plan: str, cutoff: str) -> dict:
+    return {"version": 1, "origin": "https://api.jquants.com/v2",
+            "plan": plan, "cutoff": cutoff}
+
+
 class NightlyClient:
     """Reuse only validated pages for the exact frozen cutoff and query.
 
@@ -22,8 +27,7 @@ class NightlyClient:
         if type(budget) is not int or not 1 <= budget <= 12:
             raise IngestionError("nightly request budget must be an integer from 1 to 12")
         self.client = Client(plan=plan, timeout=timeout, max_requests=budget, **test_transport)
-        self.identity = {"version": 1, "origin": "https://api.jquants.com/v2",
-                         "plan": plan, "cutoff": cutoff}
+        self.identity = cache_identity(plan=plan, cutoff=cutoff)
         self.root = confined(record_path(private.parent, "market-data"), "nightly-source-cache",
                              digest(encoded(self.identity)))
         self.retrieved = retrieved
