@@ -184,3 +184,18 @@ workflowの原本収集とPAPER準備は`stock_jp.automation.provider_budget`を
 異なる通信ライブラリや並列collectorを追加する場合は、この境界を通る回帰検証が必要である。
 今回、schedule時刻・権限・保護・承認・予算額は変更しない。
 追加枠が必要なら、対象provider・論理日・必要試行数を示して別途利用者の承認を得る。
+
+### 過去費用と日次journalの累積
+
+`provider_debit_bases`へ、当該日の`prior_charges`、却下済みpayloadにも対応する
+`legacy_debit`の費用、および開始時のdaily request列のhashを取得前に保存する。
+同じ基準を日次取得とPAPER取得で使い、過去費用＋daily request数＋PAPER予約数を数える。
+例えば過去2回＋新規daily9回では合計11回で、PAPERの残枠は1回となる。
+再起動して既存daily9回を復元しても、過去費用を`max(2, 9)`へ読み替えない。
+日次報告の`requests_for_date`はPAPERを含む共有消費、`requests_used`はdaily journalの件数、
+`paper_requests_used`はPAPER予約数である。
+
+旧journalに開始時の基準がなく、過去費用と既存daily requestの両方がある場合は、
+重複の有無が不明なため取得を止める。推測で相殺したり二重加算したりせず、
+原記録の照合を必要とする。既存基準の過去費用が変わった場合も取得を停止する。
+台帳・state・予算のリセットで解消しない。

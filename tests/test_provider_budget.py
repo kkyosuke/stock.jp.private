@@ -176,7 +176,7 @@ class ProviderBudgetTests(unittest.TestCase):
 
     def test_prior_grant_missing_journal_and_stale_writer_fail_closed(self):
         ingest.atomic_json(self.root / 'operations/acquisition/date-grants.json', {'prior_charges': {self.day: 12}})
-        with self.assertRaises(ingest.RequestBudgetExhausted):
+        with self.assertRaisesRegex(n.RemoteStop, 'overlap is unknown'):
             self.budget().reserve('https://example.com/source')
         ingest.atomic_json(self.root / 'operations/acquisition/date-grants.json', {})
         stale = self.budget()
