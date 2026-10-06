@@ -175,7 +175,7 @@ class Checkpoint:
             self.document = json.loads(git.read(self.tree[JOURNAL]))
             require(self.document.get("version") == 1
                     and {"version", "runs", "files", "github_budget"} <= set(self.document)
-                    and set(self.document) <= {"version", "runs", "files", "github_budget", "scheduled_targets", "paper_requests"},
+                    and set(self.document) <= {"version", "runs", "files", "github_budget", "scheduled_targets", "paper_requests", "provider_debit_bases"},
                     "invalid nightly checkpoint")
             for day, state in self.document["runs"].items():
                 daily.validate_state(state)
@@ -230,9 +230,9 @@ class Checkpoint:
         path = daily.run_path(source / "jquants", self.target_day)
         initial = daily.read_state(path) if path.exists() else {"requests": []}
         self.baseline_requests = len(initial["requests"])
-        old = ingest.read_json(self.root / "operations/acquisition/date-grants.json", {})
-        self.old_charged = max(self.baseline_requests,
-                               old.get("prior_charges", {}).get(self.target_day.isoformat(), 0))
+        from stock_jp.automation.provider_budget import historical_debit
+        debit = historical_debit(self.root, self.target_day.isoformat())
+        self.old_charged = self.baseline_requests + debit["prior_requests"] + debit["legacy_requests"]
         for name, entry in self.document["files"].items():
             storage.safe_name(name)
             member = RAW_PREFIX + name
@@ -306,14 +306,15 @@ class Checkpoint:
         previous = self.document["runs"].get(state["run_date"])
         if previous:
             require(state == previous, "durable run and restored journal disagree")
+        from stock_jp.automation.provider_budget import ensure_debit_basis
+        ensure_debit_basis(self, state)
         self.state = state
         self.sync(state)
 
     def before_reservation(self):
         self.observe()
-        if (self.old_charged + len(self.state["requests"]) - self.baseline_requests
-                + len(self.document.get("paper_requests", {}).get(self.state["run_date"], []))
-                >= self.state["budget"]):
+        from stock_jp.automation.provider_budget import shared_usage
+        if shared_usage(self.document, self.state["run_date"], requests=self.state["requests"]) >= self.state["budget"]:
             raise ingest.RequestBudgetExhausted("prior and nightly requests exhaust the daily allowance")
         if hasattr(self.git.request, "before_provider"):
             self.git.request.before_provider()
@@ -501,7 +502,7 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
         "base": "main", "head": branch, "draft": checkpoint.preview,
         "title": "市場データ更新 " + result["run_date"] + (" (preview)" if checkpoint.preview else ""),
         "body": ("公式市場データを取得・検証し、復元可能な世代に保存しました。\n\n"
-                 f"状態: {result['status']}、通信: {result['requests_used']}/{result['budget']}。\n"
+                 f"状態: {result['status']}、通信: {result['requests_for_date']}/{result['budget']}。\n"
                  "取得の完了はPAPER運用の完了を意味しません。analysis_readiness=NOT_EVALUATED。\n"
                  "データ以外の変更を含まないことと、このheadの全CI成功を確認してから採用します。"),
     })
@@ -560,7 +561,9 @@ def execute(root, context, request, *, target=None, preview=False, at=None, tran
     result = {k: v for k, v in result.items() if k not in {"remote_saved", "readiness"}}
     result.update(checkpoint_saved=True, analysis_readiness="NOT_EVALUATED")
     result["prior_requests_used"] = checkpoint.old_charged
-    result["requests_for_date"] = checkpoint.old_charged + result["requests_used"] - checkpoint.baseline_requests
+    from stock_jp.automation.provider_budget import shared_usage
+    result["requests_for_date"] = shared_usage(checkpoint.document, result["run_date"])
+    result["paper_requests_used"] = len(checkpoint.document.get("paper_requests", {}).get(result["run_date"], []))
     if result["status"] not in {"COLLECTED", "HOLIDAY"}:
         raise Incomplete(result)
     return publish(root, checkpoint, result)

@@ -24,7 +24,66 @@ class SharedBudgetExhausted(ingest.RequestBudgetExhausted, ValueError):
     """Existing collectors record exhaustion as an unverified source gap."""
 
 
+def historical_debit(root, day):
+    from stock_jp.automation import legacy_debit
+    ledger = ingest.read_json(root / "operations/acquisition/date-grants.json", {})
+    prior = ledger.get("prior_charges", {}).get(day, 0)
+    require(type(prior) is int and prior >= 0, "invalid prior provider charges")
+    legacy = ledger.get("legacy_debit")
+    if legacy is not None:
+        legacy_debit.validate(legacy, legacy["campaign"])
+    receipts = [entry["receipt"] for batch in (legacy or {}).get("batches", [])
+                for entry in batch if entry["target_date"] == day]
+    require(prior + len(receipts) <= 12, "historical provider charges exceed daily allowance")
+    return {"prior_requests": prior, "legacy_requests": len(receipts),
+            "legacy_receipts_sha256": ingest.digest(ingest.encoded(receipts))}
+
+
+def ensure_debit_basis(checkpoint, state):
+    """Pin disjoint historical debits before the first newly counted request.
+
+    An old daily journal plus an aggregate historical debit cannot establish
+    whether they overlap. Refuse that migration instead of either refunding
+    requests with max(), or double charging an assumed overlap with addition.
+    """
+    day = state["run_date"]
+    historical = historical_debit(checkpoint.root, day)
+    bases = checkpoint.document.setdefault("provider_debit_bases", {})
+    if day in bases:
+        require(all(bases[day][key] == value for key, value in historical.items()),
+                "historical provider debit changed after budget basis was fixed")
+    else:
+        require(not state["requests"] or historical["prior_requests"] + historical["legacy_requests"] == 0,
+                "legacy and existing daily request overlap is unknown; reconcile before acquisition")
+        bases[day] = {**historical, "initial_daily_count": len(state["requests"]),
+                      "initial_daily_sha256": ingest.digest(ingest.encoded(state["requests"]))}
+
+
+def shared_usage(document, day, *, requests=None):
+    basis = document["provider_debit_bases"][day]
+    daily_requests = document["runs"][day]["requests"] if requests is None else requests
+    return (basis["prior_requests"] + basis["legacy_requests"] + len(daily_requests)
+            + len(document.get("paper_requests", {}).get(day, [])))
+
+
 def validate_charges(document):
+    bases = document.get("provider_debit_bases", {})
+    require(isinstance(bases, dict), "invalid provider debit bases")
+    for day, basis in bases.items():
+        require(day in document["runs"] and isinstance(basis, dict) and set(basis) == {
+            "prior_requests", "legacy_requests", "legacy_receipts_sha256",
+            "initial_daily_count", "initial_daily_sha256"}, "invalid provider debit basis")
+        require(all(type(basis[key]) is int and basis[key] >= 0
+                    for key in ("prior_requests", "legacy_requests", "initial_daily_count")),
+                "invalid provider debit counts")
+        requests = document["runs"][day]["requests"]
+        require(basis["initial_daily_count"] <= len(requests)
+                and basis["initial_daily_sha256"] == ingest.digest(ingest.encoded(requests[:basis["initial_daily_count"]]))
+                and isinstance(basis["legacy_receipts_sha256"], str)
+                and re.fullmatch(r"[0-9a-f]{64}", basis["legacy_receipts_sha256"]) is not None,
+                "provider debit basis or initial requests changed")
+        require(shared_usage(document, day) <= document["runs"][day]["budget"],
+                "shared cumulative provider allowance exceeded")
     charges = document.get("paper_requests", {})
     require(isinstance(charges, dict), "invalid shared provider charges")
     for day, entries in charges.items():
@@ -67,9 +126,7 @@ class PaperBudget:
                 and state["budget"] == self.limit, "shared daily budget differs from configured allowance")
         require(state["config_sha256"] == ingest.digest((root / "config/sources.json").read_bytes()),
                 "shared budget source configuration changed")
-        grants = ingest.read_json(root / "operations/acquisition/date-grants.json", {})
-        self.prior = grants.get("prior_charges", {}).get(self.day, 0)
-        require(type(self.prior) is int and self.prior >= 0, "invalid prior provider charges")
+        ensure_debit_basis(cp, state)
         # Do not assume historical PAPER traffic was free on the migration day.
         if self.day not in cp.document.get("paper_requests", {}):
             inbox = git.ref(n.PAPER_CHECKPOINT, optional=True)
@@ -82,7 +139,7 @@ class PaperBudget:
                 require(previous["day"] != self.day and captured_day != self.day,
                         "legacy PAPER traffic has no shared charges; reconcile this day's budget before acquisition")
             cp.document.setdefault("paper_requests", {})[self.day] = []
-            cp.flush()
+        cp.flush()
         self.poisoned = False
 
     def reserve(self, url):
@@ -94,7 +151,7 @@ class PaperBudget:
         # Never store the URL, headers, request body, credentials or query values.
         cp.observe()
         entries = cp.document.setdefault("paper_requests", {}).setdefault(self.day, [])
-        used = max(self.prior, len(cp.document["runs"][self.day]["requests"])) + len(entries)
+        used = shared_usage(cp.document, self.day)
         if used >= self.limit:
             raise SharedBudgetExhausted("shared logical-day provider allowance exhausted")
         entries.append({"sequence": len(entries) + 1, "host": parsed.hostname,
