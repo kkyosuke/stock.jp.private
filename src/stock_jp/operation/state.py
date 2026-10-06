@@ -243,10 +243,11 @@ def _normalized_source_config(
 def _normalized_policy(
     policy: dict[str, Any], template: dict[str, Any]
 ) -> dict[str, Any]:
-    if policy.get("schema_version") not in {"1.0", "1.1", "1.2", "1.3", "1.4"}:
+    if policy.get("schema_version") not in {"1.0", "1.1", "1.2", "1.3", "1.4", "1.5"}:
         return policy
     normalized = dict(policy)
-    normalized["schema_version"] = "1.4"
+    normalized["schema_version"] = "1.5"
+    normalized.setdefault("start_conditions_version", template.get("start_conditions_version"))
     gates = policy.get("live_gates")
     evidence = policy.get("live_gate_evidence")
     normalized["live_gates"] = {

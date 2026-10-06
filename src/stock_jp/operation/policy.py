@@ -14,7 +14,8 @@ from typing import Any
 
 PROJECT_ROOT = project_root()
 DEFAULT_POLICY = PROJECT_ROOT / 'config/policy.json'
-POLICY_SCHEMA_VERSION = "1.4"
+POLICY_SCHEMA_VERSION = "1.5"
+START_CONDITIONS_VERSION = "readiness-v2-2026-10-07"
 VALID_MODES = {"PAPER", "LIMITED_LIVE", "LIVE", "PAUSED"}
 VALID_SUBMISSION = {"HUMAN_ONLY"}
 REQUIRED_LIVE_GATES = {
@@ -44,6 +45,8 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if policy.get("schema_version") != POLICY_SCHEMA_VERSION:
         errors.append(f"schema_version must be {POLICY_SCHEMA_VERSION}")
+    if policy.get("start_conditions_version") != START_CONDITIONS_VERSION:
+        errors.append(f"start_conditions_version must be {START_CONDITIONS_VERSION}")
     if policy.get("operation_mode") not in VALID_MODES:
         errors.append("operation_mode must be PAPER, LIMITED_LIVE, LIVE, or PAUSED")
     if policy.get("broker_submission") not in VALID_SUBMISSION:
@@ -152,15 +155,9 @@ def live_gate_failures(policy: dict[str, Any]) -> list[str]:
         if policy.get("live_gates", {}).get(name) is True
         and not policy.get("live_gate_evidence", {}).get(name)
     )
-    if policy.get("active_rule_version") == "v0.3" and not policy.get(
-        "v03_holdout_promotion"
-    ):
-        failures.append("v03_holdout_promotion")
-    if policy.get("active_rule_version") == "v0.4" and not policy.get(
-        "v04_holdout_promotion"
-    ):
-        failures.append("v04_holdout_promotion")
     approval = policy.get("approval", {})
+    if approval.get("start_conditions_version") != START_CONDITIONS_VERSION:
+        failures.append("approval.start_conditions_version")
     for name in ("approved_by", "approved_at_jst", "evidence_path"):
         if not approval.get(name):
             failures.append(f"approval.{name}")
@@ -209,6 +206,13 @@ def policy_status(policy: dict[str, Any]) -> dict[str, Any]:
     else:
         ticket_status = "BLOCKED"
     return {
+        "start_conditions_version": policy.get("start_conditions_version"),
+        "post_start_research": {
+            "required_for_start": False,
+            "v03_holdout_promotion": policy.get("v03_holdout_promotion"),
+            "v04_holdout_promotion": policy.get("v04_holdout_promotion"),
+            "interpretation": "Start eligibility is not proof of strategy profitability. Unperformed research remains unperformed.",
+        },
         "valid": not errors,
         "operation_mode": mode,
         "active_rule_version": policy.get("active_rule_version"),

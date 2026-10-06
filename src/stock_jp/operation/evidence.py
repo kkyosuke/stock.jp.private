@@ -22,7 +22,7 @@ from zoneinfo import ZoneInfo
 
 from stock_jp.operation.integrity import RunIntegrityError, validate_run_artifacts
 
-from stock_jp.operation.policy import validate_policy
+from stock_jp.operation.policy import START_CONDITIONS_VERSION, validate_policy
 
 
 PROJECT_ROOT = project_root()
@@ -44,7 +44,6 @@ LIVE_REQUIREMENT_EVIDENCE = {
     HISTORICAL_REPLAY_GATE: 'operations/evidence/historical-replay.json',
     OFFICIAL_COVERAGE_GATE: 'operations/evidence/official-coverage.json',
     PERSONAL_RISK_GATE: 'operations/evidence/personal-risk.json',
-    V04_PROMOTION_GATE: 'operations/evidence/v04-promotion.json',
 }
 POLICY_LIVE_GATES = tuple(
     name for name in LIVE_REQUIREMENT_EVIDENCE if name != V04_PROMOTION_GATE
@@ -1871,7 +1870,6 @@ def evaluate_all_live_requirements(*, root: Path = PROJECT_ROOT) -> dict[str, di
         HISTORICAL_REPLAY_GATE: evaluate_historical_replay(root=root),
         OFFICIAL_COVERAGE_GATE: evaluate_official_coverage(root=root),
         PERSONAL_RISK_GATE: evaluate_personal_risk(root=root),
-        V04_PROMOTION_GATE: evaluate_v04_promotion(root=root),
     }
 
 
@@ -1966,6 +1964,8 @@ def evaluate_live_promotion(
         else:
             inputs.append({'role': 'final_live_approval', 'path': 'operations/evidence/live-approval.json', 'sha256': _sha256(approval_path)})
     if approval:
+        if approval.get("start_conditions_version") != START_CONDITIONS_VERSION:
+            blockers.append("final approval start_conditions_version must match current start conditions")
         if approval.get("schema_version") != "1.0":
             blockers.append("final approval schema_version must be 1.0")
         if approval.get("decision") != "LIVE":
@@ -2024,6 +2024,7 @@ def evaluate_live_promotion(
             "pause_on_any_blocking_gap",
             "no_automatic_order_submission",
             "live_decision_is_not_a_profit_guarantee",
+            "forward_performance_not_established_at_start",
         )
         for name in required_acknowledgements:
             if acknowledgements.get(name) is not True:
@@ -2074,6 +2075,8 @@ def validate_promoted_evidence_bundle(
         approval = _read_object(approval_path)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         return [f"typed LIVE approval evidence is invalid: {error}"]
+    if approval.get("start_conditions_version") != START_CONDITIONS_VERSION:
+        failures.append("typed LIVE approval start_conditions_version mismatch")
     if approval.get("decision") != "LIVE":
         failures.append("typed LIVE approval decision is not LIVE")
     if approval.get("schema_version") != "1.0":
@@ -2099,6 +2102,7 @@ def validate_promoted_evidence_bundle(
         "pause_on_any_blocking_gap",
         "no_automatic_order_submission",
         "live_decision_is_not_a_profit_guarantee",
+            "forward_performance_not_established_at_start",
     )
     acknowledgements = approval.get("acknowledgements", {})
     for name in required_acknowledgements:
@@ -2162,11 +2166,12 @@ def apply_live_promotion(
     for gate in POLICY_LIVE_GATES:
         policy["live_gates"][gate] = True
         policy["live_gate_evidence"][gate] = LIVE_REQUIREMENT_EVIDENCE[gate]
-    policy["v04_holdout_promotion"] = True
+    # Starting LIVE does not complete or approve the preserved holdout study.
     approval_private_relative = approval_path.resolve().relative_to(
         (root / 'operations').resolve()
     )
     policy["approval"] = {
+        "start_conditions_version": approval["start_conditions_version"],
         "approved_by": approval["approved_by"],
         "approved_at_jst": approval["approved_at_jst"],
         "evidence_path": (Path('operations') / approval_private_relative).as_posix(),
@@ -2208,7 +2213,7 @@ def _build_parser() -> argparse.ArgumentParser:
     shadow.add_argument("--history", type=Path)
     shadow.add_argument("--write-evidence", type=Path)
     coverage = subparsers.add_parser(
-        "official-coverage", help="validate official sources across the shadow window"
+        "official-coverage", help="validate current official-source coverage"
     )
     coverage.add_argument("--history", type=Path)
     coverage.add_argument("--write-evidence", type=Path)
@@ -2226,7 +2231,7 @@ def _build_parser() -> argparse.ArgumentParser:
     personal.add_argument("--at", type=str)
     personal.add_argument("--write-evidence", type=Path)
     promotion = subparsers.add_parser(
-        "v04-promotion", help="validate explicit v0.4 holdout promotion"
+        "v04-promotion", help="optional post-start v0.4 holdout research validation"
     )
     promotion.add_argument("--replay", type=Path)
     promotion.add_argument("--historical-evidence", type=Path)

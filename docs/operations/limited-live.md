@@ -2,7 +2,7 @@
 
 `LIMITED_LIVE`の正本は `config/policy.json` と
 [`operation/limited_live.py`](../../src/stock_jp/operation/limited_live.py)。
-通常LIVEに必要な正式な過去検証・holdoutとは別に、限定資金での実約定を確認するモード。
+通常LIVEの[開始条件 v2](start-conditions-v2.md)とは別に、限定資金での実約定を確認するモード。
 資金上限、累積損失停止、新規注文数、追加購入可否はpolicyに定義する。
 
 `operations/evidence/limited-live-plan.json` に診断結果、対象範囲、損失停止率、

@@ -1,5 +1,8 @@
 # LIVE判定と人の承認
 
+開始条件の正本は[開始条件 v2](start-conditions-v2.md)。将来期間・観測回数は開始後の研究項目とし、
+holdout未実施を合格にせず、現在検証できる実質条件と本人承認を必要とする。
+
 有効な条件は [`config/policy.json`](../../config/policy.json)、判定処理は
 [`operation/evidence.py`](../../src/stock_jp/operation/evidence.py) と
 [`operation/policy.py`](../../src/stock_jp/operation/policy.py) が正本。

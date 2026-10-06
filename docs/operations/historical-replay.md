@@ -85,5 +85,8 @@ forward入力の正本は
 python -m stock_jp research replay --manifest research/historical-replay/v04-forward/input-manifest.json validate
 ```
 
-この検証が不足を返す間はPAPERを続ける。契約・権利が確認できない日次指数、
+将来のholdout期間・観測回数は[開始条件 v2](start-conditions-v2.md)では開始前ゲートにしない。
+このforward研究の不足は研究未完了として保持し、旧研究の未実施・不足を合格へ変更しない。
+現在のPIT・データ整合性・必要な一次資料レビュー・リスク確認と本人の最終承認は引き続き必要で、
+現行の運用設定はPAPER / HUMAN_ONLYである。契約・権利が確認できない日次指数、
 全銘柄の採点、財務・開示による出口を、取得した件数だけで確認済みにしない。

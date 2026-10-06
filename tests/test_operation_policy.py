@@ -90,6 +90,7 @@ class OperationPolicyTest(unittest.TestCase):
             policy["live_gates"][gate] = True
             policy["live_gate_evidence"][gate] = f'operations/evidence/{gate}.md'
         policy["approval"] = {
+            "start_conditions_version": "readiness-v2-2026-10-07",
             "approved_by": "human",
             "approved_at_jst": "2027-09-01T00:00:00+09:00",
             "evidence_path": 'operations/approvals/live.md',
@@ -101,7 +102,7 @@ class OperationPolicyTest(unittest.TestCase):
         self.assertTrue(allowed["live_orders_allowed"])
         self.assertEqual(allowed["ticket_status"], "PROPOSED")
 
-    def test_v03_needs_separate_holdout_promotion(self) -> None:
+    def test_v03_holdout_is_post_start_research(self) -> None:
         policy = copy.deepcopy(self.policy)
         policy["operation_mode"] = "LIVE"
         policy["active_rule_version"] = "v0.3"
@@ -110,28 +111,34 @@ class OperationPolicyTest(unittest.TestCase):
             policy["live_gates"][gate] = True
             policy["live_gate_evidence"][gate] = f'operations/evidence/{gate}.md'
         policy["approval"] = {
+            "start_conditions_version": "readiness-v2-2026-10-07",
             "approved_by": "human",
             "approved_at_jst": "2027-09-01T00:00:00+09:00",
             "evidence_path": 'operations/approvals/live.md',
         }
 
-        self.assertIn("v03_holdout_promotion", policy_status(policy)["live_gate_failures"])
+        self.assertNotIn("v03_holdout_promotion", policy_status(policy)["live_gate_failures"])
+        self.assertTrue(policy_status(policy)["live_orders_allowed"])
+        self.assertFalse(policy["v03_holdout_promotion"])
         policy["v03_holdout_promotion"] = True
         self.assertTrue(policy_status(policy)["live_orders_allowed"])
 
-    def test_v04_needs_separate_holdout_promotion(self) -> None:
+    def test_v04_holdout_is_post_start_research(self) -> None:
         policy = copy.deepcopy(self.policy)
         policy["operation_mode"] = "LIVE"
         for gate in policy["live_gates"]:
             policy["live_gates"][gate] = True
             policy["live_gate_evidence"][gate] = f'operations/evidence/{gate}.md'
         policy["approval"] = {
+            "start_conditions_version": "readiness-v2-2026-10-07",
             "approved_by": "human",
             "approved_at_jst": "2027-09-01T00:00:00+09:00",
             "evidence_path": 'operations/approvals/live.md',
         }
 
-        self.assertIn("v04_holdout_promotion", policy_status(policy)["live_gate_failures"])
+        self.assertNotIn("v04_holdout_promotion", policy_status(policy)["live_gate_failures"])
+        self.assertTrue(policy_status(policy)["live_orders_allowed"])
+        self.assertFalse(policy_status(policy)["post_start_research"]["v04_holdout_promotion"])
         policy["v04_holdout_promotion"] = True
         self.assertTrue(policy_status(policy)["live_orders_allowed"])
 

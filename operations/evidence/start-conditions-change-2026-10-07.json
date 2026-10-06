@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "decision": "CHANGE_START_CONDITIONS_ONLY",
+  "start_conditions_version": "readiness-v2-2026-10-07",
+  "instruction_at_jst": "2026-10-07T05:56:00+09:00",
+  "timestamp_precision": "MINUTE_REPORTED_BY_PARENT",
+  "instruction": "観測は4月までは必要ないです、時間で解決する問題は、今の時間がもったいないので開始前のルールにしないでください",
+  "source_thread_id": "01a0f72a-68e4-752c-be8c-d922a1a3501d",
+  "removed_from_start_requirements": [
+    "future_holdout_end_date",
+    "minimum_future_monthly_evaluations",
+    "minimum_future_trades",
+    "elapsed_paper_duration",
+    "future_consecutive_runs"
+  ],
+  "preserved_research_plan": "operations/evidence/v04-holdout-plan.json",
+  "research_completed": false,
+  "owner_live_approval": false,
+  "trade_authorization": false,
+  "broker_submission": "HUMAN_ONLY"
+}
