@@ -35,6 +35,11 @@ python -m stock_jp operation run resume-review --run-id <YYYY-MM-DD> --at <JST�
 この入口は既存runのleaseを取得し、失敗attemptを再開する。provider通信、資料の再取得、
 採点・MRSの再計算、レビュー成果物の再生成は行わない。元のcutoffと未完了課題を保つ。
 有効なleaseを持つ本人は `--run-token` で続行でき、別writerは `locked` で停止する。
+この再開経路ではworkspace初期化・schema移行も行わず、旧形式の注文資料を保持する。
+旧形式の資料を読めることと、finalizeの形式検証を通過することは別である。
+既存runの再開・lease取得/解放・完了/失敗処理・finalizeのrollbackは、同じrun directoryの
+排他ロックを共有する。これは同一Linux作業領域の書込保護で、別checkoutやGit branch間の
+排他ではない。別writerとのリモート競合確認も引き続き必要とする。
 `investment_readiness=NOT_EVALUATED` は購入可能を意味しない。
 これは採用済み作業領域の再開用で、source inboxからstateや台帳を自動復元する機能ではない。
 

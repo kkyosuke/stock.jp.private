@@ -4,11 +4,15 @@ from __future__ import annotations
 from stock_jp.workspace import record_path
 
 import csv
+from contextlib import contextmanager
 from datetime import datetime, timedelta
+import fcntl
 import json
 import math
+import os
 from pathlib import Path
 import tempfile
+import threading
 from typing import Any
 from urllib.parse import urlparse
 import uuid
@@ -21,6 +25,37 @@ from stock_jp.operation.artifacts import validate_nightly_artifacts
 
 JST = ZoneInfo("Asia/Tokyo")
 LEASE_HOURS = 6
+_HELD_RUN_LOCKS = threading.local()
+
+
+@contextmanager
+def run_write_lock(run_dir: Path):
+    """Serialize local lease/handoff transactions on the stable run directory.
+
+    Lock the directory inode rather than a replaced JSON file, without creating
+    or modifying saved inputs. Nested calls in the same thread reuse the lock.
+    All writers must use this protocol; it is not a cross-checkout Git lock.
+    """
+    path = run_dir.resolve()
+    held = getattr(_HELD_RUN_LOCKS, "paths", None)
+    if held is None:
+        held = _HELD_RUN_LOCKS.paths = set()
+    if path in held:
+        yield
+        return
+    descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        held.add(path)
+        try:
+            yield
+        finally:
+            held.remove(path)
+            fcntl.flock(descriptor, fcntl.LOCK_UN)
+    finally:
+        os.close(descriptor)
+
+
 SOURCE_FIELDS = [
     "source_id",
     "category",
@@ -162,6 +197,13 @@ def write_coverage_manifest(
 def acquire_run_lease(
     *, run_dir: Path, run_id: str, at: str, run_token: str | None = None
 ) -> dict[str, Any]:
+    with run_write_lock(run_dir):
+        return _acquire_run_lease(run_dir=run_dir, run_id=run_id, at=at, run_token=run_token)
+
+
+def _acquire_run_lease(
+    *, run_dir: Path, run_id: str, at: str, run_token: str | None = None
+) -> dict[str, Any]:
     now = _parse_aware(at)
     path = run_dir / "lease.json"
     existed = path.is_file()
@@ -221,12 +263,13 @@ def require_run_lease(*, run_dir: Path, run_token: str, at: str) -> None:
 
 
 def release_run_lease(*, run_dir: Path, run_token: str, at: str) -> None:
-    require_run_lease(run_dir=run_dir, run_token=run_token, at=at)
-    path = run_dir / "lease.json"
-    lease = _read_json(path)
-    lease["status"] = "RELEASED"
-    lease["released_at_jst"] = _parse_aware(at).isoformat(timespec="seconds")
-    _atomic_write_json(path, lease)
+    with run_write_lock(run_dir):
+        require_run_lease(run_dir=run_dir, run_token=run_token, at=at)
+        path = run_dir / "lease.json"
+        lease = _read_json(path)
+        lease["status"] = "RELEASED"
+        lease["released_at_jst"] = _parse_aware(at).isoformat(timespec="seconds")
+        _atomic_write_json(path, lease)
 
 
 def _validate_report(

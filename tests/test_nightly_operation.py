@@ -2,17 +2,20 @@ from tests.operation_test_support import prepare_write
 from stock_jp.workspace import project_root, record_path
 import csv
 from datetime import date, datetime
+import fcntl
 import json
+import os
 from pathlib import Path
 import shutil
+import threading
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
 from stock_jp.operation.artifacts import create_nightly_artifacts, next_trading_date, validate_nightly_artifacts
 from stock_jp.operation.nightly import finalize_nightly_run, resume_nightly_review, start_nightly_run
-from stock_jp.operation.runs import fail_run
-from stock_jp.operation.integrity import acquire_run_lease
+from stock_jp.operation.runs import fail_run, prepare_run
+from stock_jp.operation.integrity import acquire_run_lease, run_write_lock
 from stock_jp.operation.state import PROJECT_ROOT, initialize_or_migrate_workspace
 from stock_jp.operation.orders import _require_entry_assessment, propose_order
 from tests.operation_test_support import write_price_archive
@@ -733,6 +736,105 @@ class NightlyOperationTest(unittest.TestCase):
         self.assertEqual(result["status"], "locked")
         self.assertNotIn("run_token", result)
         self.assertEqual(before, {name: (run_dir / name).read_bytes() for name in before})
+
+    def test_locked_offline_review_never_migrates_legacy_orders_in_any_run(self) -> None:
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        legacy = b"ticket_id,code,status\r\nlegacy,1234,PAPER_PROPOSED\r\n"
+        (run_dir / "orders.csv").write_bytes(legacy)
+        other = self.root / "operations/runs/2026-08-28"
+        other.mkdir()
+        (other / "orders.csv").write_bytes(legacy)
+        before = {str(p.relative_to(self.root)): p.read_bytes()
+                  for p in self.root.rglob("*") if p.is_file()}
+        result = resume_nightly_review(run_id="2026-08-31", at="2026-08-31T18:45:00+09:00", root=self.root)
+        self.assertEqual(result["status"], "locked")
+        after = {str(p.relative_to(self.root)): p.read_bytes()
+                 for p in self.root.rglob("*") if p.is_file()}
+        self.assertEqual(after, before)
+
+    def test_existing_only_preparation_never_initializes_missing_workspace(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with self.assertRaisesRegex(ValueError, "requires resume_run_id"):
+                prepare_run(at="2026-08-31T18:45:00+09:00", root=root, existing_only=True)
+            with self.assertRaises(FileNotFoundError):
+                prepare_run(at="2026-08-31T18:45:00+09:00", root=root,
+                            resume_run_id="2026-08-31", existing_only=True)
+            self.assertEqual(list(root.iterdir()), [])
+
+    def test_owned_offline_review_preserves_legacy_orders_without_initializer(self) -> None:
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        legacy = b"ticket_id,code,status\r\nlegacy,1234,PAPER_PROPOSED\r\n"
+        (run_dir / "orders.csv").write_bytes(legacy)
+        with patch("stock_jp.operation.runs.initialize_workspace", side_effect=AssertionError("migration")):
+            result = resume_nightly_review(run_id="2026-08-31", at="2026-08-31T18:45:00+09:00",
+                                           run_token=str(started["run_token"]), root=self.root)
+        self.assertEqual(result["status"], "in_progress")
+        self.assertEqual((run_dir / "orders.csv").read_bytes(), legacy)
+
+    def test_finalize_rollback_and_lease_takeover_are_one_locked_transaction(self) -> None:
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        attempted, resumed = threading.Event(), threading.Event()
+        failures = []
+        workers = []
+        real_flock = fcntl.flock
+
+        def observe_flock(fd, operation):
+            if threading.current_thread().name == "review-writer-B" and operation == fcntl.LOCK_EX:
+                attempted.set()
+            return real_flock(fd, operation)
+
+        def writer_b():
+            try:
+                result = resume_nightly_review(run_id="2026-08-31", at="2026-09-01T01:00:00+09:00", root=self.root)
+                self.assertEqual(result["status"], "in_progress")
+                with run_write_lock(run_dir):
+                    path = run_dir / "handoff.json"
+                    handoff = json.loads(path.read_text())
+                    handoff["writer_marker"] = "B owns the reclaimed attempt"
+                    path.write_text(json.dumps(handoff))
+                resumed.set()
+            except BaseException as error:
+                failures.append(error)
+
+        def fail_after_first_ownership_check(**kwargs):
+            # A has validated its lease and written its provisional schedule.
+            # A different file descriptor must already be excluded by flock.
+            fd = os.open(run_dir, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                with self.assertRaises(BlockingIOError):
+                    real_flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            finally:
+                os.close(fd)
+            thread = threading.Thread(target=writer_b, name="review-writer-B")
+            workers.append(thread)
+            thread.start()
+            self.assertTrue(attempted.wait(5), "writer B never attempted the shared lock")
+            self.assertFalse(resumed.is_set(), "lease changed during A's finalize transaction")
+            raise RuntimeError("force rollback while B waits to reclaim")
+
+        with patch("stock_jp.operation.integrity.fcntl.flock", side_effect=observe_flock), \
+                patch("stock_jp.operation.nightly.complete_run", side_effect=fail_after_first_ownership_check):
+            try:
+                with self.assertRaisesRegex(RuntimeError, "force rollback"):
+                    finalize_nightly_run(run_id="2026-08-31", run_token=str(started["run_token"]),
+                                         completed_at="2026-08-31T19:05:00+09:00",
+                                         source_cutoff="2026-08-31T18:30:00+09:00", price_date="2026-08-31",
+                                         summary="A must roll back before B takes over", root=self.root)
+            finally:
+                for thread in workers:
+                    thread.join(5)
+                    self.assertFalse(thread.is_alive())
+        self.assertEqual(failures, [])
+        self.assertTrue(resumed.is_set())
+        handoff = json.loads((run_dir / "handoff.json").read_text())
+        self.assertEqual(handoff["writer_marker"], "B owns the reclaimed attempt")
+        self.assertEqual(handoff["attempt"], 2)
+        self.assertEqual(handoff["resumed_at_jst"], "2026-09-01T01:00:00+09:00")
+        self.assertNotEqual(json.loads((run_dir / "lease.json").read_text())["run_token"], started["run_token"])
 
     def test_offline_review_rejects_missing_artifacts_before_mutation(self) -> None:
         started = self._start()

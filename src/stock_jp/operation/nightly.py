@@ -12,7 +12,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from stock_jp.operation.assessment import run_assessments
-from stock_jp.operation.integrity import require_run_lease
+from stock_jp.operation.integrity import require_run_lease, run_write_lock
 from stock_jp.operation.runs import complete_run, fail_run, prepare_run, read_status
 from stock_jp.operation.artifacts import create_nightly_artifacts
 from stock_jp.market_data.disclosures import scan_sources
@@ -163,7 +163,7 @@ def resume_nightly_review(
     # resumes an existing run here; source scans, assessments and review artifacts
     # must not be refreshed merely to obtain a new review token.
     prepared = prepare_run(
-        at=at, run_token=run_token, root=root, resume_run_id=run_id
+        at=at, run_token=run_token, root=root, resume_run_id=run_id, existing_only=True
     )
     return {
         **prepared,
@@ -195,44 +195,45 @@ def finalize_nightly_run(
     if date.fromisoformat(run_id).isoformat() != run_id:
         raise ValueError("run_id must be an ISO date")
     run_dir = root / 'operations/runs' / run_id
-    frozen_path = run_dir / "source-scan-cutoff.json"
-    if frozen_path.exists() and _read_json(frozen_path) != {
-        "cutoff_at_jst": _parse_jst(source_cutoff).isoformat(timespec="seconds")
-    }:
-        raise ValueError("finalize must preserve the original source-scan cutoff")
-    handoff_path = run_dir / "handoff.json"
-    handoff = _read_json(handoff_path)
-    previous_next_run = handoff.get("next_run_at_jst")
-    already_completed = handoff.get("status") == "completed"
-    next_run_at = previous_next_run
-    if not already_completed:
-        # Check ownership before writing even a provisional schedule. A rejected
-        # writer must not overwrite the current writer's handoff during rollback.
-        require_run_lease(run_dir=run_dir, run_token=run_token, at=completed_at)
-        next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
-        handoff["next_run_at_jst"] = next_run_at
-        _atomic_json(handoff_path, handoff)
-    try:
-        result = complete_run(
-            run_id=run_id,
-            run_token=run_token,
-            completed_at=completed_at,
-            source_cutoff=source_cutoff,
-            price_date=price_date,
-            summary=summary,
-            alert_count=alert_count,
-            root=root,
-        )
-    except Exception:
+    with run_write_lock(run_dir):
+        frozen_path = run_dir / "source-scan-cutoff.json"
+        if frozen_path.exists() and _read_json(frozen_path) != {
+            "cutoff_at_jst": _parse_jst(source_cutoff).isoformat(timespec="seconds")
+        }:
+            raise ValueError("finalize must preserve the original source-scan cutoff")
+        handoff_path = run_dir / "handoff.json"
+        handoff = _read_json(handoff_path)
+        previous_next_run = handoff.get("next_run_at_jst")
+        already_completed = handoff.get("status") == "completed"
+        next_run_at = previous_next_run
         if not already_completed:
-            handoff["next_run_at_jst"] = previous_next_run
+            # Check ownership before writing even a provisional schedule. A rejected
+            # writer must not overwrite the current writer's handoff during rollback.
+            require_run_lease(run_dir=run_dir, run_token=run_token, at=completed_at)
+            next_run_at = _next_weeknight(_parse_jst(completed_at), completed_run_id=run_id)
+            handoff["next_run_at_jst"] = next_run_at
             _atomic_json(handoff_path, handoff)
-        raise
-    return {
-        **result,
-        "next_run_at_jst": next_run_at,
-        "wait_instruction": "次回夜間実行まで待機。LIMITED_LIVE/LIVE注文候補だけ翌朝に人間が確認する。",
-    }
+        try:
+            result = complete_run(
+                run_id=run_id,
+                run_token=run_token,
+                completed_at=completed_at,
+                source_cutoff=source_cutoff,
+                price_date=price_date,
+                summary=summary,
+                alert_count=alert_count,
+                root=root,
+            )
+        except Exception:
+            if not already_completed:
+                handoff["next_run_at_jst"] = previous_next_run
+                _atomic_json(handoff_path, handoff)
+            raise
+        return {
+            **result,
+            "next_run_at_jst": next_run_at,
+            "wait_instruction": "次回夜間実行まで待機。LIMITED_LIVE/LIVE注文候補だけ翌朝に人間が確認する。",
+        }
 
 
 def nightly_status(root: Path = PROJECT_ROOT) -> dict[str, Any]:

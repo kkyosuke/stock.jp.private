@@ -1,6 +1,6 @@
 # 新環境でのオフライン調査と次の工程
 
-2026-10-06。市場provider通信・Actions起動・マージ・実取引は行わない。
+2026-10-06。初回調査では市場provider通信・Actions起動・マージ・実取引を行っていない。
 旧環境を再稼働せず、新環境の最新GitHubと保存済み資料を確認した。
 
 ## 確認した状態
@@ -58,7 +58,11 @@ PR72の `paper_preparation.py` は `start_nightly_run` の後に `fail_run` を�
 今回 `run resume-review` を追加し、保存済みrunのleaseを取得してレビューへ戻る経路を設けた。
 通信も再計算も行わず、cutoff・原本・未レビュー課題を保持する。日付を越えた再開も可能。
 別writerはlocked、欠けた成果物や異なるpolicyは拒否する。再開時の投資判定はNOT_EVALUATED。
-`finalize_nightly_run` はhandoffを書く前にもleaseを確認するよう修正した。
+`finalize_nightly_run` はhandoffを書く前にもleaseを確認する。追加レビューを受け、
+既存run専用の再開ではworkspace初期化・移行を呼ばず、旧order headerも保持する。
+再開・lease取得/解放・完了/失敗処理・finalize全体（rollbackを含む）は同じrun directoryの
+排他ロックを共有し、検証後のlease交代と古いhandoffの復元が競合しないようにした。
+別checkout間の排他を保証するものではない。
 
 残る実作業は次のとおり。
 
@@ -74,14 +78,15 @@ PR72の `paper_preparation.py` は `start_nightly_run` の後に `fail_run` を�
 
 ## 実行と予算
 
-- 今回の市場provider要求数0、Actions dispatch 0、売買0。GitHubは読取・独立draft PR保存のみ。
+- 市場provider要求数0、Actions dispatch 0、売買0。追加レビュー対応後は下記の通常PR CIのみ許可された。
 - 保存済み315ファイルの確認とレビュー再開はprovider予算0で実行できる。
 - 10月5日のnightlyは9/12消費済みで追加取得不要。残3回を再取得の理由にしない。
 - PR72のPAPERスキャンは1 pass最大12要求、最大5 passで最大60要求。
   これは日次市場取得の12回枠とは別経路で、再開前に保存済み消費・cacheを照合する必要がある。
   保存済み朝の結果は49照会が完了している。今夜のcutoffには新しい対象があり得るため、
   cache利用後の必要要求数をdry inventoryで積算してから、実行を別途承認対象として提示する。
-- 新ルール検証のCI・PAPER workflow実行、正式取得の追加予算は今回は未承認・未実行。
+- 新ルールのPAPER workflow実行、正式取得の追加予算は未承認・未実行。
   有料指数契約の追加は指数不使用の移行案には不要。認証・アクセス・保護設定は変更しない。
-- draft PRには `[skip ci]` commitを使い、今回禁止されたActionsの自動起動も抑止する。
-  ローカル検証はActions成功の代わりとは記載せず、マージ前には同じheadのCIが別途必要。
+- 初回draft PRは `[skip ci]` でActions起動を抑止した。追加指示により修正commitでは
+  skip指定を外し、通常pushによるPR CIを起動する。手動dispatch・設定変更・マージはしない。
+  ローカル検証と最終headのCI結果を区別して報告する。
