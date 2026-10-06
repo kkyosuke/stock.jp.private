@@ -193,7 +193,10 @@ class PersonalStateTransitionTest(unittest.TestCase):
         pass
 
     def run_market_assessment(self):
-        pass
+        path=self.root / f'operations/runs/{self.run_id}/assessment-status.json'
+        path.write_text(json.dumps({'calculated_at_jst':'2026-10-02T18:45:00+09:00',
+            'market_regime':{'status':'UNAVAILABLE','state':'UNAVAILABLE','entry_multiplier':0.0,
+                             'error':'synthetic missing MRS evidence','log_recorded':False}}))
 
     def git(self,*args):
         return subprocess.check_output(['git','-C',str(self.root),*args],stderr=subprocess.DEVNULL).decode().strip()
@@ -378,7 +381,7 @@ class OfficialMarketRegimePublicationTest(PersonalStateTransitionTest):
             entries=[{'path':'operations/inputs/market-regime/'+name,'status':'A'},
                      {'path':'operations/ledgers/market-regime-log.csv','status':'M'}]
             with self.subTest(name=name),self.assertRaisesRegex(p.Blocked,'configured provider'):
-                p.validate_market_regime_append(self.root,self.base,self.head,self.run_id,self.root,entries,{})
+                p.validate_market_regime_append(self.root,self.base,self.head,self.run_id,self.root,entries,json.loads((self.root/f'operations/runs/{self.run_id}/handoff.json').read_text()))
 
     def test_missing_originals_cannot_be_published_as_current(self):
         path=self.root / '.work/market-data/jquants/index-history/legacy-observation.json'
@@ -434,3 +437,82 @@ class OfficialMarketRegimePublicationTest(PersonalStateTransitionTest):
         raw=json.loads(self.input_path.read_text());raw['as_of']='2026-09-29'
         with self.assertRaisesRegex(p.Blocked,'input date mismatch'):
             p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+
+class ReusedOfficialMarketRegimeTest(PersonalStateTransitionTest):
+    prepare_market_fixture = OfficialMarketRegimePublicationTest.prepare_market_fixture
+    run_market_assessment = OfficialMarketRegimePublicationTest.run_market_assessment
+    def reused_base(self, transform=None):
+        original_head=self.head
+        self.git('checkout','--detach',self.base)
+        self.git('checkout',original_head,'--','operations/inputs/market-regime','operations/ledgers/market-regime-log.csv')
+        self.log.write_text(self.log.read_text().replace('2026-10-02T18:45:00+09:00','2026-10-01T18:45:00+09:00'))
+        if transform:self.log.write_text(transform(self.log.read_text()))
+        self.git('add','operations');self.git('commit','-m','existing verified MRS')
+        self.base=self.git('rev-parse','HEAD')
+        self.git('checkout',original_head,'--','operations')
+        self.git('checkout',self.base,'--','operations/inputs/market-regime','operations/ledgers/market-regime-log.csv')
+        self.git('commit','-m','run reusing existing MRS');self.head=self.git('rev-parse','HEAD')
+
+    def test_current_without_new_input_or_log_cannot_skip_validation(self):
+        self.git('rm',str(self.input_path.relative_to(self.root)))
+        self.git('checkout',self.base,'--','operations/ledgers/market-regime-log.csv')
+        self.git('commit','-m','omit MRS input and log')
+        with self.assertRaisesRegex(p.Blocked,'referenced input missing'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_unchanged_base_input_and_log_are_recalculated(self):
+        self.reused_base()
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+        self.assertEqual(len(proof['market_regime_evidence']['index_evidence_sha256']),64)
+        path=self.root/f'operations/runs/{self.run_id}/assessment-status.json'
+        raw=json.loads(path.read_text());raw['market_regime']={k:v for k,v in raw['market_regime'].items()
+            if k in ('status','as_of','state','score','entry_multiplier','log_recorded')}
+        path.write_text(json.dumps(raw));self.git('add','operations');self.git('commit','-m','compact reused assessment')
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+        self.assertIsNotNone(proof['market_regime_evidence'])
+        raw['market_regime']['score']+=1;path.write_text(json.dumps(raw))
+        self.git('add','operations');self.git('commit','-m','false current')
+        with self.assertRaisesRegex(p.Blocked,'differs from recalculation'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_reuse_still_rejects_late_originals(self):
+        self.reused_base();OfficialMarketRegimePublicationTest.test_late_originals_cannot_be_published_as_current(self)
+
+    def test_unavailable_without_new_input_or_log_preserves_hold(self):
+        self.git('rm',str(self.input_path.relative_to(self.root)))
+        self.git('checkout',self.base,'--','operations/ledgers/market-regime-log.csv')
+        PersonalStateTransitionTest.run_market_assessment(self)
+        self.git('add','operations');self.git('commit','-m','honest unavailable MRS')
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+        self.assertEqual(proof['market_regime_evidence']['status'],'UNAVAILABLE')
+        path=self.root/f'operations/runs/{self.run_id}/assessment-status.json'
+        raw=json.loads(path.read_text());raw['market_regime']['log_recorded']=True
+        path.write_text(json.dumps(raw));self.git('add','operations');self.git('commit','-m','false unavailable log')
+        with self.assertRaisesRegex(p.Blocked,'UNAVAILABLE MRS'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_reused_current_requires_a_matching_existing_log(self):
+        self.reused_base(lambda text:text.replace('2026-09-30,MRS-v0.1,','2026-09-29,MRS-v0.1,'))
+        with self.assertRaisesRegex(p.Blocked,'log missing or ambiguous'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_reused_future_log_is_rejected(self):
+        self.reused_base(lambda text:text.replace('2026-10-01T18:45:00+09:00','2099-10-01T18:45:00+09:00'))
+        with self.assertRaisesRegex(p.Blocked,'outside evidenced chronology'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_reused_log_cannot_predate_its_input_cutoff(self):
+        self.reused_base(lambda text:text.replace('2026-10-01T18:45:00+09:00','2026-09-01T18:45:00+09:00'))
+        with self.assertRaisesRegex(p.Blocked,'outside evidenced chronology'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_missing_assessment_is_not_a_completed_evaluation(self):
+        self.git('rm',f'operations/runs/{self.run_id}/assessment-status.json')
+        self.git('commit','-m','omit assessment')
+        with self.assertRaisesRegex(p.Blocked,'assessment evidence missing'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_reused_log_components_must_match_original_inputs(self):
+        self.reused_base(lambda text:text.replace('2026-09-30,MRS-v0.1,1.0,','2026-09-30,MRS-v0.1,2.0,'))
+        with self.assertRaisesRegex(p.Blocked,'reused MRS log differs'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
