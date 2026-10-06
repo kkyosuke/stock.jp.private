@@ -33,7 +33,8 @@ class CumulativeProviderBudgetTests(unittest.TestCase):
         self.debit(2)
         first = self.fixture.run_preview()
         self.assertEqual((first['requests_used'], first['requests_for_date']), (9, 11))
-        self.assertIn('通信: 11/12', self.repo.pulls[0]['body'])
+        pull_request = next(body for method, path, body in self.repo.calls if method == 'POST' and path.endswith('/pulls'))
+        self.assertIn('通信: 11/12', pull_request['body'])
         self.paper().reserve('https://example.com/offline')
         with self.assertRaises(ingest.RequestBudgetExhausted):
             self.paper().reserve('https://example.com/offline')
