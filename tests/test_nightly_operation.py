@@ -10,7 +10,9 @@ import unittest
 from unittest.mock import patch
 
 from stock_jp.operation.artifacts import create_nightly_artifacts, next_trading_date, validate_nightly_artifacts
-from stock_jp.operation.nightly import finalize_nightly_run, start_nightly_run
+from stock_jp.operation.nightly import finalize_nightly_run, resume_nightly_review, start_nightly_run
+from stock_jp.operation.runs import fail_run
+from stock_jp.operation.integrity import acquire_run_lease
 from stock_jp.operation.state import PROJECT_ROOT, initialize_or_migrate_workspace
 from stock_jp.operation.orders import _require_entry_assessment, propose_order
 from tests.operation_test_support import write_price_archive
@@ -29,6 +31,8 @@ class NightlyScheduleTest(unittest.TestCase):
             (prepare_write(run / "handoff.json")).write_text(json.dumps(original))
             cutoff = "2026-08-31T21:00:00+09:00"
             (prepare_write(run / "source-scan-cutoff.json")).write_text(json.dumps({"cutoff_at_jst": cutoff}))
+            lease = acquire_run_lease(run_dir=run, run_id="2026-08-31",
+                                      at="2026-09-01T00:30:00+09:00")
             def inspect_completion(**kwargs):
                 self.assertEqual(kwargs["run_id"], "2026-08-31")
                 self.assertEqual(kwargs["source_cutoff"], cutoff)
@@ -37,7 +41,7 @@ class NightlyScheduleTest(unittest.TestCase):
                 raise RuntimeError("isolated completion gate")
             with patch('stock_jp.operation.nightly.complete_run', side_effect=inspect_completion):
                 with self.assertRaisesRegex(RuntimeError, "isolated completion gate"):
-                    finalize_nightly_run(run_id="2026-08-31", run_token="synthetic",
+                    finalize_nightly_run(run_id="2026-08-31", run_token=lease["run_token"],
                                          completed_at="2026-09-01T01:00:00+09:00",
                                          source_cutoff=cutoff, price_date="2026-08-31",
                                          summary="isolated scheduling test", root=root)
@@ -694,6 +698,128 @@ class NightlyOperationTest(unittest.TestCase):
 
         after = json.loads(handoff_path.read_text(encoding="utf-8"))
         self.assertEqual(after.get("next_run_at_jst"), before.get("next_run_at_jst"))
+
+    def test_offline_review_preserves_saved_inputs_and_does_not_complete_run(self) -> None:
+        self._add_holding()
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        fail_run(run_id="2026-08-31", run_token=str(started["run_token"]),
+                 completed_at="2026-08-31T19:00:00+09:00", summary="Review required", root=self.root)
+        before = {p.name: p.read_bytes() for p in run_dir.iterdir() if p.is_file()
+                  and p.name not in {"lease.json", "handoff.json"}}
+        state = (self.root / "operations/state.json").read_bytes()
+        with patch("stock_jp.operation.nightly.scan_sources", side_effect=AssertionError("network")), \
+                patch("stock_jp.operation.nightly.run_assessments", side_effect=AssertionError("refresh")), \
+                patch("stock_jp.operation.nightly.create_nightly_artifacts", side_effect=AssertionError("rewrite")), \
+                patch("stock_jp.operation.nightly.check_readiness", side_effect=AssertionError("current inputs")):
+            resumed = resume_nightly_review(run_id="2026-08-31", at="2026-09-01T01:00:00+09:00", root=self.root)
+        self.assertEqual(resumed["status"], "in_progress")
+        self.assertEqual(resumed["investment_readiness"], "NOT_EVALUATED")
+        self.assertEqual(resumed["source_cutoff_jst"], "2026-08-31T18:30:00+09:00")
+        self.assertEqual(json.loads((run_dir / "handoff.json").read_text())["attempt"], 2)
+        self.assertEqual(before, {name: (run_dir / name).read_bytes() for name in before})
+        with self.assertRaises(ValueError):
+            finalize_nightly_run(run_id="2026-08-31", run_token=resumed["run_token"],
+                                 completed_at="2026-09-01T01:05:00+09:00",
+                                 source_cutoff=resumed["source_cutoff_jst"], price_date="2026-08-31",
+                                 summary="unreviewed must fail", root=self.root)
+        self.assertEqual((self.root / "operations/state.json").read_bytes(), state)
+
+    def test_offline_review_respects_active_writer(self) -> None:
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        before = {p.name: p.read_bytes() for p in run_dir.iterdir() if p.is_file()}
+        result = resume_nightly_review(run_id="2026-08-31", at="2026-08-31T18:45:00+09:00", root=self.root)
+        self.assertEqual(result["status"], "locked")
+        self.assertNotIn("run_token", result)
+        self.assertEqual(before, {name: (run_dir / name).read_bytes() for name in before})
+
+    def test_offline_review_rejects_missing_artifacts_before_mutation(self) -> None:
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        (run_dir / "source-scan-cutoff.json").unlink()
+        before = (run_dir / "lease.json").read_bytes()
+        with self.assertRaisesRegex(ValueError, "saved artifacts"):
+            resume_nightly_review(run_id="2026-08-31", at="2026-09-01T01:00:00+09:00", root=self.root)
+        self.assertEqual((run_dir / "lease.json").read_bytes(), before)
+
+    def test_offline_review_rejects_changed_rule_version(self) -> None:
+        started = self._start()
+        path = self.root / str(started["run_dir"]) / "handoff.json"
+        handoff = json.loads(path.read_text())
+        handoff["active_rule_version"] = "different-rule"
+        path.write_text(json.dumps(handoff))
+        with self.assertRaisesRegex(ValueError, "policy differs"):
+            resume_nightly_review(run_id="2026-08-31", at="2026-09-01T01:00:00+09:00", root=self.root)
+
+    def test_non_owner_finalize_never_writes_handoff(self) -> None:
+        started = self._start()
+        with patch("stock_jp.operation.nightly._atomic_json") as write:
+            with self.assertRaisesRegex(ValueError, "does not own"):
+                finalize_nightly_run(run_id="2026-08-31", run_token="another-writer",
+                                     completed_at="2026-08-31T19:05:00+09:00",
+                                     source_cutoff="2026-08-31T18:30:00+09:00", price_date="2026-08-31",
+                                     summary="wrong writer", root=self.root)
+        write.assert_not_called()
+
+    def test_reviewed_wait_completes_with_zero_orders_without_entry_readiness(self) -> None:
+        from tests.test_daily_operation import complete_artifacts
+        self._add_holding()
+        started = self._start()
+        run_dir = self.root / str(started["run_dir"])
+        # Synthetic primary-source review only. Company/MRS inputs stay missing.
+        complete_artifacts(self.root, started)
+        queue_path = run_dir / "research-queue.json"
+        queue = json.loads(queue_path.read_text())
+        for task in queue["tasks"]:
+            task["status"] = "DEFERRED"
+        queue_path.write_text(json.dumps(queue))
+        handoff_path = run_dir / "handoff.json"
+        handoff = json.loads(handoff_path.read_text())
+        handoff["data_gaps"] = []
+        handoff["pending_reviews"] = [task["task_id"] for task in queue["tasks"]]
+        handoff_path.write_text(json.dumps(handoff))
+        coverage_path = run_dir / "coverage.json"
+        coverage = json.loads(coverage_path.read_text())
+        coverage["data_gaps"] = []
+        coverage_path.write_text(json.dumps(coverage))
+        plan_path = run_dir / "work-plan.json"
+        plan = json.loads(plan_path.read_text())
+        for task in plan["tasks"]:
+            if task["task_type"] in {"market_regime_input", "investment_case"}:
+                task["status"] = "DEFERRED"
+                task["evidence_source_ids"] = []
+                handoff["pending_reviews"].append(task["task_id"])
+        plan_path.write_text(json.dumps(plan))
+        handoff_path.write_text(json.dumps(handoff))
+        actions_path = run_dir / "next-day-actions.csv"
+        with actions_path.open(newline="") as source:
+            reader = csv.DictReader(source)
+            fields, actions = reader.fieldnames, list(reader)
+        actions[0].update(code="1234", next_action="WAIT", rule_ids="OPS-ASSESSMENT-INPUT",
+                          trigger_condition="Company and MRS inputs missing", human_action="Complete deferred reviews")
+        with actions_path.open("w", newline="") as destination:
+            writer = csv.DictWriter(destination, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(actions)
+        with self.assertRaises(ValueError):
+            _require_entry_assessment(run_dir, "1234")
+        resumed = resume_nightly_review(run_id="2026-08-31", at="2026-08-31T19:00:00+09:00",
+                                        run_token=str(started["run_token"]), root=self.root)
+        kwargs = dict(run_id="2026-08-31", run_token=resumed["run_token"],
+                      completed_at="2026-08-31T19:05:00+09:00", source_cutoff=resumed["source_cutoff_jst"],
+                      price_date="2026-08-31", summary="WAIT; missing inputs retained; zero orders", root=self.root)
+        result = finalize_nightly_run(**kwargs)
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["order_count"], 0)
+        state = json.loads((self.root / "operations/state.json").read_text())
+        self.assertTrue(state["pending_reviews"])
+        self.assertEqual(state["last_disclosure_cutoff_jst"], resumed["source_cutoff_jst"])
+        history = (self.root / "operations/run-history.csv").read_bytes()
+        self.assertTrue(finalize_nightly_run(**kwargs)["already_closed"])
+        self.assertEqual(history, (self.root / "operations/run-history.csv").read_bytes())
+        with self.assertRaises(ValueError):
+            _require_entry_assessment(run_dir, "1234")
 
 
 if __name__ == "__main__":
