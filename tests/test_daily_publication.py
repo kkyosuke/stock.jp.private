@@ -193,7 +193,10 @@ class PersonalStateTransitionTest(unittest.TestCase):
         pass
 
     def run_market_assessment(self):
-        pass
+        path=self.root / f'operations/runs/{self.run_id}/assessment-status.json'
+        path.write_text(json.dumps({'calculated_at_jst':'2026-10-02T18:45:00+09:00',
+            'market_regime':{'status':'UNAVAILABLE','state':'UNAVAILABLE','entry_multiplier':0.0,
+                             'error':'synthetic missing MRS evidence','log_recorded':False}}))
 
     def git(self,*args):
         return subprocess.check_output(['git','-C',str(self.root),*args],stderr=subprocess.DEVNULL).decode().strip()
@@ -268,6 +271,13 @@ class GeneratedMarketRegimeTest(PersonalStateTransitionTest):
         self.assertTrue(self.log.read_bytes().startswith(self.old_log))
         self.assertEqual(len(proof['market_regime_evidence']['price_evidence_sha256']), 64)
 
+    def test_legacy_filename_accepts_explicit_valid_cutoff(self):
+        path=self.root / 'operations/inputs/market-regime/2026-09-30.json'
+        raw=json.loads(path.read_text());raw['information_cutoff_at_jst']='2026-09-30T15:30:00+09:00'
+        path.write_text(json.dumps(raw));self.git('add','operations/inputs');self.git('commit','-m','explicit cutoff')
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+        self.assertEqual(proof['market_regime_evidence']['as_of'],'2026-09-30')
+
     def test_historical_and_new_risk_log_edits_rejected(self):
         original = self.log.read_bytes()
         for before, after in [(b'https://example.test/historical', b'https://example.test/rewritten'),
@@ -324,3 +334,185 @@ class SingleRepositoryBoundaryTest(unittest.TestCase):
             (root / 'stock.jp').mkdir(parents=True)
             with self.assertRaisesRegex(p.Blocked, 'repository root'):
                 p.validate_local(root / 'stock.jp', 'market', '2026-10-02', 'a'*40, 'b'*40)
+
+class OfficialMarketRegimePublicationTest(PersonalStateTransitionTest):
+    def prepare_market_fixture(self):
+        import shutil
+        from tests.test_official_indices import IndexEvidenceTests
+        from stock_jp.market_data.official_indices import load_index_series
+        from datetime import date
+        GeneratedMarketRegimeTest.prepare_market_fixture(self)
+        helper = IndexEvidenceTests(); helper.setUp(); self.addCleanup(helper.doCleanups)
+        helper.observed = '2026-09-30T14:00:00+09:00'
+        helper.rows[-1]['C'] = 1  # Exercise True == 1 without accepting boolean prices.
+        helper.collect(); helper.legacy()
+        shutil.copytree(helper.archive, self.root / '.work/market-data/jquants')
+        config_path = self.root / 'config/sources.json'
+        config = json.loads(config_path.read_text())
+        config['market_regime']['index_provider'] = 'jquants_archive'
+        config_path.write_text(json.dumps(config))
+        path = self.fixture / 'market-regime-series.json'
+        raw = json.loads(path.read_text())
+        raw['information_cutoff_at_jst'] = '2026-09-30T15:30:00+09:00'
+        raw['series'].update(load_index_series(self.root, as_of=date(2026,9,30),
+            cutoff=datetime.fromisoformat(raw['information_cutoff_at_jst'])))
+        path.write_text(json.dumps(raw))
+        self.input_path = self.root / 'operations/inputs/market-regime/2026-09-30-jquants.json'
+
+    run_market_assessment = GeneratedMarketRegimeTest.run_market_assessment
+
+    def mutate(self, raw):
+        self.input_path.write_text(json.dumps(raw)); self.git('add','operations/inputs')
+        self.git('commit','-m','invalid MRS mutation')
+        return self.git('rev-parse','HEAD')
+
+    def test_generated_official_output_replays_with_evidence_binding(self):
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+        self.assertEqual(len(proof['market_regime_evidence']['index_evidence_sha256']),64)
+        self.assertTrue(self.input_path.is_file())
+
+    def test_same_instant_utc_cutoff_is_validated_in_jst(self):
+        raw=json.loads(self.input_path.read_text());raw['information_cutoff_at_jst']='2026-09-30T06:30:00Z'
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+        self.assertEqual(proof['market_regime_evidence']['as_of'],'2026-09-30')
+
+    def test_other_provider_filename_and_month_are_rejected(self):
+        for name in ('2026-09-30.json','2026-08-31-jquants.json'):
+            entries=[{'path':'operations/inputs/market-regime/'+name,'status':'A'},
+                     {'path':'operations/ledgers/market-regime-log.csv','status':'M'}]
+            with self.subTest(name=name),self.assertRaisesRegex(p.Blocked,'configured provider'):
+                p.validate_market_regime_append(self.root,self.base,self.head,self.run_id,self.root,entries,json.loads((self.root/f'operations/runs/{self.run_id}/handoff.json').read_text()))
+
+    def test_missing_originals_cannot_be_published_as_current(self):
+        path=self.root / '.work/market-data/jquants/index-history/legacy-observation.json'
+        path.unlink()
+        with self.assertRaisesRegex(p.Blocked,'originals unavailable'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_bad_cutoff_types_dates_and_unknown_fields_are_rejected(self):
+        original=json.loads(self.input_path.read_text())
+        for value in (None,False,123,{},'', 'not-a-date', '2026-09-30T15:30:00',
+                      '2026-10-01T00:00:00+09:00','2026-09-30T20:00:00Z'):
+            with self.subTest(value=value):
+                raw=dict(original);raw['information_cutoff_at_jst']=value
+                with self.assertRaises(p.Blocked):
+                    p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+        for key in ('missing_cutoff','unknown_field'):
+            raw=dict(original)
+            if key=='missing_cutoff':raw.pop('information_cutoff_at_jst')
+            else:raw['unexpected']=True
+            with self.subTest(key=key),self.assertRaises(p.Blocked):
+                p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+
+    def test_unverified_or_fabricated_official_series_rejected(self):
+        import copy
+        original=json.loads(self.input_path.read_text())
+        for field,value in [('point_in_time_verified',False),('point_in_time_verified',None),
+                            ('point_in_time_verified',1),('primary_source',1),
+                            ('source_url','https://example.test/index'),('evidence_paths',[])]:
+            raw=copy.deepcopy(original);raw['series']['growth250'][field]=value
+            with self.subTest(field=field,value=value),self.assertRaisesRegex(p.Blocked,'differ from verified originals'):
+                p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+        raw=copy.deepcopy(original);raw['series']['growth250']['points'][-1]['value']=True
+        with self.assertRaisesRegex(p.Blocked,'differ from verified originals'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+        raw=copy.deepcopy(original);raw['series']['growth250']['points'][-1]['value']+=1
+        with self.assertRaisesRegex(p.Blocked,'differ from verified originals'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+
+    def test_late_originals_cannot_be_published_as_current(self):
+        path=self.root / '.work/market-data/jquants/index-history/legacy-observation.json'
+        d=json.loads(path.read_text());d['observed_at']='2026-10-01T00:00:00+09:00';path.write_text(json.dumps(d))
+        with self.assertRaisesRegex(p.Blocked,'originals unavailable.*after cutoff'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_only_configured_filename_and_new_input_are_allowed(self):
+        required=[{'path':v,'status':'M'} for v in ('operations/state.json','operations/run-history.csv',
+                  'operations/runs/2026-10-02/handoff.json')]
+        prefix='operations/inputs/market-regime/'
+        for name,status in [('2026-09-30-jquants.json','M'),('2026-09-30-other.json','A'),
+                            ('2026-09-30-jquants.json/extra','A'),('../2026-09-30-jquants.json','A')]:
+            with self.subTest(name=name,status=status),self.assertRaises(p.Blocked):
+                p.classify('personal',self.run_id,required+[{'path':prefix+name,'status':status}])
+        raw=json.loads(self.input_path.read_text());raw['as_of']='2026-09-29'
+        with self.assertRaisesRegex(p.Blocked,'input date mismatch'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+
+class ReusedOfficialMarketRegimeTest(PersonalStateTransitionTest):
+    prepare_market_fixture = OfficialMarketRegimePublicationTest.prepare_market_fixture
+    run_market_assessment = OfficialMarketRegimePublicationTest.run_market_assessment
+    def reused_base(self, transform=None):
+        original_head=self.head
+        self.git('checkout','--detach',self.base)
+        self.git('checkout',original_head,'--','operations/inputs/market-regime','operations/ledgers/market-regime-log.csv')
+        self.log.write_text(self.log.read_text().replace('2026-10-02T18:45:00+09:00','2026-10-01T18:45:00+09:00'))
+        if transform:self.log.write_text(transform(self.log.read_text()))
+        self.git('add','operations');self.git('commit','-m','existing verified MRS')
+        self.base=self.git('rev-parse','HEAD')
+        self.git('checkout',original_head,'--','operations')
+        self.git('checkout',self.base,'--','operations/inputs/market-regime','operations/ledgers/market-regime-log.csv')
+        self.git('commit','-m','run reusing existing MRS');self.head=self.git('rev-parse','HEAD')
+
+    def test_current_without_new_input_or_log_cannot_skip_validation(self):
+        self.git('rm',str(self.input_path.relative_to(self.root)))
+        self.git('checkout',self.base,'--','operations/ledgers/market-regime-log.csv')
+        self.git('commit','-m','omit MRS input and log')
+        with self.assertRaisesRegex(p.Blocked,'referenced input missing'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_unchanged_base_input_and_log_are_recalculated(self):
+        self.reused_base()
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+        self.assertEqual(len(proof['market_regime_evidence']['index_evidence_sha256']),64)
+        path=self.root/f'operations/runs/{self.run_id}/assessment-status.json'
+        raw=json.loads(path.read_text());raw['market_regime']={k:v for k,v in raw['market_regime'].items()
+            if k in ('status','as_of','state','score','entry_multiplier','log_recorded')}
+        path.write_text(json.dumps(raw));self.git('add','operations');self.git('commit','-m','compact reused assessment')
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+        self.assertIsNotNone(proof['market_regime_evidence'])
+        raw['market_regime']['score']+=1;path.write_text(json.dumps(raw))
+        self.git('add','operations');self.git('commit','-m','false current')
+        with self.assertRaisesRegex(p.Blocked,'differs from recalculation'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_reuse_still_rejects_late_originals(self):
+        self.reused_base();OfficialMarketRegimePublicationTest.test_late_originals_cannot_be_published_as_current(self)
+
+    def test_unavailable_without_new_input_or_log_preserves_hold(self):
+        self.git('rm',str(self.input_path.relative_to(self.root)))
+        self.git('checkout',self.base,'--','operations/ledgers/market-regime-log.csv')
+        PersonalStateTransitionTest.run_market_assessment(self)
+        self.git('add','operations');self.git('commit','-m','honest unavailable MRS')
+        proof=p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+        self.assertEqual(proof['market_regime_evidence']['status'],'UNAVAILABLE')
+        path=self.root/f'operations/runs/{self.run_id}/assessment-status.json'
+        raw=json.loads(path.read_text());raw['market_regime']['log_recorded']=True
+        path.write_text(json.dumps(raw));self.git('add','operations');self.git('commit','-m','false unavailable log')
+        with self.assertRaisesRegex(p.Blocked,'UNAVAILABLE MRS'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_reused_current_requires_a_matching_existing_log(self):
+        self.reused_base(lambda text:text.replace('2026-09-30,MRS-v0.1,','2026-09-29,MRS-v0.1,'))
+        with self.assertRaisesRegex(p.Blocked,'log missing or ambiguous'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_reused_future_log_is_rejected(self):
+        self.reused_base(lambda text:text.replace('2026-10-01T18:45:00+09:00','2099-10-01T18:45:00+09:00'))
+        with self.assertRaisesRegex(p.Blocked,'outside evidenced chronology'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_reused_log_cannot_predate_its_input_cutoff(self):
+        self.reused_base(lambda text:text.replace('2026-10-01T18:45:00+09:00','2026-09-01T18:45:00+09:00'))
+        with self.assertRaisesRegex(p.Blocked,'outside evidenced chronology'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
+
+    def test_missing_assessment_is_not_a_completed_evaluation(self):
+        self.git('rm',f'operations/runs/{self.run_id}/assessment-status.json')
+        self.git('commit','-m','omit assessment')
+        with self.assertRaisesRegex(p.Blocked,'assessment evidence missing'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.git('rev-parse','HEAD'))
+
+    def test_reused_log_components_must_match_original_inputs(self):
+        self.reused_base(lambda text:text.replace('2026-09-30,MRS-v0.1,1.0,','2026-09-30,MRS-v0.1,2.0,'))
+        with self.assertRaisesRegex(p.Blocked,'reused MRS log differs'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.head)
