@@ -33,6 +33,12 @@ def validate_archive(names, read):
     for name in names:
         if re.fullmatch(PREFIX + r"\d{4}-\d{2}-\d{2}\.json", name):
             validate_state(json.loads(read(name)), read)
+    from stock_jp.market_data.jquants import index_history
+    if index_history.MEMBER in names:
+        index_history.validate(json.loads(read(index_history.MEMBER)), read)
+    from stock_jp.market_data.official_indices import OBSERVATION, validate_observation
+    if OBSERVATION in names:
+        validate_observation(json.loads(read(OBSERVATION)), read)
     history = "jquants/history/state.json"
     if "jquants/history-marker.json" in names or any(name.startswith("jquants/history/") for name in names):
         require(history in names)

@@ -96,8 +96,11 @@ class GitHubTransport:
                         '/git/refs/heads/automation/nightly-market-data',
                         '/git/refs/heads/automation/financial-history',
                     }
+                    or method == 'POST' and re.fullmatch(r'/actions/runs/[1-9][0-9]*/approve', suffix)
                     or method == 'PUT' and re.fullmatch(r'/pulls/[1-9][0-9]*/merge',suffix)):
                 raise RemoteStop('unreviewed GitHub write operation')
+            if suffix.endswith('/approve') and (path != prefix + suffix or body is not None):
+                raise RemoteStop('unreviewed workflow approval')
             if suffix == '/actions/workflows/ci.yml/dispatches':
                 if (path != prefix + suffix or not isinstance(body, dict)
                         or set(body) != {'ref', 'return_run_details'}

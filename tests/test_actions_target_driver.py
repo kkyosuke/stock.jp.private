@@ -421,7 +421,8 @@ class TargetDriverTests(unittest.TestCase):
         def failed(*args): raise ingest.ApiError(503, 'known')
         self.execute(provider=failed)
         self.next_run()
-        self.scope['expires_at'] = (self.now+timedelta(days=3)).isoformat()
+        # Preserve a valid approval while testing the changed manifest identity.
+        self.scope['expires_at'] = (datetime.fromisoformat(self.scope['expires_at'])+timedelta(days=3)).isoformat()
         self.save_scope()
         with self.assertRaisesRegex(r.RemoteStop, 'manifest'): self.execute()
         self.assertEqual(len(self.document()['runs']['2026-09-23']['state']['requests']), 1)

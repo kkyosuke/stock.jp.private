@@ -36,7 +36,7 @@
     "minimum_liquidity_sessions": 20,
     "maximum_official_price_age_days": 7,
     "calendar_forward_days": 21,
-    "plan": "light",
+    "plan": "standard",
     "addons": [],
     "ingestion": {
       "enabled": true,
@@ -51,6 +51,7 @@
     }
   },
   "market_regime": {
+    "index_provider": "jquants_archive",
     "enabled": true,
     "jpx_monthly_statistics_pages": [
       "https://www.jpx.co.jp/markets/statistics-equities/monthly/index.html",
