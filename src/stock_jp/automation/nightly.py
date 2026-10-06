@@ -379,20 +379,26 @@ def wait_ci(git, run_id, head, branch, *, event, timeout, sleep, monotonic):
 def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
     # A token-created PR has a separate approval-required CI run. Only approve
     # that exact data-only candidate after its independent dispatch passed.
-    runs = publication.pages(git.request, "/actions/workflows/ci.yml/runs?event=pull_request&head_sha=" + head,
-                             "workflow_runs")
-    matches = [run for run in runs if run.get("path") == CI_WORKFLOW and run.get("head_branch") == branch
-               and run.get("head_sha") == head and run.get("event") == "pull_request"
-               and any(p.get("number") == pr["number"] and p.get("head", {}).get("sha") == head
-                       for p in run.get("pull_requests", []))]
-    if not matches:
-        return None
-    run = max(matches, key=lambda item: item["id"])
-    if run.get("conclusion") == "action_required":
-        require(run.get("actor", {}).get("login") == "github-actions[bot]", "unexpected data CI approval actor")
-        git.api("POST", "/actions/runs/" + str(run["id"]) + "/approve")
-    wait_ci(git, run["id"], head, branch, event="pull_request", timeout=timeout, sleep=sleep, monotonic=monotonic)
-    return run["id"]
+    deadline = monotonic() + timeout
+    while monotonic() < deadline:
+        runs = publication.pages(git.request, "/actions/workflows/ci.yml/runs?event=pull_request&head_sha=" + head,
+                                 "workflow_runs")
+        matches = [run for run in runs if run.get("path") == CI_WORKFLOW and run.get("head_branch") == branch
+                   and run.get("head_sha") == head and run.get("event") == "pull_request"
+                   and any(p.get("number") == pr["number"] and p.get("head", {}).get("sha") == head
+                           for p in run.get("pull_requests", []))]
+        if not matches:
+            sleep(30)
+            continue
+        run = max(matches, key=lambda item: item["id"])
+        if run.get("conclusion") == "action_required":
+            require(run.get("actor", {}).get("login") == "github-actions[bot]", "unexpected data CI approval actor")
+            git.api("POST", "/actions/runs/" + str(run["id"]) + "/approve")
+        wait_ci(git, run["id"], head, branch, event="pull_request", timeout=max(0, deadline-monotonic()),
+                sleep=sleep, monotonic=monotonic)
+        return run["id"]
+    raise RemoteStop("nightly data PR CI missing or unmatched; data and budget remain saved")
+
 
 
 def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
