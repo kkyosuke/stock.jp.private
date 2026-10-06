@@ -7,7 +7,7 @@ GitHub Actionsの入口は `.github/workflows/`、取得設定は
 | Workflow | 責務 |
 | --- | --- |
 | `ci.yml` | `format`、`test`、`guardrail`。静的検証と合成データのテスト |
-| `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。手動再実行も同じ入口 |
+| `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。21:20に再試行。取得後に一次資料収集とPAPER調査準備 |
 | `operation-health.yml` | 保存済みPAPER runメタデータの監視結果をartifactへ保存 |
 | `forward-holdout.yml` | 22:30 JSTに凍結したPAPER研究と採用済みデータを読み取り、不足・実装変更をartifactへ保存 |
 
@@ -33,10 +33,13 @@ GitHub Secretにはデータ取得用の `JQUANTS_API_KEY` だけを登録する
 3. 財務・株数・予想・決算予定・価格調整の観測CSVを更新し、検証した保存世代と取得完了記録のPRを作る。
 4. データbranchを指定して `ci.yml` を明示dispatchし、返されたrun IDを追跡する。
 5. そのrunが同じPR headで実行され、対応するcheck suiteの `format`、`test`、`guardrail`
-   が全て成功した後、同じheadをsquash mergeする。
+   が全て成功した後、そのデータPRの承認待ちCIを起動する。このCIも3項目の成功を確認し、同じheadをsquash mergeする。
 
 `GITHUB_TOKEN` で作成したPRのCIは承認待ちになるため、自動の `pull_request` 起動に
 依存しない。`workflow_dispatch` は標準トークンでも起動できる。
+ただしmainの必須チェックはPR側のCIに紐づく。独立したdispatchの成功後に、
+検証済みデータ差分・同じhead・同じPR・bot起動のCIだけを承認する。
+承認APIの拒否、PR側CIの失敗・未完了でも採用せず、保護ルールを変更しない。
 詳細は[GitHubのトークン仕様](https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs)を参照する。
 dispatch失敗、run ID不明、対象headの不一致、CI失敗・未完了ではmergeしない。
 標準トークンのAPI上限に合わせた通信予算は
@@ -62,10 +65,64 @@ Actionsの「Nightly market data」で対象日を指定する。未指定なら
 `JQUANTS_API_KEY` を修正し、GitHubの権限不足はworkflowのpermissionsとrepositoryの
 PR作成許可を確認してから、対象日を指定して手動実行する。消費記録を消して再試行しない。
 
+ownerの手動再実行では、公開前に作った`WAIT_PUBLICATION`について、復元したjournalと
+checkpointがともに要求0・task0・過去消費0である場合だけ現行設定へ接続できる。
+予算は変えず、旧状態と新設定のハッシュを`jquants/rebindings/`へ保存する。
+要求・取得結果があるrunや定時実行は設定変更を越えて再開しない。
+
 `preview=true` は取得・checkpoint保存・世代の検証後に、検証用draftデータPRを作って
 CIを確認する。mainへ採用しない。修正branchでもownerが手動実行できる。
 検証用branchは `daily/market/<日付>-preview`。確認後、draft PRを閉じる。
 previewでも実際の通信は消費として残り、本番の再実行で完了済み取得を再利用する。
+
+## 一次資料とPAPER調査準備
+
+市場データjobが成功した後、`paper-research` jobが最新mainを復元する。
+企業IR・公開資料の選択は`operations/inputs/primary-sources.json`で管理し、VI・景気統計の
+取得URLは`config/sources.json`の`market_regime`を正本とする。原本保存は
+`market_data/primary_sources.py`、取得記録は`research/forward_collection.py`が管理する。
+公開資料も直列・最低1.05秒間隔、1回最大60要求。J-Quantsの取得とは別の消費記録である。
+EDINETも直列・最低1.05秒間隔。J-Quantsを使うsource scanは既存の最低1.05秒間隔・
+`config/sources.json`のplanと1回の取得予算（最大12要求）を使う。
+予算停止時は未完了として保存し、scannerを作り直して取得枠を増やさない。
+同夜の同じplan・cutoffの検証済みページは再照会せず、要求数とcache hitを結果に残す。
+同じworkflowのconcurrencyで市場データ取得と調査準備の同時実行を防ぐ。
+
+```bash
+python -m stock_jp.research.forward_collection --output .work/paper-research/collection.json
+python -m stock_jp.operation.paper_preparation --output .work/paper-research/preparation.json
+```
+
+`paper_research=true`の手動実行は市場データ取得を省略して、この準備を実行する。
+PR branchでの確認は`preview=true`も指定する。Secretsは既存の`JQUANTS_API_KEY`と
+`EDINET_API_KEY`を使う。PAPER/HUMAN_ONLYを必須とし、本人の承認は生成しない。
+通常のrun開始は21:00 JST以後。朝は`WAIT_PUBLICATION`としてcutoffを作らない。
+ownerの明示previewだけが公開前の試行を許可する。朝の試行をmainの当日runへ採用せず、
+検証資料として保存する。夜間の正式なrunは公開後に開始する。
+
+準備処理は`operation run start`と同じ入口で実データを調べ、未完了のレビューを
+保存する。`REVIEW_REQUIRED`はexit 1であり、成功した開示cutoffやholdout回数を進めない。
+調査・判断が終わるまで`run finalize`を呼ばない。取得job成功と研究jobの未完了は
+Actionsのjobごとに確認する。
+
+当日のcanonical runが保存済みなら、自動準備は通信・再採点・lease取得を行わず、
+レビュー成果物をそのまま保持する。未完了は`REVIEW_REQUIRED`と`resume-review`の
+実行引数を返す。採用済み作業領域でのレビューと日次完了は[runbook](runbook.md)の
+オフライン再開手順に従う。完了済みrunは`ALREADY_COMPLETED`として扱う。
+
+`automation/paper-source-inbox` branchへ、原本・未完了run・forward記録・J-Quantsページを
+内容ハッシュ付きの追記snapshotとして保存する。期限のあるartifactに長期保存を依存しない。
+このjobの`contents: write`はこの未レビューの保管先に使い、mainを更新しない。
+次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheだけを復元する。
+復元対象は同夜に再開できるcutoffのscopeだけ。過去分はGitのsnapshotへ残し、
+翌夜のcacheや取得・復元量へ累積させない。
+運用state、判断、注文、承認は復元しない。同日の21:00以後の検証済みcutoffだけを
+再開メタデータとして返し、21:20の再試行でquery pageを再利用する。朝のcutoffは
+ownerの明示previewでしか再利用しない。checkpoint branchを削除しない。
+
+`paper-research-<run ID>` artifactは90日保持する受け取り口。repositoryの実上限も90日であり、
+400日指定でも90日に切り詰められる。取り込み後に再検証し、privateのPRで採用した
+Gitの入力と結果を正本にする。保管したsnapshotの`review_completed`は常にfalse。
 
 ## 財務履歴の初回補完
 

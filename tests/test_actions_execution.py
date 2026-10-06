@@ -26,6 +26,18 @@ class Opener:
         return self.response or Response(b'{}',request.full_url)
 
 class TransportTests(unittest.TestCase):
+    def test_workflow_approval_accepts_only_a_positive_run_id_without_body(self):
+        opener = Opener()
+        transport = http.GitHubTransport('synthetic', opener=opener)
+        prefix = '/repos/' + r.REPO + '/actions/runs/'
+        for path, body in ((prefix + '0/approve', None), (prefix + '9/approve?extra=1', None),
+                           (prefix + '9/approve', {'approve': True})):
+            with self.assertRaises(r.RemoteStop):
+                transport('POST', path, body)
+        self.assertFalse(opener.calls)
+        transport('POST', prefix + '9/approve')
+        self.assertEqual(len(opener.calls), 1)
+
     def test_ci_dispatch_handles_empty_204_and_only_market_data_refs(self):
         path = '/repos/' + r.REPO + '/actions/workflows/ci.yml/dispatches'
         opener = Opener(Response(b'', 'https://api.github.com' + path, status=204))

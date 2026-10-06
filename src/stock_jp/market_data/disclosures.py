@@ -520,6 +520,8 @@ def scan_sources(
                         fixture_dir, f"edinet-{scan_date.isoformat()}", "results"
                     )
                 else:
+                    if edinet_requests:
+                        time_module.sleep(1.05)
                     payload = _request_json(
                         base_url=str(edinet_config["base_url"]),
                         path="documents.json",

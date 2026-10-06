@@ -7,7 +7,7 @@ import copy
 from datetime import date, datetime, timedelta, timezone
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import time
 
@@ -29,6 +29,9 @@ CHECKS = {"format", "test", "guardrail"}
 FINANCIAL_CHECKPOINT = "automation/financial-history"
 FINANCIAL_JOURNAL = "operations/acquisition/financial-history-checkpoint.json"
 FINANCIAL_RAW_PREFIX = "financial-history-checkpoint/"
+PAPER_CHECKPOINT = "automation/paper-source-inbox"
+PAPER_JOURNAL = "operations/acquisition/paper-source-inbox.json"
+PAPER_RAW_PREFIX = "paper-source-inbox/"
 
 
 class Incomplete(RemoteStop):
@@ -73,18 +76,31 @@ class Git:
         return raw
 
     def write(self, branch, parent, files, *, exists):
-        require(branch in {CHECKPOINT, FINANCIAL_CHECKPOINT} or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
+        checkpoints = {CHECKPOINT: (JOURNAL, RAW_PREFIX),
+                       FINANCIAL_CHECKPOINT: (FINANCIAL_JOURNAL, FINANCIAL_RAW_PREFIX),
+                       PAPER_CHECKPOINT: (PAPER_JOURNAL, PAPER_RAW_PREFIX)}
+        require(branch in checkpoints or re.fullmatch(r"daily/market/\d{4}-\d{2}-\d{2}(?:-preview)?", branch),
                 "unexpected publication branch")
         if exists:
             require(self.ref(branch) == parent, "checkpoint or data branch moved")
         tree = self.api("GET", "/git/commits/" + parent)["tree"]["sha"]
         entries = []
         for path, raw in sorted(files.items()):
-            if branch in {CHECKPOINT, FINANCIAL_CHECKPOINT}:
-                journal, prefix = (JOURNAL, RAW_PREFIX) if branch == CHECKPOINT else (FINANCIAL_JOURNAL, FINANCIAL_RAW_PREFIX)
+            if branch in checkpoints:
+                journal, prefix = checkpoints[branch]
                 require(path == journal or path.startswith(prefix), "unexpected checkpoint path")
                 if path != journal:
-                    storage.safe_name(path.removeprefix(prefix))
+                    member = path.removeprefix(prefix)
+                    if branch == PAPER_CHECKPOINT:
+                        parsed = PurePosixPath(member)
+                        require(not parsed.is_absolute() and parsed.as_posix() == member
+                                and "\\" not in member and all(not part.startswith(".") for part in parsed.parts)
+                                and (re.fullmatch(r"snapshots/[0-9a-f]{64}\.json", member)
+                                     or len(parsed.parts) >= 3 and re.fullmatch(r"[0-9a-f]{64}", parsed.parts[0])
+                                     and parsed.parts[1] in {"operations", "data", "research", "nightly-source-cache"}),
+                                "unsafe PAPER checkpoint member")
+                    else:
+                        storage.safe_name(member)
             else:
                 require(path == "data/market/jquants/current.json" or re.fullmatch(
                     r"data/market/jquants/(?:objects|generations)/[0-9a-f]{2}/[0-9a-f]{64}\.(?:json|csv|bin|chunk)", path)
@@ -236,6 +252,34 @@ class Checkpoint:
                 state["status"] = "PAUSED"
                 ingest.atomic_json(path, state)
                 self.document["runs"][state["run_date"]] = copy.deepcopy(state)
+            # An owner retry can bind an unused pre-publication placeholder to
+            # current configuration. Charged or partially collected runs retain
+            # their original contract. Both durable copies must prove zero I/O.
+            current_sha = ingest.digest((self.root / "config/sources.json").read_bytes())
+            started = daily.aware(state["started_at"])
+            entry = self.document["files"].get(path.relative_to(source).as_posix())
+            raw = path.read_bytes()
+            unused = (state["status"] == "WAIT_PUBLICATION" and not state["requests"]
+                      and not state["tasks"] and self.old_charged == 0
+                      and all(state[k] is None for k in ("data_date", "error", "http_status", "retry_not_before"))
+                      and started.date() == self.target_day and started.hour < 21
+                      and self.document["runs"].get(state["run_date"]) == state
+                      and entry and storage.digest(raw) == entry["sha256"]
+                      and git_blob(raw) == entry["blob"])
+            if state["config_sha256"] != current_sha and unused:
+                configured_budget = ingest.read_json(self.root / "config/sources.json")["jquants"]["ingestion"]["max_requests_per_run"]
+                require(state["budget"] == configured_budget, "unused placeholder budget cannot change")
+                previous = copy.deepcopy(state)
+                state["config_sha256"] = current_sha
+                receipt = {"version": 1, "reason": "owner retry of verified unused publication placeholder",
+                           "action_run_id": self.context["run_id"], "previous_state": previous,
+                           "new_config_sha256": current_sha, "requests_preserved": 0}
+                audit = source / "jquants/rebindings" / (state["run_date"] + "-" + current_sha + "-" + str(self.context["run_id"]) + ".json")
+                require(not audit.exists() or audit.read_bytes() == ingest.encoded(receipt), "configuration audit changed")
+                ingest.atomic_json(audit, receipt)
+                ingest.atomic_json(path, state)
+                self.document["runs"][state["run_date"]] = copy.deepcopy(state)
+                self.sync(state)  # Persist the audit before any provider request.
 
     def can_defer(self, state):
         # Keep a legacy future WAIT journal intact, and defer only when both

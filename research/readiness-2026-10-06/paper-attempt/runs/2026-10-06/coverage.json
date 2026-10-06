@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-10-06",
+  "status": "IN_PROGRESS",
+  "source_window": {
+    "from_exclusive_jst": "2026-09-14T06:20:00+09:00",
+    "through_inclusive_jst": null
+  },
+  "universe": {
+    "holdings": {
+      "expected": [],
+      "checked": []
+    },
+    "pending_orders": {
+      "expected": [],
+      "checked": []
+    },
+    "watchlist": {
+      "expected": [
+        "4052"
+      ],
+      "checked": []
+    },
+    "due_reviews": {
+      "expected": [
+        "4052-fy2026-annual-review-2026-09-29",
+        "2026-09-14-carried-4052-fy2026-annual-review-2026-09-29",
+        "2026-09-14-investment-case-4052"
+      ],
+      "checked": []
+    }
+  },
+  "official_sources": {
+    "tdnet": {
+      "required": true,
+      "status": "PENDING",
+      "notes": ""
+    },
+    "edinet": {
+      "required": true,
+      "status": "CHECKED",
+      "notes": ""
+    },
+    "company_ir": {
+      "required": true,
+      "status": "PENDING",
+      "notes": ""
+    },
+    "jpx": {
+      "required": true,
+      "status": "PENDING",
+      "notes": ""
+    }
+  },
+  "data_gaps": [
+    {
+      "gap_id": "2026-10-06-edinet",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "edinet",
+      "impact": "statutory filings could be missing; all actions remain unverified",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": "2026-10-06T07:40:34+09:00",
+      "resolution_evidence": "official source scan succeeded"
+    },
+    {
+      "gap_id": "2026-10-06-nightly_jquants_scan",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "nightly_jquants_scan",
+      "impact": "J-Quants query coverage is incomplete; partial pages are not completed evidence",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-official_market_data",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "official_market_data",
+      "impact": "official price inputs are incomplete; new and additional buys are blocked",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-tdnet",
+      "status": "OPEN",
+      "severity": "CRITICAL",
+      "source": "tdnet",
+      "impact": "material timely disclosures could be missing; trade decisions are blocked",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-10-06-trading_calendar",
+      "status": "RESOLVED",
+      "severity": "CRITICAL",
+      "source": "trading_calendar",
+      "impact": "the next trading date is unconfirmed; order tickets are blocked",
+      "retry_after_jst": "2026-10-07T21:00:00+09:00",
+      "resolved_at_jst": "2026-10-06T07:40:34+09:00",
+      "resolution_evidence": "official source scan succeeded"
+    }
+  ],
+  "completed_at_jst": null
+}

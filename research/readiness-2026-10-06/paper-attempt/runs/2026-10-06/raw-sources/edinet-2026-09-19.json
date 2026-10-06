@@ -1,0 +1,20 @@
+{
+  "pages": [
+    {
+      "metadata": {
+        "title": "提出された書類を把握するためのAPI",
+        "parameter": {
+          "date": "2026-09-19",
+          "type": "2"
+        },
+        "resultset": {
+          "count": 0
+        },
+        "processDateTime": "2026-10-06 00:03",
+        "status": "200",
+        "message": "OK"
+      },
+      "results": []
+    }
+  ]
+}
