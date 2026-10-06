@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 
 from stock_jp.operation.state import initialize_or_migrate_workspace, secure_private_tree
 
-from stock_jp.operation.integrity import SOURCE_FIELDS, acquire_run_lease, advance_source_watermarks, release_run_lease, require_run_lease, validate_run_artifacts, write_coverage_manifest
+from stock_jp.operation.integrity import SOURCE_FIELDS, run_write_lock, acquire_run_lease, advance_source_watermarks, release_run_lease, require_run_lease, validate_run_artifacts, write_coverage_manifest
 
 from stock_jp.operation.artifacts import create_nightly_artifacts
 
@@ -73,8 +73,33 @@ def initialize_workspace(root: Path = PROJECT_ROOT) -> dict[str, Any]:
 def prepare_run(
     *, at: str, run_token: str | None = None, root: Path = PROJECT_ROOT,
     resume_run_id: str | None = None,
+    existing_only: bool = False,
 ) -> dict[str, Any]:
-    initialize_workspace(root)
+    if existing_only and not resume_run_id:
+        raise ValueError("existing-only preparation requires resume_run_id")
+    run_id = _validate_run_id(resume_run_id) if resume_run_id else _parse_jst(at).date().isoformat()
+    run_dir = record_path(root, 'runs') / run_id
+    if run_dir.is_dir():
+        with run_write_lock(run_dir):
+            return _prepare_run(at=at, run_token=run_token, root=root,
+                                resume_run_id=resume_run_id, existing_only=existing_only)
+    return _prepare_run(at=at, run_token=run_token, root=root,
+                        resume_run_id=resume_run_id, existing_only=existing_only)
+
+
+def _prepare_run(
+    *, at: str, run_token: str | None = None, root: Path = PROJECT_ROOT,
+    resume_run_id: str | None = None,
+    existing_only: bool = False,
+) -> dict[str, Any]:
+    # Offline review must not initialize or migrate any saved workspace input,
+    # even when another writer owns the lease. A named existing run is mandatory
+    # in this mode, so the new-run creation path below cannot be reached.
+    if existing_only:
+        if not resume_run_id:
+            raise ValueError("existing-only preparation requires resume_run_id")
+    else:
+        initialize_workspace(root)
     started = _parse_jst(at)
     started_iso = started.isoformat(timespec="seconds")
     run_id = _validate_run_id(resume_run_id) if resume_run_id else started.date().isoformat()
@@ -334,6 +359,26 @@ def complete_run(
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
     _validate_run_id(run_id)
+    with run_write_lock(record_path(root, 'runs') / run_id):
+        return _complete_run(
+            run_id=run_id, completed_at=completed_at, source_cutoff=source_cutoff,
+            price_date=price_date, summary=summary, run_token=run_token,
+            alert_count=alert_count, root=root,
+        )
+
+
+def _complete_run(
+    *,
+    run_id: str,
+    completed_at: str,
+    source_cutoff: str,
+    price_date: str,
+    summary: str,
+    run_token: str,
+    alert_count: int = 0,
+    root: Path = PROJECT_ROOT,
+) -> dict[str, Any]:
+    _validate_run_id(run_id)
     date.fromisoformat(price_date)
     if alert_count < 0:
         raise ValueError("alert count cannot be negative")
@@ -419,6 +464,22 @@ def complete_run(
 
 
 def fail_run(
+    *,
+    run_id: str,
+    completed_at: str,
+    summary: str,
+    run_token: str,
+    root: Path = PROJECT_ROOT,
+) -> dict[str, Any]:
+    _validate_run_id(run_id)
+    with run_write_lock(record_path(root, 'runs') / run_id):
+        return _fail_run(
+            run_id=run_id, completed_at=completed_at, summary=summary,
+            run_token=run_token, root=root,
+        )
+
+
+def _fail_run(
     *,
     run_id: str,
     completed_at: str,
