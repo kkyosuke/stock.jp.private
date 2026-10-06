@@ -11,7 +11,7 @@
     "provider": "J-Quants API V2 equities/master",
     "scope": "point-in-time domestic common stocks excluding PRO MARKET",
     "count": 3689,
-    "master_date": "2026-10-05",
+    "master_date": "2026-10-06",
     "product_category": "011",
     "common_share_reserve_code": "0",
     "excluded_market_codes": [
@@ -26,31 +26,31 @@
     "row_coverage_ratio": 1.0,
     "diagnostics": {
       "ROW_MISSING": 0,
-      "NO_EXECUTION": 239,
+      "NO_EXECUTION": 242,
       "PARTIAL_NULL_OR_INVALID": 0,
-      "VALID_PRICE": 4203
+      "VALID_PRICE": 4200
     }
   },
-  "retrieved_at": "2026-10-05T21:59:44.564316+00:00",
-  "latest_trading_date": "2026-10-05",
+  "retrieved_at": "2026-10-06T14:53:16.790760+00:00",
+  "latest_trading_date": "2026-10-06",
   "fetch": {
     "success_count": 3689,
     "error_count": 0,
     "error_codes": []
   },
   "latest_session": {
-    "date": "2026-10-05",
-    "file": "revisions/2026-10-05/f7cf2b697db66ee22a886f85fa75ea30ba556d1287926fe813b48c04217f9f18/2026-10-05.csv",
-    "canonical_file": "2026/2026-10-05.csv",
-    "sha256": "f7cf2b697db66ee22a886f85fa75ea30ba556d1287926fe813b48c04217f9f18",
-    "quote_count": 3667,
+    "date": "2026-10-06",
+    "file": "revisions/2026-10-06/8e94db977fa4a55341733ae69f1c6e9a6445d6fe8dc424929c06abbd07ab7b96/2026-10-06.csv",
+    "canonical_file": "2026/2026-10-06.csv",
+    "sha256": "8e94db977fa4a55341733ae69f1c6e9a6445d6fe8dc424929c06abbd07ab7b96",
+    "quote_count": 3659,
     "diagnostics": {
       "ROW_MISSING": 0,
-      "NO_EXECUTION": 22,
+      "NO_EXECUTION": 30,
       "PARTIAL_NULL_OR_INVALID": 0,
-      "VALID_PRICE": 3667
+      "VALID_PRICE": 3659
     },
-    "no_quote_count": 22,
+    "no_quote_count": 30,
     "fetch_error_count": 0
   },
   "raw_provenance": {
@@ -59,13 +59,13 @@
     "partitions": [
       {
         "dataset": "equities_master",
-        "path": "datasets/equities_master/2026-10-05/revisions/41eff06ccd3b4b2a51869c731df4b1356580586829d79e81fa2e3392e2dcd4c7.json",
-        "sha256": "41eff06ccd3b4b2a51869c731df4b1356580586829d79e81fa2e3392e2dcd4c7"
+        "path": "datasets/equities_master/2026-10-06/revisions/c5483ca1dd21d92d74c8626ef8c353e9de69cf53f5d99325f60cdb2c1fba0755.json",
+        "sha256": "c5483ca1dd21d92d74c8626ef8c353e9de69cf53f5d99325f60cdb2c1fba0755"
       },
       {
         "dataset": "equities_daily",
-        "path": "datasets/equities_daily/2026-10-05/revisions/5e776d040fdb5c3818f9aafded4205b455b562a138124779e292ff51fa3327d8.json",
-        "sha256": "5e776d040fdb5c3818f9aafded4205b455b562a138124779e292ff51fa3327d8"
+        "path": "datasets/equities_daily/2026-10-06/revisions/f1a64ef68de28a0f3ceb2a826c59d0d8a047d08e42dc117a575c9d34c0f54234.json",
+        "sha256": "f1a64ef68de28a0f3ceb2a826c59d0d8a047d08e42dc117a575c9d34c0f54234"
       }
     ]
   }
