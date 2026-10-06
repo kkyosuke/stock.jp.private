@@ -159,3 +159,27 @@ python -m stock_jp automation health --persisted-only --output .work/operation-h
 
 監視は保存済み運用記録を読み、日次runの未完了を報告する。
 市場データの取得成功だけで未完了の運用記録を成功扱いに変更しない。
+
+## PAPER通信と日次取得の共有予算
+
+日次市場取得とPAPER準備・公開原本収集は、論理日あたり既存の最大12回を共有する。
+`automation/nightly-market-data`のjournalに`paper_requests`を追記し、
+市場データの既存消費（過去の課金記録を含む）を差し引く。市場取得が10回なら残り2回、
+11回なら残り1回であり、PAPER専用に12回を追加しない。
+J-Quants・EDINET・JPX・公開原本を含むPAPER側の各HTTP試行を、通信前にGitへ予約する。
+失敗・redirect・retry・通信直前のcrashでも予約を返却しない。
+GitHubのcheckpoint保存通信には、既存のGitHub専用予算が別途適用される。
+
+定期21:00/21:20、同じcutoff、異なるcutoff、再起動は残枠を共有する。
+Actions runの論理日を保存し、日付をまたぐretryで枠を再発行しない。
+writer concurrencyに加え、checkpoint/mainの移動・保存失敗・実行終了を検出して通信前に停止する。
+同日の旧PAPER inboxに共有課金記録がない場合は、既往の消費が不明なため停止する。
+台帳削除やstateリセットで解除せず、既存記録の照合が必要である。
+
+workflowの原本収集とPAPER準備は`stock_jp.automation.provider_budget`を入口にする。
+既存urllib通信の境界を監視するため、凍結済み研究コードは変更しない。
+保存済みquery cacheは追加通信を伴わず再利用できる。新規取得の残枠不足はレビュー未完了・
+データ不足として残し、日次完了や投資可能に読み替えない。
+異なる通信ライブラリや並列collectorを追加する場合は、この境界を通る回帰検証が必要である。
+今回、schedule時刻・権限・保護・承認・予算額は変更しない。
+追加枠が必要なら、対象provider・論理日・必要試行数を示して別途利用者の承認を得る。

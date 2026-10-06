@@ -174,8 +174,8 @@ class Checkpoint:
                     "nightly checkpoint journal missing or not a regular file")
             self.document = json.loads(git.read(self.tree[JOURNAL]))
             require(self.document.get("version") == 1
-                    and set(self.document) in ({"version", "runs", "files", "github_budget"},
-                                              {"version", "runs", "files", "github_budget", "scheduled_targets"}),
+                    and {"version", "runs", "files", "github_budget"} <= set(self.document)
+                    and set(self.document) <= {"version", "runs", "files", "github_budget", "scheduled_targets", "paper_requests"},
                     "invalid nightly checkpoint")
             for day, state in self.document["runs"].items():
                 daily.validate_state(state)
@@ -186,6 +186,8 @@ class Checkpoint:
             require(not any(p.startswith(RECORDS) for p in self.tree),
                     "published nightly records exist but checkpoint was deleted")
             self.document = {"version": 1, "runs": {}, "files": {}, "github_budget": None}
+        from stock_jp.automation.provider_budget import validate_charges
+        validate_charges(self.document)
         bindings = self.document.get("scheduled_targets", {})
         require(isinstance(bindings, dict), "invalid scheduled targets")
         for run_id, binding in bindings.items():
@@ -309,7 +311,9 @@ class Checkpoint:
 
     def before_reservation(self):
         self.observe()
-        if self.old_charged + len(self.state["requests"]) - self.baseline_requests >= self.state["budget"]:
+        if (self.old_charged + len(self.state["requests"]) - self.baseline_requests
+                + len(self.document.get("paper_requests", {}).get(self.state["run_date"], []))
+                >= self.state["budget"]):
             raise ingest.RequestBudgetExhausted("prior and nightly requests exhaust the daily allowance")
         if hasattr(self.git.request, "before_provider"):
             self.git.request.before_provider()
