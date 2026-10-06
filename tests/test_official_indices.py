@@ -200,6 +200,25 @@ class IndexEvidenceTests(unittest.TestCase):
                 with self.assertRaises(ingest.IngestionError):
                     index_history.valid_rows(self.rows+[row],start=self.start,through=self.end)
 
+    def test_conflicting_retained_daily_revisions_require_review(self):
+        from stock_jp.market_data.jquants.catalog import BY_NAME
+        for kind, code in [('topix_daily', None), ('indices_daily', '0070')]:
+            with self.subTest(kind=kind):
+                archive=self.root/kind/'.work/market-data/jquants'
+                archive.mkdir(parents=True)
+                for close in (100, 101):
+                    row={'Date':str(self.end),'C':close}
+                    if code:row['Code']=code
+                    client=ingest.Client(plan='standard',max_requests=12,retries=0,
+                        transport=lambda e,p:{'data':[row]},sleep=lambda _:None)
+                    ingest.collect_partition(archive,BY_NAME[kind],self.end,client)
+                revisions=list((archive/'datasets'/kind/str(self.end)/'revisions').glob('*.json'))
+                self.assertEqual(len(revisions),2)
+                with self.assertRaisesRegex(MarketRegimeSourceError,'conflicting index generations'):
+                    load_index_series(self.root/kind,as_of=self.end,
+                        cutoff=datetime.fromisoformat('2026-09-30T21:00:00+09:00'),require_point_in_time=False)
+                self.assertTrue(all(p.is_file() for p in revisions))
+
     def test_unknown_or_nontrading_asof_is_rejected(self):
         self.collect();self.legacy()
         for day in (date(2026,9,27), date(2026,10,1)):

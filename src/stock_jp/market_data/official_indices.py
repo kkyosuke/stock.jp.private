@@ -127,11 +127,11 @@ def load_index_series(root, *, as_of, cutoff, require_point_in_time=True):
             for page in document['pages']:
                 add('growth250', json.loads(read('jquants/' + page['path']))['data'], page['retrieved_at'], bootstrap)
     for name in sorted(names):
-        if not name.endswith('/latest.json') or not any(name.startswith('jquants/datasets/'+k+'/') for k in ('topix_daily','indices_daily','trading_calendar')):
+        if not (name.endswith('/latest.json') or '/revisions/' in name) or not any(name.startswith('jquants/datasets/'+k+'/') for k in ('topix_daily','indices_daily','trading_calendar')):
             continue
         raw = read(name)
         document = json.loads(raw)
-        revision = name.removesuffix('latest.json') + 'revisions/' + ingest.digest(raw) + '.json'
+        revision = name if '/revisions/' in name else name.removesuffix('latest.json') + 'revisions/' + ingest.digest(raw) + '.json'
         require(revision in names and read(revision) == raw, 'index revision missing')
         from stock_jp.market_data.jquants.validation import validate_archive
         members = {name, revision} | {'jquants/' + p['path'] for p in document['pages']}
@@ -147,7 +147,7 @@ def load_index_series(root, *, as_of, cutoff, require_point_in_time=True):
             rows = [r for r in data['data'] if kind != 'growth250' or r.get('Code') == '0070']
             require(not seen.intersection(r['Date'] for r in rows), 'duplicate dates across index pages')
             seen.update(r['Date'] for r in rows)
-            require(all(r['Date'] == name.split('/')[-2] for r in rows), 'index partition date mismatch')
+            require(all(r['Date'] == name.split('/')[3] for r in rows), 'index partition date mismatch')
             add(kind, rows, page['retrieved_at'], revision)
     require(calendars.get(as_of.isoformat()) in {'1','2'}, 'MRS as_of is not a confirmed trading session')
     sessions, day = [], as_of
