@@ -341,6 +341,7 @@ class OfficialMarketRegimePublicationTest(PersonalStateTransitionTest):
         GeneratedMarketRegimeTest.prepare_market_fixture(self)
         helper = IndexEvidenceTests(); helper.setUp(); self.addCleanup(helper.doCleanups)
         helper.observed = '2026-09-30T14:00:00+09:00'
+        helper.rows[-1]['C'] = 1  # Exercise True == 1 without accepting boolean prices.
         helper.collect(); helper.legacy()
         shutil.copytree(helper.archive, self.root / '.work/market-data/jquants')
         config_path = self.root / 'config/sources.json'
@@ -404,10 +405,14 @@ class OfficialMarketRegimePublicationTest(PersonalStateTransitionTest):
         import copy
         original=json.loads(self.input_path.read_text())
         for field,value in [('point_in_time_verified',False),('point_in_time_verified',None),
+                            ('point_in_time_verified',1),('primary_source',1),
                             ('source_url','https://example.test/index'),('evidence_paths',[])]:
             raw=copy.deepcopy(original);raw['series']['growth250'][field]=value
             with self.subTest(field=field,value=value),self.assertRaisesRegex(p.Blocked,'differ from verified originals'):
                 p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
+        raw=copy.deepcopy(original);raw['series']['growth250']['points'][-1]['value']=True
+        with self.assertRaisesRegex(p.Blocked,'differ from verified originals'):
+            p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))
         raw=copy.deepcopy(original);raw['series']['growth250']['points'][-1]['value']+=1
         with self.assertRaisesRegex(p.Blocked,'differ from verified originals'):
             p.validate_local(self.root,'personal',self.run_id,self.base,self.mutate(raw))

@@ -277,7 +277,12 @@ def validate_market_regime_append(root, base, head, run_id, scratch, entries, ha
         except (OSError, ValueError, KeyError, TypeError, MarketRegimeSourceError) as error:
             raise Blocked('official MRS originals unavailable: ' + str(error)) from None
         require(isinstance(raw.get('series'), dict)
-                and all(raw['series'].get(k) == v for k, v in indices.items()),
+                and all(isinstance(raw['series'].get(k), dict)
+                        and raw['series'][k].get('primary_source') is True
+                        and raw['series'][k].get('point_in_time_verified') is True
+                        and raw['series'][k] == v
+                        and all(type(point['value']) in (int, float) for point in raw['series'][k]['points'])
+                        for k, v in indices.items()),
                 'official MRS series differ from verified originals')
         index_evidence = hashlib.sha256(codec.encoded(indices)).hexdigest()
     for key, default in defaults.items():
