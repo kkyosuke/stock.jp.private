@@ -136,7 +136,7 @@ jobs:
         run: |
           args=()
           if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--allow-before-publication); fi
-          python -m stock_jp.operation.paper_preparation "${args[@]}" --output .work/paper-research/preparation.json
+          python -m stock_jp.operation.paper_preparation "${args[@]}" --resume-receipt .work/paper-research/restored.json --output .work/paper-research/preparation.json
       - name: Verify frozen rules and approvals were preserved
         id: frozen
         if: always()

@@ -59,14 +59,15 @@ WAIT・注文0件、`REVIEW_REQUIRED`で終了し、成功した開示cutoffを�
 
 朝のrun・state・原本・履歴は[試行資料](paper-attempt/)へ保存する。
 当日のcanonical runへ朝のcutoffを採用せず、今夜は21:00以後の公開窓で開始する。
-新しい準備処理は同じcutoffと検証済みページで、予算停止だけを最大3回再開する。
+新しい準備処理は同じcutoffと検証済みページで、予算停止だけを最大5回再開する。
 1回12要求、各要求1.05秒以上の間隔、各回の実消費とcache hitを保存する。
 EDINETも直列1.05秒以上の間隔とする。
 
 Actionsのartifactは400日指定でも実際には90日に制限された。
 原本・未完了run・forward記録・query pageは`automation/paper-source-inbox`へ追記snapshotとして
 保存し、期限なしのprivate Gitを長期保管先とする。次回はquery cacheだけを復元し、
-運用state・cutoff・判断・承認は復元しない。artifactは受け取り口として90日保持する。
+運用state・判断・承認は復元しない。同日の公開後cutoffは再開メタデータとして使い、
+朝のcutoffはownerの明示previewだけで再利用する。artifactは受け取り口として90日保持する。
 保存はレビュー完了や正式入力への採用を意味せず、本人のLIVE承認も生成しない。
 
 ## 残る条件

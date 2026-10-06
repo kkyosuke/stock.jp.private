@@ -38,7 +38,8 @@ def run(root, context, git, *, save, preview=False):
     tree = git.tree(revision or main)
     if preview and context["sha"] != main:
         git.tree(context["sha"])  # Reuse source blobs already present in the verified execution commit.
-    day = datetime.now(JST).date().isoformat()
+    now = datetime.now(JST)
+    day = now.date().isoformat()
     config_sha = storage.digest((root / "config/sources.json").read_bytes())
     previous = json.loads(git.read(tree[n.PAPER_JOURNAL])) if revision else None
     if previous:
@@ -51,6 +52,7 @@ def run(root, context, git, *, save, preview=False):
                       "PAPER inbox member is missing")
     if not save:
         cached = {}
+        resume_cutoff = None
         if previous and previous["config_sha256"] == config_sha:
             for name, item in previous["files"].items():
                 if not cache_archive.valid_name(name):
@@ -59,12 +61,21 @@ def run(root, context, git, *, save, preview=False):
                 n.require(len(raw) == item["bytes"] and storage.digest(raw) == item["sha256"], "PAPER cache checksum mismatch")
                 cached[name] = raw
             cache_archive.validate(cached)
+            cutoff_name = f"operations/runs/{day}/source-scan-cutoff.json"
+            if previous["day"] == day and cutoff_name in previous["files"]:
+                item = previous["files"][cutoff_name]
+                raw = git.read(item["blob"])
+                n.require(len(raw) == item["bytes"] and storage.digest(raw) == item["sha256"], "PAPER cutoff checksum mismatch")
+                cutoff = n.daily.aware(json.loads(raw)["cutoff_at_jst"]).astimezone(JST)
+                if cutoff.date().isoformat() == day and cutoff <= now and (cutoff.hour >= 21 or preview):
+                    resume_cutoff = cutoff.isoformat(timespec="seconds")
             observe(git, context, main, revision)
             for name, raw in cached.items():
                 path = confined(root, ".work/market-data/" + name)
                 n.require(not path.exists() or path.read_bytes() == raw, "adopted and inbox cache disagree")
                 ingest.atomic_bytes(path, raw)
-        return {"status": "QUERY_CACHE_RESTORED", "file_count": len(cached), "canonical_state_restored": False}
+        return {"status": "QUERY_CACHE_RESTORED", "file_count": len(cached),
+                "resume_cutoff_at_jst": resume_cutoff, "canonical_state_restored": False}
     files, uploads = {}, {}
     for directory in (f"operations/runs/{day}", "data/market/primary-sources",
                       "research/historical-replay/v04-forward", ".work/market-data/nightly-source-cache"):

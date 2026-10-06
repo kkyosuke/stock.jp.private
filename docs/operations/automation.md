@@ -83,7 +83,7 @@ previewでも実際の通信は消費として残り、本番の再実行で完�
 `market_data/primary_sources.py`、取得記録は`research/forward_collection.py`が管理する。
 公開資料も直列・最低1.05秒間隔、1回最大60要求。J-Quantsの取得とは別の消費記録である。
 EDINETも直列・最低1.05秒間隔。J-Quantsを使うsource scanは既存の最低1.05秒間隔・
-1回最大12要求とpage checkpointを使う。予算による停止だけを同じcutoffで最大3回まで
+1回最大12要求とpage checkpointを使う。予算による停止だけを同じcutoffで最大5回まで
 再開し、取得済みページは再照会しない。各回の要求数とcache hitを結果に残す。
 同じworkflowのconcurrencyで市場データ取得と調査準備の同時実行を防ぐ。
 
@@ -108,7 +108,9 @@ Actionsのjobごとに確認する。
 内容ハッシュ付きの追記snapshotとして保存する。期限のあるartifactに長期保存を依存しない。
 このjobの`contents: write`はこの未レビューの保管先に使い、mainを更新しない。
 次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheだけを復元する。
-運用state、cutoff、判断、注文、承認は復元しない。checkpoint branchを削除しない。
+運用state、判断、注文、承認は復元しない。同日の21:00以後の検証済みcutoffだけを
+再開メタデータとして返し、21:20の再試行でquery pageを再利用する。朝のcutoffは
+ownerの明示previewでしか再利用しない。checkpoint branchを削除しない。
 
 `paper-research-<run ID>` artifactは90日保持する受け取り口。repositoryの実上限も90日であり、
 400日指定でも90日に切り詰められる。取り込み後に再検証し、privateのPRで採用した

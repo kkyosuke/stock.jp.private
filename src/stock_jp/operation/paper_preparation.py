@@ -16,7 +16,7 @@ from stock_jp.workspace import project_root
 JST = ZoneInfo("Asia/Tokyo")
 
 
-def prepare(root: Path, *, at: datetime | None = None, allow_before_publication=False):
+def prepare(root: Path, *, at: datetime | None = None, allow_before_publication=False, cutoff=None):
     at = at or datetime.now(JST)
     if at.tzinfo is None:
         raise ValueError("PAPER preparation time must have a UTC offset")
@@ -31,15 +31,25 @@ def prepare(root: Path, *, at: datetime | None = None, allow_before_publication=
         return {"status": "WAIT_PUBLICATION", "completed_run": False,
                 "interpretation": "Real nightly preparation starts after the declared 21:00 JST publication window."}
     run_dir = root / "operations/runs" / at.date().isoformat()
-    cutoff = at.isoformat(timespec="seconds")
     cutoff_path = run_dir / "source-scan-cutoff.json"
     if cutoff_path.exists():
-        cutoff = json.loads(cutoff_path.read_text())["cutoff_at_jst"]
+        existing = json.loads(cutoff_path.read_text())["cutoff_at_jst"]
+        if cutoff and existing != cutoff:
+            raise ValueError("existing PAPER cutoff differs; inspect the saved run before resuming")
+        cutoff = existing
+    cutoff = cutoff or at.isoformat(timespec="seconds")
+    selected = datetime.fromisoformat(cutoff)
+    if selected.tzinfo is None:
+        raise ValueError("PAPER cutoff must have a UTC offset")
+    selected = selected.astimezone(JST)
+    if selected.date() != at.date() or selected > at or selected.hour < 21 and not allow_before_publication:
+        raise ValueError("PAPER resume cutoff must be from this publication night or an explicit preview")
     passes = []
     # The existing scanner spends at most 12 requests per invocation. Resume
-    # its exact query pages, at the same cutoff, for at most three passes.
-    for _ in range(3):
-        pass_at = datetime.now(JST) if passes else at
+    # Financials and earnings each use one query per date. Five bounded
+    # passes cover the 23-day gap without increasing the SDK's 12-call limit.
+    for _ in range(5):
+        pass_at = max(at, datetime.now(JST)) if passes else at
         started = start_nightly_run(root=root, at=pass_at.isoformat(timespec="seconds"), cutoff=cutoff)
         public = {k: v for k, v in started.items() if k != "run_token"}
         if started["status"] == "completed":
@@ -69,10 +79,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-before-publication", action="store_true", help="owner's explicit preview only")
+    parser.add_argument("--resume-receipt", type=Path, help="validated query-cache restore receipt")
     args = parser.parse_args()
     root = project_root()
     output = confined(root, str(args.output))
-    result = prepare(root, allow_before_publication=args.allow_before_publication)
+    receipt = json.loads(confined(root, str(args.resume_receipt)).read_text()) if args.resume_receipt else {}
+    result = prepare(root, allow_before_publication=args.allow_before_publication,
+                     cutoff=receipt.get("resume_cutoff_at_jst"))
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps({"status": result["status"], "completed_run": result["completed_run"]}))

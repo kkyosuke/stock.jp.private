@@ -1,11 +1,14 @@
 import json
 import shutil
+from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from stock_jp.automation import nightly as n
 from stock_jp.automation.paper_checkpoint import run
+from stock_jp.market_data.primary_sources import JST
 from stock_jp.market_data.jquants import ingest
 from stock_jp.market_data.jquants.cache import NightlyClient
 from tests.test_nightly_market_data import Repository
@@ -81,3 +84,20 @@ class PaperCheckpointTest(unittest.TestCase):
             for name in (n.PAPER_RAW_PREFIX + "../config/policy.json", n.PAPER_RAW_PREFIX + "a/.git/config"):
                 with self.assertRaisesRegex(n.RemoteStop, "unsafe PAPER"):
                     n.Git(repo).write(n.PAPER_CHECKPOINT, repo.refs["main"], {name: b"x"}, exists=False)
+
+    def test_resume_metadata_reuses_only_this_night_and_never_imports_the_run(self):
+        for hour, preview, expected in ((21, False, True), (8, False, False), (8, True, True)):
+            with self.subTest(hour=hour, preview=preview), TemporaryDirectory() as temporary, \
+                    patch("stock_jp.automation.paper_checkpoint.datetime") as clock:
+                clock.now.return_value = datetime(2026, 10, 6, 21, 20, tzinfo=JST)
+                root = Path(temporary)
+                repo, context = self.root_and_context(root)
+                path = root / "operations/runs/2026-10-06/source-scan-cutoff.json"
+                cutoff = datetime(2026, 10, 6, hour, tzinfo=JST).isoformat(timespec="seconds")
+                ingest.atomic_json(path, {"cutoff_at_jst": cutoff})
+                run(root, context, n.Git(repo), save=True)
+                path.unlink()
+                restored = run(root, context, n.Git(repo), save=False, preview=preview)
+                self.assertEqual(restored["resume_cutoff_at_jst"], cutoff if expected else None)
+                self.assertFalse(path.exists())
+                self.assertFalse(restored["canonical_state_restored"])
