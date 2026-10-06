@@ -155,6 +155,25 @@ class ProviderBudgetTests(unittest.TestCase):
             self.budget()
         self.assertNotIn('paper_requests', self.repo.journal())
 
+    def test_exhausted_public_collector_preserves_blocker_without_network(self):
+        from stock_jp.market_data.primary_sources import collect, Download
+        config_path = self.root / 'config/sources.json'
+        config = json.loads(config_path.read_text())
+        config['market_regime'] = {'fixture_url': 'https://example.com/primary.csv'}
+        ingest.atomic_json(config_path, config)
+        self.seed(12)
+        ingest.atomic_json(self.root / 'operations/inputs/primary-sources.json', {
+            'allowed_hosts': ['example.com'], 'max_requests': 60, 'issuers': [],
+            'public_series': [{'id': 'fixture', 'title': 'Fixture', 'config_key': 'fixture_url', 'suffix': '.csv'}]})
+        seen = []
+        download = Download(['example.com'], opener=build_opener(OfflineHTTPS(seen.append)).open)
+        with guard(self.budget()):
+            result = collect(self.root, cutoff=self.at, download=download)
+        self.assertEqual(result['sources'], [])
+        self.assertEqual(result['blockers'][0]['source'], 'fixture')
+        self.assertIn('allowance exhausted', result['blockers'][0]['error'])
+        self.assertFalse(seen)
+
     def test_prior_grant_missing_journal_and_stale_writer_fail_closed(self):
         ingest.atomic_json(self.root / 'operations/acquisition/date-grants.json', {'prior_charges': {self.day: 12}})
         with self.assertRaises(ingest.RequestBudgetExhausted):

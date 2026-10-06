@@ -20,6 +20,10 @@ _active = None
 _installed = False
 
 
+class SharedBudgetExhausted(ingest.RequestBudgetExhausted, ValueError):
+    """Existing collectors record exhaustion as an unverified source gap."""
+
+
 def validate_charges(document):
     charges = document.get("paper_requests", {})
     require(isinstance(charges, dict), "invalid shared provider charges")
@@ -92,7 +96,7 @@ class PaperBudget:
         entries = cp.document.setdefault("paper_requests", {}).setdefault(self.day, [])
         used = max(self.prior, len(cp.document["runs"][self.day]["requests"])) + len(entries)
         if used >= self.limit:
-            raise ingest.RequestBudgetExhausted("shared logical-day provider allowance exhausted")
+            raise SharedBudgetExhausted("shared logical-day provider allowance exhausted")
         entries.append({"sequence": len(entries) + 1, "host": parsed.hostname,
                         "reserved_at": self.clock().isoformat(),
                         "action_run_id": cp.context["run_id"], "execution_sha": cp.context["sha"]})

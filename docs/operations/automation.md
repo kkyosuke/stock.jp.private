@@ -178,7 +178,8 @@ writer concurrencyに加え、checkpoint/mainの移動・保存失敗・実行�
 
 workflowの原本収集とPAPER準備は`stock_jp.automation.provider_budget`を入口にする。
 既存urllib通信の境界を監視するため、凍結済み研究コードは変更しない。
-保存済みquery cacheは追加通信を伴わず再利用できる。新規取得の残枠不足はレビュー未完了・
+保存済みquery cacheは追加通信を伴わず再利用できる。各collectorのローカル試行数には通信前停止を含む場合があるため、消費の正本は共有journalである。
+新規取得の残枠不足はレビュー未完了・
 データ不足として残し、日次完了や投資可能に読み替えない。
 異なる通信ライブラリや並列collectorを追加する場合は、この境界を通る回帰検証が必要である。
 今回、schedule時刻・権限・保護・承認・予算額は変更しない。
