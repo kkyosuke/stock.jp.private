@@ -1,0 +1,57 @@
+{
+  "schema_version": "2.1",
+  "state_revision": 5,
+  "timezone": "Asia/Tokyo",
+  "schedule": "weekdays 18:30",
+  "last_successful_run_at_jst": "2026-09-14T06:45:00+09:00",
+  "last_disclosure_cutoff_jst": "2026-09-14T06:20:00+09:00",
+  "last_price_date": "2026-09-11",
+  "last_run_id": "2026-09-14",
+  "pending_reviews": [
+    "4052-fy2026-annual-review-2026-09-29",
+    "2026-09-14-carried-4052-fy2026-annual-review-2026-09-29",
+    "2026-09-14-investment-case-4052"
+  ],
+  "pending_orders": [],
+  "data_gaps": [
+    {
+      "gap_id": "2026-09-03-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-03公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-04-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面が401で2026-09-04公式終値を確認できない。非公式archiveの740円は参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    },
+    {
+      "gap_id": "2026-09-14-official_market_data",
+      "status": "OPEN",
+      "severity": "NON_CRITICAL",
+      "source": "official_market_data",
+      "impact": "JPX個別株価画面がメンテナンス応答で2026-09-11公式終値を確認できない。非公式archiveは参考値に限定し、新規・追加購入を禁止。",
+      "retry_after_jst": "2026-09-15T18:30:00+09:00",
+      "resolved_at_jst": null,
+      "resolution_evidence": null
+    }
+  ],
+  "next_run_at_jst": "2026-09-15T18:30:00+09:00",
+  "unreconciled_ticket_ids": [],
+  "last_ledger_reconciliation_at_jst": null,
+  "consecutive_successful_runs": 1,
+  "last_rule_reviews": {
+    "monthly_operations": null,
+    "quarterly_performance": null,
+    "annual_promotion": null
+  }
+}
