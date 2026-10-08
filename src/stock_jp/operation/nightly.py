@@ -68,6 +68,7 @@ def start_nightly_run(
     run_token: str | None = None,
     resume_run_id: str | None = None,
     target_run_id: str | None = None,
+    market_target: dict | None = None,
     fixture_dir: Path | None = None,
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
@@ -90,6 +91,7 @@ def start_nightly_run(
         run_token=token,
         cutoff=cutoff,
         at=at,
+        market_target=market_target,
         fixture_dir=fixture_dir,
         root=root,
     )

@@ -21,6 +21,7 @@ def resolve(root, checkpoint, now):
     n.require(name in main_tree and local.is_file(), 'PAPER target has not been adopted on main')
     raw = local.read_bytes()
     n.require(n.git_blob(raw) == main_tree[name], 'local PAPER adoption record differs from main')
+    adoption_record_sha256 = ingest.digest(raw)
     record = json.loads(raw)
     for key in ('run_date', 'status', 'data_date', 'requests', 'tasks', 'budget', 'config_sha256'):
         n.require(record.get(key) == state.get(key), 'PAPER target adoption differs from daily checkpoint')
@@ -62,4 +63,5 @@ def resolve(root, checkpoint, now):
         binding['paper_cutoff_at_jst'] = cutoff
         cp.observe()
         cp.flush()
-    return {'day': day, 'cutoff_at_jst': cutoff, 'daily_status': record['status']}
+    return {'day': day, 'cutoff_at_jst': cutoff, 'daily_status': record['status'],
+            'adoption_record_sha256': adoption_record_sha256}
