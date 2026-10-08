@@ -83,7 +83,7 @@ def prepare(root: Path, *, at: datetime | None = None, allow_before_publication=
     # One scan uses the configured invocation budget, including retries.
     # Recreating its client after a budget pause would multiply that allowance.
     started = start_nightly_run(root=root, at=at.isoformat(timespec="seconds"), cutoff=cutoff,
-                                **({"target_run_id": day} if logical_target else {}))
+                                **({"target_run_id": day, "market_target": logical_target} if logical_target else {}))
     public = {k: v for k, v in started.items() if k != "run_token"}
     if started["status"] == "completed":
         return {"status": "ALREADY_COMPLETED", "completed_run": True, "run": public}

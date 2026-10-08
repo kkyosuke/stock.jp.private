@@ -363,6 +363,7 @@ def scan_sources(
     fixture_dir: Path | None = None,
     root: Path = PROJECT_ROOT,
     environ: Mapping[str, str] | None = None,
+    market_target: dict | None = None,
 ) -> dict[str, Any]:
     parsed_run_id = date.fromisoformat(run_id)
     if parsed_run_id.isoformat() != run_id:
@@ -616,6 +617,11 @@ def scan_sources(
         fixture_dir=fixture_dir,
         environ=environment,
     )
+    if (market_target is not None and targets and config.get("jquants", {}).get("enabled", False)
+            and config["jquants"].get("daily_bars_enabled", True)):
+        from stock_jp.operation.liquidity_adapter import apply
+        non_edinet = apply(root=root, run_id=run_id, target=market_target, cutoff=cutoff_at,
+                           observed=started, targets=targets, config=config, run_dir=run_dir, result=non_edinet)
     health["providers"].update(non_edinet["providers"])
     source_rows.extend(non_edinet["source_rows"])
     tasks.extend(non_edinet["tasks"])
