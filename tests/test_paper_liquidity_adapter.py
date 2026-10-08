@@ -101,6 +101,15 @@ class PaperLiquidityAdapterTest(unittest.TestCase):
                     self.pin_record();self.write_sources()
                 self.assertEqual(self.call()[1]['status'],'ALIGNED')
 
+    def test_newer_session_close_boundary_cannot_select_an_older_window(self):
+        for clock, expected in [('15:29:59','ALIGNED'), ('15:30:00','BLOCKED'), ('15:30:01','BLOCKED')]:
+            with self.subTest(clock=clock):
+                self.setup_day('2026-10-07')
+                self.cutoff=datetime.fromisoformat('2026-10-08T'+clock+'+09:00')
+                self.observed=self.cutoff
+                self.pin_record();self.write_sources()
+                self.assertEqual(self.call()[1]['status'],expected)
+
     def test_rerun_is_idempotent_and_does_not_rewrite_observation(self):
         first=self.call()
         before=(self.run/'reference-data/manifest.json').read_bytes()
@@ -138,7 +147,7 @@ class PaperLiquidityAdapterTest(unittest.TestCase):
         self.assertEqual(float(rows[0]['median_trading_value_20d']),1000)
 
     def test_holiday_unadopted_future_observation_and_tampered_prices_rejected(self):
-        for failure in ['holiday','unadopted','hash','future_adoption','future_observation','future_query','raw_tamper','tamper','live']:
+        for failure in ['holiday','unadopted','hash','future_adoption','future_observation','future_query','raw_tamper','missing_next_calendar','tamper','live']:
             with self.subTest(failure=failure):
                 self.setup_day('2026-10-07')
                 if failure=='holiday':
@@ -156,6 +165,9 @@ class PaperLiquidityAdapterTest(unittest.TestCase):
                 elif failure=='raw_tamper':
                     self.bars[-1]['Va']=2000
                     ingest.atomic_json(self.run/f'raw-sources/jquants-bars-1234-{self.day}.json',{'pages':[{'data':self.bars}]})
+                elif failure=='missing_next_calendar':
+                    self.calendar=[r for r in self.calendar if r['date']!=self.cutoff.date().isoformat()]
+                    self.write_sources()
                 elif failure=='tamper':(self.run/'reference-data/jquants-daily-bars.csv.gz').write_bytes(b'bad')
                 else:ingest.atomic_json(self.root/'config/policy.json',{'operation_mode':'LIVE','broker_submission':'HUMAN_ONLY'})
                 _,audit,rows=self.call();self.assertEqual(audit['status'],'BLOCKED');self.assertFalse(rows)

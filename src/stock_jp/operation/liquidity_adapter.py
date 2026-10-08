@@ -1,5 +1,5 @@
 """PAPER-only calendar alignment; the frozen collector and liquidity formula stay intact."""
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 import csv
 import gzip
 import hashlib
@@ -79,6 +79,13 @@ def apply(*, root, run_id, target, cutoff, observed, targets, config, run_dir, r
         _require(providers['jquants_trading_calendar']['status'] == 'OK', 'official calendar incomplete')
         _require([r['holiday_division'] for r in calendar if r['date'] == run_id] in (['1'], ['2']),
                  'target is not an official trading session')
+        for offset in range((cutoff.date() - day).days + 1):
+            session = (day + timedelta(days=offset)).isoformat()
+            _require(sum(r['date'] == session for r in calendar) == 1,
+                     'official calendar missing or duplicate between target and cutoff')
+        _require(not any(r['date'] > run_id and r['holiday_division'] in {'1', '2'}
+                         and datetime.combine(date.fromisoformat(r['date']), time(15, 30), tzinfo=jpx.JST) <= cutoff
+                         for r in calendar), 'a newer official session has closed; do not substitute an older window')
         with gzip.open(checked('jquants_daily_bars'), 'rt', newline='') as stream:
             normalized = list(csv.DictReader(stream))
         bars = []
