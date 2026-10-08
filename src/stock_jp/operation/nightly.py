@@ -67,6 +67,7 @@ def start_nightly_run(
     cutoff: str,
     run_token: str | None = None,
     resume_run_id: str | None = None,
+    target_run_id: str | None = None,
     fixture_dir: Path | None = None,
     root: Path = PROJECT_ROOT,
 ) -> dict[str, Any]:
@@ -80,7 +81,7 @@ def start_nightly_run(
     errors = validate_workspace(root)
     if errors:
         raise ValueError("workspace validation failed: " + "; ".join(errors))
-    prepared = prepare_run(at=at, run_token=run_token, root=root, resume_run_id=resume_run_id)
+    prepared = prepare_run(at=at, run_token=run_token, root=root, resume_run_id=resume_run_id, target_run_id=target_run_id)
     if prepared["status"] in {"completed", "locked"}:
         return prepared
     token = str(prepared["run_token"])

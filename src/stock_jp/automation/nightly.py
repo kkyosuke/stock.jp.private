@@ -192,10 +192,13 @@ class Checkpoint:
         require(isinstance(bindings, dict), "invalid scheduled targets")
         for run_id, binding in bindings.items():
             require(re.fullmatch(r"[1-9][0-9]*", run_id) is not None
-                    and isinstance(binding, dict) and set(binding) == {"date", "resolved_at"},
+                    and isinstance(binding, dict) and {"date", "resolved_at"} <= set(binding) <= {"date", "resolved_at", "paper_cutoff_at_jst"},
                     "invalid scheduled target identity")
             require(scheduled_day(daily.aware(binding["resolved_at"])).isoformat() == binding["date"],
                     "invalid scheduled target date")
+            if "paper_cutoff_at_jst" in binding:
+                require(scheduled_day(daily.aware(binding["paper_cutoff_at_jst"])).isoformat() == binding["date"],
+                        "invalid PAPER target cutoff")
         self.saved = ingest.encoded({k: v for k, v in self.document.items() if k != "github_budget"})
         self.pending_bytes = {}
         self.signatures = {}

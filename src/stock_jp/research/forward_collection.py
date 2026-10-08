@@ -136,13 +136,16 @@ def register_sources(root, manifest_path, primary):
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 
 
-def main():
+def main(*, bound_cutoff=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cutoff", help="aware JST cutoff; defaults to actual collection time")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     root = project_root()
-    cutoff = datetime.fromisoformat(args.cutoff) if args.cutoff else datetime.now(JST)
+    if bound_cutoff is not None and args.cutoff not in (None, bound_cutoff):
+        raise ValueError("forward cutoff differs from bound PAPER target")
+    selected = bound_cutoff or args.cutoff
+    cutoff = datetime.fromisoformat(selected) if selected else datetime.now(JST)
     output = confined(root, str(args.output))
     result, receipt = capture(root, cutoff=cutoff)
     output.parent.mkdir(parents=True, exist_ok=True)

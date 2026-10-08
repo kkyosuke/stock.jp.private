@@ -31,7 +31,7 @@ def observe(git, context, main, revision):
               "main or PAPER source checkpoint moved")
 
 
-def run(root, context, git, *, save, preview=False):
+def run(root, context, git, *, save, preview=False, logical_target=None):
     root = root.resolve()
     n.trusted_context(root, context, preview)
     git.private_metadata()
@@ -41,7 +41,7 @@ def run(root, context, git, *, save, preview=False):
     if preview and context["sha"] != main:
         git.tree(context["sha"])  # Reuse source blobs already present in the verified execution commit.
     now = datetime.now(JST)
-    day = now.date().isoformat()
+    day = logical_target["day"] if logical_target else now.date().isoformat()
     config_raw = (root / "config/sources.json").read_bytes()
     config_sha = storage.digest(config_raw)
     previous = json.loads(git.read(tree[n.PAPER_JOURNAL])) if revision else None
@@ -63,9 +63,12 @@ def run(root, context, git, *, save, preview=False):
                 raw = git.read(item["blob"])
                 n.require(len(raw) == item["bytes"] and storage.digest(raw) == item["sha256"], "PAPER cutoff checksum mismatch")
                 cutoff = n.daily.aware(json.loads(raw)["cutoff_at_jst"]).astimezone(JST)
-                if cutoff.date().isoformat() == day and cutoff <= now and (cutoff.hour >= 21 or preview):
+                if ((n.scheduled_day(cutoff).isoformat() == day if logical_target else cutoff.date().isoformat() == day)
+                        and cutoff <= now and (logical_target is not None or cutoff.hour >= 21 or preview)):
                     resume_cutoff = cutoff.isoformat(timespec="seconds")
             if resume_cutoff:
+                n.require(logical_target is None or resume_cutoff == logical_target["cutoff_at_jst"],
+                          "inbox cutoff differs from bound PAPER target")
                 plan = json.loads(config_raw)["jquants"]["plan"]
                 scope = ingest.digest(ingest.encoded(cache_identity(plan=plan, cutoff=resume_cutoff)))
                 prefix = cache_archive.PREFIX + scope + "/"
@@ -131,8 +134,14 @@ def main():
                "actor": os.environ["GITHUB_ACTOR"], "triggering_actor": os.environ["GITHUB_TRIGGERING_ACTOR"],
                "run_id": int(os.environ["GITHUB_RUN_ID"])}
     root = project_root()
-    result = run(root, context, n.Git(rate.BudgetedTransport(http.GitHubTransport(os.environ["GITHUB_TOKEN"]))),
-                 save=args.action == "save", preview=args.preview)
+    git = n.Git(rate.BudgetedTransport(http.GitHubTransport(os.environ["GITHUB_TOKEN"])))
+    n.trusted_context(root, context, args.preview)
+    git.private_metadata()
+    now = datetime.now(JST)
+    cp = n.Checkpoint(root, git, git.ref("main"), n.scheduled_day(now), context, preview=args.preview)
+    from stock_jp.automation.paper_target import resolve
+    target = resolve(root, cp, now)
+    result = run(root, context, git, save=args.action == "save", preview=args.preview, logical_target=target)
     output = confined(root, str(args.output))
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
