@@ -201,8 +201,13 @@ def main():
                "run_id": int(os.environ["GITHUB_RUN_ID"])}
     git = n.Git(rate.BudgetedTransport(http.GitHubTransport(os.environ["GITHUB_TOKEN"])))
     budget = PaperBudget(project_root(), context, git, preview=os.environ.get("STOCK_PREVIEW") == "true")
+    from stock_jp.automation.paper_target import resolve
+    target = resolve(project_root(), budget.checkpoint, budget.clock())
     with guard(budget):
-        return (forward_collection.main if action == "forward" else paper_preparation.main)()
+        if action == "forward":
+            return forward_collection.main(bound_cutoff=target["cutoff_at_jst"])
+        return paper_preparation.main(logical_target=target,
+            budget_remaining=budget.limit - shared_usage(budget.checkpoint.document, budget.day))
 
 
 if __name__ == "__main__":

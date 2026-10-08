@@ -74,23 +74,27 @@ def prepare_run(
     *, at: str, run_token: str | None = None, root: Path = PROJECT_ROOT,
     resume_run_id: str | None = None,
     existing_only: bool = False,
+    target_run_id: str | None = None,
 ) -> dict[str, Any]:
     if existing_only and not resume_run_id:
         raise ValueError("existing-only preparation requires resume_run_id")
-    run_id = _validate_run_id(resume_run_id) if resume_run_id else _parse_jst(at).date().isoformat()
+    if target_run_id and resume_run_id:
+        raise ValueError("choose a target or an existing resume run")
+    run_id = _validate_run_id(target_run_id or resume_run_id) if (target_run_id or resume_run_id) else _parse_jst(at).date().isoformat()
     run_dir = record_path(root, 'runs') / run_id
     if run_dir.is_dir():
         with run_write_lock(run_dir):
             return _prepare_run(at=at, run_token=run_token, root=root,
-                                resume_run_id=resume_run_id, existing_only=existing_only)
+                                resume_run_id=resume_run_id, existing_only=existing_only, target_run_id=target_run_id)
     return _prepare_run(at=at, run_token=run_token, root=root,
-                        resume_run_id=resume_run_id, existing_only=existing_only)
+                        resume_run_id=resume_run_id, existing_only=existing_only, target_run_id=target_run_id)
 
 
 def _prepare_run(
     *, at: str, run_token: str | None = None, root: Path = PROJECT_ROOT,
     resume_run_id: str | None = None,
     existing_only: bool = False,
+    target_run_id: str | None = None,
 ) -> dict[str, Any]:
     # Offline review must not initialize or migrate any saved workspace input,
     # even when another writer owns the lease. A named existing run is mandatory
@@ -102,13 +106,20 @@ def _prepare_run(
         initialize_workspace(root)
     started = _parse_jst(at)
     started_iso = started.isoformat(timespec="seconds")
-    run_id = _validate_run_id(resume_run_id) if resume_run_id else started.date().isoformat()
+    if target_run_id and resume_run_id:
+        raise ValueError("choose a target or an existing resume run")
+    run_id = _validate_run_id(target_run_id or resume_run_id) if (target_run_id or resume_run_id) else started.date().isoformat()
     private = _private_root(root)
     state = _read_json(record_path(private.parent, 'state.json'))
     policy = _read_json(record_path(private.parent, 'policy.json'))
     run_dir = record_path(private.parent, 'runs') / run_id
     handoff_path = run_dir / "handoff.json"
 
+    if target_run_id:
+        if run_id > started.date().isoformat():
+            raise ValueError("cannot create a future target run")
+        if state.get("last_run_id") and state["last_run_id"] > run_id:
+            raise ValueError("cannot create a target older than the latest completed run")
     if resume_run_id:
         if run_id > started.date().isoformat():
             raise ValueError("cannot resume a future run")

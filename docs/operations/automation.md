@@ -199,3 +199,26 @@ workflowの原本収集とPAPER準備は`stock_jp.automation.provider_budget`を
 重複の有無が不明なため取得を止める。推測で相殺したり二重加算したりせず、
 原記録の照合を必要とする。既存基準の過去費用が変わった場合も取得を停止する。
 台帳・state・予算のリセットで解消しない。
+
+## 遅延したPAPER工程の対象日
+
+PAPERの自動入口は日次checkpointの`scheduled_targets[Actions run ID]`を使う。
+例えば10月7日対象の定時runが10月8日04:17 JSTにPAPERへ到達しても、
+`operations/runs/2026-10-07`を対象にする。main採用済みの日次取得記録と
+checkpointの対象日・状態・要求・task・設定hashが一致しない場合は停止する。
+休日は新しい調査runを作成しない。
+
+最初のPAPER工程で実時刻の`paper_cutoff_at_jst`を同じbindingへ保存し、
+一次資料収集・query cache・準備・inbox保存が共有する。
+既存runまたは同日の検証済みinboxにcutoffがあればそれを保つ。
+cutoffは対象日の21時から翌日21時未満の実観測時刻であり、
+翌朝に取得した資料を前日21時に知っていたことにはしない。
+取得時刻・公表時刻・既存のPIT検証条件は維持する。
+最初のcutoffがないまま次の公開夜まで遅延した古いrunは停止し、
+過去の観測時刻を作らない。保存済みcutoffがある同一runの再試行は元対象を保持する。
+
+既存のcanonical runは再生成せず、`resume-review`でオフラインレビューへ進む。
+共有予算が枯渇し新しいrunもない場合は`BUDGET_EXHAUSTED`を返してscanを開始しない。
+保存資料のレビュー、日次finalize、投資可能判定は別の工程であり、
+対象日の修正だけで完了・投資可能にしない。旧checkpointの消費を削除・移動せず、
+予算12回、98%基準、PAPER/HUMAN_ONLYと承認条件を維持する。
