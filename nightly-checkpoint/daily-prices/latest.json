@@ -11,46 +11,46 @@
     "provider": "J-Quants API V2 equities/master",
     "scope": "point-in-time domestic common stocks excluding PRO MARKET",
     "count": 3689,
-    "master_date": "2026-10-07",
+    "master_date": "2026-10-08",
     "product_category": "011",
     "common_share_reserve_code": "0",
     "excluded_market_codes": [
       "0105"
     ],
-    "excluded_pro_market_count": 191
+    "excluded_pro_market_count": 192
   },
   "acquisition": {
-    "master_row_count": 4442,
-    "bar_row_count": 4442,
+    "master_row_count": 4443,
+    "bar_row_count": 4443,
     "missing_bar_row_count": 0,
     "row_coverage_ratio": 1.0,
     "diagnostics": {
       "ROW_MISSING": 0,
-      "NO_EXECUTION": 249,
+      "NO_EXECUTION": 268,
       "PARTIAL_NULL_OR_INVALID": 0,
-      "VALID_PRICE": 4193
+      "VALID_PRICE": 4175
     }
   },
-  "retrieved_at": "2026-10-07T18:16:17.731825+00:00",
-  "latest_trading_date": "2026-10-07",
+  "retrieved_at": "2026-10-08T18:15:12.981503+00:00",
+  "latest_trading_date": "2026-10-08",
   "fetch": {
     "success_count": 3689,
     "error_count": 0,
     "error_codes": []
   },
   "latest_session": {
-    "date": "2026-10-07",
-    "file": "revisions/2026-10-07/18c9f54e46614cf4444e901b449c09142cf589cb20da43c2c7940f07d787a33f/2026-10-07.csv",
-    "canonical_file": "2026/2026-10-07.csv",
-    "sha256": "18c9f54e46614cf4444e901b449c09142cf589cb20da43c2c7940f07d787a33f",
-    "quote_count": 3655,
+    "date": "2026-10-08",
+    "file": "revisions/2026-10-08/418fc7bf1c72c3be2f42b98a3cc34506bd960c0fdec691edd9e05af6c4511a5a/2026-10-08.csv",
+    "canonical_file": "2026/2026-10-08.csv",
+    "sha256": "418fc7bf1c72c3be2f42b98a3cc34506bd960c0fdec691edd9e05af6c4511a5a",
+    "quote_count": 3643,
     "diagnostics": {
       "ROW_MISSING": 0,
-      "NO_EXECUTION": 34,
+      "NO_EXECUTION": 46,
       "PARTIAL_NULL_OR_INVALID": 0,
-      "VALID_PRICE": 3655
+      "VALID_PRICE": 3643
     },
-    "no_quote_count": 34,
+    "no_quote_count": 46,
     "fetch_error_count": 0
   },
   "raw_provenance": {
@@ -59,13 +59,13 @@
     "partitions": [
       {
         "dataset": "equities_master",
-        "path": "datasets/equities_master/2026-10-07/revisions/601b9016654e8ccd2d20911cb6a9efb0e8cecaa0e0c0d07f0cff5beb3381826e.json",
-        "sha256": "601b9016654e8ccd2d20911cb6a9efb0e8cecaa0e0c0d07f0cff5beb3381826e"
+        "path": "datasets/equities_master/2026-10-08/revisions/8b342fb86ec902248e7702de30f2c21b1de5986e7b657724f80f694f2c0826b8.json",
+        "sha256": "8b342fb86ec902248e7702de30f2c21b1de5986e7b657724f80f694f2c0826b8"
       },
       {
         "dataset": "equities_daily",
-        "path": "datasets/equities_daily/2026-10-07/revisions/d03a2211853013d29ade5d499b02eab243186dfec6ffe28262676648a46566d5.json",
-        "sha256": "d03a2211853013d29ade5d499b02eab243186dfec6ffe28262676648a46566d5"
+        "path": "datasets/equities_daily/2026-10-08/revisions/b103befb624873542d3bb96e17462165a5709d4216d36fe55a42b2a1350113ba.json",
+        "sha256": "b103befb624873542d3bb96e17462165a5709d4216d36fe55a42b2a1350113ba"
       }
     ]
   }
