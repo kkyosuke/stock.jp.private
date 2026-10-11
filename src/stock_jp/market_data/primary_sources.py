@@ -123,7 +123,11 @@ def collect(root: Path, *, cutoff: datetime, download=None, logical_day=None):
         nonlocal hits
         if url in reused:
             hits += 1
-            return confined(root, reused[url]["path"]).read_bytes()
+            source = reused[url]
+            raw = confined(root, source["path"]).read_bytes()
+            if len(raw) != source["bytes"] or hashlib.sha256(raw).hexdigest() != source["sha256"]:
+                raise ValueError("primary source changed after reuse validation")
+            return raw
         return fetch(url)
 
     def retrieved(url):

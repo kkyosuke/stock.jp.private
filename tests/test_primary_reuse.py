@@ -209,3 +209,20 @@ class PrimaryReuseTest(unittest.TestCase):
             self.assertTrue(replay['blockers'])
             self.assertFalse(set(calls) & {s['url'] for s in first['sources']})
             self.assertFalse(replay['full_universe_disclosure_coverage_certified'])
+
+
+    def test_source_changed_between_validation_and_use_is_not_adopted(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo, context, first = self.two_attempts(root)
+            paper_checkpoint.run(root, context, n.Git(repo), save=False, logical_target=TARGET)
+            original_load = reuse.load
+            def changed(*args, **kwargs):
+                result = original_load(*args, **kwargs)
+                (root / first['sources'][1]['path']).write_bytes(b'%PDF-1.7 modified after validation')
+                return result
+            with patch.object(reuse, 'load', side_effect=changed):
+                result = primary.collect(root, cutoff=datetime.fromisoformat(CUTOFF), logical_day=DAY,
+                                         download=lambda _: self.fail('unexpected request'))
+            self.assertTrue(result['blockers'])
+            self.assertNotIn(first['sources'][1]['url'], [s['url'] for s in result['sources']])
