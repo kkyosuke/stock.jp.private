@@ -1,0 +1,3780 @@
+{
+  "schema_version": "1.0",
+  "status": "INPUTS_COLLECTED_REVIEW_REQUIRED",
+  "captured_at_jst": "2026-10-12T02:38:29+09:00",
+  "cutoff_at_jst": "2026-10-12T02:30:01+09:00",
+  "period": {
+    "from": "2026-10-06",
+    "through": "2027-04-01"
+  },
+  "plan_sha256": "fe7927ebd7c63e6d92f47181f8986effa08217ae77212e0d7e86ca694a7ccbb2",
+  "generation": "33e237307613d4ccdf861838e65511f6364f025a0887df33f0700c55f1573394",
+  "pointer_sha256": "155b60d75369c3d980a9dfbc0d149ccd7bdc1a72221b153dbbaca862cb28f11e",
+  "latest_price_date": "2026-10-09",
+  "latest_price_metadata": {
+    "api_version": "v2",
+    "completed_at": "2026-10-09T17:48:23.090224+00:00",
+    "dataset": "equities_daily",
+    "endpoint": "https://api.jquants.com/v2/equities/bars/daily",
+    "pages": [
+      {
+        "bytes": 1069303,
+        "page_number": 1,
+        "path": "objects/22/22bd6a0c3cfb045357897fcfab6168ee5134e362b4f5f2264cf4a61daeac284a.json",
+        "retrieved_at": "2026-10-09T17:47:22.521583+00:00",
+        "row_count": 4440,
+        "sha256": "22bd6a0c3cfb045357897fcfab6168ee5134e362b4f5f2264cf4a61daeac284a"
+      }
+    ],
+    "period": {
+      "from": "2026-10-09",
+      "to": "2026-10-09"
+    },
+    "provider": "J-Quants API V2",
+    "query": {
+      "date": "2026-10-09"
+    },
+    "row_count": 4440,
+    "schema_version": 1,
+    "started_at": "2026-10-09T17:46:18.861927+00:00",
+    "status": "complete",
+    "units": "JPY unadjusted O/H/L/C; shares Vo; adjusted Adj* preserved separately",
+    "universe": "all returned issues; no configured watchlist filter"
+  },
+  "partitions": {
+    "equities_master": [
+      {
+        "path": "jquants/datasets/equities_master/2025-08-07/latest.json",
+        "bytes": 775,
+        "object": "objects/97/97e63c846db555ab9a9af7e4edbdd8f68661bc83c0148672adcc7cc114a9b162.json",
+        "sha256": "97e63c846db555ab9a9af7e4edbdd8f68661bc83c0148672adcc7cc114a9b162"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-08/latest.json",
+        "bytes": 775,
+        "object": "objects/d4/d499277469a8b22ddade8250c2e8069c82cd72296d2d5bd68935efbb31c7a81c.json",
+        "sha256": "d499277469a8b22ddade8250c2e8069c82cd72296d2d5bd68935efbb31c7a81c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-12/latest.json",
+        "bytes": 775,
+        "object": "objects/28/283f7a1d96c9096761ad8b0a9178fca0fb22cf94f40e7250e7daf32a74961090.json",
+        "sha256": "283f7a1d96c9096761ad8b0a9178fca0fb22cf94f40e7250e7daf32a74961090"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-13/latest.json",
+        "bytes": 775,
+        "object": "objects/1c/1cdde9efcc6a9274f9a999e01ae78db4e7f89105b8966c0b6d3191c2972e871a.json",
+        "sha256": "1cdde9efcc6a9274f9a999e01ae78db4e7f89105b8966c0b6d3191c2972e871a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-14/latest.json",
+        "bytes": 775,
+        "object": "objects/fb/fb4bc8fcc8e2a18a44c58f686fa7a7406f5bc8ecba6a000907254315399e616d.json",
+        "sha256": "fb4bc8fcc8e2a18a44c58f686fa7a7406f5bc8ecba6a000907254315399e616d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-15/latest.json",
+        "bytes": 775,
+        "object": "objects/0f/0f7d07cbddac0ff836f5fbfbf86cd75e2d24a4296de95464a04085dd2abfd537.json",
+        "sha256": "0f7d07cbddac0ff836f5fbfbf86cd75e2d24a4296de95464a04085dd2abfd537"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-18/latest.json",
+        "bytes": 775,
+        "object": "objects/66/665379aa21d396ddd66215e7ee5d0e375b2bf7a09e9013eed86ed03798cbb2d8.json",
+        "sha256": "665379aa21d396ddd66215e7ee5d0e375b2bf7a09e9013eed86ed03798cbb2d8"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-19/latest.json",
+        "bytes": 775,
+        "object": "objects/e5/e598912cedc6b7501b6f1cbdd31b119f4da5e420b62fcfc6ce25c2075e573067.json",
+        "sha256": "e598912cedc6b7501b6f1cbdd31b119f4da5e420b62fcfc6ce25c2075e573067"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-20/latest.json",
+        "bytes": 775,
+        "object": "objects/27/2758deae598a69d105acea0f59b7a625440c2c0755e6225f2a7a596708f9c6c1.json",
+        "sha256": "2758deae598a69d105acea0f59b7a625440c2c0755e6225f2a7a596708f9c6c1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-21/latest.json",
+        "bytes": 775,
+        "object": "objects/4b/4b0fa36eeba9ab8eb768975e1788c166d65cd9cd61aed541c810cbc765be5e1d.json",
+        "sha256": "4b0fa36eeba9ab8eb768975e1788c166d65cd9cd61aed541c810cbc765be5e1d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-22/latest.json",
+        "bytes": 775,
+        "object": "objects/c5/c500b54406ea09ae0a111e05aa7c6eec14a288356f794c25dd8c90f8f75b4c98.json",
+        "sha256": "c500b54406ea09ae0a111e05aa7c6eec14a288356f794c25dd8c90f8f75b4c98"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-25/latest.json",
+        "bytes": 775,
+        "object": "objects/a0/a0a81fdae518d4e8dd1dddbb920d9fed4927580c5ca18c83c866fe290cef67c8.json",
+        "sha256": "a0a81fdae518d4e8dd1dddbb920d9fed4927580c5ca18c83c866fe290cef67c8"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-26/latest.json",
+        "bytes": 775,
+        "object": "objects/fa/faae075357be63cb27d59242eee53951875a7c53f0bc5867d44df8713915cae3.json",
+        "sha256": "faae075357be63cb27d59242eee53951875a7c53f0bc5867d44df8713915cae3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-27/latest.json",
+        "bytes": 775,
+        "object": "objects/6e/6e16249c65498f6483886de2acb1aceed8c84fa9a70ee785ecc6e6da8c31abc2.json",
+        "sha256": "6e16249c65498f6483886de2acb1aceed8c84fa9a70ee785ecc6e6da8c31abc2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-28/latest.json",
+        "bytes": 775,
+        "object": "objects/c6/c68e9be1e6119fac9df30701a55fba69ea0bac59846166872c81cc7052a6d4d5.json",
+        "sha256": "c68e9be1e6119fac9df30701a55fba69ea0bac59846166872c81cc7052a6d4d5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-08-29/latest.json",
+        "bytes": 775,
+        "object": "objects/a0/a00b964e29ab515fbfc47f0467a597fde09b2b96b6c695e3e5655625ee90a1b9.json",
+        "sha256": "a00b964e29ab515fbfc47f0467a597fde09b2b96b6c695e3e5655625ee90a1b9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-01/latest.json",
+        "bytes": 775,
+        "object": "objects/60/60e491f10282f1480229ef8bdc279e679ff7769017f960844bf726c73785c527.json",
+        "sha256": "60e491f10282f1480229ef8bdc279e679ff7769017f960844bf726c73785c527"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-02/latest.json",
+        "bytes": 775,
+        "object": "objects/42/42e7a03d4327e79816c89d42242ef22711b83ff6f82ee1672674f5aca20d34dc.json",
+        "sha256": "42e7a03d4327e79816c89d42242ef22711b83ff6f82ee1672674f5aca20d34dc"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-03/latest.json",
+        "bytes": 775,
+        "object": "objects/cb/cb08404d5f5028bf6ff7b100cf931827501a10f0aac86939a7b989b78358cdec.json",
+        "sha256": "cb08404d5f5028bf6ff7b100cf931827501a10f0aac86939a7b989b78358cdec"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-04/latest.json",
+        "bytes": 775,
+        "object": "objects/b8/b89579a3eb564e5947980a14a8685adfde8f88bb6dfa3e0e91edeb6d67dfca62.json",
+        "sha256": "b89579a3eb564e5947980a14a8685adfde8f88bb6dfa3e0e91edeb6d67dfca62"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-05/latest.json",
+        "bytes": 775,
+        "object": "objects/c3/c3c07ecb1ac7fefe5c1f4f328a1432b8a10f9cfb907c1624ec0b5fc07e3f3b74.json",
+        "sha256": "c3c07ecb1ac7fefe5c1f4f328a1432b8a10f9cfb907c1624ec0b5fc07e3f3b74"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-08/latest.json",
+        "bytes": 775,
+        "object": "objects/d6/d6fe38de19bde2503cdd3f5905ae71fbf1f623ce32f3e2deaa6009d8b88028bc.json",
+        "sha256": "d6fe38de19bde2503cdd3f5905ae71fbf1f623ce32f3e2deaa6009d8b88028bc"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-09/latest.json",
+        "bytes": 775,
+        "object": "objects/28/28950b09a608a1d8362f52c3bab8824783f659cba084aaf989725da115f79c21.json",
+        "sha256": "28950b09a608a1d8362f52c3bab8824783f659cba084aaf989725da115f79c21"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-10/latest.json",
+        "bytes": 775,
+        "object": "objects/38/38e9dcd091ce526d567d05a68fea9300083297c75b05572beb25ad12dad22295.json",
+        "sha256": "38e9dcd091ce526d567d05a68fea9300083297c75b05572beb25ad12dad22295"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-11/latest.json",
+        "bytes": 775,
+        "object": "objects/1c/1c40bf967a2fec59a653384f35bf4e87dad797d34e3c1f537f6255bae8d2a372.json",
+        "sha256": "1c40bf967a2fec59a653384f35bf4e87dad797d34e3c1f537f6255bae8d2a372"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-12/latest.json",
+        "bytes": 775,
+        "object": "objects/dc/dc643a4e518590400d78406e08f51d791ffe519dca0b507ba3596c91bf93245b.json",
+        "sha256": "dc643a4e518590400d78406e08f51d791ffe519dca0b507ba3596c91bf93245b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-16/latest.json",
+        "bytes": 775,
+        "object": "objects/b2/b21347efe965072ea1bc803a32c03617783ad687d188d15d3a840419e04acaff.json",
+        "sha256": "b21347efe965072ea1bc803a32c03617783ad687d188d15d3a840419e04acaff"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-17/latest.json",
+        "bytes": 775,
+        "object": "objects/21/216a8be83a680a5b1bf54fabe1fb52fe57af776ca859850ede56741bc212dffb.json",
+        "sha256": "216a8be83a680a5b1bf54fabe1fb52fe57af776ca859850ede56741bc212dffb"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-18/latest.json",
+        "bytes": 775,
+        "object": "objects/75/7579ead875d18386a4edd42592c74fe66563301e4380e18659f16c2fdc46f366.json",
+        "sha256": "7579ead875d18386a4edd42592c74fe66563301e4380e18659f16c2fdc46f366"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-19/latest.json",
+        "bytes": 775,
+        "object": "objects/d5/d5672578150590f72d3564fac6f3aebfdec9dffc6b237f893ccfd61ee5694bbd.json",
+        "sha256": "d5672578150590f72d3564fac6f3aebfdec9dffc6b237f893ccfd61ee5694bbd"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-22/latest.json",
+        "bytes": 775,
+        "object": "objects/54/547faf9453ebb834f830dd6b53e4f8804773ba80c6f18900954ba51c10d5a5d6.json",
+        "sha256": "547faf9453ebb834f830dd6b53e4f8804773ba80c6f18900954ba51c10d5a5d6"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-24/latest.json",
+        "bytes": 775,
+        "object": "objects/07/07209e45d1ad449d11befdbff192f603d47ecd4d953e06fccc9b366c41e1ec10.json",
+        "sha256": "07209e45d1ad449d11befdbff192f603d47ecd4d953e06fccc9b366c41e1ec10"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-25/latest.json",
+        "bytes": 775,
+        "object": "objects/f0/f01576e12770b381f78837db9eb95d76716a13d402d08340f9e71ccf366fb13d.json",
+        "sha256": "f01576e12770b381f78837db9eb95d76716a13d402d08340f9e71ccf366fb13d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-26/latest.json",
+        "bytes": 775,
+        "object": "objects/2a/2a51deee6164567776d0a665642098a05884a9263b1936e5971ebca1dc1f81d0.json",
+        "sha256": "2a51deee6164567776d0a665642098a05884a9263b1936e5971ebca1dc1f81d0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-29/latest.json",
+        "bytes": 775,
+        "object": "objects/64/6450007df388153c7d833a17cf0e65c127da24014c92d9c88f6131f909e84121.json",
+        "sha256": "6450007df388153c7d833a17cf0e65c127da24014c92d9c88f6131f909e84121"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-09-30/latest.json",
+        "bytes": 775,
+        "object": "objects/b5/b58ea9d6c2e16236ef66e742d85ac4166b9746e12f49bed8adeeff719b06ae28.json",
+        "sha256": "b58ea9d6c2e16236ef66e742d85ac4166b9746e12f49bed8adeeff719b06ae28"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-01/latest.json",
+        "bytes": 775,
+        "object": "objects/93/93f4ade2d2be7cbbcec3bfb6620ecda48bde512b81f1ae26bd9ee66e81661175.json",
+        "sha256": "93f4ade2d2be7cbbcec3bfb6620ecda48bde512b81f1ae26bd9ee66e81661175"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-02/latest.json",
+        "bytes": 775,
+        "object": "objects/88/88e542d28a01d9ca41e718ffe46e0908a58a5322f1d0ab98ad14d46219dc151e.json",
+        "sha256": "88e542d28a01d9ca41e718ffe46e0908a58a5322f1d0ab98ad14d46219dc151e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-03/latest.json",
+        "bytes": 775,
+        "object": "objects/49/49e01d8a237ab25eb7cd3ec65274491e3fee6639b8610f21678a10442673b40e.json",
+        "sha256": "49e01d8a237ab25eb7cd3ec65274491e3fee6639b8610f21678a10442673b40e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-06/latest.json",
+        "bytes": 775,
+        "object": "objects/68/68d6e516fbd4f6f008659d10538d9facd9d291f052ad1bb58c2d0471b3fca179.json",
+        "sha256": "68d6e516fbd4f6f008659d10538d9facd9d291f052ad1bb58c2d0471b3fca179"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-07/latest.json",
+        "bytes": 775,
+        "object": "objects/c4/c4250f3a84f0fd4f543aa59224f21ca9b537c0cc0f3dc5168b3d2caa923e6da2.json",
+        "sha256": "c4250f3a84f0fd4f543aa59224f21ca9b537c0cc0f3dc5168b3d2caa923e6da2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-08/latest.json",
+        "bytes": 775,
+        "object": "objects/2e/2e37bc5f0892373088c6a405944cde04f48ef3867a14f57b1eba9d9bf9608f19.json",
+        "sha256": "2e37bc5f0892373088c6a405944cde04f48ef3867a14f57b1eba9d9bf9608f19"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-09/latest.json",
+        "bytes": 775,
+        "object": "objects/5f/5f9fcb32639894e67cc913fb77040f2fa31aa5db692b62c453001a3e5d508047.json",
+        "sha256": "5f9fcb32639894e67cc913fb77040f2fa31aa5db692b62c453001a3e5d508047"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-10/latest.json",
+        "bytes": 775,
+        "object": "objects/8d/8d5ae3b739b7abd3f1edbb28758d5d9d27a4ade017c407a801b9ec7c8b27ca56.json",
+        "sha256": "8d5ae3b739b7abd3f1edbb28758d5d9d27a4ade017c407a801b9ec7c8b27ca56"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-14/latest.json",
+        "bytes": 775,
+        "object": "objects/ce/cec29b83039e77a06a86d4e03681010685a99856077e2a09a6b4817c27c6632a.json",
+        "sha256": "cec29b83039e77a06a86d4e03681010685a99856077e2a09a6b4817c27c6632a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-15/latest.json",
+        "bytes": 775,
+        "object": "objects/c9/c99110d1ba1ca2d3d8528ef9b9683b872a28cfed99ed21b22f74e3b748269b61.json",
+        "sha256": "c99110d1ba1ca2d3d8528ef9b9683b872a28cfed99ed21b22f74e3b748269b61"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-16/latest.json",
+        "bytes": 775,
+        "object": "objects/a0/a07be51606e22b572eaeb5fa837b3c58ba096fe4b47981f2fce17bf9ee39cbc9.json",
+        "sha256": "a07be51606e22b572eaeb5fa837b3c58ba096fe4b47981f2fce17bf9ee39cbc9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-17/latest.json",
+        "bytes": 775,
+        "object": "objects/77/774ace9d3fe7f087ad9389ed156953fbb61484cbbaa5d330f5f0b5bdb589a6c4.json",
+        "sha256": "774ace9d3fe7f087ad9389ed156953fbb61484cbbaa5d330f5f0b5bdb589a6c4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-20/latest.json",
+        "bytes": 775,
+        "object": "objects/b7/b775d53d316a262eda126aff2b2da519404ad82f42519b0bff54ed463289b102.json",
+        "sha256": "b775d53d316a262eda126aff2b2da519404ad82f42519b0bff54ed463289b102"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-21/latest.json",
+        "bytes": 775,
+        "object": "objects/87/8705067621d2cc8e4dedb53d26fad7405f2c9c2387e487224a08bbb9f29bdb21.json",
+        "sha256": "8705067621d2cc8e4dedb53d26fad7405f2c9c2387e487224a08bbb9f29bdb21"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-22/latest.json",
+        "bytes": 775,
+        "object": "objects/e7/e71f4b85705f970a7c45d3fddbbdb6ccdf40f5f43b8344f0f2a76c7927979d99.json",
+        "sha256": "e71f4b85705f970a7c45d3fddbbdb6ccdf40f5f43b8344f0f2a76c7927979d99"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-23/latest.json",
+        "bytes": 775,
+        "object": "objects/ba/babd7c3319d9984518b7ff75390964ad8bbabbd7253533a9a7f8ad18d982224b.json",
+        "sha256": "babd7c3319d9984518b7ff75390964ad8bbabbd7253533a9a7f8ad18d982224b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-24/latest.json",
+        "bytes": 775,
+        "object": "objects/67/67f50fad4b8634a0e3f9813b8cf5ff32246e1fe085e1e1b795454492e9e1aa72.json",
+        "sha256": "67f50fad4b8634a0e3f9813b8cf5ff32246e1fe085e1e1b795454492e9e1aa72"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-27/latest.json",
+        "bytes": 775,
+        "object": "objects/a0/a082b3efb2885ff1d44757d7982469011eaf0d7a9268f4fe9370aca6c0058589.json",
+        "sha256": "a082b3efb2885ff1d44757d7982469011eaf0d7a9268f4fe9370aca6c0058589"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-28/latest.json",
+        "bytes": 775,
+        "object": "objects/71/71fe1cb4b178e41334be41c571cdbb727bbbdb23f12d0532f354e196718dff44.json",
+        "sha256": "71fe1cb4b178e41334be41c571cdbb727bbbdb23f12d0532f354e196718dff44"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-29/latest.json",
+        "bytes": 775,
+        "object": "objects/e9/e999ec134776ece63e0666fae0183635720f0818d5bd3015638ce678dadef6e7.json",
+        "sha256": "e999ec134776ece63e0666fae0183635720f0818d5bd3015638ce678dadef6e7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-30/latest.json",
+        "bytes": 775,
+        "object": "objects/dd/dde50a372010d9b38fbb886fbfa9d9fbfecfbcb57b95e6a223e94732e66d9c45.json",
+        "sha256": "dde50a372010d9b38fbb886fbfa9d9fbfecfbcb57b95e6a223e94732e66d9c45"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-10-31/latest.json",
+        "bytes": 775,
+        "object": "objects/f0/f0f7020bf1cc36541b24aa9880e048e3178c79641a1da6927b3ae703fc66ae46.json",
+        "sha256": "f0f7020bf1cc36541b24aa9880e048e3178c79641a1da6927b3ae703fc66ae46"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-04/latest.json",
+        "bytes": 775,
+        "object": "objects/f1/f17c39e58a3b4bb36d4f8d11855fc80c2e316ebfb0be668998a43f8d94fb5b8d.json",
+        "sha256": "f17c39e58a3b4bb36d4f8d11855fc80c2e316ebfb0be668998a43f8d94fb5b8d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-05/latest.json",
+        "bytes": 775,
+        "object": "objects/37/37f8fe90a5ae86874129566c916e7fe6c24ccd4748e20d21da314fb381d1f94f.json",
+        "sha256": "37f8fe90a5ae86874129566c916e7fe6c24ccd4748e20d21da314fb381d1f94f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-06/latest.json",
+        "bytes": 775,
+        "object": "objects/13/13e4c6d0419d006d95de93f186165e34454ef543e8b93d332f6611aa967b924f.json",
+        "sha256": "13e4c6d0419d006d95de93f186165e34454ef543e8b93d332f6611aa967b924f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-07/latest.json",
+        "bytes": 775,
+        "object": "objects/39/39e367828d5b3890738f8eca43a4f118adece3837c17200cc9773478f0a720b5.json",
+        "sha256": "39e367828d5b3890738f8eca43a4f118adece3837c17200cc9773478f0a720b5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-10/latest.json",
+        "bytes": 775,
+        "object": "objects/08/08194c462d0e6a76e90f17e2e57a51e9908dc2f6fb57844908f24c6ae5c56878.json",
+        "sha256": "08194c462d0e6a76e90f17e2e57a51e9908dc2f6fb57844908f24c6ae5c56878"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-11/latest.json",
+        "bytes": 775,
+        "object": "objects/73/732645b8b141fec630125e931a1eced72622891c89c35da4a3a872e66c7f36d7.json",
+        "sha256": "732645b8b141fec630125e931a1eced72622891c89c35da4a3a872e66c7f36d7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-12/latest.json",
+        "bytes": 775,
+        "object": "objects/2f/2ff290370febad4ade9429f9669124fc3f428b80d1ce6ced81944c25de67ad6c.json",
+        "sha256": "2ff290370febad4ade9429f9669124fc3f428b80d1ce6ced81944c25de67ad6c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-13/latest.json",
+        "bytes": 775,
+        "object": "objects/bc/bcf943773801324a64a9b56ce0668a8c9a5f170c88319979bbd7941e466c5d4e.json",
+        "sha256": "bcf943773801324a64a9b56ce0668a8c9a5f170c88319979bbd7941e466c5d4e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-14/latest.json",
+        "bytes": 775,
+        "object": "objects/a2/a207698cb8bbacbe6567893c39f908d7ab3bb1e9334876fe370d81a24e0ffbf7.json",
+        "sha256": "a207698cb8bbacbe6567893c39f908d7ab3bb1e9334876fe370d81a24e0ffbf7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-17/latest.json",
+        "bytes": 775,
+        "object": "objects/36/361aa22420590d756f93f3577c91ac95fd39cb789f998181e13838b8caad5125.json",
+        "sha256": "361aa22420590d756f93f3577c91ac95fd39cb789f998181e13838b8caad5125"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-18/latest.json",
+        "bytes": 775,
+        "object": "objects/de/de26e7a61eba8742fbc0f54f2a205b92dc1484fcb5326205d75ada8e90c7b6ca.json",
+        "sha256": "de26e7a61eba8742fbc0f54f2a205b92dc1484fcb5326205d75ada8e90c7b6ca"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-19/latest.json",
+        "bytes": 775,
+        "object": "objects/54/5464297bb460ae345c1fb121a6265df023353b748b6c727b94ebc0e574847832.json",
+        "sha256": "5464297bb460ae345c1fb121a6265df023353b748b6c727b94ebc0e574847832"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-20/latest.json",
+        "bytes": 775,
+        "object": "objects/55/55aab3b9b76d8f2ebf402fdbe98990baab0e6e061bf02678632fd5c57273d554.json",
+        "sha256": "55aab3b9b76d8f2ebf402fdbe98990baab0e6e061bf02678632fd5c57273d554"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-21/latest.json",
+        "bytes": 775,
+        "object": "objects/84/8447dad894fcffd40b86c32ad93e77e8633e252dd2f03bfb82185f9d5887114f.json",
+        "sha256": "8447dad894fcffd40b86c32ad93e77e8633e252dd2f03bfb82185f9d5887114f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-25/latest.json",
+        "bytes": 775,
+        "object": "objects/ca/ca2e714fcf9d903a2acd92820c51ec7f4acccc61d7b615ddb0e56ba9ea419aa7.json",
+        "sha256": "ca2e714fcf9d903a2acd92820c51ec7f4acccc61d7b615ddb0e56ba9ea419aa7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-26/latest.json",
+        "bytes": 775,
+        "object": "objects/1b/1bcae2fdf809e2e6139fd4f7fbbc677e71859bc569716e35911f9266dbd86da9.json",
+        "sha256": "1bcae2fdf809e2e6139fd4f7fbbc677e71859bc569716e35911f9266dbd86da9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-27/latest.json",
+        "bytes": 775,
+        "object": "objects/0b/0b0c7638ec8267ab8898adf14474372761147f46997976ef404367afd48abdce.json",
+        "sha256": "0b0c7638ec8267ab8898adf14474372761147f46997976ef404367afd48abdce"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-11-28/latest.json",
+        "bytes": 775,
+        "object": "objects/1b/1b0f58a3ce3ce19e983251b58e19ccb2ab90a0db8ca8cf9dc00b7e5920b8baf2.json",
+        "sha256": "1b0f58a3ce3ce19e983251b58e19ccb2ab90a0db8ca8cf9dc00b7e5920b8baf2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-01/latest.json",
+        "bytes": 775,
+        "object": "objects/d8/d8f7ea15181fdb0f9e2ec13310614a4f75ea41d6bb40aea70c2e8edc2a2670be.json",
+        "sha256": "d8f7ea15181fdb0f9e2ec13310614a4f75ea41d6bb40aea70c2e8edc2a2670be"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-02/latest.json",
+        "bytes": 775,
+        "object": "objects/46/46dbd061a7f99e0638a368565633a8eb303aae061d65745be1731f828a874a45.json",
+        "sha256": "46dbd061a7f99e0638a368565633a8eb303aae061d65745be1731f828a874a45"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-03/latest.json",
+        "bytes": 775,
+        "object": "objects/28/28cf2caa5c097fa9dba379446bb9920ba72e30af7d889fc9129bf0894f484891.json",
+        "sha256": "28cf2caa5c097fa9dba379446bb9920ba72e30af7d889fc9129bf0894f484891"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-04/latest.json",
+        "bytes": 775,
+        "object": "objects/3f/3f5f0fe765217dc231c8cbaaa20ceef71a0efcf35e3ecbe2afeea899fc7eb8ad.json",
+        "sha256": "3f5f0fe765217dc231c8cbaaa20ceef71a0efcf35e3ecbe2afeea899fc7eb8ad"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-05/latest.json",
+        "bytes": 775,
+        "object": "objects/eb/eb90d8009daf0fff5ba364b599802b0d7f0e10a6737dbd6736b966dab3ae050e.json",
+        "sha256": "eb90d8009daf0fff5ba364b599802b0d7f0e10a6737dbd6736b966dab3ae050e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-08/latest.json",
+        "bytes": 775,
+        "object": "objects/7b/7b4a55d56922fe719d491f5780dd0e51b041c5272c29e7fea1e02e978c03b6c0.json",
+        "sha256": "7b4a55d56922fe719d491f5780dd0e51b041c5272c29e7fea1e02e978c03b6c0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-09/latest.json",
+        "bytes": 775,
+        "object": "objects/96/967fabd80682a041deae43814f951426775dbb68a101e3f37202edf1ceb17299.json",
+        "sha256": "967fabd80682a041deae43814f951426775dbb68a101e3f37202edf1ceb17299"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-10/latest.json",
+        "bytes": 775,
+        "object": "objects/fa/faf1e38d68192d88cdba7d34e00178ad4145970000c0daca61fde23297a0df28.json",
+        "sha256": "faf1e38d68192d88cdba7d34e00178ad4145970000c0daca61fde23297a0df28"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-11/latest.json",
+        "bytes": 775,
+        "object": "objects/b4/b4ce5cc463404e12d8f4a3c577ac4548f1b0825da389830f4174ca441188e72d.json",
+        "sha256": "b4ce5cc463404e12d8f4a3c577ac4548f1b0825da389830f4174ca441188e72d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-12/latest.json",
+        "bytes": 775,
+        "object": "objects/53/5390cc78bca70601a7fe1f5f9c337e29b8b2bebbf2f07e7422f07c51878a52aa.json",
+        "sha256": "5390cc78bca70601a7fe1f5f9c337e29b8b2bebbf2f07e7422f07c51878a52aa"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-15/latest.json",
+        "bytes": 775,
+        "object": "objects/5a/5a3e39bec235dc3f63488e5dbe503b70dbd05e72424dd13e76661c272161aae0.json",
+        "sha256": "5a3e39bec235dc3f63488e5dbe503b70dbd05e72424dd13e76661c272161aae0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-16/latest.json",
+        "bytes": 775,
+        "object": "objects/f0/f04a2dce5e71cd0f7d40ec83dddcef989a0daa94bf4f5bccc8fd8747279f5676.json",
+        "sha256": "f04a2dce5e71cd0f7d40ec83dddcef989a0daa94bf4f5bccc8fd8747279f5676"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-17/latest.json",
+        "bytes": 775,
+        "object": "objects/d1/d1723c82172664962390a072fa2f7fc3c1945ae1ad4a39d8d9d0de457470403b.json",
+        "sha256": "d1723c82172664962390a072fa2f7fc3c1945ae1ad4a39d8d9d0de457470403b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-18/latest.json",
+        "bytes": 775,
+        "object": "objects/a9/a95061569d7c84af51560d0b1643b5f3e6f51ac8fa2ce0987847b361165f44b3.json",
+        "sha256": "a95061569d7c84af51560d0b1643b5f3e6f51ac8fa2ce0987847b361165f44b3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-19/latest.json",
+        "bytes": 775,
+        "object": "objects/c9/c9eff6a2ecd102a95061f4dbeda3ef01b83acd6f6aae5a5c4c1a73b50f3ea334.json",
+        "sha256": "c9eff6a2ecd102a95061f4dbeda3ef01b83acd6f6aae5a5c4c1a73b50f3ea334"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-22/latest.json",
+        "bytes": 775,
+        "object": "objects/ce/cee928bdd6f446e4f4ed91053febaefaa26583934e098b16322bd86e2139a0be.json",
+        "sha256": "cee928bdd6f446e4f4ed91053febaefaa26583934e098b16322bd86e2139a0be"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-23/latest.json",
+        "bytes": 775,
+        "object": "objects/91/911daba3ed34ef8bf63dcb5fe8ee18dd19456bb3179906426228b07290c5b71f.json",
+        "sha256": "911daba3ed34ef8bf63dcb5fe8ee18dd19456bb3179906426228b07290c5b71f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-24/latest.json",
+        "bytes": 775,
+        "object": "objects/d2/d25653bf7abcbbaae3ede61963bffc8113e2c11b319c343b8ca468a657821a08.json",
+        "sha256": "d25653bf7abcbbaae3ede61963bffc8113e2c11b319c343b8ca468a657821a08"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-25/latest.json",
+        "bytes": 775,
+        "object": "objects/08/08d51a135cc0a32d012af751cf9286a2bc88f91da0c490d20fc87860a3983cab.json",
+        "sha256": "08d51a135cc0a32d012af751cf9286a2bc88f91da0c490d20fc87860a3983cab"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-26/latest.json",
+        "bytes": 775,
+        "object": "objects/03/03e335845cacc140d98c3f679c4b858322cf422d6600e79f2b3b958808f8373a.json",
+        "sha256": "03e335845cacc140d98c3f679c4b858322cf422d6600e79f2b3b958808f8373a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-29/latest.json",
+        "bytes": 775,
+        "object": "objects/fb/fbbb22a44a7e48c54c4038e238c36001d08d493739e09416c7edba7f72e9c5e7.json",
+        "sha256": "fbbb22a44a7e48c54c4038e238c36001d08d493739e09416c7edba7f72e9c5e7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2025-12-30/latest.json",
+        "bytes": 775,
+        "object": "objects/ce/ce13b8c6c69f7121ce7fe59925267afbb634119ea1a6e8a47bcb216b2eb3740b.json",
+        "sha256": "ce13b8c6c69f7121ce7fe59925267afbb634119ea1a6e8a47bcb216b2eb3740b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-05/latest.json",
+        "bytes": 775,
+        "object": "objects/ea/ea24985207bd7998e37f293d4507ccbceb471bfe38a728a7af67b9e511b3bc08.json",
+        "sha256": "ea24985207bd7998e37f293d4507ccbceb471bfe38a728a7af67b9e511b3bc08"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-06/latest.json",
+        "bytes": 775,
+        "object": "objects/04/04ed81026a5de720f665f3824ad027e94fbc52d4dd869d9dc48a34cc5d3ccf8e.json",
+        "sha256": "04ed81026a5de720f665f3824ad027e94fbc52d4dd869d9dc48a34cc5d3ccf8e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-07/latest.json",
+        "bytes": 775,
+        "object": "objects/a2/a2bbc0d7f1644781fa035b4eea2f61d9e56972049db0d1ab445c32f4c68b26ca.json",
+        "sha256": "a2bbc0d7f1644781fa035b4eea2f61d9e56972049db0d1ab445c32f4c68b26ca"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-08/latest.json",
+        "bytes": 775,
+        "object": "objects/ee/ee68cdbd9f40c7a2c9a1df59381c53bd38204d81283ac5dbca22e74de188e3c4.json",
+        "sha256": "ee68cdbd9f40c7a2c9a1df59381c53bd38204d81283ac5dbca22e74de188e3c4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-09/latest.json",
+        "bytes": 775,
+        "object": "objects/77/7782b8f25951939da011f52cb45ce6550fedf98acafd32e795ea067bb787b3a6.json",
+        "sha256": "7782b8f25951939da011f52cb45ce6550fedf98acafd32e795ea067bb787b3a6"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-13/latest.json",
+        "bytes": 775,
+        "object": "objects/4a/4a03ec8b9bc89c63efeeae2da115469d70350f38d53d37e4f4dcea88dcef5f55.json",
+        "sha256": "4a03ec8b9bc89c63efeeae2da115469d70350f38d53d37e4f4dcea88dcef5f55"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-14/latest.json",
+        "bytes": 775,
+        "object": "objects/9b/9b825dee47fe7ff83c2f1e9c0f827b2d586cca5aff6d81097f4e87036891c74c.json",
+        "sha256": "9b825dee47fe7ff83c2f1e9c0f827b2d586cca5aff6d81097f4e87036891c74c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-15/latest.json",
+        "bytes": 775,
+        "object": "objects/66/66fbf4bdbf27e4e3eb58db7d9fa8575dc9dd8d0c4e8ccd6ee236b0d26dba7348.json",
+        "sha256": "66fbf4bdbf27e4e3eb58db7d9fa8575dc9dd8d0c4e8ccd6ee236b0d26dba7348"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-16/latest.json",
+        "bytes": 775,
+        "object": "objects/40/400c3f1ea577da43958934f0b29c443e88a20186dcfca8d50893a788b60d436d.json",
+        "sha256": "400c3f1ea577da43958934f0b29c443e88a20186dcfca8d50893a788b60d436d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-19/latest.json",
+        "bytes": 775,
+        "object": "objects/6f/6fe6a285286b397f02c0e56ca14b21f1ea2a34328ccbf74bc04d25abcddcfb87.json",
+        "sha256": "6fe6a285286b397f02c0e56ca14b21f1ea2a34328ccbf74bc04d25abcddcfb87"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-20/latest.json",
+        "bytes": 775,
+        "object": "objects/8d/8df57e801f0a6b1060993073ce2706977690c83b29ae730ca48832359dd71187.json",
+        "sha256": "8df57e801f0a6b1060993073ce2706977690c83b29ae730ca48832359dd71187"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-21/latest.json",
+        "bytes": 775,
+        "object": "objects/42/428328d730a9027e2bfd7048d58c74267a496f27a15249f5d4ab38f840cf4a51.json",
+        "sha256": "428328d730a9027e2bfd7048d58c74267a496f27a15249f5d4ab38f840cf4a51"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-22/latest.json",
+        "bytes": 775,
+        "object": "objects/96/96236cd002024911071d6dad4b76c119754b3876d0fabfcc84959180fb794733.json",
+        "sha256": "96236cd002024911071d6dad4b76c119754b3876d0fabfcc84959180fb794733"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-23/latest.json",
+        "bytes": 775,
+        "object": "objects/d2/d27128ed52ca0922032fe26bd2028df2a5d158dec544ac8f8774dd6c6ccd45cf.json",
+        "sha256": "d27128ed52ca0922032fe26bd2028df2a5d158dec544ac8f8774dd6c6ccd45cf"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-26/latest.json",
+        "bytes": 775,
+        "object": "objects/fb/fbd83e7bbbc39e50ea4bf6fe0387baf41dc599b7e12a9e87ae46c210dabded12.json",
+        "sha256": "fbd83e7bbbc39e50ea4bf6fe0387baf41dc599b7e12a9e87ae46c210dabded12"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-27/latest.json",
+        "bytes": 775,
+        "object": "objects/13/13b92832387f5b965f0dc423749c7f0a7119af1a44149ce0dbd10117f98593b3.json",
+        "sha256": "13b92832387f5b965f0dc423749c7f0a7119af1a44149ce0dbd10117f98593b3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-28/latest.json",
+        "bytes": 775,
+        "object": "objects/31/31676996d58097ee97da9ee981ab7eb05616c19877dd4476c52cb41e3707109d.json",
+        "sha256": "31676996d58097ee97da9ee981ab7eb05616c19877dd4476c52cb41e3707109d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-29/latest.json",
+        "bytes": 775,
+        "object": "objects/92/92562f4005c533725add6d9b45912946fc5cbbcc554fd5a0caff7f12e1e44fe0.json",
+        "sha256": "92562f4005c533725add6d9b45912946fc5cbbcc554fd5a0caff7f12e1e44fe0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-01-30/latest.json",
+        "bytes": 775,
+        "object": "objects/0e/0e34d5ad04158562b716e0b2ae5f3238e3b13471b868d78b072e9813f1070eb6.json",
+        "sha256": "0e34d5ad04158562b716e0b2ae5f3238e3b13471b868d78b072e9813f1070eb6"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-02/latest.json",
+        "bytes": 775,
+        "object": "objects/31/316eda309c866dd321fb73a6537c9a46bdc2fb1e457ca1bcd378ce7e082bfb56.json",
+        "sha256": "316eda309c866dd321fb73a6537c9a46bdc2fb1e457ca1bcd378ce7e082bfb56"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-03/latest.json",
+        "bytes": 775,
+        "object": "objects/6a/6a672ca5890cd169f92aec5ded4185b0247e905d5ad5724d323656259643c93a.json",
+        "sha256": "6a672ca5890cd169f92aec5ded4185b0247e905d5ad5724d323656259643c93a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-04/latest.json",
+        "bytes": 775,
+        "object": "objects/26/2659ec69656e96e3403c4be49ddd5fb53165f9f5d0f09607670dd1602b45fb15.json",
+        "sha256": "2659ec69656e96e3403c4be49ddd5fb53165f9f5d0f09607670dd1602b45fb15"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-05/latest.json",
+        "bytes": 775,
+        "object": "objects/fd/fd5b425eba99466277aa7ead8e753be18f6cd4cecb943f109a03e8ebe949812a.json",
+        "sha256": "fd5b425eba99466277aa7ead8e753be18f6cd4cecb943f109a03e8ebe949812a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-06/latest.json",
+        "bytes": 775,
+        "object": "objects/d1/d1142ed873b705ab2a6fdd0730778aa123ec2f7bd2cb5c7daff8d1b81aa9e9b0.json",
+        "sha256": "d1142ed873b705ab2a6fdd0730778aa123ec2f7bd2cb5c7daff8d1b81aa9e9b0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-09/latest.json",
+        "bytes": 775,
+        "object": "objects/28/28304ad2646768446662d419b4c2454c139f2bb5406c9e562501a4a226840244.json",
+        "sha256": "28304ad2646768446662d419b4c2454c139f2bb5406c9e562501a4a226840244"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-10/latest.json",
+        "bytes": 775,
+        "object": "objects/9e/9eb494c7436d44782feb66bf3d9ef9c0ecf88b98a5f5939f542f061c1dbdaa40.json",
+        "sha256": "9eb494c7436d44782feb66bf3d9ef9c0ecf88b98a5f5939f542f061c1dbdaa40"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-12/latest.json",
+        "bytes": 775,
+        "object": "objects/de/de38c7db4d3c2425643804b080a3634e6770d5616cac76ab51943d6a2c1b5e8b.json",
+        "sha256": "de38c7db4d3c2425643804b080a3634e6770d5616cac76ab51943d6a2c1b5e8b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-13/latest.json",
+        "bytes": 775,
+        "object": "objects/88/884f73de47088961f94dbc31833422576068f3db5404651f1a6902779dcea741.json",
+        "sha256": "884f73de47088961f94dbc31833422576068f3db5404651f1a6902779dcea741"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-16/latest.json",
+        "bytes": 775,
+        "object": "objects/a2/a2355d219a707517aedc0878ac5fc43b94bf332ee7a91f8bc0244f88726ae199.json",
+        "sha256": "a2355d219a707517aedc0878ac5fc43b94bf332ee7a91f8bc0244f88726ae199"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-17/latest.json",
+        "bytes": 775,
+        "object": "objects/d8/d8dfd33a29467f4167ac16242097ba9fc9d817ae3e9f2949bcafd6a5634b6052.json",
+        "sha256": "d8dfd33a29467f4167ac16242097ba9fc9d817ae3e9f2949bcafd6a5634b6052"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-18/latest.json",
+        "bytes": 775,
+        "object": "objects/04/04e1154701dbb0e94a5c9d2aa81e7bd696c6c65e0525cc82ef4814fcefdc4a5f.json",
+        "sha256": "04e1154701dbb0e94a5c9d2aa81e7bd696c6c65e0525cc82ef4814fcefdc4a5f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-19/latest.json",
+        "bytes": 775,
+        "object": "objects/a0/a052fd4e9d7df8385366f794e2be086b08dcb9a445a597aee72fffee15ffd5ca.json",
+        "sha256": "a052fd4e9d7df8385366f794e2be086b08dcb9a445a597aee72fffee15ffd5ca"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-20/latest.json",
+        "bytes": 775,
+        "object": "objects/ae/ae9aa2b2825e5c48d37bd6dc29e11d9d11769017c4d8523d7bdbe206f82ed4a5.json",
+        "sha256": "ae9aa2b2825e5c48d37bd6dc29e11d9d11769017c4d8523d7bdbe206f82ed4a5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-24/latest.json",
+        "bytes": 775,
+        "object": "objects/03/038c68642324760f623724e947dc657570b14cf43e51c8781e5c551d48e4a78f.json",
+        "sha256": "038c68642324760f623724e947dc657570b14cf43e51c8781e5c551d48e4a78f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-25/latest.json",
+        "bytes": 775,
+        "object": "objects/16/167e6044b547a2967583adbb0b6663d3fb87870248fcdf74dff9a12e70d6b669.json",
+        "sha256": "167e6044b547a2967583adbb0b6663d3fb87870248fcdf74dff9a12e70d6b669"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-26/latest.json",
+        "bytes": 775,
+        "object": "objects/f1/f18b13a1f48aec126876deae1f667f9ab66b9e6f02b6ce399aa9733a704d448a.json",
+        "sha256": "f18b13a1f48aec126876deae1f667f9ab66b9e6f02b6ce399aa9733a704d448a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-02-27/latest.json",
+        "bytes": 775,
+        "object": "objects/6e/6e815d0049c24aef7456ce3cf02f65dc795bffecab54f70482d36ef869e0335d.json",
+        "sha256": "6e815d0049c24aef7456ce3cf02f65dc795bffecab54f70482d36ef869e0335d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-02/latest.json",
+        "bytes": 775,
+        "object": "objects/19/19d379d6435899a7f7a5b82c36b3716ef346d92c882b943bdd4f6f65fa806095.json",
+        "sha256": "19d379d6435899a7f7a5b82c36b3716ef346d92c882b943bdd4f6f65fa806095"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-03/latest.json",
+        "bytes": 775,
+        "object": "objects/67/67962f43b94e0d4efc57b7bdf0677eee7fe5b9bda4dd1ae3dc1d538d13d98183.json",
+        "sha256": "67962f43b94e0d4efc57b7bdf0677eee7fe5b9bda4dd1ae3dc1d538d13d98183"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-04/latest.json",
+        "bytes": 775,
+        "object": "objects/fa/faee272e5f27396ebef7c4e8039809da640ab79f4b5c2871be5af28b10ea9e2c.json",
+        "sha256": "faee272e5f27396ebef7c4e8039809da640ab79f4b5c2871be5af28b10ea9e2c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-05/latest.json",
+        "bytes": 775,
+        "object": "objects/be/be32a75b642d2895e1851806c8816ccb2068ce8cedee46f2ea1afb4fc4098c2c.json",
+        "sha256": "be32a75b642d2895e1851806c8816ccb2068ce8cedee46f2ea1afb4fc4098c2c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-06/latest.json",
+        "bytes": 775,
+        "object": "objects/34/34af5abe13f53c6ff3f3c028b6b07efa2d8f0935a747a1f0b0eb333ab00d0ff3.json",
+        "sha256": "34af5abe13f53c6ff3f3c028b6b07efa2d8f0935a747a1f0b0eb333ab00d0ff3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-09/latest.json",
+        "bytes": 775,
+        "object": "objects/39/398fcc801d84450f0e73eb4743533701f633504491416e735129c0099958e426.json",
+        "sha256": "398fcc801d84450f0e73eb4743533701f633504491416e735129c0099958e426"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-10/latest.json",
+        "bytes": 775,
+        "object": "objects/23/230e0d83b892a6ef01c0cf70c1ae2fe18b0743e770595f1d601668ec5f69c5ad.json",
+        "sha256": "230e0d83b892a6ef01c0cf70c1ae2fe18b0743e770595f1d601668ec5f69c5ad"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-11/latest.json",
+        "bytes": 775,
+        "object": "objects/dc/dc7eabc78ac0a38b893d1dce3fc5560f58e6ffcf9a3db58aa20fdd23f08756fc.json",
+        "sha256": "dc7eabc78ac0a38b893d1dce3fc5560f58e6ffcf9a3db58aa20fdd23f08756fc"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-12/latest.json",
+        "bytes": 775,
+        "object": "objects/d9/d909f052e1431b5248b8995e4d2f319e7913e1019736cf30cbd0599f795d80d6.json",
+        "sha256": "d909f052e1431b5248b8995e4d2f319e7913e1019736cf30cbd0599f795d80d6"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-13/latest.json",
+        "bytes": 775,
+        "object": "objects/3a/3a12be67e9846444891907c93639feca0fdde0e5343d03763303868a79a7bf01.json",
+        "sha256": "3a12be67e9846444891907c93639feca0fdde0e5343d03763303868a79a7bf01"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-16/latest.json",
+        "bytes": 775,
+        "object": "objects/46/46f25091620dca43e8590c18a7368e153482b068ed9edf569e5658408badc854.json",
+        "sha256": "46f25091620dca43e8590c18a7368e153482b068ed9edf569e5658408badc854"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-17/latest.json",
+        "bytes": 775,
+        "object": "objects/97/97934930e59d9741ee4f6604c56c37204d15ebe1789abab7acb8f3acdea3d8e5.json",
+        "sha256": "97934930e59d9741ee4f6604c56c37204d15ebe1789abab7acb8f3acdea3d8e5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-18/latest.json",
+        "bytes": 775,
+        "object": "objects/56/560fff0b6ae918e163de4cd814931ed6464a4cf9e2507c31977d09dc18632a27.json",
+        "sha256": "560fff0b6ae918e163de4cd814931ed6464a4cf9e2507c31977d09dc18632a27"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-19/latest.json",
+        "bytes": 775,
+        "object": "objects/99/9928e77e951041c913763b208ea83db081c4d82730be6cad001680a49e5edbd2.json",
+        "sha256": "9928e77e951041c913763b208ea83db081c4d82730be6cad001680a49e5edbd2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-23/latest.json",
+        "bytes": 775,
+        "object": "objects/8a/8a8e3c5bb0afcc3dd96dfa17a598885a2605df7deb72ed456e6ec6b18cdbc947.json",
+        "sha256": "8a8e3c5bb0afcc3dd96dfa17a598885a2605df7deb72ed456e6ec6b18cdbc947"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-24/latest.json",
+        "bytes": 775,
+        "object": "objects/f1/f1b61d7b4ea042509b067965854e0db356e66426ee4eb7b3e0f50d047fa10f30.json",
+        "sha256": "f1b61d7b4ea042509b067965854e0db356e66426ee4eb7b3e0f50d047fa10f30"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-25/latest.json",
+        "bytes": 775,
+        "object": "objects/01/01f0fc352b799b56a99c184f3c5255bed27a5c24c5f67afefa939afe7f118269.json",
+        "sha256": "01f0fc352b799b56a99c184f3c5255bed27a5c24c5f67afefa939afe7f118269"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-26/latest.json",
+        "bytes": 775,
+        "object": "objects/17/17eb03865ff2d6c38fe8a717c6b33bd1fa7e8e4989cb9ca2ede95582a5b5ffd5.json",
+        "sha256": "17eb03865ff2d6c38fe8a717c6b33bd1fa7e8e4989cb9ca2ede95582a5b5ffd5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-27/latest.json",
+        "bytes": 775,
+        "object": "objects/28/286b54b4e2a438817dcf2f73282f21ea069c4e974ca5e80327e8a1f4d17ad124.json",
+        "sha256": "286b54b4e2a438817dcf2f73282f21ea069c4e974ca5e80327e8a1f4d17ad124"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-30/latest.json",
+        "bytes": 775,
+        "object": "objects/b8/b8e647a113c235030925821325e600bc98143285c6629917c62e800d2b212986.json",
+        "sha256": "b8e647a113c235030925821325e600bc98143285c6629917c62e800d2b212986"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-03-31/latest.json",
+        "bytes": 775,
+        "object": "objects/77/774151c08f0a67c9e71ef535e320b79e13807e68b57967a5be5c74bf8b95908d.json",
+        "sha256": "774151c08f0a67c9e71ef535e320b79e13807e68b57967a5be5c74bf8b95908d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-01/latest.json",
+        "bytes": 775,
+        "object": "objects/3f/3fde9832df3decd94f0f95911507447e32f05d291e449f799f710b911d0c0305.json",
+        "sha256": "3fde9832df3decd94f0f95911507447e32f05d291e449f799f710b911d0c0305"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-02/latest.json",
+        "bytes": 775,
+        "object": "objects/66/66b19fbb891402cbd864dcd20b7e086fce5098549e87fa061b083662a7bb92dc.json",
+        "sha256": "66b19fbb891402cbd864dcd20b7e086fce5098549e87fa061b083662a7bb92dc"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-03/latest.json",
+        "bytes": 775,
+        "object": "objects/34/34722f5c156882811a4d2a7283cc6287ff12149d1dc4d7f685471e177bf81aa1.json",
+        "sha256": "34722f5c156882811a4d2a7283cc6287ff12149d1dc4d7f685471e177bf81aa1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-06/latest.json",
+        "bytes": 775,
+        "object": "objects/34/3418e3ca16f0638e859d707c4a9d60905f5302375af22aba66137f56d81600e1.json",
+        "sha256": "3418e3ca16f0638e859d707c4a9d60905f5302375af22aba66137f56d81600e1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-07/latest.json",
+        "bytes": 775,
+        "object": "objects/67/67ba2e9297971537ad6854f6d5a7f9bf076c67539e12ee3f00a6c7b566ac4981.json",
+        "sha256": "67ba2e9297971537ad6854f6d5a7f9bf076c67539e12ee3f00a6c7b566ac4981"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-08/latest.json",
+        "bytes": 775,
+        "object": "objects/b7/b774e64dc084d575cdb0a84005d2ec4651dbd83c093db7734bea6368962a52b9.json",
+        "sha256": "b774e64dc084d575cdb0a84005d2ec4651dbd83c093db7734bea6368962a52b9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-09/latest.json",
+        "bytes": 775,
+        "object": "objects/4f/4f9becf97ac8aa65861f259c1eb0da4704e279b856886804fdd3ec62aa75fb8c.json",
+        "sha256": "4f9becf97ac8aa65861f259c1eb0da4704e279b856886804fdd3ec62aa75fb8c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-10/latest.json",
+        "bytes": 775,
+        "object": "objects/0d/0d4cc754884c45297b7cbe1f2611d90aae7f41e68cb72352ded0c7b8182c4a6e.json",
+        "sha256": "0d4cc754884c45297b7cbe1f2611d90aae7f41e68cb72352ded0c7b8182c4a6e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-13/latest.json",
+        "bytes": 775,
+        "object": "objects/dd/dd99b6a6d893119be5344b9a1d76cfdba12a4b05b5402f29619017a5d74be6f2.json",
+        "sha256": "dd99b6a6d893119be5344b9a1d76cfdba12a4b05b5402f29619017a5d74be6f2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-14/latest.json",
+        "bytes": 775,
+        "object": "objects/87/8737efff4ce6d5f93a0af3a061107382ed225ddb1df78ea776674bade3c2124a.json",
+        "sha256": "8737efff4ce6d5f93a0af3a061107382ed225ddb1df78ea776674bade3c2124a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-15/latest.json",
+        "bytes": 775,
+        "object": "objects/aa/aa62ed07e3551a05ec2f9c58d68c3e3f5c7b1c5f51fd31487c596491a668eab4.json",
+        "sha256": "aa62ed07e3551a05ec2f9c58d68c3e3f5c7b1c5f51fd31487c596491a668eab4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-16/latest.json",
+        "bytes": 775,
+        "object": "objects/14/148269bfd073e7e2c982a98d51d2a8392938231ea1f4092c593d75e197f80dec.json",
+        "sha256": "148269bfd073e7e2c982a98d51d2a8392938231ea1f4092c593d75e197f80dec"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-17/latest.json",
+        "bytes": 775,
+        "object": "objects/03/03df8d2587868e30dbd32bf89192c45d39ea908521a7c872e7afc77c091b512f.json",
+        "sha256": "03df8d2587868e30dbd32bf89192c45d39ea908521a7c872e7afc77c091b512f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-20/latest.json",
+        "bytes": 775,
+        "object": "objects/26/2625e6837e801437b7e09948a8e296d134edde418795d4c0f8d05bfa6eed3fd9.json",
+        "sha256": "2625e6837e801437b7e09948a8e296d134edde418795d4c0f8d05bfa6eed3fd9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-21/latest.json",
+        "bytes": 775,
+        "object": "objects/10/10ec905d447a44f09c292c79730bb3c7d5f90f1f04b98dcfe87527a123b40db7.json",
+        "sha256": "10ec905d447a44f09c292c79730bb3c7d5f90f1f04b98dcfe87527a123b40db7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-22/latest.json",
+        "bytes": 775,
+        "object": "objects/de/de04882db309e9bc2fdc2332a07ddc13d2fca39229837e9ecb789047ab9e3f7d.json",
+        "sha256": "de04882db309e9bc2fdc2332a07ddc13d2fca39229837e9ecb789047ab9e3f7d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-23/latest.json",
+        "bytes": 775,
+        "object": "objects/a4/a4d28c5f7e0a6719b41955eb41a4bf97f2cd699c340c3f5ab0a5f2cd17b77139.json",
+        "sha256": "a4d28c5f7e0a6719b41955eb41a4bf97f2cd699c340c3f5ab0a5f2cd17b77139"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-24/latest.json",
+        "bytes": 775,
+        "object": "objects/b9/b97daddca55eff6a0e951b04e585414af38f018a26129898273dcb1a111f13bd.json",
+        "sha256": "b97daddca55eff6a0e951b04e585414af38f018a26129898273dcb1a111f13bd"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-27/latest.json",
+        "bytes": 775,
+        "object": "objects/ad/ad8bf48ce0e078e3fec620176b520a051d695521ac217ed100fd0f51cd0a87ce.json",
+        "sha256": "ad8bf48ce0e078e3fec620176b520a051d695521ac217ed100fd0f51cd0a87ce"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-28/latest.json",
+        "bytes": 775,
+        "object": "objects/5e/5ed10007876bc3e469a31e43388cd6df90720c374558fb6676eb7d2e0f84a20f.json",
+        "sha256": "5ed10007876bc3e469a31e43388cd6df90720c374558fb6676eb7d2e0f84a20f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-04-30/latest.json",
+        "bytes": 775,
+        "object": "objects/f8/f8c7312af69d0e7d8d0094e0bb95245b8d95ae03670df8f52e62ca1b85c4b20e.json",
+        "sha256": "f8c7312af69d0e7d8d0094e0bb95245b8d95ae03670df8f52e62ca1b85c4b20e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-01/latest.json",
+        "bytes": 775,
+        "object": "objects/6f/6f23aedb87dc068b70db901733a86f8f3d556206e21585e768840be2bc441da7.json",
+        "sha256": "6f23aedb87dc068b70db901733a86f8f3d556206e21585e768840be2bc441da7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-07/latest.json",
+        "bytes": 775,
+        "object": "objects/f9/f9cfb76cd3094352aaa953427267b67e95ec8353d12396e8ec142f0b6285c741.json",
+        "sha256": "f9cfb76cd3094352aaa953427267b67e95ec8353d12396e8ec142f0b6285c741"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-08/latest.json",
+        "bytes": 775,
+        "object": "objects/15/157d8dc0de8157b116af181469fdecd72be45826c5cb44dcde6a60a6de36ce70.json",
+        "sha256": "157d8dc0de8157b116af181469fdecd72be45826c5cb44dcde6a60a6de36ce70"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-11/latest.json",
+        "bytes": 775,
+        "object": "objects/aa/aa79928a6a159d02e7a65ad4cc3401f2f7e3e366310de2cec9ce90c2c99725f0.json",
+        "sha256": "aa79928a6a159d02e7a65ad4cc3401f2f7e3e366310de2cec9ce90c2c99725f0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-12/latest.json",
+        "bytes": 775,
+        "object": "objects/97/9753b57986ecd9d940f3f731eb76797bdf7ec932d614468851b7668da8582266.json",
+        "sha256": "9753b57986ecd9d940f3f731eb76797bdf7ec932d614468851b7668da8582266"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-13/latest.json",
+        "bytes": 775,
+        "object": "objects/0b/0bdb03afd63f5e129d4ce0d9caaba632829fdf5789df176e8000906731b43c45.json",
+        "sha256": "0bdb03afd63f5e129d4ce0d9caaba632829fdf5789df176e8000906731b43c45"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-14/latest.json",
+        "bytes": 775,
+        "object": "objects/7d/7dd448ad56866e2a24edc6da47631b1bf376a251ddfb14d79e7026ffa4e9c1f3.json",
+        "sha256": "7dd448ad56866e2a24edc6da47631b1bf376a251ddfb14d79e7026ffa4e9c1f3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-15/latest.json",
+        "bytes": 775,
+        "object": "objects/b0/b08a7f9c6f81a388d35add96b19624a66fa91426a5a55f86fbcb9da916285f0b.json",
+        "sha256": "b08a7f9c6f81a388d35add96b19624a66fa91426a5a55f86fbcb9da916285f0b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-18/latest.json",
+        "bytes": 775,
+        "object": "objects/71/7107836805325f3cbb71095f4569e375b64574161f1246baba45de4123234302.json",
+        "sha256": "7107836805325f3cbb71095f4569e375b64574161f1246baba45de4123234302"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-19/latest.json",
+        "bytes": 775,
+        "object": "objects/75/75aa5a4132ce578c7819b0c3f21b75730fa6ba928b485cf5bea818d16a675371.json",
+        "sha256": "75aa5a4132ce578c7819b0c3f21b75730fa6ba928b485cf5bea818d16a675371"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-20/latest.json",
+        "bytes": 775,
+        "object": "objects/f8/f8295f69d7a366da4c9033b2459100b8b30d9fc47ad41acf568f5a9fbe7d67ab.json",
+        "sha256": "f8295f69d7a366da4c9033b2459100b8b30d9fc47ad41acf568f5a9fbe7d67ab"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-21/latest.json",
+        "bytes": 775,
+        "object": "objects/b5/b5d260dd715a752b3831e69f4877388b5a628b664f510b17460aa1449387c6d4.json",
+        "sha256": "b5d260dd715a752b3831e69f4877388b5a628b664f510b17460aa1449387c6d4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-22/latest.json",
+        "bytes": 775,
+        "object": "objects/6e/6e0a0efc0377d9bbf2d1230ff9b0ec37b1c6d0280a417aa068ad5279008ec2f2.json",
+        "sha256": "6e0a0efc0377d9bbf2d1230ff9b0ec37b1c6d0280a417aa068ad5279008ec2f2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-25/latest.json",
+        "bytes": 775,
+        "object": "objects/14/149bf7a1a44d2a3549fa18700fe9690ff28432c7bdf3e19a265e55cbe833d8db.json",
+        "sha256": "149bf7a1a44d2a3549fa18700fe9690ff28432c7bdf3e19a265e55cbe833d8db"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-26/latest.json",
+        "bytes": 775,
+        "object": "objects/d8/d81f56279fd17bda401505288e64d69952dec9d7ea41b4abb102fe0509281190.json",
+        "sha256": "d81f56279fd17bda401505288e64d69952dec9d7ea41b4abb102fe0509281190"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-27/latest.json",
+        "bytes": 775,
+        "object": "objects/a1/a124a3cbedb17ebf4b83489a6ec4261b67c0b3f3f8ba4158bd6a63cf10220416.json",
+        "sha256": "a124a3cbedb17ebf4b83489a6ec4261b67c0b3f3f8ba4158bd6a63cf10220416"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-28/latest.json",
+        "bytes": 775,
+        "object": "objects/1c/1c47aece0ce5a5b274d6ba0e85c36a14f0e358dee726631524d357fb01b12687.json",
+        "sha256": "1c47aece0ce5a5b274d6ba0e85c36a14f0e358dee726631524d357fb01b12687"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-05-29/latest.json",
+        "bytes": 775,
+        "object": "objects/eb/eb826703355dd28d08f5aa46e7da4401ed2d8a8783d2ea301df0f8699118d028.json",
+        "sha256": "eb826703355dd28d08f5aa46e7da4401ed2d8a8783d2ea301df0f8699118d028"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-01/latest.json",
+        "bytes": 775,
+        "object": "objects/02/024c96a410b88b4ee77ee0b9324193525349f9823ecc89b35cefb35bb10a6a18.json",
+        "sha256": "024c96a410b88b4ee77ee0b9324193525349f9823ecc89b35cefb35bb10a6a18"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-02/latest.json",
+        "bytes": 775,
+        "object": "objects/6b/6b8ca182a53e851a1c9780a71eb11c96aea000eb80ea27ea42ea4f2c7cc6349d.json",
+        "sha256": "6b8ca182a53e851a1c9780a71eb11c96aea000eb80ea27ea42ea4f2c7cc6349d"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-03/latest.json",
+        "bytes": 775,
+        "object": "objects/7b/7b7015b93c8d87e15c0e230f6ae80644b097dddaabd85346b3d227dbecf14ae3.json",
+        "sha256": "7b7015b93c8d87e15c0e230f6ae80644b097dddaabd85346b3d227dbecf14ae3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-04/latest.json",
+        "bytes": 775,
+        "object": "objects/57/57b0a337c0fdcd81e168df8bf28b1e60cf6e1b9bd9a9da14367f1773e8ea94e3.json",
+        "sha256": "57b0a337c0fdcd81e168df8bf28b1e60cf6e1b9bd9a9da14367f1773e8ea94e3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-05/latest.json",
+        "bytes": 775,
+        "object": "objects/b8/b8e68fb569cfe72892d3874f51c784f652cf4acfd401bdf06135fd65d18b5403.json",
+        "sha256": "b8e68fb569cfe72892d3874f51c784f652cf4acfd401bdf06135fd65d18b5403"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-08/latest.json",
+        "bytes": 775,
+        "object": "objects/9b/9b7e7abada30209e95c6325706f626d93e81ca41cb423fb6782714ccd691999b.json",
+        "sha256": "9b7e7abada30209e95c6325706f626d93e81ca41cb423fb6782714ccd691999b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-09/latest.json",
+        "bytes": 775,
+        "object": "objects/99/99db24e56714fb98e4d78606d047f87e7424816941c131017fbe8ecd6233fdc6.json",
+        "sha256": "99db24e56714fb98e4d78606d047f87e7424816941c131017fbe8ecd6233fdc6"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-10/latest.json",
+        "bytes": 775,
+        "object": "objects/73/73d0cb8d9f5d42a45bfe24748d26a1eb82f4db589d320203bc073ae5c5efb44c.json",
+        "sha256": "73d0cb8d9f5d42a45bfe24748d26a1eb82f4db589d320203bc073ae5c5efb44c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-11/latest.json",
+        "bytes": 775,
+        "object": "objects/7b/7b56472bbaeb2cd4c5afba34b73a7c696dc077f1e651c0e4ca3ef15626021101.json",
+        "sha256": "7b56472bbaeb2cd4c5afba34b73a7c696dc077f1e651c0e4ca3ef15626021101"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-12/latest.json",
+        "bytes": 775,
+        "object": "objects/63/631452f5057aeecccc5574a575f7e1ce70e8f7d0664160e62a5817a36ff93edf.json",
+        "sha256": "631452f5057aeecccc5574a575f7e1ce70e8f7d0664160e62a5817a36ff93edf"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-15/latest.json",
+        "bytes": 775,
+        "object": "objects/60/60f6ea4c8432ef03187e7a5e773151056d9024bae155cbbafb5dc6cecff688fb.json",
+        "sha256": "60f6ea4c8432ef03187e7a5e773151056d9024bae155cbbafb5dc6cecff688fb"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-16/latest.json",
+        "bytes": 775,
+        "object": "objects/eb/eb13e90c3e76744276a8fb8a31e242aa2ecec0d8dc544308ccb208cccb341e98.json",
+        "sha256": "eb13e90c3e76744276a8fb8a31e242aa2ecec0d8dc544308ccb208cccb341e98"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-17/latest.json",
+        "bytes": 775,
+        "object": "objects/60/6036dc53ccb8b0a9257fc6e17d3f28b21bde233456ab60d0b679e4f47748e01b.json",
+        "sha256": "6036dc53ccb8b0a9257fc6e17d3f28b21bde233456ab60d0b679e4f47748e01b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-18/latest.json",
+        "bytes": 775,
+        "object": "objects/e2/e22b8201cc093e15f07f6abc2963f3a199bc1e37b5655ed61d87e776119076d1.json",
+        "sha256": "e22b8201cc093e15f07f6abc2963f3a199bc1e37b5655ed61d87e776119076d1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-19/latest.json",
+        "bytes": 775,
+        "object": "objects/bb/bbef22e47b2aee614cccf1b896aa5961275795d17284822d448346990a905ed1.json",
+        "sha256": "bbef22e47b2aee614cccf1b896aa5961275795d17284822d448346990a905ed1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-22/latest.json",
+        "bytes": 775,
+        "object": "objects/a6/a695c25d6ba38dc318f144a723e32b5ed4ee4340dc912797a5c3da2eadf8406a.json",
+        "sha256": "a695c25d6ba38dc318f144a723e32b5ed4ee4340dc912797a5c3da2eadf8406a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-23/latest.json",
+        "bytes": 775,
+        "object": "objects/e6/e691beb2964dffa7c95aa51e1b72d7bac1f784af612dc28f88af716183934916.json",
+        "sha256": "e691beb2964dffa7c95aa51e1b72d7bac1f784af612dc28f88af716183934916"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-24/latest.json",
+        "bytes": 775,
+        "object": "objects/73/73e72c5a830a77f99cdeeab407167e22736072976980fdaf8a1c312dced4d780.json",
+        "sha256": "73e72c5a830a77f99cdeeab407167e22736072976980fdaf8a1c312dced4d780"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-25/latest.json",
+        "bytes": 775,
+        "object": "objects/c8/c8ca01881de4aa8b064c64081901de0548f95dd48da8cc4fda95d410dbecb32c.json",
+        "sha256": "c8ca01881de4aa8b064c64081901de0548f95dd48da8cc4fda95d410dbecb32c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-26/latest.json",
+        "bytes": 775,
+        "object": "objects/25/2552316c3812368d563e2a8e8f65b8498a93cb22d2047bbf64c2e4c66d47b0a5.json",
+        "sha256": "2552316c3812368d563e2a8e8f65b8498a93cb22d2047bbf64c2e4c66d47b0a5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-29/latest.json",
+        "bytes": 775,
+        "object": "objects/e7/e704558a5062667c9ecca0346f305b17ccf17d249f94e4a65a2832b82934f5ca.json",
+        "sha256": "e704558a5062667c9ecca0346f305b17ccf17d249f94e4a65a2832b82934f5ca"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-06-30/latest.json",
+        "bytes": 775,
+        "object": "objects/84/84779d8ed28cdf14cc7dc84d0b799b32e7df734d9db573ed6faedf720ca177c8.json",
+        "sha256": "84779d8ed28cdf14cc7dc84d0b799b32e7df734d9db573ed6faedf720ca177c8"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-01/latest.json",
+        "bytes": 775,
+        "object": "objects/ac/ac2f8836cf98fe9428ebaf39c00f7ce5ab965bd22544a30504fb645e0c85382c.json",
+        "sha256": "ac2f8836cf98fe9428ebaf39c00f7ce5ab965bd22544a30504fb645e0c85382c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-02/latest.json",
+        "bytes": 775,
+        "object": "objects/57/57834a11e4a5393da1ca8a26048fb5d8f9d56889fe39641274bd8fa35d4192c3.json",
+        "sha256": "57834a11e4a5393da1ca8a26048fb5d8f9d56889fe39641274bd8fa35d4192c3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-03/latest.json",
+        "bytes": 775,
+        "object": "objects/77/77b87c08494f442eee1d1d53f8e6f50abf350af82237bae05b863c2f89ea007f.json",
+        "sha256": "77b87c08494f442eee1d1d53f8e6f50abf350af82237bae05b863c2f89ea007f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-06/latest.json",
+        "bytes": 775,
+        "object": "objects/e5/e51ff50eb0d4d88ccf65509e5c27418cfeaf6e38e027de267a09e33390e132ae.json",
+        "sha256": "e51ff50eb0d4d88ccf65509e5c27418cfeaf6e38e027de267a09e33390e132ae"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-07/latest.json",
+        "bytes": 775,
+        "object": "objects/20/2079cdd2169b029e6ffe6ca26fb071bad49bb8e856136d0f279982c44ef044c7.json",
+        "sha256": "2079cdd2169b029e6ffe6ca26fb071bad49bb8e856136d0f279982c44ef044c7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-08/latest.json",
+        "bytes": 775,
+        "object": "objects/b8/b84daf29470c27bc881b04af93647a6f7f6da340da8bb27b6dbbfcc0943d106a.json",
+        "sha256": "b84daf29470c27bc881b04af93647a6f7f6da340da8bb27b6dbbfcc0943d106a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-09/latest.json",
+        "bytes": 775,
+        "object": "objects/de/de88c9819511d60f58ffacda77ec3c642722042f59eec22c6b0639f1292656a4.json",
+        "sha256": "de88c9819511d60f58ffacda77ec3c642722042f59eec22c6b0639f1292656a4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-10/latest.json",
+        "bytes": 775,
+        "object": "objects/78/781ab8a049d10ae08db28765ab09ea37323f3d66fb9a1f406b1d7da86c4de4e1.json",
+        "sha256": "781ab8a049d10ae08db28765ab09ea37323f3d66fb9a1f406b1d7da86c4de4e1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-13/latest.json",
+        "bytes": 775,
+        "object": "objects/22/221aa7e2429b2265d8726bc7338062fae785bdec80cf892c7b21a9014852bfa0.json",
+        "sha256": "221aa7e2429b2265d8726bc7338062fae785bdec80cf892c7b21a9014852bfa0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-14/latest.json",
+        "bytes": 775,
+        "object": "objects/62/6237e9c8021799e90b804e9879a71b7ab9a7d6136dda5258c77b7597ec45e7a1.json",
+        "sha256": "6237e9c8021799e90b804e9879a71b7ab9a7d6136dda5258c77b7597ec45e7a1"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-15/latest.json",
+        "bytes": 775,
+        "object": "objects/15/15b98038000649bee7fed024c02533fbea378b338c0da284ccf4e315d8880602.json",
+        "sha256": "15b98038000649bee7fed024c02533fbea378b338c0da284ccf4e315d8880602"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-16/latest.json",
+        "bytes": 775,
+        "object": "objects/14/14de19dfc98142c3c1e1bc8d20f6fe86484bb760db3cfe48c4ee48d1bd1d65a4.json",
+        "sha256": "14de19dfc98142c3c1e1bc8d20f6fe86484bb760db3cfe48c4ee48d1bd1d65a4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-17/latest.json",
+        "bytes": 775,
+        "object": "objects/fb/fba4e9b7a82df5b94dab0df714bdd6801977c5066d08c98aab76ea85b899c1e3.json",
+        "sha256": "fba4e9b7a82df5b94dab0df714bdd6801977c5066d08c98aab76ea85b899c1e3"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-21/latest.json",
+        "bytes": 775,
+        "object": "objects/f4/f4fb203e0dd3d6d11ea39e3fe993b5275257f65c8e2913d98a9fba95cc3ffac4.json",
+        "sha256": "f4fb203e0dd3d6d11ea39e3fe993b5275257f65c8e2913d98a9fba95cc3ffac4"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-22/latest.json",
+        "bytes": 775,
+        "object": "objects/c3/c38a0ef195aa9f071a6ab747cf90c798e83c3454aaf5927462472233183ba6b9.json",
+        "sha256": "c38a0ef195aa9f071a6ab747cf90c798e83c3454aaf5927462472233183ba6b9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-23/latest.json",
+        "bytes": 775,
+        "object": "objects/43/430164f86b4947b7233846af9804350c9e1c36c7f2b88d6a911394ed22011717.json",
+        "sha256": "430164f86b4947b7233846af9804350c9e1c36c7f2b88d6a911394ed22011717"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-24/latest.json",
+        "bytes": 775,
+        "object": "objects/bc/bc7f94752544b6d79b02760e40dc98da80777f09b7c92ed1a01c6c651c48a142.json",
+        "sha256": "bc7f94752544b6d79b02760e40dc98da80777f09b7c92ed1a01c6c651c48a142"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-27/latest.json",
+        "bytes": 775,
+        "object": "objects/09/09b3af911124491cf3d15e02efb011328d4a30f79154984c3c2b0a7a6b98c424.json",
+        "sha256": "09b3af911124491cf3d15e02efb011328d4a30f79154984c3c2b0a7a6b98c424"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-28/latest.json",
+        "bytes": 775,
+        "object": "objects/9e/9edfbf6a14944de538b796566f3e51712303af97b081e0c920389e038f72c0c2.json",
+        "sha256": "9edfbf6a14944de538b796566f3e51712303af97b081e0c920389e038f72c0c2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-29/latest.json",
+        "bytes": 775,
+        "object": "objects/dc/dc1a8ef8fd3c19590cf4d81cea6fce9c4386a3fda1c8104ef5bb5193a63fcb79.json",
+        "sha256": "dc1a8ef8fd3c19590cf4d81cea6fce9c4386a3fda1c8104ef5bb5193a63fcb79"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-30/latest.json",
+        "bytes": 775,
+        "object": "objects/29/29ed7ff6c3e024053152c35a013507963ba8e163ecf62ed12cb8fdee9d4690aa.json",
+        "sha256": "29ed7ff6c3e024053152c35a013507963ba8e163ecf62ed12cb8fdee9d4690aa"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-07-31/latest.json",
+        "bytes": 775,
+        "object": "objects/73/73835ba4c4aa7671a28be51c2d73970c84ed09bdb189b30e81032cf9bc6052e5.json",
+        "sha256": "73835ba4c4aa7671a28be51c2d73970c84ed09bdb189b30e81032cf9bc6052e5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-03/latest.json",
+        "bytes": 775,
+        "object": "objects/9e/9e99b64a1a4479193461808ddbf277a403854bbe00cdd71f35aa718d3e753866.json",
+        "sha256": "9e99b64a1a4479193461808ddbf277a403854bbe00cdd71f35aa718d3e753866"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-04/latest.json",
+        "bytes": 775,
+        "object": "objects/18/18ab2f3d25617e032daa597f4b1f4278fa6f45c222d4faa66cefe35a72d4e8ed.json",
+        "sha256": "18ab2f3d25617e032daa597f4b1f4278fa6f45c222d4faa66cefe35a72d4e8ed"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-05/latest.json",
+        "bytes": 775,
+        "object": "objects/26/2646088ed8d82c08d6b1da21cbd9448e88023ee52d42bbc73f58a5d6fbe288aa.json",
+        "sha256": "2646088ed8d82c08d6b1da21cbd9448e88023ee52d42bbc73f58a5d6fbe288aa"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-06/latest.json",
+        "bytes": 775,
+        "object": "objects/30/30b1bf14501447c606e32cec6ad2e9a70e8569d6a8e4cb50e848703109743708.json",
+        "sha256": "30b1bf14501447c606e32cec6ad2e9a70e8569d6a8e4cb50e848703109743708"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-07/latest.json",
+        "bytes": 775,
+        "object": "objects/25/25d03c2d7a324fb568958c08411edcdd33ebb56e9823d725417df2a6915f6cda.json",
+        "sha256": "25d03c2d7a324fb568958c08411edcdd33ebb56e9823d725417df2a6915f6cda"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-10/latest.json",
+        "bytes": 775,
+        "object": "objects/6f/6f48b9a96c69500b20a122a81dac3b7a1635b141df1ac77e5621bd733093c22c.json",
+        "sha256": "6f48b9a96c69500b20a122a81dac3b7a1635b141df1ac77e5621bd733093c22c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-12/latest.json",
+        "bytes": 775,
+        "object": "objects/b0/b0482b7722147ab253f0b00cc70500eee2cc0e9f9a9bb61c4f38b26b09b51293.json",
+        "sha256": "b0482b7722147ab253f0b00cc70500eee2cc0e9f9a9bb61c4f38b26b09b51293"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-13/latest.json",
+        "bytes": 775,
+        "object": "objects/33/339182d0f9c0ffc25f3cf2cfff1dd573d540174b029a140d551e2385578a1962.json",
+        "sha256": "339182d0f9c0ffc25f3cf2cfff1dd573d540174b029a140d551e2385578a1962"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-14/latest.json",
+        "bytes": 775,
+        "object": "objects/36/36ed55ff1e81c1efdd0ac838a2a9fdde472d2bc6f5ed1bc614cd325a660ff7db.json",
+        "sha256": "36ed55ff1e81c1efdd0ac838a2a9fdde472d2bc6f5ed1bc614cd325a660ff7db"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-17/latest.json",
+        "bytes": 775,
+        "object": "objects/9f/9f1db82bc7d71e5995e4bf6fe8c1041a1fd83d45fecaa921d30e15564dc2230c.json",
+        "sha256": "9f1db82bc7d71e5995e4bf6fe8c1041a1fd83d45fecaa921d30e15564dc2230c"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-18/latest.json",
+        "bytes": 775,
+        "object": "objects/be/bece83c1c565e687234b75f0a8ddea7bf846464e63320172e4f8b87071235880.json",
+        "sha256": "bece83c1c565e687234b75f0a8ddea7bf846464e63320172e4f8b87071235880"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-19/latest.json",
+        "bytes": 775,
+        "object": "objects/78/7893140c85320660176d8bf5c22917532d680f61df33dc063ebbd7c3dc239eeb.json",
+        "sha256": "7893140c85320660176d8bf5c22917532d680f61df33dc063ebbd7c3dc239eeb"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-20/latest.json",
+        "bytes": 775,
+        "object": "objects/7a/7a4454747358b503de3e2bd84615de9f74db4d94d12f96a4f6150b6ffc8634de.json",
+        "sha256": "7a4454747358b503de3e2bd84615de9f74db4d94d12f96a4f6150b6ffc8634de"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-21/latest.json",
+        "bytes": 775,
+        "object": "objects/e7/e7655fd1e518c131d15b36f0eac21d169440f15afca0856d75481cd3c76aabe2.json",
+        "sha256": "e7655fd1e518c131d15b36f0eac21d169440f15afca0856d75481cd3c76aabe2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-24/latest.json",
+        "bytes": 775,
+        "object": "objects/d3/d3b0de4cf3718102a49b8468a1299c4bea7830e22ab84fe47a767545f57044f8.json",
+        "sha256": "d3b0de4cf3718102a49b8468a1299c4bea7830e22ab84fe47a767545f57044f8"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-25/latest.json",
+        "bytes": 775,
+        "object": "objects/b2/b2cc4d676d84ad62001ee18cbc702acfc98b3f9d31fed6acbf944d8dcc344655.json",
+        "sha256": "b2cc4d676d84ad62001ee18cbc702acfc98b3f9d31fed6acbf944d8dcc344655"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-26/latest.json",
+        "bytes": 775,
+        "object": "objects/77/77b07a17a11923c4b490b7b85332d0612fd7cc23893e28962551483f1e6e08f5.json",
+        "sha256": "77b07a17a11923c4b490b7b85332d0612fd7cc23893e28962551483f1e6e08f5"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-27/latest.json",
+        "bytes": 775,
+        "object": "objects/2a/2a516eb31e95e3bddb8b0fd447027534d50db49f4a3fab9c455a75de2b13f799.json",
+        "sha256": "2a516eb31e95e3bddb8b0fd447027534d50db49f4a3fab9c455a75de2b13f799"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-28/latest.json",
+        "bytes": 775,
+        "object": "objects/97/97855273fd5ecf478cfd67f8a2e2353f80f48d9c4b35146a55e0b8b364e91271.json",
+        "sha256": "97855273fd5ecf478cfd67f8a2e2353f80f48d9c4b35146a55e0b8b364e91271"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-08-31/latest.json",
+        "bytes": 775,
+        "object": "objects/22/225876c4293c6a8aaf56830d780a0edce447741a5b34aa325f7c913a99b96165.json",
+        "sha256": "225876c4293c6a8aaf56830d780a0edce447741a5b34aa325f7c913a99b96165"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-01/latest.json",
+        "bytes": 775,
+        "object": "objects/83/83bb91c810ca4e5bce56444e8f90928c63f8c4b53c0ee60719198e448acb4fd0.json",
+        "sha256": "83bb91c810ca4e5bce56444e8f90928c63f8c4b53c0ee60719198e448acb4fd0"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-02/latest.json",
+        "bytes": 775,
+        "object": "objects/5c/5c0299e874465c42b7d2f901d68550a83edb9eecca9e51373677d5bd0f3ff184.json",
+        "sha256": "5c0299e874465c42b7d2f901d68550a83edb9eecca9e51373677d5bd0f3ff184"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-03/latest.json",
+        "bytes": 775,
+        "object": "objects/76/762ad59c5f07198a44228fcdf808cdee90db616a54dcdd22e6b1b6328f83ff60.json",
+        "sha256": "762ad59c5f07198a44228fcdf808cdee90db616a54dcdd22e6b1b6328f83ff60"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-04/latest.json",
+        "bytes": 775,
+        "object": "objects/8e/8e4c3c4c4eece55f8c778ef0fba2e8c097d1a55283a511ccf32ffad46ec69c55.json",
+        "sha256": "8e4c3c4c4eece55f8c778ef0fba2e8c097d1a55283a511ccf32ffad46ec69c55"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-07/latest.json",
+        "bytes": 775,
+        "object": "objects/59/595b682aa792c0e0add681f0a9ab0ea03d453bb9bf89dc5615a66e4de134611b.json",
+        "sha256": "595b682aa792c0e0add681f0a9ab0ea03d453bb9bf89dc5615a66e4de134611b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-08/latest.json",
+        "bytes": 775,
+        "object": "objects/2d/2db570bcd82cbd3fce835a087a5a73ad472b7692dbcaafc2d2c49d4ec051e9ee.json",
+        "sha256": "2db570bcd82cbd3fce835a087a5a73ad472b7692dbcaafc2d2c49d4ec051e9ee"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-09/latest.json",
+        "bytes": 775,
+        "object": "objects/4b/4b71eff42abff939f4d2002622ffa333f5574825ed33235fd03054d2fadb2b6f.json",
+        "sha256": "4b71eff42abff939f4d2002622ffa333f5574825ed33235fd03054d2fadb2b6f"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-10/latest.json",
+        "bytes": 775,
+        "object": "objects/c4/c4ac801cf54703438f4ffac7aafa0e330c31d0ed6796f4cd8012ab8c7b790bc2.json",
+        "sha256": "c4ac801cf54703438f4ffac7aafa0e330c31d0ed6796f4cd8012ab8c7b790bc2"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-11/latest.json",
+        "bytes": 775,
+        "object": "objects/8c/8cf450355c6553476f7d6a7bc3c1017dae084edd3c33def0e22ffd0556596ef8.json",
+        "sha256": "8cf450355c6553476f7d6a7bc3c1017dae084edd3c33def0e22ffd0556596ef8"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-14/latest.json",
+        "bytes": 775,
+        "object": "objects/13/132a4467a3c33d4fb233c410e8703151b38c9274eb85f350bf02ef74a1b863ce.json",
+        "sha256": "132a4467a3c33d4fb233c410e8703151b38c9274eb85f350bf02ef74a1b863ce"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-15/latest.json",
+        "bytes": 775,
+        "object": "objects/6f/6f633796243ad898ee96b7f2b564a8c6bd8e5f22cdfbb90b35b3a66294c4592a.json",
+        "sha256": "6f633796243ad898ee96b7f2b564a8c6bd8e5f22cdfbb90b35b3a66294c4592a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-16/latest.json",
+        "bytes": 775,
+        "object": "objects/17/1761bcd76795256ecc30abc1422b5b1667e0ad3d8f4aafbdeb555369b95d748b.json",
+        "sha256": "1761bcd76795256ecc30abc1422b5b1667e0ad3d8f4aafbdeb555369b95d748b"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-17/latest.json",
+        "bytes": 775,
+        "object": "objects/80/808d7e476167dc277f5a00827900a5bc105bba21e3cf2312e0b4a970c86e9919.json",
+        "sha256": "808d7e476167dc277f5a00827900a5bc105bba21e3cf2312e0b4a970c86e9919"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-18/latest.json",
+        "bytes": 775,
+        "object": "objects/4e/4ead18c45781cb8590b287f83cfd2ed7df2622da6d4fec44b39d4baf4457deec.json",
+        "sha256": "4ead18c45781cb8590b287f83cfd2ed7df2622da6d4fec44b39d4baf4457deec"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-24/latest.json",
+        "bytes": 775,
+        "object": "objects/f4/f44d586ff311ed3aa2ebe0a429b17a9f0fc60b08a659ef8973904b9927ef27d7.json",
+        "sha256": "f44d586ff311ed3aa2ebe0a429b17a9f0fc60b08a659ef8973904b9927ef27d7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-25/latest.json",
+        "bytes": 775,
+        "object": "objects/6e/6e6b9181330653e193bceb730e201d97fec7c4a3982e23de1899c72749e0e4d9.json",
+        "sha256": "6e6b9181330653e193bceb730e201d97fec7c4a3982e23de1899c72749e0e4d9"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-28/latest.json",
+        "bytes": 775,
+        "object": "objects/4b/4b3dacd18fa988d5c894e9acbbaa51f0fc8a965758083b2136f111b5ef02331a.json",
+        "sha256": "4b3dacd18fa988d5c894e9acbbaa51f0fc8a965758083b2136f111b5ef02331a"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-29/latest.json",
+        "bytes": 775,
+        "object": "objects/81/8180c89e76c940a8aeb937930f6e22f8150641f080a046e8449908a759951baa.json",
+        "sha256": "8180c89e76c940a8aeb937930f6e22f8150641f080a046e8449908a759951baa"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-09-30/latest.json",
+        "bytes": 775,
+        "object": "objects/67/6748287a20c22a9d8c6c09d64625719feae59f69e480c9236cb956cb703d6d17.json",
+        "sha256": "6748287a20c22a9d8c6c09d64625719feae59f69e480c9236cb956cb703d6d17"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-01/latest.json",
+        "bytes": 775,
+        "object": "objects/75/75b07f59eefbc14f792e9e70b98f1f6aab59c00f94c9eaf9aed1b56173e8bc14.json",
+        "sha256": "75b07f59eefbc14f792e9e70b98f1f6aab59c00f94c9eaf9aed1b56173e8bc14"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-02/latest.json",
+        "bytes": 775,
+        "object": "objects/33/3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51.json",
+        "sha256": "3393f6c29da95e6be92f3176eacb56e92a00e00d07323cc352b81ac40324ac51"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-05/latest.json",
+        "bytes": 775,
+        "object": "objects/41/41eff06ccd3b4b2a51869c731df4b1356580586829d79e81fa2e3392e2dcd4c7.json",
+        "sha256": "41eff06ccd3b4b2a51869c731df4b1356580586829d79e81fa2e3392e2dcd4c7"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-06/latest.json",
+        "bytes": 775,
+        "object": "objects/c5/c5483ca1dd21d92d74c8626ef8c353e9de69cf53f5d99325f60cdb2c1fba0755.json",
+        "sha256": "c5483ca1dd21d92d74c8626ef8c353e9de69cf53f5d99325f60cdb2c1fba0755"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-07/latest.json",
+        "bytes": 775,
+        "object": "objects/60/601b9016654e8ccd2d20911cb6a9efb0e8cecaa0e0c0d07f0cff5beb3381826e.json",
+        "sha256": "601b9016654e8ccd2d20911cb6a9efb0e8cecaa0e0c0d07f0cff5beb3381826e"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-08/latest.json",
+        "bytes": 775,
+        "object": "objects/8b/8b342fb86ec902248e7702de30f2c21b1de5986e7b657724f80f694f2c0826b8.json",
+        "sha256": "8b342fb86ec902248e7702de30f2c21b1de5986e7b657724f80f694f2c0826b8"
+      },
+      {
+        "path": "jquants/datasets/equities_master/2026-10-09/latest.json",
+        "bytes": 775,
+        "object": "objects/fa/fac759efff0e756dbae320e3031272f408eaef455754feebb28f273968eaf659.json",
+        "sha256": "fac759efff0e756dbae320e3031272f408eaef455754feebb28f273968eaf659"
+      }
+    ],
+    "equities_daily": [
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-07/latest.json",
+        "bytes": 792,
+        "object": "objects/d8/d8a8507a33698a34793397cce7b6c6ac30eaa502775e36de59be505429e6734e.json",
+        "sha256": "d8a8507a33698a34793397cce7b6c6ac30eaa502775e36de59be505429e6734e"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-08/latest.json",
+        "bytes": 792,
+        "object": "objects/10/102a0e4422276ad41f942a53b000c8a0a1d9718adb4d7445e2fa759bbfa5406c.json",
+        "sha256": "102a0e4422276ad41f942a53b000c8a0a1d9718adb4d7445e2fa759bbfa5406c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-12/latest.json",
+        "bytes": 792,
+        "object": "objects/4d/4d3c6da39988443144eb3976fbaf5c146c08296766a2ea3979c06fab1f35de9c.json",
+        "sha256": "4d3c6da39988443144eb3976fbaf5c146c08296766a2ea3979c06fab1f35de9c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-13/latest.json",
+        "bytes": 792,
+        "object": "objects/53/531d3aa159089d6d49f8b69c14d53245f9ed9766d7f630df970fa8325cd6f7e3.json",
+        "sha256": "531d3aa159089d6d49f8b69c14d53245f9ed9766d7f630df970fa8325cd6f7e3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-14/latest.json",
+        "bytes": 792,
+        "object": "objects/e1/e15c8566a575ada0ac1ca4313b51b3a8e5290d3531e5a3dcd1d7f5d751698799.json",
+        "sha256": "e15c8566a575ada0ac1ca4313b51b3a8e5290d3531e5a3dcd1d7f5d751698799"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-15/latest.json",
+        "bytes": 792,
+        "object": "objects/64/64f4aa20e0f3c4eb8d0cd0fd05f6fd57f3ba7d322db79a50f58f73aaabff430f.json",
+        "sha256": "64f4aa20e0f3c4eb8d0cd0fd05f6fd57f3ba7d322db79a50f58f73aaabff430f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-18/latest.json",
+        "bytes": 792,
+        "object": "objects/ec/ec4fa467e0b13325e0d8b7d60ed1b5d687aa1d2da2e7bdfc2c6a0c9d48b29ac9.json",
+        "sha256": "ec4fa467e0b13325e0d8b7d60ed1b5d687aa1d2da2e7bdfc2c6a0c9d48b29ac9"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-19/latest.json",
+        "bytes": 792,
+        "object": "objects/ee/eef6e24493cd3526b44059d7d8e61372405e3d6ca3e838a48ef3ca5600b06289.json",
+        "sha256": "eef6e24493cd3526b44059d7d8e61372405e3d6ca3e838a48ef3ca5600b06289"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-20/latest.json",
+        "bytes": 792,
+        "object": "objects/34/344731836e382e72fbf1ec638b980b673b5348ac3d308bc232ec3277d8e79f5f.json",
+        "sha256": "344731836e382e72fbf1ec638b980b673b5348ac3d308bc232ec3277d8e79f5f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-21/latest.json",
+        "bytes": 792,
+        "object": "objects/60/6085799885f7966ee5aacfdb3cd6988ff69a3e33b4fda116bfc3d4c1fddc506d.json",
+        "sha256": "6085799885f7966ee5aacfdb3cd6988ff69a3e33b4fda116bfc3d4c1fddc506d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-22/latest.json",
+        "bytes": 792,
+        "object": "objects/14/140b04291fd6a53f4a05258362a13d78b96075c903ed3e17558dc6dd40fd4066.json",
+        "sha256": "140b04291fd6a53f4a05258362a13d78b96075c903ed3e17558dc6dd40fd4066"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-25/latest.json",
+        "bytes": 792,
+        "object": "objects/2a/2a9bb5ef493a634914ffe823858894e39ec60f71d8cf036fea1689bf428f3922.json",
+        "sha256": "2a9bb5ef493a634914ffe823858894e39ec60f71d8cf036fea1689bf428f3922"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-26/latest.json",
+        "bytes": 792,
+        "object": "objects/34/344995dfe6f5c2fd75632ec512f265c111a1d204152b9c8cc53e5713fe1bbfc8.json",
+        "sha256": "344995dfe6f5c2fd75632ec512f265c111a1d204152b9c8cc53e5713fe1bbfc8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-27/latest.json",
+        "bytes": 792,
+        "object": "objects/a2/a2a1ed9e7545c813120f6e79f26a59b5eba79d1ec95d87678e0f0adbaa1911c4.json",
+        "sha256": "a2a1ed9e7545c813120f6e79f26a59b5eba79d1ec95d87678e0f0adbaa1911c4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-28/latest.json",
+        "bytes": 792,
+        "object": "objects/4b/4bbc4ae3201aa40196cddf470bd61f45b6fac333cb8c56a12d1fc91a05a2ad42.json",
+        "sha256": "4bbc4ae3201aa40196cddf470bd61f45b6fac333cb8c56a12d1fc91a05a2ad42"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-08-29/latest.json",
+        "bytes": 792,
+        "object": "objects/af/afd428c42ab3abde3a672b2fe8b19df0f39acbc6fdd94e5145ed9f8d85e8ea9e.json",
+        "sha256": "afd428c42ab3abde3a672b2fe8b19df0f39acbc6fdd94e5145ed9f8d85e8ea9e"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-01/latest.json",
+        "bytes": 792,
+        "object": "objects/e3/e3963fa7e9e73f50163d6960e9c4f69430987295cd7d6a104efd969a65c666a0.json",
+        "sha256": "e3963fa7e9e73f50163d6960e9c4f69430987295cd7d6a104efd969a65c666a0"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-02/latest.json",
+        "bytes": 792,
+        "object": "objects/0e/0efcf39c1f3368cdfdb38e4bd30b9ddd90eea0305dda857813fda089e5ec793b.json",
+        "sha256": "0efcf39c1f3368cdfdb38e4bd30b9ddd90eea0305dda857813fda089e5ec793b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-03/latest.json",
+        "bytes": 792,
+        "object": "objects/58/58106a368c4abb7b1d15b24e48e4bcdde7e571c53dfce9ebe3deacd3e0427aad.json",
+        "sha256": "58106a368c4abb7b1d15b24e48e4bcdde7e571c53dfce9ebe3deacd3e0427aad"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-04/latest.json",
+        "bytes": 792,
+        "object": "objects/f6/f611f5df5a9a7de9e73f8e6960365da747774736d0048d6cd1ef4a4ded38d382.json",
+        "sha256": "f611f5df5a9a7de9e73f8e6960365da747774736d0048d6cd1ef4a4ded38d382"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-05/latest.json",
+        "bytes": 792,
+        "object": "objects/48/487467c395f7fdebf12d4a1c9ef89d5857b86a3b77edfc85413031e413e1c389.json",
+        "sha256": "487467c395f7fdebf12d4a1c9ef89d5857b86a3b77edfc85413031e413e1c389"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-08/latest.json",
+        "bytes": 792,
+        "object": "objects/85/85be8c11c1b0972c49c49a3502bd2fc26d8ac2392b7bf13c9f37730f0024b20d.json",
+        "sha256": "85be8c11c1b0972c49c49a3502bd2fc26d8ac2392b7bf13c9f37730f0024b20d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-09/latest.json",
+        "bytes": 792,
+        "object": "objects/6b/6b3bff585df12fe1854e89220d51738c7eb78f6eed26063ce2c27fc542f740ac.json",
+        "sha256": "6b3bff585df12fe1854e89220d51738c7eb78f6eed26063ce2c27fc542f740ac"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-10/latest.json",
+        "bytes": 792,
+        "object": "objects/4b/4bd4cdd2fd8dd73f8adcc4b29896c5a50b1b931a2d15ca64f87c4704956786b8.json",
+        "sha256": "4bd4cdd2fd8dd73f8adcc4b29896c5a50b1b931a2d15ca64f87c4704956786b8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-11/latest.json",
+        "bytes": 792,
+        "object": "objects/4a/4a4f1e1185821fad6cdfeb3238d093e6bc7d39a1f44de72ad5d1098dbb6d3501.json",
+        "sha256": "4a4f1e1185821fad6cdfeb3238d093e6bc7d39a1f44de72ad5d1098dbb6d3501"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-12/latest.json",
+        "bytes": 792,
+        "object": "objects/a0/a0d893b0c083c5955ed679af167ad31a845f15de793aa1f9f21ade9a227e93e4.json",
+        "sha256": "a0d893b0c083c5955ed679af167ad31a845f15de793aa1f9f21ade9a227e93e4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-16/latest.json",
+        "bytes": 792,
+        "object": "objects/d1/d13fc91e47cdb4d27d9db59c27fec5ad5aae3a20499aa42b15253719237265d5.json",
+        "sha256": "d13fc91e47cdb4d27d9db59c27fec5ad5aae3a20499aa42b15253719237265d5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-17/latest.json",
+        "bytes": 792,
+        "object": "objects/23/238d82ca73e02c9f9d64fd0c5b4b30c2eec3d4c1a17782fe8e1767c5a7988bb4.json",
+        "sha256": "238d82ca73e02c9f9d64fd0c5b4b30c2eec3d4c1a17782fe8e1767c5a7988bb4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-18/latest.json",
+        "bytes": 792,
+        "object": "objects/12/12321c650d16d12268a7eb5e002cc58c2b32d7f8c5716d1e603f8b6f1c6a8349.json",
+        "sha256": "12321c650d16d12268a7eb5e002cc58c2b32d7f8c5716d1e603f8b6f1c6a8349"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-19/latest.json",
+        "bytes": 792,
+        "object": "objects/56/560cc69f544cb77adac33ee6f1622248bfaeaa21176648f2dae033ed60820ff4.json",
+        "sha256": "560cc69f544cb77adac33ee6f1622248bfaeaa21176648f2dae033ed60820ff4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-22/latest.json",
+        "bytes": 792,
+        "object": "objects/b1/b1453c9565ad7b1d80ceb266e711b148b538813aceb8e23431df261bdb8272f4.json",
+        "sha256": "b1453c9565ad7b1d80ceb266e711b148b538813aceb8e23431df261bdb8272f4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-24/latest.json",
+        "bytes": 792,
+        "object": "objects/da/dab2d46d397e6e5e2d30e7c155bee43dc57091bc969de170c8da0a7237824b50.json",
+        "sha256": "dab2d46d397e6e5e2d30e7c155bee43dc57091bc969de170c8da0a7237824b50"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-25/latest.json",
+        "bytes": 792,
+        "object": "objects/d8/d8a74f11fa7d86cc6c58a13ea2245a0e1538306e7548531f4834d86a88fb35a5.json",
+        "sha256": "d8a74f11fa7d86cc6c58a13ea2245a0e1538306e7548531f4834d86a88fb35a5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-26/latest.json",
+        "bytes": 792,
+        "object": "objects/ce/ce6f3468edf1cef0e34d72f4264b1b4d707eb9a328949b2495e505c5d02625ed.json",
+        "sha256": "ce6f3468edf1cef0e34d72f4264b1b4d707eb9a328949b2495e505c5d02625ed"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-29/latest.json",
+        "bytes": 792,
+        "object": "objects/59/59e5580de54e135fb5a917d43ad75ef32f27fbe24f47be2e9d53a5ea72580a4f.json",
+        "sha256": "59e5580de54e135fb5a917d43ad75ef32f27fbe24f47be2e9d53a5ea72580a4f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-09-30/latest.json",
+        "bytes": 792,
+        "object": "objects/fe/feca50295fdbb55aab2c8eaeda79e9a4b05f8745765b952ffae565e8734444b8.json",
+        "sha256": "feca50295fdbb55aab2c8eaeda79e9a4b05f8745765b952ffae565e8734444b8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-01/latest.json",
+        "bytes": 792,
+        "object": "objects/47/47f1f1fa8caad6ac190750d42ea1dd33649208f62fecc949af3bd9af20c555d4.json",
+        "sha256": "47f1f1fa8caad6ac190750d42ea1dd33649208f62fecc949af3bd9af20c555d4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-02/latest.json",
+        "bytes": 792,
+        "object": "objects/aa/aaa2e031d2b3d8a6f6a6b4c1f95cf93fae522e8477a20fa6d4892c30d45adbae.json",
+        "sha256": "aaa2e031d2b3d8a6f6a6b4c1f95cf93fae522e8477a20fa6d4892c30d45adbae"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-03/latest.json",
+        "bytes": 792,
+        "object": "objects/a6/a68ba1cf49da2041af90733270fcc9a8669b5e2b96f31a3b99ee81ec33002df1.json",
+        "sha256": "a68ba1cf49da2041af90733270fcc9a8669b5e2b96f31a3b99ee81ec33002df1"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-06/latest.json",
+        "bytes": 792,
+        "object": "objects/9e/9ef2e791a63a74209ac075b9af7ca83ac1fb75deb1652193cb43c486b7bf0ca4.json",
+        "sha256": "9ef2e791a63a74209ac075b9af7ca83ac1fb75deb1652193cb43c486b7bf0ca4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-07/latest.json",
+        "bytes": 792,
+        "object": "objects/22/226fb10c212c944cf43afb428f8a727d20c1b23189d242f9663e2859e334c47a.json",
+        "sha256": "226fb10c212c944cf43afb428f8a727d20c1b23189d242f9663e2859e334c47a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-08/latest.json",
+        "bytes": 792,
+        "object": "objects/00/00ede30ca27e93b8f9670bab5a4f6248794341e4fa40049638751571ab726099.json",
+        "sha256": "00ede30ca27e93b8f9670bab5a4f6248794341e4fa40049638751571ab726099"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-09/latest.json",
+        "bytes": 792,
+        "object": "objects/7c/7ca70e6e078dc90dc6b75da66a7fba15909cc103145d71c6b710455b64a82fa7.json",
+        "sha256": "7ca70e6e078dc90dc6b75da66a7fba15909cc103145d71c6b710455b64a82fa7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-10/latest.json",
+        "bytes": 792,
+        "object": "objects/c5/c5d82bc8864a309b9dfc69ef72e66c7035f5b64dfa8dc20cf8bdbff905440a3f.json",
+        "sha256": "c5d82bc8864a309b9dfc69ef72e66c7035f5b64dfa8dc20cf8bdbff905440a3f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-14/latest.json",
+        "bytes": 792,
+        "object": "objects/57/57bdf0553a3ed96e0c7b3032343150b7bae7be944477cfd7d587d64de1e3dcb1.json",
+        "sha256": "57bdf0553a3ed96e0c7b3032343150b7bae7be944477cfd7d587d64de1e3dcb1"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-15/latest.json",
+        "bytes": 792,
+        "object": "objects/08/08a6d03e2c319f334a6d799784262c612a7ff5ff6cc4b34405a069bf2860d6fa.json",
+        "sha256": "08a6d03e2c319f334a6d799784262c612a7ff5ff6cc4b34405a069bf2860d6fa"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-16/latest.json",
+        "bytes": 792,
+        "object": "objects/92/9278f65bc7e47e30468c57bbdb913d82a2a2fc7a973e9587b985bbfeb08f2599.json",
+        "sha256": "9278f65bc7e47e30468c57bbdb913d82a2a2fc7a973e9587b985bbfeb08f2599"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-17/latest.json",
+        "bytes": 792,
+        "object": "objects/1e/1ed1dc7221ca9ee5cd1baa7396d3ea99531d469bb77c20e30c7c50726f6c2515.json",
+        "sha256": "1ed1dc7221ca9ee5cd1baa7396d3ea99531d469bb77c20e30c7c50726f6c2515"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-20/latest.json",
+        "bytes": 792,
+        "object": "objects/b8/b8a6eb7a8ab8ea0a0fb13a86ee6a6974a14f77f44ea136090093f6c58e4caeaa.json",
+        "sha256": "b8a6eb7a8ab8ea0a0fb13a86ee6a6974a14f77f44ea136090093f6c58e4caeaa"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-21/latest.json",
+        "bytes": 792,
+        "object": "objects/e9/e9c8bf5dd2867b401653ee238779d1ad6a1b3ca78ef1eba44f585006a79747db.json",
+        "sha256": "e9c8bf5dd2867b401653ee238779d1ad6a1b3ca78ef1eba44f585006a79747db"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-22/latest.json",
+        "bytes": 792,
+        "object": "objects/3d/3dabc940586a61143f3f94bec4297f4bf7c66dbf98251412a1f0ac13df95b1b3.json",
+        "sha256": "3dabc940586a61143f3f94bec4297f4bf7c66dbf98251412a1f0ac13df95b1b3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-23/latest.json",
+        "bytes": 792,
+        "object": "objects/6c/6cc1211560443efa2f036ec3b9d90a8beda403ecfcb6820fddc8fad7fb5d075c.json",
+        "sha256": "6cc1211560443efa2f036ec3b9d90a8beda403ecfcb6820fddc8fad7fb5d075c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-24/latest.json",
+        "bytes": 792,
+        "object": "objects/30/302ef49b5b541a2760ff73e0be429d148841bce8e2cd29d3473a2dd562e9b85f.json",
+        "sha256": "302ef49b5b541a2760ff73e0be429d148841bce8e2cd29d3473a2dd562e9b85f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-27/latest.json",
+        "bytes": 792,
+        "object": "objects/b9/b9646f0ff4a61a1a7d26187d63aa54192fdbade0513bf42e6ab5448c869fc6d8.json",
+        "sha256": "b9646f0ff4a61a1a7d26187d63aa54192fdbade0513bf42e6ab5448c869fc6d8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-28/latest.json",
+        "bytes": 792,
+        "object": "objects/60/60983d06f0ea158612d5a87608d1306c510f6267dafe818f692dadcb2fd0f875.json",
+        "sha256": "60983d06f0ea158612d5a87608d1306c510f6267dafe818f692dadcb2fd0f875"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-29/latest.json",
+        "bytes": 792,
+        "object": "objects/e1/e18bd54b7a66aa67786f0934f16a65a6855c52351d652af3f7cb4be59d30dbc8.json",
+        "sha256": "e18bd54b7a66aa67786f0934f16a65a6855c52351d652af3f7cb4be59d30dbc8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-30/latest.json",
+        "bytes": 792,
+        "object": "objects/72/721d1639a1ed0b29f5b01b16f08ec90dc89ef54f1574c55119cc1d66c5e8ca5b.json",
+        "sha256": "721d1639a1ed0b29f5b01b16f08ec90dc89ef54f1574c55119cc1d66c5e8ca5b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-10-31/latest.json",
+        "bytes": 792,
+        "object": "objects/46/467284d2b783b64d9e87acad6a396849ac751a9ba7924a4a86c230cb27cefc7c.json",
+        "sha256": "467284d2b783b64d9e87acad6a396849ac751a9ba7924a4a86c230cb27cefc7c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-04/latest.json",
+        "bytes": 792,
+        "object": "objects/f6/f6630cb8388d8d22955a3e8bede0f813c5010664225f45aafeb0d6016e50aa5c.json",
+        "sha256": "f6630cb8388d8d22955a3e8bede0f813c5010664225f45aafeb0d6016e50aa5c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-05/latest.json",
+        "bytes": 792,
+        "object": "objects/64/644d69ea60a592ee07bf2aec0224fa7c114301a2baabea27d2945cf17f1a0658.json",
+        "sha256": "644d69ea60a592ee07bf2aec0224fa7c114301a2baabea27d2945cf17f1a0658"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-06/latest.json",
+        "bytes": 792,
+        "object": "objects/8d/8df26e906fe4bda9af9fc71f81cbd7366e2bf3c02079846565daa6774bda726d.json",
+        "sha256": "8df26e906fe4bda9af9fc71f81cbd7366e2bf3c02079846565daa6774bda726d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-07/latest.json",
+        "bytes": 792,
+        "object": "objects/8c/8cf56ecc5fcc970d244dab8711ee44d00d797bf9b7e6f226a6a8ce954d7ad594.json",
+        "sha256": "8cf56ecc5fcc970d244dab8711ee44d00d797bf9b7e6f226a6a8ce954d7ad594"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-10/latest.json",
+        "bytes": 792,
+        "object": "objects/c5/c51c58b57d40592a48294fb38c33fe3d6804cfee8a1da3cd9223be7341a6b6c6.json",
+        "sha256": "c51c58b57d40592a48294fb38c33fe3d6804cfee8a1da3cd9223be7341a6b6c6"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-11/latest.json",
+        "bytes": 792,
+        "object": "objects/d3/d3c31b512f229b39b1c566eec2be1ad84eb285cbf417cde600c52580eac31d53.json",
+        "sha256": "d3c31b512f229b39b1c566eec2be1ad84eb285cbf417cde600c52580eac31d53"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-12/latest.json",
+        "bytes": 792,
+        "object": "objects/01/01d7a476d88c1d18149adb1418a3d13ccaa510464c6e0801816421267f8a279f.json",
+        "sha256": "01d7a476d88c1d18149adb1418a3d13ccaa510464c6e0801816421267f8a279f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-13/latest.json",
+        "bytes": 792,
+        "object": "objects/78/7806bb08bbc08fa088aeba0b657db37219412c7ef175c16d9d5b422dc196f46e.json",
+        "sha256": "7806bb08bbc08fa088aeba0b657db37219412c7ef175c16d9d5b422dc196f46e"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-14/latest.json",
+        "bytes": 792,
+        "object": "objects/67/6762aa6ace608260092be2e2df77a58b803c986e5e8bc21c9acea3157b6745a6.json",
+        "sha256": "6762aa6ace608260092be2e2df77a58b803c986e5e8bc21c9acea3157b6745a6"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-17/latest.json",
+        "bytes": 792,
+        "object": "objects/05/056dcd8677695f9fbd70d22d5053fcf74e94f12cb1507a3a2ba8219b36395019.json",
+        "sha256": "056dcd8677695f9fbd70d22d5053fcf74e94f12cb1507a3a2ba8219b36395019"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-18/latest.json",
+        "bytes": 792,
+        "object": "objects/37/3730e66e47fecb4055419dae1a55ee779bb672589b455049da58a303ccae1101.json",
+        "sha256": "3730e66e47fecb4055419dae1a55ee779bb672589b455049da58a303ccae1101"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-19/latest.json",
+        "bytes": 792,
+        "object": "objects/4b/4b01d13b78fc05e3caf3d2b4125f7c5f6f8bfbe1c9c59d362c67db51ec6c56a7.json",
+        "sha256": "4b01d13b78fc05e3caf3d2b4125f7c5f6f8bfbe1c9c59d362c67db51ec6c56a7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-20/latest.json",
+        "bytes": 792,
+        "object": "objects/31/31007da6e927a6112e8b1e217971b4dd4038c8beb275543c8d40b74631b524f1.json",
+        "sha256": "31007da6e927a6112e8b1e217971b4dd4038c8beb275543c8d40b74631b524f1"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-21/latest.json",
+        "bytes": 792,
+        "object": "objects/05/0595e28005e0443327793ed29560873c31b921ecd354b831c8de2303cd761414.json",
+        "sha256": "0595e28005e0443327793ed29560873c31b921ecd354b831c8de2303cd761414"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-25/latest.json",
+        "bytes": 792,
+        "object": "objects/d3/d3331b87aad9cf725f43c491db3941b72e6b21bd1817191174b9f868f94ef399.json",
+        "sha256": "d3331b87aad9cf725f43c491db3941b72e6b21bd1817191174b9f868f94ef399"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-26/latest.json",
+        "bytes": 792,
+        "object": "objects/06/06da0bfefdddce57596146af922dc2a26903567ede799a36396b16ac418c6292.json",
+        "sha256": "06da0bfefdddce57596146af922dc2a26903567ede799a36396b16ac418c6292"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-27/latest.json",
+        "bytes": 792,
+        "object": "objects/af/afa1aa0da2dbc6b52aace8437409d9ff0543f81d594ae8741a989507e2cd2364.json",
+        "sha256": "afa1aa0da2dbc6b52aace8437409d9ff0543f81d594ae8741a989507e2cd2364"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-11-28/latest.json",
+        "bytes": 792,
+        "object": "objects/56/56e4ffd843a5f51695695a359ef24159c48f978df76cd5b7b6854e444aa27164.json",
+        "sha256": "56e4ffd843a5f51695695a359ef24159c48f978df76cd5b7b6854e444aa27164"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-01/latest.json",
+        "bytes": 792,
+        "object": "objects/85/859334fb0bf6b680ff91e33ef398a499e8b9b521a4c2d1232b449a2252e92204.json",
+        "sha256": "859334fb0bf6b680ff91e33ef398a499e8b9b521a4c2d1232b449a2252e92204"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-02/latest.json",
+        "bytes": 792,
+        "object": "objects/ea/ea73f4d683bb06142ff99dd030d9ae4adb3130b187b1bf768c4d00cf673c965f.json",
+        "sha256": "ea73f4d683bb06142ff99dd030d9ae4adb3130b187b1bf768c4d00cf673c965f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-03/latest.json",
+        "bytes": 792,
+        "object": "objects/5d/5d3f55cb9d80821374fe0fdf8d6ffb13034c377c1f2c7c3f5835e1babf78dfcc.json",
+        "sha256": "5d3f55cb9d80821374fe0fdf8d6ffb13034c377c1f2c7c3f5835e1babf78dfcc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-04/latest.json",
+        "bytes": 792,
+        "object": "objects/c3/c305b5d048a4cdcbad69ebfe22f0271f16c74bd6a68806a2dd2134b8c5bb53b8.json",
+        "sha256": "c305b5d048a4cdcbad69ebfe22f0271f16c74bd6a68806a2dd2134b8c5bb53b8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-05/latest.json",
+        "bytes": 792,
+        "object": "objects/84/8431c90a9a961928601ed6e005373402e863b6ea9681168ce63fca75ae5e0069.json",
+        "sha256": "8431c90a9a961928601ed6e005373402e863b6ea9681168ce63fca75ae5e0069"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-08/latest.json",
+        "bytes": 792,
+        "object": "objects/43/43d3a4c501d630855346bedfce0b52b4925e6679e94127b3692513de259a4cf5.json",
+        "sha256": "43d3a4c501d630855346bedfce0b52b4925e6679e94127b3692513de259a4cf5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-09/latest.json",
+        "bytes": 792,
+        "object": "objects/d7/d7631a4120b2874149ff193fb27934ef425fb9fc78c2b20ef3d30d6bfd1c8d2c.json",
+        "sha256": "d7631a4120b2874149ff193fb27934ef425fb9fc78c2b20ef3d30d6bfd1c8d2c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-10/latest.json",
+        "bytes": 792,
+        "object": "objects/ff/ff25b95d03d7c3dca9782ea0fe360edd2bb1fa8cb9922807502866d559412d8c.json",
+        "sha256": "ff25b95d03d7c3dca9782ea0fe360edd2bb1fa8cb9922807502866d559412d8c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-11/latest.json",
+        "bytes": 792,
+        "object": "objects/b8/b8634dc70d902ef35923c28dddbd786b17d177bbdbc5d5fdbba406d770ab3ad2.json",
+        "sha256": "b8634dc70d902ef35923c28dddbd786b17d177bbdbc5d5fdbba406d770ab3ad2"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-12/latest.json",
+        "bytes": 792,
+        "object": "objects/ed/ed0e40254e6408aa51e0725a201cf4d5b7f2d0757d8d796a8812188cc6593ecd.json",
+        "sha256": "ed0e40254e6408aa51e0725a201cf4d5b7f2d0757d8d796a8812188cc6593ecd"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-15/latest.json",
+        "bytes": 792,
+        "object": "objects/e0/e04429ba18ace7c99c923ee03022a51854c7dc85bfbe272f835d6e2ae2ae7434.json",
+        "sha256": "e04429ba18ace7c99c923ee03022a51854c7dc85bfbe272f835d6e2ae2ae7434"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-16/latest.json",
+        "bytes": 792,
+        "object": "objects/81/812dd21836234d127b618a56e613761e0f7087f19c1929d59865c4f1be2359b7.json",
+        "sha256": "812dd21836234d127b618a56e613761e0f7087f19c1929d59865c4f1be2359b7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-17/latest.json",
+        "bytes": 792,
+        "object": "objects/be/beea0594c066c36a19481a2dda63329ac1eee5901e57ef813fc62c8220d1735c.json",
+        "sha256": "beea0594c066c36a19481a2dda63329ac1eee5901e57ef813fc62c8220d1735c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-18/latest.json",
+        "bytes": 792,
+        "object": "objects/ee/eeb8f49c5ac8921882dc1b4d1a5a10d9eac2124b0edebe9c1c5875cc44650694.json",
+        "sha256": "eeb8f49c5ac8921882dc1b4d1a5a10d9eac2124b0edebe9c1c5875cc44650694"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-19/latest.json",
+        "bytes": 792,
+        "object": "objects/37/3747adbb8846d32b0c652fc4dbdf453ba1ff41261dd93025e9ee19e8c91e01cf.json",
+        "sha256": "3747adbb8846d32b0c652fc4dbdf453ba1ff41261dd93025e9ee19e8c91e01cf"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-22/latest.json",
+        "bytes": 792,
+        "object": "objects/4a/4a01ba7b023dd729ba76085bedef73969ef1e5492675f1e16ecc11009556478b.json",
+        "sha256": "4a01ba7b023dd729ba76085bedef73969ef1e5492675f1e16ecc11009556478b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-23/latest.json",
+        "bytes": 792,
+        "object": "objects/76/7673404bb23273c3efd2952c5a7e1039392c1175359e61e179cacfcae81b3b62.json",
+        "sha256": "7673404bb23273c3efd2952c5a7e1039392c1175359e61e179cacfcae81b3b62"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-24/latest.json",
+        "bytes": 792,
+        "object": "objects/50/50f9f3867ff6aba129460a4e22bf3dceac60b3ce64c2dafac03e3c09ed3f0c8a.json",
+        "sha256": "50f9f3867ff6aba129460a4e22bf3dceac60b3ce64c2dafac03e3c09ed3f0c8a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-25/latest.json",
+        "bytes": 792,
+        "object": "objects/e0/e04a72a2ed9e2208c0bee780157c529dd53de1793c1e0752e456c34829529f1d.json",
+        "sha256": "e04a72a2ed9e2208c0bee780157c529dd53de1793c1e0752e456c34829529f1d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-26/latest.json",
+        "bytes": 792,
+        "object": "objects/4c/4c24d86be662951a0c3294eeee28bb2e582ef18be8967a2fe5daf7b6f438fba3.json",
+        "sha256": "4c24d86be662951a0c3294eeee28bb2e582ef18be8967a2fe5daf7b6f438fba3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-29/latest.json",
+        "bytes": 792,
+        "object": "objects/0e/0e7571b18eda93dd57e0213f390f84b1239e2881309849d7c1b82fbba70d33e0.json",
+        "sha256": "0e7571b18eda93dd57e0213f390f84b1239e2881309849d7c1b82fbba70d33e0"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2025-12-30/latest.json",
+        "bytes": 792,
+        "object": "objects/e5/e55af4554084349bb79d766ae0e6d93d152caa434d100854bccc9eaddb68e140.json",
+        "sha256": "e55af4554084349bb79d766ae0e6d93d152caa434d100854bccc9eaddb68e140"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-05/latest.json",
+        "bytes": 792,
+        "object": "objects/c9/c99225fb814f39774abdcabc805e605c85e4010b532da4323f3e3345e4dc6fab.json",
+        "sha256": "c99225fb814f39774abdcabc805e605c85e4010b532da4323f3e3345e4dc6fab"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-06/latest.json",
+        "bytes": 792,
+        "object": "objects/0b/0b225a76722411acc1af90cfc34470b11197678ff1477eb9b5ecd22d7e0c5ecd.json",
+        "sha256": "0b225a76722411acc1af90cfc34470b11197678ff1477eb9b5ecd22d7e0c5ecd"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-07/latest.json",
+        "bytes": 792,
+        "object": "objects/94/941a6ce41de4f7ea20c982a9fe9101e1ee83b75e6125d29aa8281a393461aaab.json",
+        "sha256": "941a6ce41de4f7ea20c982a9fe9101e1ee83b75e6125d29aa8281a393461aaab"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-08/latest.json",
+        "bytes": 792,
+        "object": "objects/d7/d716c8a00b251f1eece86367ae133ef356d9561dc90b9a62e591a36a9d8ca8fc.json",
+        "sha256": "d716c8a00b251f1eece86367ae133ef356d9561dc90b9a62e591a36a9d8ca8fc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-09/latest.json",
+        "bytes": 792,
+        "object": "objects/92/92e9cbce01b8c41c7b40207793be0bd1e624d28f435656a0d9c7175f1459f5de.json",
+        "sha256": "92e9cbce01b8c41c7b40207793be0bd1e624d28f435656a0d9c7175f1459f5de"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-13/latest.json",
+        "bytes": 792,
+        "object": "objects/5f/5f606c3cf4a2890388094de9ff0fdcd83aba8c154f073697dac55095ae024347.json",
+        "sha256": "5f606c3cf4a2890388094de9ff0fdcd83aba8c154f073697dac55095ae024347"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-14/latest.json",
+        "bytes": 792,
+        "object": "objects/f6/f6799b16c0c8827c28011a94d51ed1d75ede666cd93ce62b2e3cef66c612e413.json",
+        "sha256": "f6799b16c0c8827c28011a94d51ed1d75ede666cd93ce62b2e3cef66c612e413"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-15/latest.json",
+        "bytes": 792,
+        "object": "objects/d7/d76c83ae5d4c7e944498604f25ebb5efd7035a85105e8a0e802911afe4973735.json",
+        "sha256": "d76c83ae5d4c7e944498604f25ebb5efd7035a85105e8a0e802911afe4973735"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-16/latest.json",
+        "bytes": 792,
+        "object": "objects/e4/e41d0a6f9fd4a6cc325b01c55654b2a503b07d4240909248075309fc0f9a1c80.json",
+        "sha256": "e41d0a6f9fd4a6cc325b01c55654b2a503b07d4240909248075309fc0f9a1c80"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-19/latest.json",
+        "bytes": 792,
+        "object": "objects/95/956430f39e54ccf5ab42eacf743ffe7eac32d91c963be220c32927d40f804c0a.json",
+        "sha256": "956430f39e54ccf5ab42eacf743ffe7eac32d91c963be220c32927d40f804c0a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-20/latest.json",
+        "bytes": 792,
+        "object": "objects/dd/dd27ecad66869a956dfa0774c5eb1795ce6a1fd06067b1129ae63857ed4e7a80.json",
+        "sha256": "dd27ecad66869a956dfa0774c5eb1795ce6a1fd06067b1129ae63857ed4e7a80"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-21/latest.json",
+        "bytes": 792,
+        "object": "objects/4b/4be5795b8e86263fdb5c18a52471c8b0f42daf6ab3ef607ea17f87dce863079b.json",
+        "sha256": "4be5795b8e86263fdb5c18a52471c8b0f42daf6ab3ef607ea17f87dce863079b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-22/latest.json",
+        "bytes": 792,
+        "object": "objects/42/424b077c351abaad494ba69404d8dc888eeb4b73defef7615e009085f8e0b026.json",
+        "sha256": "424b077c351abaad494ba69404d8dc888eeb4b73defef7615e009085f8e0b026"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-23/latest.json",
+        "bytes": 792,
+        "object": "objects/b4/b411624e60327e0c63b17ad0132b4ac44e633a0833a2c5d0af1c572de6d6d218.json",
+        "sha256": "b411624e60327e0c63b17ad0132b4ac44e633a0833a2c5d0af1c572de6d6d218"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-26/latest.json",
+        "bytes": 792,
+        "object": "objects/a5/a5ced3c8bc84e66787d0237251031133fe3ac7dbf1971e70a6199fac005b3b82.json",
+        "sha256": "a5ced3c8bc84e66787d0237251031133fe3ac7dbf1971e70a6199fac005b3b82"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-27/latest.json",
+        "bytes": 792,
+        "object": "objects/49/49090b0dc7212a09e255a6927d8eeb9d9fa592460b683df8fc08df22022782ab.json",
+        "sha256": "49090b0dc7212a09e255a6927d8eeb9d9fa592460b683df8fc08df22022782ab"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-28/latest.json",
+        "bytes": 792,
+        "object": "objects/40/4099b54169c7b4fdd52eca236ca361292461493c142caec4de6e23ed8c1b1eb3.json",
+        "sha256": "4099b54169c7b4fdd52eca236ca361292461493c142caec4de6e23ed8c1b1eb3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-29/latest.json",
+        "bytes": 792,
+        "object": "objects/87/87b73b4dc18adc65eaebcbd6f2bf36a6e6555c7e451a2a283570e55f7a67db02.json",
+        "sha256": "87b73b4dc18adc65eaebcbd6f2bf36a6e6555c7e451a2a283570e55f7a67db02"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-01-30/latest.json",
+        "bytes": 792,
+        "object": "objects/cb/cb79d85b96d976f61676dd20eb73cf4498e7e356e2473ac35fd026a81b7cf25a.json",
+        "sha256": "cb79d85b96d976f61676dd20eb73cf4498e7e356e2473ac35fd026a81b7cf25a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-02/latest.json",
+        "bytes": 792,
+        "object": "objects/15/15b2c8ddc665494e8c4e2d6741f5f9cd6f52f9f38ae8e506ee5b0354d53e3c4d.json",
+        "sha256": "15b2c8ddc665494e8c4e2d6741f5f9cd6f52f9f38ae8e506ee5b0354d53e3c4d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-03/latest.json",
+        "bytes": 792,
+        "object": "objects/8a/8a52794be3537a891f778a6e82eb8dcbf246d80dc7a5b89b9dab20f03224081f.json",
+        "sha256": "8a52794be3537a891f778a6e82eb8dcbf246d80dc7a5b89b9dab20f03224081f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-04/latest.json",
+        "bytes": 792,
+        "object": "objects/37/37db0eb646e3aed5cc270b72a380542e58c8b583b616f1a8fd4a10039f4b0e14.json",
+        "sha256": "37db0eb646e3aed5cc270b72a380542e58c8b583b616f1a8fd4a10039f4b0e14"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-05/latest.json",
+        "bytes": 792,
+        "object": "objects/1d/1d3c19a9329c932406091ca0d739ef69d6ac8ec4e4aa6fd6c0b9099b96ca65aa.json",
+        "sha256": "1d3c19a9329c932406091ca0d739ef69d6ac8ec4e4aa6fd6c0b9099b96ca65aa"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-06/latest.json",
+        "bytes": 792,
+        "object": "objects/75/750e4132d0e5f4de4181a6113dcc07981b7c3655038d809b0a1782ee724acd68.json",
+        "sha256": "750e4132d0e5f4de4181a6113dcc07981b7c3655038d809b0a1782ee724acd68"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-09/latest.json",
+        "bytes": 792,
+        "object": "objects/ad/adbda84dafe74466585e1596246a5695cacc17df4f83ad8f4deb8f35d231692a.json",
+        "sha256": "adbda84dafe74466585e1596246a5695cacc17df4f83ad8f4deb8f35d231692a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-10/latest.json",
+        "bytes": 792,
+        "object": "objects/e9/e952cfebc7f80740bb980be8d089af4a9d1e16992a9cf45b9918a5f08cb8e5c8.json",
+        "sha256": "e952cfebc7f80740bb980be8d089af4a9d1e16992a9cf45b9918a5f08cb8e5c8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-12/latest.json",
+        "bytes": 792,
+        "object": "objects/fa/fab94545900645051ea4ee62a9268088a604ce5f52201b7d56580aa65d2323a4.json",
+        "sha256": "fab94545900645051ea4ee62a9268088a604ce5f52201b7d56580aa65d2323a4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-13/latest.json",
+        "bytes": 792,
+        "object": "objects/32/32a393552f4f343f1a4b8e182ad16ac66e90738f6fb3dbff0b455797d4376111.json",
+        "sha256": "32a393552f4f343f1a4b8e182ad16ac66e90738f6fb3dbff0b455797d4376111"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-16/latest.json",
+        "bytes": 792,
+        "object": "objects/16/1603e191eea0f29e3ceda95cd2199d3341c038fcaa2b385d324d98884a65a3a4.json",
+        "sha256": "1603e191eea0f29e3ceda95cd2199d3341c038fcaa2b385d324d98884a65a3a4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-17/latest.json",
+        "bytes": 792,
+        "object": "objects/a8/a8ccb8a40c7ef216ce724a2f4d56fcd5fd0820d59893beca6c5140c0f10610be.json",
+        "sha256": "a8ccb8a40c7ef216ce724a2f4d56fcd5fd0820d59893beca6c5140c0f10610be"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-18/latest.json",
+        "bytes": 792,
+        "object": "objects/7e/7edd780f1bd8f11acddf19e67b0154f742c543cb8276c30923a61b166138acd6.json",
+        "sha256": "7edd780f1bd8f11acddf19e67b0154f742c543cb8276c30923a61b166138acd6"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-19/latest.json",
+        "bytes": 792,
+        "object": "objects/6e/6efe2a628a914c66512e55afba0e87e3abe91f8497b33346a5ed365850fc0b55.json",
+        "sha256": "6efe2a628a914c66512e55afba0e87e3abe91f8497b33346a5ed365850fc0b55"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-20/latest.json",
+        "bytes": 792,
+        "object": "objects/4f/4f1109323d1fdbd09a4538dacf9c8b715953f34c5f524d9b9e704853049c10aa.json",
+        "sha256": "4f1109323d1fdbd09a4538dacf9c8b715953f34c5f524d9b9e704853049c10aa"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-24/latest.json",
+        "bytes": 792,
+        "object": "objects/dd/dd58716b25ec6f99e263ebb7e21b96eb9a863d2775b33149f8ced3847ce8c609.json",
+        "sha256": "dd58716b25ec6f99e263ebb7e21b96eb9a863d2775b33149f8ced3847ce8c609"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-25/latest.json",
+        "bytes": 792,
+        "object": "objects/77/778ee61feb31dfbabe1888f282e86089375cfc36f5bb4fd49a91993e28964832.json",
+        "sha256": "778ee61feb31dfbabe1888f282e86089375cfc36f5bb4fd49a91993e28964832"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-26/latest.json",
+        "bytes": 792,
+        "object": "objects/fd/fd66fbf14ada55a416df27537c22f29e72920a7077d618a448e54ba920cefc54.json",
+        "sha256": "fd66fbf14ada55a416df27537c22f29e72920a7077d618a448e54ba920cefc54"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-02-27/latest.json",
+        "bytes": 792,
+        "object": "objects/4c/4c46287d58d60a52da3e4ba74ae26657155b68178314af761c0dcc47767ab4ae.json",
+        "sha256": "4c46287d58d60a52da3e4ba74ae26657155b68178314af761c0dcc47767ab4ae"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-02/latest.json",
+        "bytes": 792,
+        "object": "objects/4d/4de9f5c3f63602586d0ae158899e9ecbcbd98e517cfd6d8c0af6270626576c58.json",
+        "sha256": "4de9f5c3f63602586d0ae158899e9ecbcbd98e517cfd6d8c0af6270626576c58"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-03/latest.json",
+        "bytes": 792,
+        "object": "objects/1d/1d8dbfd8cf9dfd917e85b2891f411a2badf5cda556ac3f95195de4c260b67d24.json",
+        "sha256": "1d8dbfd8cf9dfd917e85b2891f411a2badf5cda556ac3f95195de4c260b67d24"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-04/latest.json",
+        "bytes": 792,
+        "object": "objects/e8/e8f0136672e8ae1c877816ace792def7eb148dc2070a5d6e3ab198490716bc6d.json",
+        "sha256": "e8f0136672e8ae1c877816ace792def7eb148dc2070a5d6e3ab198490716bc6d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-05/latest.json",
+        "bytes": 792,
+        "object": "objects/88/8840a2788dd2d4975c3b01348ee6d1c11210b538ee5c239a71d8911d64787fea.json",
+        "sha256": "8840a2788dd2d4975c3b01348ee6d1c11210b538ee5c239a71d8911d64787fea"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-06/latest.json",
+        "bytes": 792,
+        "object": "objects/4d/4d4c93c426e708925c391bd360b15397b5681257e25854c23637289a3c6691c5.json",
+        "sha256": "4d4c93c426e708925c391bd360b15397b5681257e25854c23637289a3c6691c5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-09/latest.json",
+        "bytes": 792,
+        "object": "objects/c2/c2e19c29283e718673666490568ea9d80a3dae4f5ae72cc35c441d821dabb9da.json",
+        "sha256": "c2e19c29283e718673666490568ea9d80a3dae4f5ae72cc35c441d821dabb9da"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-10/latest.json",
+        "bytes": 792,
+        "object": "objects/d2/d221b85e9b6dda232677f735c76db1b5059d2304b2996fa3bfe9c52eeee8d878.json",
+        "sha256": "d221b85e9b6dda232677f735c76db1b5059d2304b2996fa3bfe9c52eeee8d878"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-11/latest.json",
+        "bytes": 792,
+        "object": "objects/eb/ebf50f960f2955b41815cd4a104141d110f7f906b0b673835636f7dc220cdd98.json",
+        "sha256": "ebf50f960f2955b41815cd4a104141d110f7f906b0b673835636f7dc220cdd98"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-12/latest.json",
+        "bytes": 792,
+        "object": "objects/5d/5dffcf8358bbbaeab5ee17c522f7a07277fd6bf4920527db4b214b064928152c.json",
+        "sha256": "5dffcf8358bbbaeab5ee17c522f7a07277fd6bf4920527db4b214b064928152c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-13/latest.json",
+        "bytes": 792,
+        "object": "objects/b4/b4c34334feccd80d1dfe958d3b1ccb44ee8d1886f20fda85ed32fb799ed53eaf.json",
+        "sha256": "b4c34334feccd80d1dfe958d3b1ccb44ee8d1886f20fda85ed32fb799ed53eaf"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-16/latest.json",
+        "bytes": 792,
+        "object": "objects/da/da368e852160f97d0484ba230e37ae856e409bce65f87acef25bb9153d938940.json",
+        "sha256": "da368e852160f97d0484ba230e37ae856e409bce65f87acef25bb9153d938940"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-17/latest.json",
+        "bytes": 792,
+        "object": "objects/41/41628a84d817e3ba744c7b6cb12a6dad9b623eb47bcc2eb81a4eeb0362b3f9dc.json",
+        "sha256": "41628a84d817e3ba744c7b6cb12a6dad9b623eb47bcc2eb81a4eeb0362b3f9dc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-18/latest.json",
+        "bytes": 792,
+        "object": "objects/97/979e8017c618aea1db5432dfac0c6fb467e9ebee4d2c26f73310fc820efe8585.json",
+        "sha256": "979e8017c618aea1db5432dfac0c6fb467e9ebee4d2c26f73310fc820efe8585"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-19/latest.json",
+        "bytes": 792,
+        "object": "objects/14/1421dadc374059993bdf2764ecb51db300b7ed7924e874834c5600c0e7610b72.json",
+        "sha256": "1421dadc374059993bdf2764ecb51db300b7ed7924e874834c5600c0e7610b72"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-23/latest.json",
+        "bytes": 792,
+        "object": "objects/d7/d765ab2fc9469f23fc27431c3fc22de8faa5822ac00254bc8d7ae601e1fa9f87.json",
+        "sha256": "d765ab2fc9469f23fc27431c3fc22de8faa5822ac00254bc8d7ae601e1fa9f87"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-24/latest.json",
+        "bytes": 792,
+        "object": "objects/3e/3e31e3cd42cc4cb6ea0c485ba8ae814573371c2df32a8e7c700da00acc031760.json",
+        "sha256": "3e31e3cd42cc4cb6ea0c485ba8ae814573371c2df32a8e7c700da00acc031760"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-25/latest.json",
+        "bytes": 792,
+        "object": "objects/50/50a380f710c4aa8ece663915149260517e2158a0039b65eebb171329f9d717fe.json",
+        "sha256": "50a380f710c4aa8ece663915149260517e2158a0039b65eebb171329f9d717fe"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-26/latest.json",
+        "bytes": 792,
+        "object": "objects/b9/b97c24b4c1d6a424421cbef54add526038f1343f019e88104c8b82d4f423f32c.json",
+        "sha256": "b97c24b4c1d6a424421cbef54add526038f1343f019e88104c8b82d4f423f32c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-27/latest.json",
+        "bytes": 792,
+        "object": "objects/a3/a3170c13308809d1d83e36f51fa8fb112d49f9f0bc681fc88f56173378c99515.json",
+        "sha256": "a3170c13308809d1d83e36f51fa8fb112d49f9f0bc681fc88f56173378c99515"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-30/latest.json",
+        "bytes": 792,
+        "object": "objects/41/4114a0254e761641c31b5279990086dd90325c0cda838827746494f61bd952e5.json",
+        "sha256": "4114a0254e761641c31b5279990086dd90325c0cda838827746494f61bd952e5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-03-31/latest.json",
+        "bytes": 792,
+        "object": "objects/be/be428a5583ac3c6cc60c9f6d4ac78755eeca863e1c53f7d9d68c03be3cfe0dc4.json",
+        "sha256": "be428a5583ac3c6cc60c9f6d4ac78755eeca863e1c53f7d9d68c03be3cfe0dc4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-01/latest.json",
+        "bytes": 792,
+        "object": "objects/17/1770bcc962d77fbb652f8f8f5790ef96740ac6c62ea202cfda7a6ccb271cff79.json",
+        "sha256": "1770bcc962d77fbb652f8f8f5790ef96740ac6c62ea202cfda7a6ccb271cff79"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-02/latest.json",
+        "bytes": 792,
+        "object": "objects/df/df4115c955d9f20e08c8a8e3b4399c4ea0b43aadd80785a98e73ce4417667a14.json",
+        "sha256": "df4115c955d9f20e08c8a8e3b4399c4ea0b43aadd80785a98e73ce4417667a14"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-03/latest.json",
+        "bytes": 792,
+        "object": "objects/98/9867ac6a2ed645b0e709dda95ee119cf449fb3940b81ba46342fbcc4589a48c4.json",
+        "sha256": "9867ac6a2ed645b0e709dda95ee119cf449fb3940b81ba46342fbcc4589a48c4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-06/latest.json",
+        "bytes": 792,
+        "object": "objects/64/64fb57e35b9b704fcce99eea88d95532a2511562a19262cacdae035d93aa2f45.json",
+        "sha256": "64fb57e35b9b704fcce99eea88d95532a2511562a19262cacdae035d93aa2f45"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-07/latest.json",
+        "bytes": 792,
+        "object": "objects/1e/1ee4da6906e7026af3d0cbb32a1af7e1eb7f9ecb673b096c99844e9d2a67447f.json",
+        "sha256": "1ee4da6906e7026af3d0cbb32a1af7e1eb7f9ecb673b096c99844e9d2a67447f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-08/latest.json",
+        "bytes": 792,
+        "object": "objects/ec/ec28e359b2f5796d13c313a6ef009024f0a3850137f1bd7b9b62de8b46ccc252.json",
+        "sha256": "ec28e359b2f5796d13c313a6ef009024f0a3850137f1bd7b9b62de8b46ccc252"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-09/latest.json",
+        "bytes": 792,
+        "object": "objects/9d/9d5c0eed843dbb8679b3142a0ec83159574d2e8c77617ea6dcd159b6775846f0.json",
+        "sha256": "9d5c0eed843dbb8679b3142a0ec83159574d2e8c77617ea6dcd159b6775846f0"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-10/latest.json",
+        "bytes": 792,
+        "object": "objects/48/4867cf2701971b5a3938df0ab2f73ec6a8696d176c4cc1be790ea7f3110d4d69.json",
+        "sha256": "4867cf2701971b5a3938df0ab2f73ec6a8696d176c4cc1be790ea7f3110d4d69"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-13/latest.json",
+        "bytes": 792,
+        "object": "objects/32/32ac3903a7aa67f1c3ec8066c6ee4e879d8013762472ee2ce9cd7331b6665696.json",
+        "sha256": "32ac3903a7aa67f1c3ec8066c6ee4e879d8013762472ee2ce9cd7331b6665696"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-14/latest.json",
+        "bytes": 792,
+        "object": "objects/9a/9aa1c9de5a9745101e461e2eefacb24ab487dfb60dfeb62824e30b5ed1b32919.json",
+        "sha256": "9aa1c9de5a9745101e461e2eefacb24ab487dfb60dfeb62824e30b5ed1b32919"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-15/latest.json",
+        "bytes": 792,
+        "object": "objects/39/39f2f6f3754b33bd6a562cf467ff6d14ec2774f5291e1130ebfc5c43b1557681.json",
+        "sha256": "39f2f6f3754b33bd6a562cf467ff6d14ec2774f5291e1130ebfc5c43b1557681"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-16/latest.json",
+        "bytes": 792,
+        "object": "objects/7d/7d9cd9b66a1e321aa7b652adc099909c8f75e35e45bfcac60e504178c65d19bc.json",
+        "sha256": "7d9cd9b66a1e321aa7b652adc099909c8f75e35e45bfcac60e504178c65d19bc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-17/latest.json",
+        "bytes": 792,
+        "object": "objects/51/5149aedcd68046c1916f0ac9e4a082e2b54e8c84fd9aaa4063ef77fc51ea5199.json",
+        "sha256": "5149aedcd68046c1916f0ac9e4a082e2b54e8c84fd9aaa4063ef77fc51ea5199"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-20/latest.json",
+        "bytes": 792,
+        "object": "objects/ff/ffd6320c248389ea4bd9c43ba625082326206e926dd9b24a607c97a1019d2e0d.json",
+        "sha256": "ffd6320c248389ea4bd9c43ba625082326206e926dd9b24a607c97a1019d2e0d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-21/latest.json",
+        "bytes": 792,
+        "object": "objects/86/86f7ab93738073a14bf98902f3f7e218e17aff8ccb9710663413acedcb27ca3a.json",
+        "sha256": "86f7ab93738073a14bf98902f3f7e218e17aff8ccb9710663413acedcb27ca3a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-22/latest.json",
+        "bytes": 792,
+        "object": "objects/d7/d701abef923214748f481cc8f515f701b547de800b8d6388de1d2011e6cb1ec8.json",
+        "sha256": "d701abef923214748f481cc8f515f701b547de800b8d6388de1d2011e6cb1ec8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-23/latest.json",
+        "bytes": 792,
+        "object": "objects/26/26615f142cbc9ed27a8055e57b60de89c05d13b9bc1b09710ebfc26b892b6c47.json",
+        "sha256": "26615f142cbc9ed27a8055e57b60de89c05d13b9bc1b09710ebfc26b892b6c47"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-24/latest.json",
+        "bytes": 792,
+        "object": "objects/86/860225cf132ac51e0e077c3e500d0eb6d4092c33e41a18cc7ca25fedc6f77625.json",
+        "sha256": "860225cf132ac51e0e077c3e500d0eb6d4092c33e41a18cc7ca25fedc6f77625"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-27/latest.json",
+        "bytes": 792,
+        "object": "objects/3a/3a910f63bdfea0837c4e11de9d741b95a9577288bcf7a1a252e66580d3190359.json",
+        "sha256": "3a910f63bdfea0837c4e11de9d741b95a9577288bcf7a1a252e66580d3190359"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-28/latest.json",
+        "bytes": 792,
+        "object": "objects/e7/e7001a99989cfc45038b27d63709dad9bf6ae3e79cc69dd3457ee4989ecf1a14.json",
+        "sha256": "e7001a99989cfc45038b27d63709dad9bf6ae3e79cc69dd3457ee4989ecf1a14"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-04-30/latest.json",
+        "bytes": 792,
+        "object": "objects/5d/5dc2269d56b7e3776f00438b104884f95e6e0ca1ab495a05d50d5d569db7f59d.json",
+        "sha256": "5dc2269d56b7e3776f00438b104884f95e6e0ca1ab495a05d50d5d569db7f59d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-01/latest.json",
+        "bytes": 792,
+        "object": "objects/c2/c273897d1693ad359356994fe54f36526f1a458d58fab2a97ceaccbb177cb815.json",
+        "sha256": "c273897d1693ad359356994fe54f36526f1a458d58fab2a97ceaccbb177cb815"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-07/latest.json",
+        "bytes": 792,
+        "object": "objects/ae/ae777dcf4388540424d0b3e113cf21fba5e66dfcd54dca1e92bb9aa5da3745f3.json",
+        "sha256": "ae777dcf4388540424d0b3e113cf21fba5e66dfcd54dca1e92bb9aa5da3745f3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-08/latest.json",
+        "bytes": 792,
+        "object": "objects/f4/f4e3fcd4b4100c8d4e682b874f6359fb36fb29773fe52bbe08926ea54a3511b3.json",
+        "sha256": "f4e3fcd4b4100c8d4e682b874f6359fb36fb29773fe52bbe08926ea54a3511b3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-11/latest.json",
+        "bytes": 792,
+        "object": "objects/99/996d04418b63ce43fc34a7a86eba79caaad4cbe59461435f488300c08ccf8daa.json",
+        "sha256": "996d04418b63ce43fc34a7a86eba79caaad4cbe59461435f488300c08ccf8daa"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-12/latest.json",
+        "bytes": 792,
+        "object": "objects/cd/cd82a4224aa1f59df3864939f567eeb0b17f91a2502135624d5f1ef6a162172e.json",
+        "sha256": "cd82a4224aa1f59df3864939f567eeb0b17f91a2502135624d5f1ef6a162172e"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-13/latest.json",
+        "bytes": 792,
+        "object": "objects/db/db8d399fa510c2da0437b18412be6e7b3dd96d71f573e9bbc41911e84852926f.json",
+        "sha256": "db8d399fa510c2da0437b18412be6e7b3dd96d71f573e9bbc41911e84852926f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-14/latest.json",
+        "bytes": 792,
+        "object": "objects/98/984d463a16cff7b3e4e1bcc006084d35c0acd5b39cc9c406f1cad506c65cdff9.json",
+        "sha256": "984d463a16cff7b3e4e1bcc006084d35c0acd5b39cc9c406f1cad506c65cdff9"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-15/latest.json",
+        "bytes": 792,
+        "object": "objects/15/15d1b604aaf5b3e83843eeba79ae0ff2a27fc79fbc7c61bc37dd84edf7c641f9.json",
+        "sha256": "15d1b604aaf5b3e83843eeba79ae0ff2a27fc79fbc7c61bc37dd84edf7c641f9"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-18/latest.json",
+        "bytes": 792,
+        "object": "objects/4d/4de83ba81a89e3974bbb88a2c5c461cff464fe400dfdebe17fe5356e57a66a90.json",
+        "sha256": "4de83ba81a89e3974bbb88a2c5c461cff464fe400dfdebe17fe5356e57a66a90"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-19/latest.json",
+        "bytes": 792,
+        "object": "objects/f1/f1720b18bd74ed5539bf3c13e6d37ec4533050b667cccad6746799c235d8e334.json",
+        "sha256": "f1720b18bd74ed5539bf3c13e6d37ec4533050b667cccad6746799c235d8e334"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-20/latest.json",
+        "bytes": 792,
+        "object": "objects/e7/e712cd2c493838bbba33d0e435b0cf988873e2d438c9c70cd4c66131b7e8c982.json",
+        "sha256": "e712cd2c493838bbba33d0e435b0cf988873e2d438c9c70cd4c66131b7e8c982"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-21/latest.json",
+        "bytes": 792,
+        "object": "objects/5b/5bfde4c18ebe43db27be6318c4d98bcc55e280799f347c5650b6efa5bba9efd5.json",
+        "sha256": "5bfde4c18ebe43db27be6318c4d98bcc55e280799f347c5650b6efa5bba9efd5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-22/latest.json",
+        "bytes": 792,
+        "object": "objects/4d/4d4453dc034923f20f1d4f2fa046ba89405f50d83fa6c777ea234a8d3d34a5a2.json",
+        "sha256": "4d4453dc034923f20f1d4f2fa046ba89405f50d83fa6c777ea234a8d3d34a5a2"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-25/latest.json",
+        "bytes": 792,
+        "object": "objects/e3/e3860f899b28ca74711b2ef600801b5b5247e93c2882b7b4ce73b94b41add1c4.json",
+        "sha256": "e3860f899b28ca74711b2ef600801b5b5247e93c2882b7b4ce73b94b41add1c4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-26/latest.json",
+        "bytes": 792,
+        "object": "objects/a5/a57ac5e6a64d4638dc186dd8170868872c5f0ca437cf08634e23ebad5e616e67.json",
+        "sha256": "a57ac5e6a64d4638dc186dd8170868872c5f0ca437cf08634e23ebad5e616e67"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-27/latest.json",
+        "bytes": 792,
+        "object": "objects/c3/c3a05a776c7fe0645a3a2a2b7cc24e8e5e5c14bbb0ed2618cbee9ef382c652e3.json",
+        "sha256": "c3a05a776c7fe0645a3a2a2b7cc24e8e5e5c14bbb0ed2618cbee9ef382c652e3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-28/latest.json",
+        "bytes": 792,
+        "object": "objects/a5/a5658d662ffe0d6ee3d1d789a28d7077e527f33e3efc143333fe2d2371670ffc.json",
+        "sha256": "a5658d662ffe0d6ee3d1d789a28d7077e527f33e3efc143333fe2d2371670ffc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-05-29/latest.json",
+        "bytes": 792,
+        "object": "objects/5b/5bf9267f01b75a5f386541a6fd8439fe6761e30e366d1c8d9f949ad0c0cb4046.json",
+        "sha256": "5bf9267f01b75a5f386541a6fd8439fe6761e30e366d1c8d9f949ad0c0cb4046"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-01/latest.json",
+        "bytes": 792,
+        "object": "objects/b2/b281462defd143ff857362294f6931dcc705c36bac80e918d92835d23327f940.json",
+        "sha256": "b281462defd143ff857362294f6931dcc705c36bac80e918d92835d23327f940"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-02/latest.json",
+        "bytes": 792,
+        "object": "objects/11/11953659c2ffd1a563df03e64c8b8af633808e47cfc5ecf28146342952ad3ed2.json",
+        "sha256": "11953659c2ffd1a563df03e64c8b8af633808e47cfc5ecf28146342952ad3ed2"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-03/latest.json",
+        "bytes": 792,
+        "object": "objects/c6/c65387981b3861d0a8ed63f3a60c755d2a1e99e57dd934cf2a49f0795db2026b.json",
+        "sha256": "c65387981b3861d0a8ed63f3a60c755d2a1e99e57dd934cf2a49f0795db2026b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-04/latest.json",
+        "bytes": 792,
+        "object": "objects/18/187908c039fc061efff2ffa24b41bc56cb9136f6a5d6718ab4f40de48549c103.json",
+        "sha256": "187908c039fc061efff2ffa24b41bc56cb9136f6a5d6718ab4f40de48549c103"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-05/latest.json",
+        "bytes": 792,
+        "object": "objects/c6/c672dfb6cf7925496db6a5b36529acfc07f6e8da27b6ce8db75da71d627f3444.json",
+        "sha256": "c672dfb6cf7925496db6a5b36529acfc07f6e8da27b6ce8db75da71d627f3444"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-08/latest.json",
+        "bytes": 792,
+        "object": "objects/4f/4f38524f99b47a7e8ef73b589df6ef5d94d11c200c5666e16049852a48b5413a.json",
+        "sha256": "4f38524f99b47a7e8ef73b589df6ef5d94d11c200c5666e16049852a48b5413a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-09/latest.json",
+        "bytes": 792,
+        "object": "objects/d3/d3cc97408fc8205574296a87e27ba5cf7f511c3b528ec498c0231e4db6224127.json",
+        "sha256": "d3cc97408fc8205574296a87e27ba5cf7f511c3b528ec498c0231e4db6224127"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-10/latest.json",
+        "bytes": 792,
+        "object": "objects/87/87ea29fc0136ade033b2951b51175358615f55a5e55ef5767407dae15c7dadad.json",
+        "sha256": "87ea29fc0136ade033b2951b51175358615f55a5e55ef5767407dae15c7dadad"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-11/latest.json",
+        "bytes": 792,
+        "object": "objects/28/28b1b599f3bbae83336d464fc23efe9356cffee5bb13c0e72d8872e19c1bba0d.json",
+        "sha256": "28b1b599f3bbae83336d464fc23efe9356cffee5bb13c0e72d8872e19c1bba0d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-12/latest.json",
+        "bytes": 792,
+        "object": "objects/65/65e3e43251617b6aa3c84894d12e0eb4c16cf9b65972cf19bc17237b6045b9b3.json",
+        "sha256": "65e3e43251617b6aa3c84894d12e0eb4c16cf9b65972cf19bc17237b6045b9b3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-15/latest.json",
+        "bytes": 792,
+        "object": "objects/49/49edf8897eeae62ebf71b5cc7e30948827061d64b061bce6d43c593ad036cab8.json",
+        "sha256": "49edf8897eeae62ebf71b5cc7e30948827061d64b061bce6d43c593ad036cab8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-16/latest.json",
+        "bytes": 792,
+        "object": "objects/6e/6e0f8e2324ff13c8772869ee2a69484b96d3b506893dd8cef3fbc3669b8314cf.json",
+        "sha256": "6e0f8e2324ff13c8772869ee2a69484b96d3b506893dd8cef3fbc3669b8314cf"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-17/latest.json",
+        "bytes": 792,
+        "object": "objects/eb/ebf3490314d7938b23f71c4743d013e235e5fa939527380aa96dd200eca2c0b2.json",
+        "sha256": "ebf3490314d7938b23f71c4743d013e235e5fa939527380aa96dd200eca2c0b2"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-18/latest.json",
+        "bytes": 792,
+        "object": "objects/a9/a90db0c2abeafc5a83bd50b916079f3e8ab416137bcddc7e4a5f073ac7291db7.json",
+        "sha256": "a90db0c2abeafc5a83bd50b916079f3e8ab416137bcddc7e4a5f073ac7291db7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-19/latest.json",
+        "bytes": 792,
+        "object": "objects/8a/8a75491165659cbee7f1e8faf6ea3d19b4c61554b5200ba8e6f50a3fe217481f.json",
+        "sha256": "8a75491165659cbee7f1e8faf6ea3d19b4c61554b5200ba8e6f50a3fe217481f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-22/latest.json",
+        "bytes": 792,
+        "object": "objects/67/67be7a35df7c45e3df3f7a2ed0689512a5d03b08aa0b7204e70d2aafc2aa6db0.json",
+        "sha256": "67be7a35df7c45e3df3f7a2ed0689512a5d03b08aa0b7204e70d2aafc2aa6db0"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-23/latest.json",
+        "bytes": 792,
+        "object": "objects/49/49c56bd3febc29e9ca4016809c6db2a977403d81bd9de9fbda126d9479a5bfc2.json",
+        "sha256": "49c56bd3febc29e9ca4016809c6db2a977403d81bd9de9fbda126d9479a5bfc2"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-24/latest.json",
+        "bytes": 792,
+        "object": "objects/d9/d921794fc602c907cfa97cb438ee406aeb3a4d43735373087da4dce01d08977b.json",
+        "sha256": "d921794fc602c907cfa97cb438ee406aeb3a4d43735373087da4dce01d08977b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-25/latest.json",
+        "bytes": 792,
+        "object": "objects/60/60444f664ee51bfece7f45f6cc5b75ac67203d71c328dddef14326db8f477484.json",
+        "sha256": "60444f664ee51bfece7f45f6cc5b75ac67203d71c328dddef14326db8f477484"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-26/latest.json",
+        "bytes": 792,
+        "object": "objects/75/752a98b6f0dce831d8a8597ad7cc535ab593af9f138fefe2cda8ea883b78e268.json",
+        "sha256": "752a98b6f0dce831d8a8597ad7cc535ab593af9f138fefe2cda8ea883b78e268"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-29/latest.json",
+        "bytes": 792,
+        "object": "objects/1c/1c03c48c17ee3a53d1b50902f4495f3f332597fdbc3fd01998ff921b592f5d72.json",
+        "sha256": "1c03c48c17ee3a53d1b50902f4495f3f332597fdbc3fd01998ff921b592f5d72"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-06-30/latest.json",
+        "bytes": 792,
+        "object": "objects/d7/d7756114b2b80d2a33a50db437bd253a3319b67f086733a94b6e21496aea06da.json",
+        "sha256": "d7756114b2b80d2a33a50db437bd253a3319b67f086733a94b6e21496aea06da"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-01/latest.json",
+        "bytes": 792,
+        "object": "objects/ab/abcfe9967ac9606dbbf64e171314607aa39fd4cf2d322acffe30f0663fa21204.json",
+        "sha256": "abcfe9967ac9606dbbf64e171314607aa39fd4cf2d322acffe30f0663fa21204"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-02/latest.json",
+        "bytes": 792,
+        "object": "objects/ad/ad86313d7688da298ba9da1a86e7c5429fa77bf1dcb2f6e1f096650e214f38aa.json",
+        "sha256": "ad86313d7688da298ba9da1a86e7c5429fa77bf1dcb2f6e1f096650e214f38aa"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-03/latest.json",
+        "bytes": 792,
+        "object": "objects/52/52c066200ed812981cb10a74f39e3c3c7726e74b904fcbdc5a5a231aee0b489a.json",
+        "sha256": "52c066200ed812981cb10a74f39e3c3c7726e74b904fcbdc5a5a231aee0b489a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-06/latest.json",
+        "bytes": 792,
+        "object": "objects/6c/6c3d4d02a48ec86d18149cd97c108ddfbbbb636b1866c70dff663140c972c07e.json",
+        "sha256": "6c3d4d02a48ec86d18149cd97c108ddfbbbb636b1866c70dff663140c972c07e"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-07/latest.json",
+        "bytes": 792,
+        "object": "objects/6d/6d6771d30509656c398bbe2026fc93b81d07cf41ed66e4453cfe901b53e5e735.json",
+        "sha256": "6d6771d30509656c398bbe2026fc93b81d07cf41ed66e4453cfe901b53e5e735"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-08/latest.json",
+        "bytes": 792,
+        "object": "objects/46/46738ea092d55c26530b1051b9c54157a6a6c55bc9f213b5d16dced9ae6e6870.json",
+        "sha256": "46738ea092d55c26530b1051b9c54157a6a6c55bc9f213b5d16dced9ae6e6870"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-09/latest.json",
+        "bytes": 792,
+        "object": "objects/e0/e05c89e0147021e51a61f0dafd061644288e9365e76c520420fce42bad03942e.json",
+        "sha256": "e05c89e0147021e51a61f0dafd061644288e9365e76c520420fce42bad03942e"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-10/latest.json",
+        "bytes": 792,
+        "object": "objects/a0/a0236dbcaafddb04dbb80c2c155d1260184fa6161e3e9f695f4d712a9655667b.json",
+        "sha256": "a0236dbcaafddb04dbb80c2c155d1260184fa6161e3e9f695f4d712a9655667b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-13/latest.json",
+        "bytes": 792,
+        "object": "objects/e5/e5e52de24df52e1a6347c27beef04146c132d616c014979efa8f151a0c956b77.json",
+        "sha256": "e5e52de24df52e1a6347c27beef04146c132d616c014979efa8f151a0c956b77"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-14/latest.json",
+        "bytes": 792,
+        "object": "objects/c3/c3a66c5babd454f7f17435bef04b5457e029988ffb4f6c44f7bc142cf4e492b4.json",
+        "sha256": "c3a66c5babd454f7f17435bef04b5457e029988ffb4f6c44f7bc142cf4e492b4"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-15/latest.json",
+        "bytes": 792,
+        "object": "objects/83/833b9e411a4611b92e75d2d294b9bb728e91e39e747431fcbc68917e364d6479.json",
+        "sha256": "833b9e411a4611b92e75d2d294b9bb728e91e39e747431fcbc68917e364d6479"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-16/latest.json",
+        "bytes": 792,
+        "object": "objects/c3/c3031fbb636e02d2183e5d6c87e1e447cc8b270ca895e51fcc20ba3626edd838.json",
+        "sha256": "c3031fbb636e02d2183e5d6c87e1e447cc8b270ca895e51fcc20ba3626edd838"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-17/latest.json",
+        "bytes": 792,
+        "object": "objects/f1/f163e9fd65abb34e6185063ab9d2d4b761a972f71dcbf37f60c44f31270954d7.json",
+        "sha256": "f163e9fd65abb34e6185063ab9d2d4b761a972f71dcbf37f60c44f31270954d7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-21/latest.json",
+        "bytes": 792,
+        "object": "objects/cd/cdceb1086710cd6b7c2236627fb20f7ce2d429379ed5c2c6decf82d9504a893d.json",
+        "sha256": "cdceb1086710cd6b7c2236627fb20f7ce2d429379ed5c2c6decf82d9504a893d"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-22/latest.json",
+        "bytes": 792,
+        "object": "objects/9b/9b135bb7847920b39ead4222e7a444ebca2f94fc8e94c0618c7492e0791d1fac.json",
+        "sha256": "9b135bb7847920b39ead4222e7a444ebca2f94fc8e94c0618c7492e0791d1fac"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-23/latest.json",
+        "bytes": 792,
+        "object": "objects/a0/a0d62773ae1d1c41a0db74af15efd51207e08eb293000b07890ad55049cb9d9b.json",
+        "sha256": "a0d62773ae1d1c41a0db74af15efd51207e08eb293000b07890ad55049cb9d9b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-24/latest.json",
+        "bytes": 792,
+        "object": "objects/76/763affdbb09d2c4df612cba43ea85cc1a7ec946ca28fccd3d614d5d22b122ae8.json",
+        "sha256": "763affdbb09d2c4df612cba43ea85cc1a7ec946ca28fccd3d614d5d22b122ae8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-27/latest.json",
+        "bytes": 792,
+        "object": "objects/c1/c1eea77a7d3db17f11e7ece9710ab15faebc617c8bb2d567e727417101177026.json",
+        "sha256": "c1eea77a7d3db17f11e7ece9710ab15faebc617c8bb2d567e727417101177026"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-28/latest.json",
+        "bytes": 792,
+        "object": "objects/20/209ae7ad7b3e3badc4abe333b739acc0b87fd34a52b445f662fb3a39651f03e2.json",
+        "sha256": "209ae7ad7b3e3badc4abe333b739acc0b87fd34a52b445f662fb3a39651f03e2"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-29/latest.json",
+        "bytes": 792,
+        "object": "objects/3f/3f98ce1d815d152184d757d0eaeee2ae0e1fd1a2f930bce6360111a82b02456c.json",
+        "sha256": "3f98ce1d815d152184d757d0eaeee2ae0e1fd1a2f930bce6360111a82b02456c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-30/latest.json",
+        "bytes": 792,
+        "object": "objects/99/994d1abc867b1931a15c20e0669272f082c23ef32a6099a1630ad4093f6690dc.json",
+        "sha256": "994d1abc867b1931a15c20e0669272f082c23ef32a6099a1630ad4093f6690dc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-07-31/latest.json",
+        "bytes": 792,
+        "object": "objects/a6/a62d258e8bef08dcba45aab7c76075409f2d8f73187c2cea3e660b2285c58cb1.json",
+        "sha256": "a62d258e8bef08dcba45aab7c76075409f2d8f73187c2cea3e660b2285c58cb1"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-03/latest.json",
+        "bytes": 792,
+        "object": "objects/f2/f23b398e31de5dabfb453f319e65d3087917ffeb2d0bed1d2b25d7de574a114a.json",
+        "sha256": "f23b398e31de5dabfb453f319e65d3087917ffeb2d0bed1d2b25d7de574a114a"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-04/latest.json",
+        "bytes": 792,
+        "object": "objects/96/968e7dce922d62cba810c3f9da9bffeb07c2eba492364bb2e20ef30ac7d05154.json",
+        "sha256": "968e7dce922d62cba810c3f9da9bffeb07c2eba492364bb2e20ef30ac7d05154"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-05/latest.json",
+        "bytes": 792,
+        "object": "objects/4d/4da4d5faaa523566fa9d8252ef605c1376b578f76d82505e74402ccb766cdc40.json",
+        "sha256": "4da4d5faaa523566fa9d8252ef605c1376b578f76d82505e74402ccb766cdc40"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-06/latest.json",
+        "bytes": 792,
+        "object": "objects/6a/6a323368606d36fba0e915f318704c84fd12a185528838379f0fc8ac71e30bf5.json",
+        "sha256": "6a323368606d36fba0e915f318704c84fd12a185528838379f0fc8ac71e30bf5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-07/latest.json",
+        "bytes": 792,
+        "object": "objects/73/733c07a7b520cd6510ae24dae6caf24bb279b70cbcb2b6d33a923f0e96f6b668.json",
+        "sha256": "733c07a7b520cd6510ae24dae6caf24bb279b70cbcb2b6d33a923f0e96f6b668"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-10/latest.json",
+        "bytes": 792,
+        "object": "objects/f5/f59615367c45c62efc9b4f0a22671a452692cdaedc7078326168ec315a724216.json",
+        "sha256": "f59615367c45c62efc9b4f0a22671a452692cdaedc7078326168ec315a724216"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-12/latest.json",
+        "bytes": 792,
+        "object": "objects/45/4584e306e7854e161abac373a4f5998212f6d58144798717e1ad600f9905d8b5.json",
+        "sha256": "4584e306e7854e161abac373a4f5998212f6d58144798717e1ad600f9905d8b5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-13/latest.json",
+        "bytes": 792,
+        "object": "objects/ab/aba24ecf34aeffb47a7236cd229b3cb12d4cff1fd0442d95f9d975d61e6a7278.json",
+        "sha256": "aba24ecf34aeffb47a7236cd229b3cb12d4cff1fd0442d95f9d975d61e6a7278"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-14/latest.json",
+        "bytes": 792,
+        "object": "objects/80/8084bc28aace0c80de46d17024132433ad7ab2da9fab6cc94a46a3df156f8a5b.json",
+        "sha256": "8084bc28aace0c80de46d17024132433ad7ab2da9fab6cc94a46a3df156f8a5b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-17/latest.json",
+        "bytes": 792,
+        "object": "objects/bd/bd9284cb782594008b213d9e9c147d717c708927571c7bdce3ccdc78a69dfda1.json",
+        "sha256": "bd9284cb782594008b213d9e9c147d717c708927571c7bdce3ccdc78a69dfda1"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-18/latest.json",
+        "bytes": 792,
+        "object": "objects/cc/ccfe3a97e65d7d9d3c55617af2aa69491e2d7b11a7358bb4ef15a1501f395cee.json",
+        "sha256": "ccfe3a97e65d7d9d3c55617af2aa69491e2d7b11a7358bb4ef15a1501f395cee"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-19/latest.json",
+        "bytes": 792,
+        "object": "objects/2c/2c630db3126f5715760a92d8b7bdd269ee86ff31ba981c90f3d8c09e84a938da.json",
+        "sha256": "2c630db3126f5715760a92d8b7bdd269ee86ff31ba981c90f3d8c09e84a938da"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-20/latest.json",
+        "bytes": 792,
+        "object": "objects/fa/fafbb742892b4264a7db01424dda16025f78424aa441f2eab1d7499ea724b4db.json",
+        "sha256": "fafbb742892b4264a7db01424dda16025f78424aa441f2eab1d7499ea724b4db"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-21/latest.json",
+        "bytes": 792,
+        "object": "objects/01/011494d2195bddbd19cc6aa85c00ab70f451e8432e77b8f80abd81a0e083b178.json",
+        "sha256": "011494d2195bddbd19cc6aa85c00ab70f451e8432e77b8f80abd81a0e083b178"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-24/latest.json",
+        "bytes": 792,
+        "object": "objects/55/553e4d48ca7417ca33d259398ab07d1da7885c9332b92c1681ddf24e32183c35.json",
+        "sha256": "553e4d48ca7417ca33d259398ab07d1da7885c9332b92c1681ddf24e32183c35"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-25/latest.json",
+        "bytes": 792,
+        "object": "objects/63/639fd97fee451b6acc39b6de1424133c75163e9f9e003d154cdb678577d2d1dc.json",
+        "sha256": "639fd97fee451b6acc39b6de1424133c75163e9f9e003d154cdb678577d2d1dc"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-26/latest.json",
+        "bytes": 792,
+        "object": "objects/68/687ad12ce33c40ae52a3df12c1a62b8426a330b124b63652a08eae6f3e30867f.json",
+        "sha256": "687ad12ce33c40ae52a3df12c1a62b8426a330b124b63652a08eae6f3e30867f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-27/latest.json",
+        "bytes": 792,
+        "object": "objects/41/417b65e500bd1dd2a876e74c012ec2f8960859a50e95689fdbe795cf06927334.json",
+        "sha256": "417b65e500bd1dd2a876e74c012ec2f8960859a50e95689fdbe795cf06927334"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-28/latest.json",
+        "bytes": 792,
+        "object": "objects/60/608538ce35819e452b3673c048d4017a125534f7547ccbe66d718dd2e2648e6f.json",
+        "sha256": "608538ce35819e452b3673c048d4017a125534f7547ccbe66d718dd2e2648e6f"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-08-31/latest.json",
+        "bytes": 792,
+        "object": "objects/50/502807cfd831cf584571ea73105fcfd24ecc9bcd3f9c21f0dc51943061d4018c.json",
+        "sha256": "502807cfd831cf584571ea73105fcfd24ecc9bcd3f9c21f0dc51943061d4018c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-01/latest.json",
+        "bytes": 792,
+        "object": "objects/93/93f53a4c3536bebb330c0333f9c3a638833e0da638f79b3c1568882c6906f8a0.json",
+        "sha256": "93f53a4c3536bebb330c0333f9c3a638833e0da638f79b3c1568882c6906f8a0"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-02/latest.json",
+        "bytes": 792,
+        "object": "objects/6f/6fcadb286b51c7f489e05ab931b0cfaa49ef3241dfb6a081bc969a81b32b0a0c.json",
+        "sha256": "6fcadb286b51c7f489e05ab931b0cfaa49ef3241dfb6a081bc969a81b32b0a0c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-03/latest.json",
+        "bytes": 792,
+        "object": "objects/58/58d04e7effa12de5501950ec6e41b9418dd90cb48712aa8aa100130f7d355004.json",
+        "sha256": "58d04e7effa12de5501950ec6e41b9418dd90cb48712aa8aa100130f7d355004"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-04/latest.json",
+        "bytes": 792,
+        "object": "objects/e3/e35c16c3be7876a415cab741cef98623e647b403ed3420a7d9257843cbc902eb.json",
+        "sha256": "e35c16c3be7876a415cab741cef98623e647b403ed3420a7d9257843cbc902eb"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-07/latest.json",
+        "bytes": 792,
+        "object": "objects/49/49a0e2255efe49532f849bd6044fb14320f4e416b34c177355ea5152e049a543.json",
+        "sha256": "49a0e2255efe49532f849bd6044fb14320f4e416b34c177355ea5152e049a543"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-08/latest.json",
+        "bytes": 792,
+        "object": "objects/44/441018c9245b4111d5f9db56ed018d3c49bf7c3946da9dea036391a9af38a9e3.json",
+        "sha256": "441018c9245b4111d5f9db56ed018d3c49bf7c3946da9dea036391a9af38a9e3"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-09/latest.json",
+        "bytes": 792,
+        "object": "objects/79/7960e81d5db8e083da980ec8de4f92728c3aebf8ae1675cd875ad70f67a127ee.json",
+        "sha256": "7960e81d5db8e083da980ec8de4f92728c3aebf8ae1675cd875ad70f67a127ee"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-10/latest.json",
+        "bytes": 792,
+        "object": "objects/16/1685dffc8a723c4465a11614dc07bcb22845cec4bc09bd0623b33500f9dc635b.json",
+        "sha256": "1685dffc8a723c4465a11614dc07bcb22845cec4bc09bd0623b33500f9dc635b"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-11/latest.json",
+        "bytes": 792,
+        "object": "objects/fd/fd6c1b829b00b291600d2a8a303807716f6efdccf7518357a2523a0c503b5ef7.json",
+        "sha256": "fd6c1b829b00b291600d2a8a303807716f6efdccf7518357a2523a0c503b5ef7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-14/latest.json",
+        "bytes": 792,
+        "object": "objects/d1/d1484a69d8bc258789133159ec6e4a347a4b740283c977ee3a48a59071bd9a83.json",
+        "sha256": "d1484a69d8bc258789133159ec6e4a347a4b740283c977ee3a48a59071bd9a83"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-15/latest.json",
+        "bytes": 792,
+        "object": "objects/9f/9f0737e7a267a9a868b88f6cad07c89fba71caff4d4b462e75627fd051a60642.json",
+        "sha256": "9f0737e7a267a9a868b88f6cad07c89fba71caff4d4b462e75627fd051a60642"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-16/latest.json",
+        "bytes": 792,
+        "object": "objects/53/5313c58ce6628eff70d8879722d906cfd8e21a27a6c9c6027554a7c5e7f45ec5.json",
+        "sha256": "5313c58ce6628eff70d8879722d906cfd8e21a27a6c9c6027554a7c5e7f45ec5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-17/latest.json",
+        "bytes": 792,
+        "object": "objects/f7/f763be43417b6f177c731d116b59aeb22846034b1bca107e866b14d090153b66.json",
+        "sha256": "f763be43417b6f177c731d116b59aeb22846034b1bca107e866b14d090153b66"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-18/latest.json",
+        "bytes": 792,
+        "object": "objects/46/46b51a13458c3a49b6b58910ac7292b967bf16e6ff8df00f69ea09acbba61292.json",
+        "sha256": "46b51a13458c3a49b6b58910ac7292b967bf16e6ff8df00f69ea09acbba61292"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-24/latest.json",
+        "bytes": 792,
+        "object": "objects/f7/f7a6d5758adefd06a142b0d4cc4d4dd6bdeab26e200a05af9800159e682428db.json",
+        "sha256": "f7a6d5758adefd06a142b0d4cc4d4dd6bdeab26e200a05af9800159e682428db"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-25/latest.json",
+        "bytes": 792,
+        "object": "objects/7e/7ee7a1d37341f33cd86514eec3b3ed63ee2455235ac54770a6eb0d4fc14bcf19.json",
+        "sha256": "7ee7a1d37341f33cd86514eec3b3ed63ee2455235ac54770a6eb0d4fc14bcf19"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-28/latest.json",
+        "bytes": 792,
+        "object": "objects/82/829e8f0177433703a62efc5454729f07545f666bcd597892332de69b82cc3ec7.json",
+        "sha256": "829e8f0177433703a62efc5454729f07545f666bcd597892332de69b82cc3ec7"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-29/latest.json",
+        "bytes": 792,
+        "object": "objects/75/75a77586d8e4db86a5d256de3ec93028bc5b8ea50df81d66db5396df51778ec1.json",
+        "sha256": "75a77586d8e4db86a5d256de3ec93028bc5b8ea50df81d66db5396df51778ec1"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-09-30/latest.json",
+        "bytes": 792,
+        "object": "objects/f1/f1aa0afbc71cb3aad85dde5eef7a59619e24455b866792c935f80c60459fe12c.json",
+        "sha256": "f1aa0afbc71cb3aad85dde5eef7a59619e24455b866792c935f80c60459fe12c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-01/latest.json",
+        "bytes": 792,
+        "object": "objects/3a/3ac68d5c8dce52fd7e5996c2c3cc9ccab25821fd522a6aa6a831647f3c6014fe.json",
+        "sha256": "3ac68d5c8dce52fd7e5996c2c3cc9ccab25821fd522a6aa6a831647f3c6014fe"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-02/latest.json",
+        "bytes": 792,
+        "object": "objects/d4/d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c.json",
+        "sha256": "d44d27d6b175e6c38b2424a0eb6db8212b095b295ea96abb180a96ac7b81166c"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-05/latest.json",
+        "bytes": 792,
+        "object": "objects/5e/5e776d040fdb5c3818f9aafded4205b455b562a138124779e292ff51fa3327d8.json",
+        "sha256": "5e776d040fdb5c3818f9aafded4205b455b562a138124779e292ff51fa3327d8"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-06/latest.json",
+        "bytes": 792,
+        "object": "objects/f1/f1a64ef68de28a0f3ceb2a826c59d0d8a047d08e42dc117a575c9d34c0f54234.json",
+        "sha256": "f1a64ef68de28a0f3ceb2a826c59d0d8a047d08e42dc117a575c9d34c0f54234"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-07/latest.json",
+        "bytes": 792,
+        "object": "objects/d0/d03a2211853013d29ade5d499b02eab243186dfec6ffe28262676648a46566d5.json",
+        "sha256": "d03a2211853013d29ade5d499b02eab243186dfec6ffe28262676648a46566d5"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-08/latest.json",
+        "bytes": 792,
+        "object": "objects/b1/b103befb624873542d3bb96e17462165a5709d4216d36fe55a42b2a1350113ba.json",
+        "sha256": "b103befb624873542d3bb96e17462165a5709d4216d36fe55a42b2a1350113ba"
+      },
+      {
+        "path": "jquants/datasets/equities_daily/2026-10-09/latest.json",
+        "bytes": 792,
+        "object": "objects/8c/8c8f072d866eb5ef9cb3621790534f5a90b79827cf196c114055e6e3690244c7.json",
+        "sha256": "8c8f072d866eb5ef9cb3621790534f5a90b79827cf196c114055e6e3690244c7"
+      }
+    ],
+    "financial_summary": [
+      {
+        "path": "jquants/datasets/financial_summary/2026-10-02/latest.json",
+        "bytes": 768,
+        "object": "objects/fc/fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59.json",
+        "sha256": "fc45c686a667a58e12a65f33377dd32e583d99b7b387450ac06012844b0d0b59"
+      },
+      {
+        "path": "jquants/datasets/financial_summary/2026-10-05/latest.json",
+        "bytes": 768,
+        "object": "objects/fc/fc6690a522927066ba20796a3b4e031b53aff9ed43127d9d3246a1b5f44d7068.json",
+        "sha256": "fc6690a522927066ba20796a3b4e031b53aff9ed43127d9d3246a1b5f44d7068"
+      },
+      {
+        "path": "jquants/datasets/financial_summary/2026-10-06/latest.json",
+        "bytes": 768,
+        "object": "objects/8f/8fb05abce667f4efd9261b411a3128b281d43b101987f22814ba3765aa868f36.json",
+        "sha256": "8fb05abce667f4efd9261b411a3128b281d43b101987f22814ba3765aa868f36"
+      },
+      {
+        "path": "jquants/datasets/financial_summary/2026-10-07/latest.json",
+        "bytes": 768,
+        "object": "objects/be/be75059c7c972798b32582cb7f362769e5e012ebf661bddb2b347a697469c3d2.json",
+        "sha256": "be75059c7c972798b32582cb7f362769e5e012ebf661bddb2b347a697469c3d2"
+      },
+      {
+        "path": "jquants/datasets/financial_summary/2026-10-08/latest.json",
+        "bytes": 768,
+        "object": "objects/5e/5e95989136674e48efc73f9374b8a7fc589cc60eda789d54e41e12f7c25ce8e2.json",
+        "sha256": "5e95989136674e48efc73f9374b8a7fc589cc60eda789d54e41e12f7c25ce8e2"
+      },
+      {
+        "path": "jquants/datasets/financial_summary/2026-10-09/latest.json",
+        "bytes": 769,
+        "object": "objects/38/389d9d0d284663bd5105c46abcc62c71c343ede3631189b0789f59b5da8a7c27.json",
+        "sha256": "389d9d0d284663bd5105c46abcc62c71c343ede3631189b0789f59b5da8a7c27"
+      }
+    ],
+    "trading_calendar": [
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-02/latest.json",
+        "bytes": 784,
+        "object": "objects/ed/edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f.json",
+        "sha256": "edd3785f62d0c73e1183a4ce9c3324b6063391bb5bc954f60bb617d7686f590f"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-03/latest.json",
+        "bytes": 784,
+        "object": "objects/aa/aa720020290989766997061b035099b957ac3ae96dd30220f22ffc16e26a1c14.json",
+        "sha256": "aa720020290989766997061b035099b957ac3ae96dd30220f22ffc16e26a1c14"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-04/latest.json",
+        "bytes": 784,
+        "object": "objects/58/58a04b2ae0510d6fb40fd7169fe9dbbbc861dec2287cecfb0c5b0dbc51cedee5.json",
+        "sha256": "58a04b2ae0510d6fb40fd7169fe9dbbbc861dec2287cecfb0c5b0dbc51cedee5"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-05/latest.json",
+        "bytes": 784,
+        "object": "objects/3d/3d83838e32b2efd1ed28f374ad606061e200ebaf42ba0bb3b9bf297cd0a81444.json",
+        "sha256": "3d83838e32b2efd1ed28f374ad606061e200ebaf42ba0bb3b9bf297cd0a81444"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-06/latest.json",
+        "bytes": 784,
+        "object": "objects/d7/d763cd8a2ea8e2bc2fa6d70b1b76da05ec3401b599c7843075bcf1f8c8f6e7ae.json",
+        "sha256": "d763cd8a2ea8e2bc2fa6d70b1b76da05ec3401b599c7843075bcf1f8c8f6e7ae"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-07/latest.json",
+        "bytes": 784,
+        "object": "objects/10/1097ced340ab1a6bf27d6883e0e8bc4d646acb05f66a293c94c1676b935af297.json",
+        "sha256": "1097ced340ab1a6bf27d6883e0e8bc4d646acb05f66a293c94c1676b935af297"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-08/latest.json",
+        "bytes": 784,
+        "object": "objects/84/840329efb56952f7feee523037dbfe4fa02a723c87d4fc988bc73072f8860d55.json",
+        "sha256": "840329efb56952f7feee523037dbfe4fa02a723c87d4fc988bc73072f8860d55"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-09/latest.json",
+        "bytes": 784,
+        "object": "objects/cf/cff1617153f1faa3f1b4194bf0a01a7929833005ec926ffcae5a2648ccb0a70b.json",
+        "sha256": "cff1617153f1faa3f1b4194bf0a01a7929833005ec926ffcae5a2648ccb0a70b"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-10/latest.json",
+        "bytes": 784,
+        "object": "objects/f3/f3c7b9323d6ecf0f1f5d579d8448d4c4a5df5def663127fd44972470496446d2.json",
+        "sha256": "f3c7b9323d6ecf0f1f5d579d8448d4c4a5df5def663127fd44972470496446d2"
+      },
+      {
+        "path": "jquants/datasets/trading_calendar/2026-10-11/latest.json",
+        "bytes": 784,
+        "object": "objects/59/59c24e015e37a60b5308fb73fa8e149715bd956bc388dc1f4fa5a93f9c86a9ec.json",
+        "sha256": "59c24e015e37a60b5308fb73fa8e149715bd956bc388dc1f4fa5a93f9c86a9ec"
+      }
+    ],
+    "topix_daily": [
+      {
+        "path": "jquants/datasets/topix_daily/2026-10-02/latest.json",
+        "bytes": 787,
+        "object": "objects/78/780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034.json",
+        "sha256": "780393d2991c31d095fc36b1a659ee76806a2ed75ee24c18e503f88feb065034"
+      },
+      {
+        "path": "jquants/datasets/topix_daily/2026-10-05/latest.json",
+        "bytes": 787,
+        "object": "objects/33/333e77fc74ed7e479c8ed567f74ac15e11a68c3f8965b319893d2cae9769f4d5.json",
+        "sha256": "333e77fc74ed7e479c8ed567f74ac15e11a68c3f8965b319893d2cae9769f4d5"
+      },
+      {
+        "path": "jquants/datasets/topix_daily/2026-10-06/latest.json",
+        "bytes": 787,
+        "object": "objects/9d/9d4a7678356b73ca9d063bff6d283676c967ca3d4aface7a12a41288e764347b.json",
+        "sha256": "9d4a7678356b73ca9d063bff6d283676c967ca3d4aface7a12a41288e764347b"
+      },
+      {
+        "path": "jquants/datasets/topix_daily/2026-10-07/latest.json",
+        "bytes": 787,
+        "object": "objects/7d/7d85519eabb30e6034df599698b8ef01241b611d3273b70440687dd9cf19cdbd.json",
+        "sha256": "7d85519eabb30e6034df599698b8ef01241b611d3273b70440687dd9cf19cdbd"
+      },
+      {
+        "path": "jquants/datasets/topix_daily/2026-10-08/latest.json",
+        "bytes": 787,
+        "object": "objects/05/053e1297985b136937e9f1cedff8cdff14591b79bc1851055e08d92cf68cbd87.json",
+        "sha256": "053e1297985b136937e9f1cedff8cdff14591b79bc1851055e08d92cf68cbd87"
+      },
+      {
+        "path": "jquants/datasets/topix_daily/2026-10-09/latest.json",
+        "bytes": 787,
+        "object": "objects/92/927892ef57955a1de73e848775ff7f6759528ef49eb2148bbafdb2a3c5981f00.json",
+        "sha256": "927892ef57955a1de73e848775ff7f6759528ef49eb2148bbafdb2a3c5981f00"
+      }
+    ],
+    "indices_daily": [
+      {
+        "path": "jquants/datasets/indices_daily/2026-10-06/latest.json",
+        "bytes": 769,
+        "object": "objects/e5/e5735c80623259c26ec027a140ee97335b230246a3825c8b3d92ccdca94cd47d.json",
+        "sha256": "e5735c80623259c26ec027a140ee97335b230246a3825c8b3d92ccdca94cd47d"
+      },
+      {
+        "path": "jquants/datasets/indices_daily/2026-10-07/latest.json",
+        "bytes": 769,
+        "object": "objects/39/399f906db2c36196129e9d677615fd04170f6718cf5e503c6a4d0ae22dc1476d.json",
+        "sha256": "399f906db2c36196129e9d677615fd04170f6718cf5e503c6a4d0ae22dc1476d"
+      },
+      {
+        "path": "jquants/datasets/indices_daily/2026-10-08/latest.json",
+        "bytes": 769,
+        "object": "objects/d0/d0b8fcb2693338325485c7ba874abc17762602a760989dfcf8b2e2bff690f7bb.json",
+        "sha256": "d0b8fcb2693338325485c7ba874abc17762602a760989dfcf8b2e2bff690f7bb"
+      },
+      {
+        "path": "jquants/datasets/indices_daily/2026-10-09/latest.json",
+        "bytes": 769,
+        "object": "objects/e8/e8c0cfb9241bca651a593681cb825715078432ae242eadbcfb85cff936571f35.json",
+        "sha256": "e8c0cfb9241bca651a593681cb825715078432ae242eadbcfb85cff936571f35"
+      }
+    ]
+  },
+  "primary_sources": {
+    "schema_version": "1.0",
+    "scope": "CONFIGURED_ACTIVE_TARGETS_AND_MACRO_SOURCES",
+    "cutoff_at_jst": "2026-10-12T02:30:01+09:00",
+    "retrieved_at_jst": "2026-10-12T02:32:30+09:00",
+    "config_sha256": "90328b7dd4817ba67997819cbad1136ea6f58e8256d16b2bda0ff9a85613f858",
+    "source_config_sha256": "a4bbf417e1190f2585e9c8e053f0b5c9ebfc82845f80cb6dd40ea198555fbee0",
+    "sources": [
+      {
+        "code": "4052",
+        "title": "Official issuer IR announcement feed",
+        "url": "https://ssl4.eir-parts.net/V4Public/eir/4052/ja/announcement/announcement_0.js",
+        "retrieved_at_jst": "2026-10-12T02:33:23+09:00",
+        "item_count": 204,
+        "path": "data/market/primary-sources/5fa04b4213c01d7c899bc95709935287f0c9d2056a32e8c8b5017cc8cbf6c32e.js",
+        "sha256": "5fa04b4213c01d7c899bc95709935287f0c9d2056a32e8c8b5017cc8cbf6c32e",
+        "bytes": 151825
+      },
+      {
+        "code": "4052",
+        "source_id": "company-4052-press_2888886",
+        "title": "コーポレート・ガバナンスに関する報告書 2026/09/30",
+        "url": "https://ssl4.eir-parts.net/doc/4052/tdnet/2888886/00.pdf",
+        "published_at_jst": "2026-09-30T10:04:00+09:00",
+        "publication_precision": "SECOND",
+        "retrieved_at_jst": "2026-10-12T02:34:15+09:00",
+        "review_status": "COLLECTED_NOT_REVIEWED",
+        "original_historical_vintage_verified": false,
+        "path": "data/market/primary-sources/56c6bd63abbf464001d52f3ec812fb04d2947e7fa124ac3a2f77c843d40028f5.pdf",
+        "sha256": "56c6bd63abbf464001d52f3ec812fb04d2947e7fa124ac3a2f77c843d40028f5",
+        "bytes": 90993
+      },
+      {
+        "code": "4052",
+        "source_id": "company-4052-ir_material_286494",
+        "title": "第21回定時株主総会決議ご通知",
+        "url": "https://ssl4.eir-parts.net/doc/4052/ir_material/286494/00.pdf",
+        "published_at_jst": "2026-09-29T11:51:00+09:00",
+        "publication_precision": "SECOND",
+        "retrieved_at_jst": "2026-10-12T02:35:07+09:00",
+        "review_status": "COLLECTED_NOT_REVIEWED",
+        "original_historical_vintage_verified": false,
+        "path": "data/market/primary-sources/38290015dc6b030d50726dc41747050603d87baac7ccebae5171cc3865b26aa0.pdf",
+        "sha256": "38290015dc6b030d50726dc41747050603d87baac7ccebae5171cc3865b26aa0",
+        "bytes": 58204
+      },
+      {
+        "code": "4052",
+        "source_id": "company-4052-yuho_3016416",
+        "title": "2026年6月期 有価証券報告書",
+        "url": "https://ssl4.eir-parts.net/doc/4052/yuho_pdf/S100Z1RU/00.pdf",
+        "published_at_jst": "2026-09-28T23:59:59+09:00",
+        "publication_precision": "DATE_ONLY",
+        "retrieved_at_jst": "2026-10-12T02:35:56+09:00",
+        "review_status": "COLLECTED_NOT_REVIEWED",
+        "original_historical_vintage_verified": false,
+        "path": "data/market/primary-sources/99979de24d62737da6ec93897f1a19a80b31bb36e982479c030d2fded13db569.pdf",
+        "sha256": "99979de24d62737da6ec93897f1a19a80b31bb36e982479c030d2fded13db569",
+        "bytes": 511938
+      },
+      {
+        "code": "4052",
+        "source_id": "company-4052-press_2886384",
+        "title": "事業計画及び成長可能性に関する事項",
+        "url": "https://ssl4.eir-parts.net/doc/4052/tdnet/2886384/00.pdf",
+        "published_at_jst": "2026-09-18T15:30:00+09:00",
+        "publication_precision": "SECOND",
+        "retrieved_at_jst": "2026-10-12T02:36:50+09:00",
+        "review_status": "COLLECTED_NOT_REVIEWED",
+        "original_historical_vintage_verified": false,
+        "path": "data/market/primary-sources/1b6131810973ebb215790c6289d0525d6cc71976bd9a1a4935a471fec8641dd8.pdf",
+        "sha256": "1b6131810973ebb215790c6289d0525d6cc71976bd9a1a4935a471fec8641dd8",
+        "bytes": 2964051
+      },
+      {
+        "series": "nikkei_vi",
+        "title": "Nikkei Stock Average Volatility Index daily CSV",
+        "url": "https://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_en.csv",
+        "retrieved_at_jst": "2026-10-12T02:37:39+09:00",
+        "review_status": "COLLECTED_NOT_REVIEWED",
+        "original_historical_vintage_verified": false,
+        "path": "data/market/primary-sources/28dba099e936b6325e71ae9908c2cee50ee399a384eb481476e0e0c752e1ddb6.csv",
+        "sha256": "28dba099e936b6325e71ae9908c2cee50ee399a384eb481476e0e0c752e1ddb6",
+        "bytes": 42582
+      },
+      {
+        "series": "leading_ci_publication_index",
+        "title": "Cabinet Office leading CI publication index",
+        "url": "https://www.esri.cao.go.jp/jp/stat/di/di.html",
+        "retrieved_at_jst": "2026-10-12T02:38:29+09:00",
+        "review_status": "COLLECTED_NOT_REVIEWED",
+        "original_historical_vintage_verified": false,
+        "path": "data/market/primary-sources/4538c1106a44865a36607809684187171458992b9df03da21f047a0b9e8d24ca.html",
+        "sha256": "4538c1106a44865a36607809684187171458992b9df03da21f047a0b9e8d24ca",
+        "bytes": 63683
+      }
+    ],
+    "blockers": [],
+    "request_count": 7,
+    "full_universe_disclosure_coverage_certified": false,
+    "interpretation": "Collection does not certify disclosure completeness, source rights, original historical vintages, or scores."
+  },
+  "input_manifest_sha256": "bca6eec2dd851dec6d8160ae6971a84452bfb95bb3e6762425a7f56e931be11f",
+  "formal_input_quality": null,
+  "formal_input_blockers": [
+    "input manifest status must be READY",
+    "certifications.point_in_time_security_master must be true",
+    "certifications.includes_delisted must be true",
+    "certifications.includes_mergers must be true",
+    "certifications.includes_corporate_actions must be true",
+    "certifications.includes_all_material_disclosures must be true",
+    "certifications.source_rights_reviewed must be true",
+    "datasets[0].official must be true",
+    "datasets[0].replay_authorized must be true",
+    "datasets[1].official must be true",
+    "datasets[1].replay_authorized must be true",
+    "datasets[2].official must be true",
+    "datasets[2].replay_authorized must be true",
+    "datasets[3].official must be true",
+    "datasets[3].replay_authorized must be true",
+    "datasets[4].official must be true",
+    "datasets[4].replay_authorized must be true",
+    "datasets[5].official must be true",
+    "datasets[5].replay_authorized must be true",
+    "datasets[6].official must be true",
+    "datasets[6].replay_authorized must be true",
+    "datasets[7].official must be true",
+    "datasets[7].replay_authorized must be true",
+    "datasets[8].official must be true",
+    "datasets[8].replay_authorized must be true",
+    "source_register:2 must be official and replay_authorized",
+    "source_register:3 must be official and replay_authorized",
+    "source_register:4 must be official and replay_authorized",
+    "source_register:5 must be official and replay_authorized",
+    "trading calendar is incomplete: 2026-10-06, 2026-10-07, 2026-10-08, 2026-10-09, 2026-10-10, 2026-10-11, 2026-10-12, 2026-10-13, 2026-10-14, 2026-10-15",
+    "trading calendar does not define replay sessions",
+    "at least one full-universe MONTHLY assessment is required",
+    "manifest cannot be generated before period.through",
+    "replay period cannot end in the future"
+  ],
+  "raw_pinned_inputs_verified": {
+    "jquants/datasets/equities_daily/2026-10-09/latest.json": "8c8f072d866eb5ef9cb3621790534f5a90b79827cf196c114055e6e3690244c7"
+  },
+  "formal_monthly_evaluations_credited": 0,
+  "formal_trades_credited": 0,
+  "live_promotion_approved": false
+}
