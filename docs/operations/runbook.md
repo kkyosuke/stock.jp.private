@@ -63,3 +63,28 @@ python -m stock_jp automation health --persisted-only
 
 新しい空の作業領域の初期化には `operation state init` を使う。
 雛形は初期化用で、既存の設定や台帳を置換しない。
+
+## canonical runがまだない保存資料のレビュー
+
+HOLIDAYや予算停止でhandoff等が作られていない場合、`resume-review`では再開できない。
+既存inboxは未レビュー保管庫であり、運用state・台帳・注文の復元元として採用しない。
+独立レビュー後に、確認済みのprivate repositoryの専用checkoutで、取得済みGit objectsから
+次のoffline入口を使える。事前に読み取り取得したoriginの2つのcheckpoint refと、
+確認済みの完全commit SHAを一致させる。コマンド自体はfetch・provider・dispatchを行わない。
+
+```bash
+python -m stock_jp.operation.paper_offline \
+  --day <logical-run日> --cutoff <checkpointに固定されたJST日時> \
+  --inbox-commit <確認済み40桁SHA> --checkpoint-commit <確認済み40桁SHA>
+```
+
+共有checkpointのlogical day・固定cutoff・予算証跡、inboxの追記snapshot、collection receipt、
+設定・provenance・原本checksumを検証する。確認済みの原本とreceipt以外は復元しない。
+`.work/paper-research/offline/<日付>/review.json`を作り、exit 1の
+`OFFLINE_PRIMARY_REVIEW_REQUIRED`を返す。ネットワークなしで原本を読み、内容・PIT時刻・
+source権利・網羅性の不足を記録するための資料であり、canonical run・注文・承認は作らない。
+既存のレビュー資料を上書きせず、`completed_run=false`と`review_command=null`を保つ。
+日次finalizeは別途canonical runの全必須成果物と検証が必要で、このpacketから直接実行できない。
+
+98%品質閾値、PAPER/HUMAN_ONLY、実際のPIT・source権利・レビュー・risk承認条件は維持する。
+凍結forward研究の診断や将来の月数・取引件数・2027-04-01はLIVE開始条件へ追加しない。

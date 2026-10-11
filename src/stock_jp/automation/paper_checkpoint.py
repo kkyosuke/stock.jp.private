@@ -1,4 +1,4 @@
-"""Preserve an unreviewed PAPER source inbox in private Git; reuse only query pages."""
+"""Preserve an unreviewed PAPER source inbox in private Git; reuse verified query pages and primary evidence."""
 from __future__ import annotations
 
 import argparse
@@ -56,6 +56,7 @@ def run(root, context, git, *, save, preview=False, logical_target=None):
     if not save:
         cached = {}
         resume_cutoff = None
+        primary_files, primary_bundle = {}, None
         if previous and previous["config_sha256"] == config_sha:
             cutoff_name = f"operations/runs/{day}/source-scan-cutoff.json"
             if previous["day"] == day and cutoff_name in previous["files"]:
@@ -66,7 +67,15 @@ def run(root, context, git, *, save, preview=False, logical_target=None):
                 if ((n.scheduled_day(cutoff).isoformat() == day if logical_target else cutoff.date().isoformat() == day)
                         and cutoff <= now and (logical_target is not None or cutoff.hour >= 21 or preview)):
                     resume_cutoff = cutoff.isoformat(timespec="seconds")
+            if logical_target:
+                n.require(resume_cutoff in (None, logical_target["cutoff_at_jst"]),
+                          "inbox cutoff differs from bound PAPER target")
+                resume_cutoff = logical_target["cutoff_at_jst"]
             if resume_cutoff:
+                from stock_jp.automation import paper_sources
+                if (root / "operations/inputs/primary-sources.json").is_file():
+                    primary_files, primary_bundle = paper_sources.stage(
+                        root, git, revision, tree, day=day, cutoff=resume_cutoff)
                 n.require(logical_target is None or resume_cutoff == logical_target["cutoff_at_jst"],
                           "inbox cutoff differs from bound PAPER target")
                 plan = json.loads(config_raw)["jquants"]["plan"]
@@ -80,12 +89,15 @@ def run(root, context, git, *, save, preview=False, logical_target=None):
                     cached[name] = raw
                 cache_archive.validate(cached)
             observe(git, context, main, revision)
+            if primary_files:
+                paper_sources.install(root, primary_files)
             for name, raw in cached.items():
                 path = confined(root, ".work/market-data/" + name)
                 n.require(not path.exists() or path.read_bytes() == raw, "adopted and inbox cache disagree")
                 ingest.atomic_bytes(path, raw)
         return {"status": "QUERY_CACHE_RESTORED", "file_count": len(cached),
-                "resume_cutoff_at_jst": resume_cutoff, "canonical_state_restored": False}
+                "resume_cutoff_at_jst": resume_cutoff, "canonical_state_restored": False,
+                "primary_receipt_count": len(primary_bundle["receipts"]) if primary_bundle else 0}
     files, uploads = {}, {}
     for directory in (f"operations/runs/{day}", "data/market/primary-sources",
                       "research/historical-replay/v04-forward", ".work/market-data/nightly-source-cache"):
