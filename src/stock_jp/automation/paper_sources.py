@@ -71,14 +71,20 @@ def stage(root, git, revision, tree, *, day, cutoff):
     return files, bundle
 
 
-def install(root, files):
+def preflight(root, files):
     # Preflight all conflicts before writing; never overwrite adopted evidence.
     for name, raw in files.items():
         lexical = root / name
         if any(p.is_symlink() for p in [lexical, *lexical.parents] if p.is_relative_to(root)):
             raise ValueError('primary evidence path contains a symlink')
+        if any(p.exists() and not p.is_dir() for p in lexical.parents if p.is_relative_to(root)):
+            raise ValueError('primary evidence parent is not a directory')
         path = reuse.confined(root, name)
-        if path.exists() and path.read_bytes() != raw:
+        if path.exists() and (not path.is_file() or path.read_bytes() != raw):
             raise ValueError('local and restored primary evidence disagree')
+
+
+def install(root, files):
+    preflight(root, files)
     for name, raw in files.items():
         ingest.atomic_bytes(reuse.confined(root, name), raw)

@@ -29,6 +29,8 @@ class PrimaryReuseTest(unittest.TestCase):
         ingest.atomic_json(root / primary.CONFIG, config)
         path = root / 'config/sources.json'
         source = json.loads(path.read_text())
+        source['jquants']['ingestion'] = {'max_requests_per_run': 12}
+        ingest.atomic_json(root / 'operations/acquisition/date-grants.json', {'prior_charges': {}})
         source['market_regime'] = {'vi': 'https://allowed/vi', 'ci': 'https://allowed/ci'}
         ingest.atomic_json(path, source)
         items = [{'type': 'pdf', 'date': '2026/10/05 12:00:00', 'link': f'https://allowed/doc/4052/{i}.pdf',
@@ -164,20 +166,79 @@ class PrimaryReuseTest(unittest.TestCase):
                     git('update-index', '--add', '--cacheinfo', '100644', blob, name)
                 return git('commit-tree', git('write-tree'), '-m', 'Synthetic evidence')
             inbox = commit({name: reader.read(blob) for name, blob in repo.tree(repo.refs[n.PAPER_CHECKPOINT]).items()})
-            checkpoint = {'runs': {DAY: {'status': 'HOLIDAY', 'config_sha256': reuse.digest((root / 'config/sources.json').read_bytes()),
-                                        'requests': [], 'budget': 12}},
-                          'scheduled_targets': {'123': {'date': DAY, 'paper_cutoff_at_jst': CUTOFF}}}
+            from tests.test_paper_offline_budget import checkpoint as valid_checkpoint
+            checkpoint = valid_checkpoint(root)
             checkpoint_sha = commit({n.JOURNAL: ingest.encoded(checkpoint)})
             git('update-ref', 'refs/remotes/origin/' + n.PAPER_CHECKPOINT, inbox)
+            git('update-ref', 'refs/remotes/origin/' + n.CHECKPOINT, checkpoint_sha)
+            from stock_jp.operation.paper_offline import packet_name
+            output = root / packet_name(DAY)
+            canonical = root / f'operations/runs/{DAY}/handoff.json'
+            canonical.parent.mkdir(parents=True)
+            output.parent.mkdir(parents=True)
+            for hazard in ('dangling_file', 'parent_directory', 'parent_dangling', 'parent_file', 'conflict', 'directory'):
+                with self.subTest(hazard=hazard):
+                    if hazard == 'dangling_file':
+                        output.symlink_to(canonical)
+                    elif hazard == 'parent_directory':
+                        output.parent.rmdir()
+                        output.parent.symlink_to(canonical.parent, target_is_directory=True)
+                    elif hazard == 'parent_dangling':
+                        output.parent.rmdir()
+                        output.parent.symlink_to(canonical.parent / 'missing', target_is_directory=True)
+                    elif hazard == 'parent_file':
+                        output.parent.rmdir()
+                        output.parent.write_bytes(b'preserve parent conflict')
+                    elif hazard == 'conflict':
+                        output.write_bytes(b'preserve existing review work')
+                    else:
+                        output.mkdir()
+                    with patch.object(paper_sources, 'install', side_effect=AssertionError('install preceded output preflight')):
+                        with self.assertRaises(ValueError):
+                            paper_offline.prepare(root, day=DAY, cutoff=CUTOFF, inbox_commit=inbox, checkpoint_commit=checkpoint_sha)
+                    self.assertFalse(canonical.exists())
+                    self.assertFalse((root / reuse.BUNDLE).exists())
+                    self.assertFalse((root / 'data').exists())
+                    if hazard.startswith('parent_'):
+                        output.parent.unlink()
+                        output.parent.mkdir()
+                    elif hazard == 'directory':
+                        output.rmdir()
+                    else:
+                        output.unlink()
+            fake = copy.deepcopy(checkpoint)
+            fake_cutoff = '2026-10-07T02:31:01+09:00'
+            fake['scheduled_targets']['123']['paper_cutoff_at_jst'] = fake_cutoff
+            replacement = commit({n.JOURNAL: ingest.encoded(fake)})
+            git('replace', checkpoint_sha, replacement)
+            with patch.object(paper_sources, 'stage', side_effect=AssertionError('false cutoff reached source staging')):
+                with self.assertRaisesRegex(ValueError, 'logical target differs'):
+                    paper_offline.prepare(root, day=DAY, cutoff=fake_cutoff, inbox_commit=inbox, checkpoint_commit=checkpoint_sha)
+            for hazard in ('missing_mappings_daily13', 'invalid_reservation'):
+                bad = copy.deepcopy(checkpoint)
+                if hazard == 'missing_mappings_daily13':
+                    bad['runs'][DAY]['requests'] *= 13
+                    del bad['provider_debit_bases']; del bad['paper_requests']
+                else:
+                    bad['paper_requests'][DAY][0]['action_run_id'] = 456
+                invalid = commit({n.JOURNAL: ingest.encoded(bad)})
+                git('update-ref', 'refs/remotes/origin/' + n.CHECKPOINT, invalid)
+                with patch.object(paper_sources, 'stage', side_effect=AssertionError('invalid budget reached staging')):
+                    with self.assertRaisesRegex(ValueError, 'offline budget evidence rejected'):
+                        paper_offline.prepare(root, day=DAY, cutoff=CUTOFF, inbox_commit=inbox, checkpoint_commit=invalid)
+                self.assertFalse(canonical.exists())
+                self.assertFalse((root / reuse.BUNDLE).exists())
             git('update-ref', 'refs/remotes/origin/' + n.CHECKPOINT, checkpoint_sha)
             before = git('show-ref')
             with patch('socket.create_connection', side_effect=AssertionError('offline network forbidden')):
                 result = paper_offline.prepare(root, day=DAY, cutoff=CUTOFF, inbox_commit=inbox, checkpoint_commit=checkpoint_sha)
             self.assertEqual(result['status'], 'OFFLINE_PRIMARY_REVIEW_REQUIRED')
             self.assertEqual(len(result['sources']), 7)
-            self.assertFalse((root / 'operations/runs').exists())
+            self.assertFalse(canonical.exists())
+            self.assertEqual(result['cutoff_at_jst'], CUTOFF)
+            self.assertEqual(result['checkpoint_commit'], checkpoint_sha)
             self.assertEqual(git('show-ref'), before)
-            self.assertEqual(paper_offline.LocalGit(root).read(git('rev-parse', checkpoint_sha + ':' + n.JOURNAL)), ingest.encoded(checkpoint))
+            self.assertEqual(paper_offline.LocalGit(root).read(paper_offline.LocalGit(root).tree(checkpoint_sha)[n.JOURNAL]), ingest.encoded(checkpoint))
             with self.assertRaisesRegex(ValueError, 'pin differs'):
                 paper_offline.prepare(root, day=DAY, cutoff=CUTOFF, inbox_commit=checkpoint_sha, checkpoint_commit=checkpoint_sha)
 

@@ -1,6 +1,7 @@
 """Prepare unreviewed primary evidence offline, without creating a canonical run."""
 import argparse
 import json
+import os
 import re
 import subprocess
 
@@ -16,7 +17,15 @@ class LocalGit:
         self.root, self.modes = root, {}
 
     def command(self, *args):
-        return subprocess.check_output(['git', '-C', str(self.root), *args], stderr=subprocess.DEVNULL)
+        env = {**os.environ, 'GIT_NO_REPLACE_OBJECTS': '1', 'GIT_NO_LAZY_FETCH': '1',
+               'GIT_ALLOW_PROTOCOL': '', 'GIT_TERMINAL_PROMPT': '0'}
+        try:
+            return subprocess.check_output(
+                ['git', '--no-replace-objects', '--no-lazy-fetch', '--no-optional-locks',
+                 '-C', str(self.root), *args], env=env, stderr=subprocess.DEVNULL)
+        except (OSError, subprocess.CalledProcessError):
+            raise ValueError('offline Git read failed: required objects/refs must exist locally; '
+                             'Git must support no-lazy-fetch; fetching is disabled') from None
 
     def pin(self, branch, commit):
         if not re.fullmatch(r'[0-9a-f]{40}', commit):
@@ -52,7 +61,7 @@ def prepare(root, *, day, cutoff, inbox_commit, checkpoint_commit):
     policy = json.loads((root / 'config/policy.json').read_text())
     if (policy.get('operation_mode'), policy.get('broker_submission')) != ('PAPER', 'HUMAN_ONLY'):
         raise ValueError('offline preparation requires PAPER/HUMAN_ONLY')
-    bound = reuse.identity(root, day, cutoff)
+    reuse.identity(root, day, cutoff)
     git = LocalGit(root)
     origin = git.command('remote', 'get-url', 'origin').decode().strip()
     if origin not in {'https://github.com/kkyosuke/stock.jp.private', 'https://github.com/kkyosuke/stock.jp.private.git',
@@ -62,45 +71,42 @@ def prepare(root, *, day, cutoff, inbox_commit, checkpoint_commit):
     git.pin(n.CHECKPOINT, checkpoint_commit)
     tree = git.tree(checkpoint_commit)
     journal = json.loads(git.read(tree[n.JOURNAL]))
-    cutoffs = {b['paper_cutoff_at_jst'] for b in journal['scheduled_targets'].values()
-               if b['date'] == day and 'paper_cutoff_at_jst' in b}
-    state = journal['runs'][day]
-    if cutoffs != {cutoff} or state['config_sha256'] != bound['source_config_sha256']:
-        raise ValueError('offline logical target differs from pinned checkpoint')
-    if type(state['budget']) is not int or not 1 <= state['budget'] <= 12:
-        raise ValueError('offline target budget differs from shared allowance')
-    if state['status'] not in {'HOLIDAY', 'COLLECTED'}:
-        raise ValueError('offline target acquisition is incomplete')
     n.require(git.modes[checkpoint_commit][n.JOURNAL] == '100644', 'unsafe offline checkpoint mode')
-    # Preserve and validate the budget evidence, without ever initializing/reserving it.
-    from stock_jp.automation.provider_budget import validate_charges
-    validate_charges(journal)
+    from stock_jp.operation.paper_offline_budget import validate_budget
+    validate_budget(root, journal, day=day, cutoff=cutoff)
     files, bundle = paper_sources.stage(root, git, inbox_commit, git.tree(inbox_commit), day=day, cutoff=cutoff)
     if not bundle['receipts']:
         raise ValueError('no verified primary evidence for the selected target')
     git.pin(n.PAPER_CHECKPOINT, inbox_commit)
     git.pin(n.CHECKPOINT, checkpoint_commit)
+    result = review_packet(root, day=day, cutoff=cutoff, checkpoint_commit=checkpoint_commit,
+                           files=files, write=False)
+    files[packet_name(day)] = ingest.encoded(result)
+    # All output conflicts (including dangling symlinks) are checked before any install.
     paper_sources.install(root, files)
-    return review_packet(root, day=day, cutoff=cutoff, checkpoint_commit=checkpoint_commit)
+    return result
 
 
-def review_packet(root, *, day, cutoff, checkpoint_commit=None):
-    sources = reuse.load(root, day=day, cutoff=cutoff)
+def packet_name(day):
+    return f'.work/paper-research/offline/{day}/review.json'
+
+
+def review_packet(root, *, day, cutoff, checkpoint_commit=None, files=None, write=True):
+    sources = reuse.load(root, day=day, cutoff=cutoff, files=files)
     if not sources:
         raise ValueError('no verified primary evidence for offline review')
     result = {'status': 'OFFLINE_PRIMARY_REVIEW_REQUIRED', 'logical_day': day, 'cutoff_at_jst': cutoff,
               'operation_mode': 'PAPER', 'broker_submission': 'HUMAN_ONLY', 'completed_run': False,
               'canonical_run_created': False, 'review_command': None, 'checkpoint_commit': checkpoint_commit,
-              'provenance': json.loads(reuse.confined(root, reuse.BUNDLE).read_text()),
+              'provenance': json.loads(files[reuse.BUNDLE] if files is not None else reuse.confined(root, reuse.BUNDLE).read_bytes()),
               'sources': list(sources.values()), 'review_completed': False,
               'blocking_gaps': ['Source content, PIT availability, source rights and disclosure coverage remain unverified.',
                                 'Canonical run preparation and finalization are separate; this packet cannot finalize a run.'],
               'investment_readiness': 'NOT_EVALUATED'}
-    path = reuse.confined(root, f'.work/paper-research/offline/{day}/review.json')
-    raw = ingest.encoded(result)
-    if path.exists() and path.read_bytes() != raw:
-        raise ValueError('offline review packet already exists; preserve existing review work')
-    ingest.atomic_bytes(path, raw)
+    output = {packet_name(day): ingest.encoded(result)}
+    paper_sources.preflight(root, output)
+    if write:
+        paper_sources.install(root, output)
     return result
 
 

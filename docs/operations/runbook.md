@@ -71,6 +71,11 @@ HOLIDAYや予算停止でhandoff等が作られていない場合、`resume-revi
 独立レビュー後に、確認済みのprivate repositoryの専用checkoutで、取得済みGit objectsから
 次のoffline入口を使える。事前に読み取り取得したoriginの2つのcheckpoint refと、
 確認済みの完全commit SHAを一致させる。コマンド自体はfetch・provider・dispatchを行わない。
+全ローカルGit読み取りでreplace refsとpromisorの暗黙fetchを無効化し、transportも禁止する。
+必要objectが欠けるpartial cloneや、`--no-lazy-fetch`を扱えないGitでは明示停止する。
+出力ファイル・親directoryのsymlinkと既存レビューとの競合は、資料install前に拒否する。
+対象日のdaily ledger・debit basis・PAPER予約・logical target bindingは必須で、
+元の履歴課金との一致、予約時刻・連番・対象、共有上限を検証する。不明な証跡を補正しない。
 
 ```bash
 python -m stock_jp.operation.paper_offline \

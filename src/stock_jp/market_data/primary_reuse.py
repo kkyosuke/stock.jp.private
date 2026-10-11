@@ -92,16 +92,17 @@ def validate_sources(root, sources, *, cutoff, read):
     return result, objects
 
 
-def load(root, *, day, cutoff):
+def load(root, *, day, cutoff, files=None):
     path = confined(root, BUNDLE)
-    if not path.exists():
+    if files is None and not path.exists():
         return {}
-    bundle = json.loads(path.read_text())
+    read = files.__getitem__ if files is not None else lambda name: confined(root, name).read_bytes()
+    bundle = json.loads(read(BUNDLE))
     if bundle['identity'] != identity(root, day, cutoff):
         raise ValueError('primary reuse logical day, cutoff or configuration mismatch')
     sources = []
     for receipt in bundle['receipts']:
-        raw = confined(root, receipt['path']).read_bytes()
+        raw = read(receipt['path'])
         if digest(raw) != receipt['sha256'] or Path(receipt['path']).stem != receipt['sha256']:
             raise ValueError('primary collection receipt checksum mismatch')
         value = json.loads(raw)
@@ -110,5 +111,5 @@ def load(root, *, day, cutoff):
                 ('cutoff_at_jst', 'config_sha256', 'source_config_sha256')):
             raise ValueError('primary receipt scope mismatch')
         sources.extend(primary['sources'])
-    result, _ = validate_sources(root, sources, cutoff=cutoff, read=lambda name: confined(root, name).read_bytes())
+    result, _ = validate_sources(root, sources, cutoff=cutoff, read=read)
     return result
