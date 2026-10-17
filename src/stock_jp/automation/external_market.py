@@ -203,10 +203,28 @@ def execute(root, request, identity, *, at=None, transport=None, sleep=None):
     return report
 
 
+def handoff(root, request, identity):
+    """Explicit release by the locally locked owner; retain every charged byte."""
+    root = Path(root).resolve()
+    git = n.Git(request)
+    main = git.ref("main")
+    verify = lambda: checkout_main(root, main)
+    verify()
+    n.require(identity["main"] == main, "external session main mismatch")
+    cp = Checkpoint(root, git, main, identity, verify=verify)
+    n.require(cp.document.get("external_writer") == identity, "no matching external writer to hand off")
+    no_actions_writer(git)
+    cp.release()
+    return {"status": "EXTERNAL_WRITER_RELEASED", "writer": identity,
+            "checkpoint_saved": True, "provider_calls": 0,
+            "analysis_readiness": "NOT_EVALUATED", "actions_dispatched": False}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--session", required=True)
+    parser.add_argument("--handoff-to-actions", action="store_true")
     args = parser.parse_args()
     root = args.root.resolve()
     try:
@@ -214,7 +232,7 @@ def main():
         main_sha = n.Git(request).ref("main")
         checkout_main(root, main_sha)  # No session/checkpoint write on an unmerged branch.
         with session(root, args.session, main_sha, datetime.now(daily.JST)) as identity:
-            report = execute(root, request, identity)
+            report = handoff(root, request, identity) if args.handoff_to_actions else execute(root, request, identity)
         code = 0
     except n.Incomplete as error:
         report, code = error.result, 2

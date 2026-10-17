@@ -247,6 +247,11 @@ cutoff後の観測は明記し、取得時刻を前夜へ戻さず、過去時�
 
 ## Actions停止中の外部市場データ実行
 
+Actionsの定時実行とowner手動実行は引き続き`market-data-manual.yml`を使い、
+実際のActions環境内で`python -m stock_jp.automation.nightly`を起動する。
+スケジュール、既存のCI検証・採用経路は変更しない。
+外部実行のためにActionsの環境変数やrun IDを捏造しない。
+
 `python -m stock_jp.automation.external_market --root <checkout> --session <name>`
 は、ユーザーが外部取得と保存PRを明示承認した場合の市場データ専用入口。
 PAPER調査、取引、Actions dispatch、CI承認、mergeは実行しない。
@@ -283,6 +288,20 @@ queued/in-progress/waiting/pending/requested runがあれば開始・通信を�
 保存候補の作成だけを意味し、採用や日次運用完了を意味しない。
 PR作成後に外部fenceを解除し、writer来歴はcheckpointのGit履歴に残す。
 途中停止・不明応答ではfenceを保持し、同じreceiptでのみ再開する。
+中断した外部実行をActionsへ切り替える場合は、元のプロセスが停止した同じcheckoutで
+次の明示handoffを行う。ローカルlockとUUID所有権を確認してfenceだけを解除し、
+不明応答も含む要求・journal・課金basis・PAPER課金はそのまま残す。
+
+```bash
+python -m stock_jp.automation.external_market --root <checkout> --session <name> --handoff-to-actions
+```
+
+handoff自体はprovider通信もActions dispatchも行わない。
+その後のowner Actions手動実行ではreceiptに記録された論理日を`target_date`へ指定する。
+Actions中断から外部実行へ切り替える場合も、Actionsが終了していることを確認し、
+同じ論理日の共有journalから再開する。日をまたいで未完了runが残る場合は、新しい日を
+開始せず、元の日のActions再開または既存外部sessionの再開で解消する。
+外部完了後のActions再実行も既存receiptを再利用し、要求枠をリセットしない。
 receipt紛失、main移動、未解決PR、認証停止は明示的な運用照合が必要。
 公開途中に追跡対象の生成ファイルが残った場合も、保存済みcheckpointと照合し、
 取得原本を保持したままmainの追跡ツリーを復元してから再開する。

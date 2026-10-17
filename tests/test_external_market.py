@@ -193,6 +193,55 @@ class ExternalMarketTest(unittest.TestCase):
             with e.session(self.root, "recovery", "f" * 40, self.fixture.at):
                 self.fail("changed main")
 
+    def test_interrupted_actions_to_external_preserves_charge_and_resumes(self):
+        context = {**self.support.context, "sha": self.identity["main"]}
+        with self.assertRaises(n.Incomplete):
+            n.execute(self.root, context, self.repo, at=self.fixture.at,
+                      transport=lambda *_: (_ for _ in ()).throw(ingest.ApiError(0)), sleep=lambda _: None)
+        original = copy.deepcopy(self.repo.journal()["runs"][self.identity["date"]]["requests"])
+        report = self.run_external()
+        self.assertEqual(report["requests_for_date"], 10)
+        self.assertEqual(self.repo.journal()["runs"][self.identity["date"]]["requests"][:1], original)
+
+    def test_interrupted_external_explicit_handoff_to_actions_retains_charge(self):
+        with self.assertRaises(KeyboardInterrupt):
+            self.run_external(lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
+        before = copy.deepcopy(self.repo.journal())
+        result = e.handoff(self.root, self.repo, self.identity)
+        self.assertEqual(result["status"], "EXTERNAL_WRITER_RELEASED")
+        self.assertFalse(result["actions_dispatched"])
+        after = self.repo.journal()
+        self.assertNotIn("external_writer", after)
+        self.assertEqual({k: v for k, v in before.items() if k != "external_writer"}, after)
+        context = {**self.support.context, "sha": self.identity["main"]}
+        with patch.object(ingest, "utc_now", return_value=self.fixture.at.isoformat()):
+            report = n.execute(self.root, context, self.repo, at=self.fixture.at, preview=True,
+                               transport=self.fixture.transport, sleep=lambda _: None)
+        self.assertEqual(report["status"], "PREVIEW_COMPLETE")
+        self.assertEqual(report["requests_for_date"], 10)
+        self.assertEqual(after["runs"][self.identity["date"]]["requests"],
+                         self.repo.journal()["runs"][self.identity["date"]]["requests"][:1])
+
+    def test_completed_external_to_actions_reuses_without_provider_calls(self):
+        external = self.run_external()
+        calls = len(self.fixture.calls)
+        context = {**self.support.context, "sha": self.identity["main"]}
+        report = n.execute(self.root, context, self.repo, at=self.fixture.at, preview=True,
+                           transport=self.fixture.transport, sleep=lambda _: None)
+        self.assertEqual(report["requests_for_date"], external["requests_for_date"])
+        self.assertEqual(len(self.fixture.calls), calls)
+
+    def test_handoff_rejects_other_session_or_active_actions_without_mutation(self):
+        with self.assertRaises(KeyboardInterrupt):
+            self.run_external(lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
+        revision = self.repo.refs[n.CHECKPOINT]
+        with self.assertRaises(n.RemoteStop):
+            e.handoff(self.root, self.repo, {**self.identity, "session": "b" * 32})
+        self.repo.active = True
+        with self.assertRaises(n.RemoteStop):
+            e.handoff(self.root, self.repo, self.identity)
+        self.assertEqual(self.repo.refs[n.CHECKPOINT], revision)
+
 
 class ExternalBoundaryTest(unittest.TestCase):
     def test_transport_cannot_dispatch_approve_merge_or_write_other_checkpoint(self):
