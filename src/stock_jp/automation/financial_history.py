@@ -95,6 +95,8 @@ class Checkpoint:
         return head
 
     def active_run(self):
+        from stock_jp.automation.external_market import reject_external_writer
+        reject_external_writer(self.git)
         run = self.git.api("GET", "/actions/runs/" + str(self.context["run_id"]))
         require(run["status"] == "in_progress" and run["head_sha"] == self.context["sha"]
                 and run["path"] == WORKFLOW, "financial collection Actions run is inactive")

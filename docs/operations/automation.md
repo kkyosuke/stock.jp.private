@@ -244,3 +244,47 @@ cutoff後の観測は明記し、取得時刻を前夜へ戻さず、過去時�
 同じ翌朝入力でも旧研究の窓末日は従来のcutoff日付となるため、
 旧研究との結果差は運用adapterの適用有無として区別する。
 新しい研究結果や投資可能判定を自動承認するものではない。
+
+## Actions停止中の外部市場データ実行
+
+`python -m stock_jp.automation.external_market --root <checkout> --session <name>`
+は、ユーザーが外部取得と保存PRを明示承認した場合の市場データ専用入口。
+PAPER調査、取引、Actions dispatch、CI承認、mergeは実行しない。
+資格情報は既存の`GH_TOKEN`と`JQUANTS_API_KEY`をメモリ内で使用する。
+旧`config/automation.json`の期限切れ外部campaignを再有効化しない。
+
+修正を採用した最新mainからのみ実行できる。未マージの修正branchを
+実取得に使ってはいけない。既存のfinancial-history経路は独立checkpointを使い、
+旧コードは外部writerを認識しないため、ローカル試験成功と一時点のActions停止だけでは
+相互排他が成立しない。mainの採用には通常のexact-head CIと独立レビューを必要とし、
+Actionsの支払・利用上限による未実行をローカル成功で置き換えない。
+旧branchからの取得workflowや別の外部collectorを同時に開始しない。
+
+外部writerは`external-market-v1`とランダムsession UUID、main SHA、論理日、
+解決時刻で識別する。Actions actor/run IDは生成しない。
+ローカルreceiptは`.work/external-market/<name>.json`に保存し、全session共通の
+`flock`で同一checkoutの並行プロセスを拒否する。receiptを別環境へコピーしない。
+共有日次checkpointの`external_writer`を非force Git更新とreadbackで確保し、
+異なるsession、通常の日次/PAPER writer、financial-historyを停止する。
+競合したclaimは非fast-forwardで失敗する。既に走っている旧Actionsも含め、
+queued/in-progress/waiting/pending/requested runがあれば開始・通信を拒否する。
+
+通信前にmain/code/config不変、checkpoint所有権、既存の履歴課金basis、PAPER込み
+日付別12回上限を検証する。各要求は既存collectorが通信前に共有checkpointへ保存し、
+保存済みstateと予約を再読してから通信する。ページ・失敗・不明応答・再起動も消費し、
+既存の予約やreceiptを返却・修正しない。GitHub通信は別の既存rate budgetに従う。
+
+初回は最新の経過済み21時JSTを論理日とする。日曜朝なら土曜を対象にcalendarで確認し、
+架空の取引日を作らない。同じsessionの再開では元の論理日を維持し、過去日指定で
+新しい取得枠を作るオプションは設けない。欠損日のbackfillは既存campaignと別途判断する。
+
+取得後は現在の非圧縮保存形式を検証し、mainを親とするデータ専用PRを作成して停止する。
+コードはデータPRに入らない。`DATA_PR_CREATED`と`required_ci=NOT_VERIFIED`は
+保存候補の作成だけを意味し、採用や日次運用完了を意味しない。
+PR作成後に外部fenceを解除し、writer来歴はcheckpointのGit履歴に残す。
+途中停止・不明応答ではfenceを保持し、同じreceiptでのみ再開する。
+receipt紛失、main移動、未解決PR、認証停止は明示的な運用照合が必要。
+公開途中に追跡対象の生成ファイルが残った場合も、保存済みcheckpointと照合し、
+取得原本を保持したままmainの追跡ツリーを復元してから再開する。
+タイムアウトによる自動takeover、台帳reset、main追随の自動再bindは行わない。
+98%基準、PAPER/HUMAN_ONLY、凍結研究と実LIVE承認条件は変更しない。
