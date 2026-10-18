@@ -230,7 +230,8 @@ class Checkpoint:
             storage.restore(self.root / "data/market/jquants", source)
         prices = ingest.read_json(source / "daily-prices/latest.json", {})
         latest_day = prices.get("latest_trading_date")
-        require(not latest_day or self.target_day >= date.fromisoformat(latest_day),
+        recorded_complete = self.document["runs"].get(self.target_day.isoformat(), {}).get("status") in {"COLLECTED", "HOLIDAY"}
+        require(not latest_day or self.target_day >= date.fromisoformat(latest_day) or recorded_complete,
                 "historical backfill must use its existing campaign and budget")
         self.signatures = {p.relative_to(source).as_posix(): (p.stat().st_size, p.stat().st_mtime_ns)
                            for p in source.rglob("*") if p.is_file()}
