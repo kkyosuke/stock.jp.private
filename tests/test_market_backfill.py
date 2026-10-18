@@ -169,3 +169,13 @@ class BackfillTest(unittest.TestCase):
         self.assertEqual([row["run_date"] for row in result["backfill_results"]], ["2026-10-02", "2026-10-03"])
         self.assertEqual(latest.read_bytes(), before)
         self.assertFalse(self.data.calls)
+
+    def test_partial_then_saved_holiday_reloads_updated_checkpoint_tree(self):
+        saturday = datetime.fromisoformat("2026-10-03T21:00:00+09:00")
+        cp = n.Checkpoint(self.root, n.Git(self.repo), self.identity["main"], saturday.date(), self.support.support.context)
+        with patch.object(ingest, "utc_now", return_value=saturday.isoformat()):
+            n.daily.run(self.root, at=saturday, remote=cp, transport=self.data.transport, sleep=lambda _: None)
+        self.seed_partial()
+        result = self.execute([self.day, saturday.date()])
+        self.assertEqual([item["status"] for item in result["backfill_results"]], ["COLLECTED", "HOLIDAY"])
+        self.assertEqual(len(self.data.calls), 1)

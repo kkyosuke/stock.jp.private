@@ -113,6 +113,8 @@ def execute(root, request, now, days, *, context=None, identity=None, plan_only=
         cp.before_provider_io()
     results = []
     for day in days:
+        cp.observe()
+        cp.tree = git.tree(cp.revision)  # Previous day's reservations may have advanced the ref.
         cp.target_day = day
         result = daily.run(root, at=now, remote=cp, transport=transport, sleep=sleep)
         result = {k: v for k, v in result.items() if k not in {"remote_saved", "readiness"}}
