@@ -32,6 +32,8 @@ FINANCIAL_RAW_PREFIX = "financial-history-checkpoint/"
 PAPER_CHECKPOINT = "automation/paper-source-inbox"
 PAPER_JOURNAL = "operations/acquisition/paper-source-inbox.json"
 PAPER_RAW_PREFIX = "paper-source-inbox/"
+# Bound the serialized JSON, including escaped Unicode, well below HTTP's cap.
+MAX_TREE_BODY = 4 * 1024 * 1024
 
 
 class Incomplete(RemoteStop):
@@ -45,6 +47,7 @@ class Git:
         self.request = request
         self.blobs = set()
         self.modes = {}
+        self.commit_trees = {}
         self.write_permission_verified = False
 
     def api(self, method, path, body=None):
@@ -58,8 +61,14 @@ class Git:
                 return None
             raise
 
+    def tree_sha(self, commit):
+        commit = sha(commit)
+        if commit not in self.commit_trees:
+            self.commit_trees[commit] = sha(self.api("GET", "/git/commits/" + commit)["tree"]["sha"])
+        return self.commit_trees[commit]
+
     def tree(self, commit):
-        tree_sha = self.api("GET", "/git/commits/" + sha(commit))["tree"]["sha"]
+        tree_sha = self.tree_sha(commit)
         tree = self.api("GET", "/git/trees/" + sha(tree_sha) + "?recursive=1")
         require(tree.get("truncated") is False, "Git tree is truncated")
         members = [item for item in tree["tree"] if item["type"] != "tree"]
@@ -75,6 +84,51 @@ class Git:
         require(git_blob(raw) == blob, "Git blob checksum mismatch")
         return raw
 
+    def _write_tree(self, base, files):
+        """Batch UTF-8 contents; binary/large objects still use verified blobs."""
+        entries = []
+        expected = {}
+        # SHA length is fixed, so this overhead also applies to later batches.
+        overhead = len(json.dumps({"base_tree": base, "tree": []}, separators=(",", ":")).encode())
+        size = overhead
+        for path, raw in sorted(files.items()):
+            blob = git_blob(raw)
+            expected[path] = blob
+            entry = {"path": path, "mode": "100644", "type": "blob", "sha": blob}
+            if blob not in self.blobs:
+                try:
+                    content = raw.decode("utf-8")
+                except UnicodeDecodeError:
+                    content = None
+                inline = {"path": path, "mode": "100644", "type": "blob", "content": content}
+                if (content is not None and "\0" not in content
+                        and overhead + len(json.dumps(inline, separators=(",", ":")).encode()) <= MAX_TREE_BODY):
+                    entry = inline
+                else:
+                    value = self.api("POST", "/git/blobs", {
+                        "encoding": "base64", "content": base64.b64encode(raw).decode(),
+                    })
+                    require(value.get("sha") == blob, "uploaded blob checksum mismatch")
+                    self.blobs.add(blob)
+            entry_size = len(json.dumps(entry, separators=(",", ":")).encode())
+            require(overhead + entry_size <= MAX_TREE_BODY, "Git tree entry exceeds limit")
+            if entries and size + 1 + entry_size > MAX_TREE_BODY:
+                base = sha(self.api("POST", "/git/trees", {"base_tree": base, "tree": entries})["sha"])
+                entries, size = [], overhead
+            size += entry_size + bool(entries)
+            entries.append(entry)
+        tree = sha(self.api("POST", "/git/trees", {"base_tree": base, "tree": entries})["sha"])
+        # Verify the created blobs before publishing a commit/ref or caching their
+        # identities. A failed batch leaves only unreferenced immutable objects.
+        result = self.api("GET", "/git/trees/" + tree + "?recursive=1")
+        require(result.get("truncated") is False, "uploaded Git tree is truncated")
+        actual = {item["path"]: item for item in result["tree"]}
+        require(all(path in actual and actual[path].get("sha") == blob
+                    and actual[path].get("mode") == "100644" and actual[path].get("type") == "blob"
+                    for path, blob in expected.items()), "uploaded tree checksum mismatch")
+        self.blobs.update(expected.values())
+        return tree
+
     def write(self, branch, parent, files, *, exists):
         checkpoints = {CHECKPOINT: (JOURNAL, RAW_PREFIX),
                        FINANCIAL_CHECKPOINT: (FINANCIAL_JOURNAL, FINANCIAL_RAW_PREFIX),
@@ -83,8 +137,7 @@ class Git:
                 "unexpected publication branch")
         if exists:
             require(self.ref(branch) == parent, "checkpoint or data branch moved")
-        tree = self.api("GET", "/git/commits/" + parent)["tree"]["sha"]
-        entries = []
+        tree = self.tree_sha(parent)
         for path, raw in sorted(files.items()):
             if branch in checkpoints:
                 journal, prefix = checkpoints[branch]
@@ -108,18 +161,11 @@ class Git:
                     or observations.publication_path(path),
                     "unexpected data publication path")
             storage.scan(raw)
-            blob = git_blob(raw)
-            if blob not in self.blobs:
-                value = self.api("POST", "/git/blobs", {
-                    "encoding": "base64", "content": base64.b64encode(raw).decode(),
-                })
-                require(value.get("sha") == blob, "uploaded blob checksum mismatch")
-                self.blobs.add(blob)
-            entries.append({"path": path, "mode": "100644", "type": "blob", "sha": blob})
-        tree = self.api("POST", "/git/trees", {"base_tree": tree, "tree": entries})["sha"]
-        child = self.api("POST", "/git/commits", {
+        tree = self._write_tree(tree, files)
+        child = sha(self.api("POST", "/git/commits", {
             "message": "Save nightly market data", "tree": tree, "parents": [parent],
-        })["sha"]
+        })["sha"])
+        self.commit_trees[child] = tree
         if exists:
             self.api("PATCH", "/git/refs/heads/" + branch, {"sha": child, "force": False})
         else:
