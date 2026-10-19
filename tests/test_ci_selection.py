@@ -75,7 +75,8 @@ class DependencySelectionTest(unittest.TestCase):
                 self.assertIsNone(self.selected(['src/stock_jp/domain/leaf.py', path]))
 
     def test_uncovered_source_and_deleted_tests_run_all(self):
-        after = {**self.files, 'src/stock_jp/new.py': 'value = 1'}
+        after = {**self.files, 'src/stock_jp/new.py': 'value = 1',
+                 'tests/test_other.py': 'import importlib\nload = lambda name: importlib.import_module(name)'}
         self.assertIsNone(self.selected(['src/stock_jp/new.py'], after=after))
         after = dict(self.files)
         del after['tests/test_other.py']
@@ -152,3 +153,9 @@ class GitSelectionTest(unittest.TestCase):
     def test_snapshot_never_extracts_files(self):
         with patch.object(c.tarfile.TarFile, 'extractall', side_effect=AssertionError('unsafe extraction')):
             self.assertIn('src/stock_jp/domain/leaf.py', c.snapshot(self.root, self.head))
+
+    def test_known_broad_diff_does_not_build_unused_source_snapshots(self):
+        (self.root / 'pyproject.toml').write_text('[project]\nname = "fixture"\n')
+        self.head = self.commit()
+        with patch.object(c, 'snapshot', side_effect=AssertionError('unnecessary snapshot')):
+            self.assertIsNone(self.plan()[0])

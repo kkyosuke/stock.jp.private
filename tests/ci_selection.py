@@ -35,6 +35,16 @@ def module_name(path):
     return name.removesuffix(".__init__")
 
 
+def is_document(path):
+    return path == "README.md" or (path.startswith("docs/") and path.endswith(".md")
+                                   and not path.startswith("docs/rules/"))
+
+
+def broad_input(paths):
+    return next((path for path in paths if not is_document(path)
+                 and (module_name(path) is None or path in SHARED or path.endswith("/__init__.py"))), None)
+
+
 def snapshot(root, commit):
     """Read committed Python blobs only, without extracting or following links."""
     names = git(root, "ls-tree", "-r", "--name-only", "-z", commit, "--", "src/stock_jp", "tests")
@@ -52,7 +62,7 @@ def snapshot(root, commit):
     return files
 
 
-def dependencies(files, known):
+def dependencies(files, known, dynamic):
     graph = defaultdict(set)
     for path, source in files.items():
         name = module_name(path)
@@ -73,7 +83,7 @@ def dependencies(files, known):
                     in {"import_module", "spec_from_file_location", "__import__", "exec", "eval"}:
                 # Runtime loaders may hide dependencies from AST analysis.
                 # Always include their consumers for any source change.
-                graph[name].update(m for m in known if m.startswith("stock_jp."))
+                dynamic.add(name)
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     add(alias.name)
@@ -108,36 +118,49 @@ def affected_modules(before, after, paths, test_modules):
     modules = {module_name(path) for path in before.keys() | after.keys()}
     if None in modules:
         return None, "unmapped Python snapshot"
+    broad = broad_input(paths)
+    if broad:
+        return None, "shared or non-Python input: " + broad
     changed = set()
     for path in paths:
-        if path == "README.md" or (path.startswith("docs/") and path.endswith(".md")
-                                    and not path.startswith("docs/rules/")):
+        if is_document(path):
             continue
         name = module_name(path)
-        if name not in modules or path in SHARED or path.endswith("/__init__.py"):
-            return None, "shared or non-Python input: " + path
+        if name not in modules:
+            return None, "unmapped Python input: " + path
         changed.add(name)
     if not changed:
         return None, "no mapped Python changes"
-    graph = dependencies(before, modules)
-    for module, refs in dependencies(after, modules).items():
+    dynamic = set()
+    graph = dependencies(before, modules, dynamic)
+    for module, refs in dependencies(after, modules, dynamic).items():
         graph[module].update(refs)
     reverse = defaultdict(set)
     for module, refs in graph.items():
         for ref in refs:
             reverse[ref].add(module)
-    selected = set()
-    for module in changed:
+    def consumers(module):
         affected, pending = set(), [module]
         while pending:
             current = pending.pop()
             if current not in affected:
                 affected.add(current)
                 pending.extend(reverse[current] - affected)
+        return affected
+
+    selected, source_affected = set(), False
+    for module in changed:
+        affected = consumers(module)
         covered = affected & test_modules
         if not covered:
             return None, "no dependent test for: " + module
         selected.update(covered)
+        source_affected |= any(name.startswith("stock_jp.") for name in affected)
+    # Dynamic consumers widen the suite but cannot establish that an otherwise
+    # untested source file has coverage. That case already fell back above.
+    if source_affected:
+        for module in dynamic:
+            selected.update(consumers(module) & test_modules)
     return selected | BASELINE, "dependencies in base and head"
 
 
@@ -155,6 +178,9 @@ def plan(root, base, head, test_modules):
         paths = [p.decode() for p in git(root, "diff", "--no-renames", "--name-only", "-z", base, head).split(b"\0") if p]
         if not paths:
             return None, "empty diff"
+        broad = broad_input(paths)
+        if broad:
+            return None, "shared or non-Python input: " + broad
         return affected_modules(snapshot(root, base), snapshot(root, head), paths, test_modules)
     except (OSError, subprocess.CalledProcessError, UnicodeError, SyntaxError, ValueError, tarfile.TarError):
         return None, "dependency comparison unavailable"
