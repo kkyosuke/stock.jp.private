@@ -113,7 +113,14 @@ Actionsのjobごとに確認する。
 `automation/paper-source-inbox` branchへ、原本・未完了run・forward記録・J-Quantsページを
 内容ハッシュ付きの追記snapshotとして保存する。期限のあるartifactに長期保存を依存しない。
 このjobの`contents: write`はこの未レビューの保管先に使い、mainを更新しない。
-次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheだけを復元する。
+次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheを復元する。
+一次資料は同じlogical day・固定cutoffの追記snapshotを検証して復元する。
+最新inboxだけでは前attemptの成功資料が欠けるため、同日の過去snapshotも照合する。
+collection receiptのSHA256、Git blob、原本の長さ・SHA256、設定済みURL、issuer feedの
+公表日時・文書ID・対象企業を照合し、改変・不明資料・同URLの矛盾する原本は停止する。
+復元結果は`.work/paper-research/primary-reuse.json`へ束縛し、collectorは再検証後に再利用する。
+元の取得時刻と未レビュー状態を保持し、欠落資料だけが既存の共有予算境界へ進む。
+cache hitは課金を返却せず、共有12要求上限と既存charge/receiptを変更しない。
 復元対象は同夜に再開できるcutoffのscopeだけ。過去分はGitのsnapshotへ残し、
 翌夜のcacheや取得・復元量へ累積させない。
 運用state、判断、注文、承認は復元しない。同日の21:00以後の検証済みcutoffだけを

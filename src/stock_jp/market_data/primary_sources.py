@@ -106,7 +106,7 @@ def available_at(value):
     return parsed, "DATE_ONLY" if date_only else "SECOND"
 
 
-def collect(root: Path, *, cutoff: datetime, download=None):
+def collect(root: Path, *, cutoff: datetime, download=None, logical_day=None):
     if cutoff.tzinfo is None:
         raise ValueError("primary-source cutoff needs a UTC offset")
     cutoff = cutoff.astimezone(JST)
@@ -115,6 +115,24 @@ def collect(root: Path, *, cutoff: datetime, download=None):
     source_config_path = confined(root, "config/sources.json")
     market_regime = json.loads(source_config_path.read_text())["market_regime"]
     fetch = download or Download(config["allowed_hosts"], limit=config["max_requests"])
+    from stock_jp.market_data.primary_reuse import load
+    reused = load(root, day=logical_day or cutoff.date().isoformat(), cutoff=cutoff.isoformat(timespec="seconds"))
+    hits = 0
+
+    def obtain(url):
+        nonlocal hits
+        if url in reused:
+            hits += 1
+            source = reused[url]
+            raw = confined(root, source["path"]).read_bytes()
+            if len(raw) != source["bytes"] or hashlib.sha256(raw).hexdigest() != source["sha256"]:
+                raise ValueError("primary source changed after reuse validation")
+            return raw
+        return fetch(url)
+
+    def retrieved(url):
+        return reused[url]["retrieved_at_jst"] if url in reused else datetime.now(JST).isoformat(timespec="seconds")
+
     sources, blockers = [], []
     observed = datetime.now(JST).isoformat(timespec="seconds")
     for issuer in config["issuers"]:
@@ -123,10 +141,10 @@ def collect(root: Path, *, cutoff: datetime, download=None):
             raise ValueError("invalid configured issuer code")
         try:
             checked_url(issuer["feed_url"], config["allowed_hosts"])
-            raw = fetch(issuer["feed_url"])
+            raw = obtain(issuer["feed_url"])
             items = feed_items(raw, code)
             sources.append({"code": code, "title": "Official issuer IR announcement feed",
-                            "url": issuer["feed_url"], "retrieved_at_jst": datetime.now(JST).isoformat(timespec="seconds"),
+                            "url": issuer["feed_url"], "retrieved_at_jst": retrieved(issuer["feed_url"]),
                             "item_count": len(items), **preserve(root, raw, ".js")})
             floor = datetime.fromisoformat(issuer["from_at_jst"]).astimezone(JST)
             for item in items:
@@ -136,11 +154,11 @@ def collect(root: Path, *, cutoff: datetime, download=None):
                 url = checked_url(item["link"], config["allowed_hosts"])
                 if not urlsplit(url).path.startswith(f"/doc/{code}/"):
                     raise ValueError("IR document does not belong to configured issuer")
-                raw = fetch(url)
+                raw = obtain(url)
                 sources.append({"code": code, "source_id": f"company-{code}-{item['guid']}",
                                 "title": item["title"], "url": url,
                                 "published_at_jst": published.isoformat(timespec="seconds"),
-                                "publication_precision": precision, "retrieved_at_jst": datetime.now(JST).isoformat(timespec="seconds"),
+                                "publication_precision": precision, "retrieved_at_jst": retrieved(url),
                                 "review_status": "COLLECTED_NOT_REVIEWED",
                                 "original_historical_vintage_verified": False,
                                 **preserve(root, raw, ".pdf")})
@@ -149,9 +167,9 @@ def collect(root: Path, *, cutoff: datetime, download=None):
     for series in config["public_series"]:
         try:
             url = checked_url(market_regime[series["config_key"]], config["allowed_hosts"])
-            raw = fetch(url)
+            raw = obtain(url)
             sources.append({"series": series["id"], "title": series["title"], "url": url,
-                            "retrieved_at_jst": datetime.now(JST).isoformat(timespec="seconds"), "review_status": "COLLECTED_NOT_REVIEWED",
+                            "retrieved_at_jst": retrieved(url), "review_status": "COLLECTED_NOT_REVIEWED",
                             "original_historical_vintage_verified": False,
                             **preserve(root, raw, series["suffix"])})
         except (OSError, ValueError, KeyError, TypeError) as error:
@@ -161,6 +179,6 @@ def collect(root: Path, *, cutoff: datetime, download=None):
             "config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest(),
             "source_config_sha256": hashlib.sha256(source_config_path.read_bytes()).hexdigest(),
             "sources": sources, "blockers": blockers,
-            "request_count": getattr(fetch, "requests", None),
+            "request_count": getattr(fetch, "requests", None), "cache_hits": hits,
             "full_universe_disclosure_coverage_certified": False,
             "interpretation": "Collection does not certify disclosure completeness, source rights, original historical vintages, or scores."}
