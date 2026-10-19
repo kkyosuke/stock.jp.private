@@ -52,7 +52,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: python -m pip install -e '.[dev]'
-      - run: python -m unittest discover -s tests -t .
+      - run: python -m unittest discover -s tests -t . --durations 25
       - run: python -m compileall -q src tests
       - name: Twenty-day synthetic operation smoke
         run: python -m stock_jp operation smoke --days 20 --start-date 2026-09-01
