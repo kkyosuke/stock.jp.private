@@ -55,6 +55,8 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install runtime dependencies
         run: python -m pip install -e .
       - name: Collect, verify and save market data
@@ -94,6 +96,7 @@ jobs:
             .work/market-data/jquants/financial-history/
           if-no-files-found: warn
           retention-days: 30
+          compression-level: 0
   paper-research:
     needs: nightly-market-data
     if: ${{ always() && !cancelled() && !inputs.financial_history && github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && ((needs.nightly-market-data.result == 'success' && !inputs.preview) || (github.event_name == 'workflow_dispatch' && inputs.paper_research && (github.ref == 'refs/heads/main' || inputs.preview))) }}
@@ -114,6 +117,8 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.13'
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - run: python -m pip install -e .
       - name: Restore adopted official data
         run: python -m stock_jp data restore
@@ -169,4 +174,5 @@ jobs:
             data/market/primary-sources/
           include-hidden-files: true
           retention-days: 90
+          compression-level: 1
           if-no-files-found: error
