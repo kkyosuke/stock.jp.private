@@ -1,4 +1,5 @@
 """Conservative history resource limits; existing codec caps remain unchanged."""
+import os
 import resource
 import shutil
 
@@ -13,9 +14,25 @@ MAX_ADDRESS_SPACE=GiB
 class ResourceLimit(ValueError):pass
 
 
+def _tree_size(root):
+    if not root.is_dir():
+        return 0
+    total = 0
+    pending = [root]
+    while pending:
+        with os.scandir(pending.pop()) as entries:
+            for entry in entries:
+                # DirEntry reuses type/stat information within this scan. Scan
+                # again on every reservation; never cache a previous budget.
+                if entry.is_file():
+                    total += entry.stat().st_size
+                elif entry.is_dir(follow_symlinks=False):
+                    pending.append(entry.path)
+    return total
+
+
 def inspect(source,staging):
-    def size(root):return sum(p.stat().st_size for p in root.rglob('*') if p.is_file()) if root.exists() else 0
-    return {'raw_bytes':size(source),'staging_bytes':size(staging),'free_bytes':shutil.disk_usage(source).free,
+    return {'raw_bytes':_tree_size(source),'staging_bytes':_tree_size(staging),'free_bytes':shutil.disk_usage(source).free,
             'max_raw_bytes':MAX_RAW,'max_staging_bytes':MAX_STAGING,'min_free_bytes':MIN_FREE,
             'max_response_bytes':MAX_RESPONSE,'max_address_space_bytes':MAX_ADDRESS_SPACE}
 

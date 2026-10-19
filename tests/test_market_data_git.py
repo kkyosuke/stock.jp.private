@@ -86,9 +86,35 @@ class ArchiveTests(unittest.TestCase):
             m.pack(self.source, self.store)
 
     def test_secret_and_signed_url_patterns(self):
-        for payload in (b'{"api_key":"synthetic"}', b'{"url":"https://example.test/file?X-Amz-Signature=synthetic"}', b'Authorization: Bearer synthetic'):
-            with self.assertRaises(m.ArchiveError):
+        fields = [b'x-api-key', b'authorization'] + [
+            left + separator + right
+            for left, right in ((b'api', b'key'), (b'access', b'token'), (b'refresh', b'token'))
+            for separator in (b'', b'_', b'-')
+        ]
+        payloads = [field + b'\t" : "synthetic"' for name in fields for field in (name, name.upper())]
+        payloads += [b'-----BEGIN ' + kind + b'PRIVATE KEY-----' for kind in (b'', b'RSA ', b'EC ', b'OPENSSH ')]
+        payloads += [b'gh' + kind + b'_' + b'a' * 20 for kind in (b'p', b'o', b'u', b's', b'r')]
+        payloads += [b'github_pat_' + b'a_1' * 7]
+        payloads += [b'HTTPS://example.test/file?other=1&' + marker + b'=synthetic'
+                     for marker in (b'Signature', b'TOKEN', b'Credential', b'X-Amz-Signature', b'X-Goog-Signature')]
+        for payload in payloads:
+            with self.subTest(payload=payload), self.assertRaises(m.ArchiveError):
                 m.scan(payload)
+
+    def test_secret_markers_without_matching_patterns_are_allowed(self):
+        for payload in (b'', b'{"next_key":"synthetic-page-2"}', b'authorization documentation',
+                        b'{"url":"https://example.test/file?date=2026-10-02"}',
+                        b'ghp_' + b'a' * 19, b'wordghp_' + b'a' * 20,
+                        b'-----BEGIN PUBLIC KEY-----', b'\x00\xffmarket data'):
+            with self.subTest(payload=payload):
+                m.scan(payload)
+
+    def test_secret_scan_covers_large_payload_and_chunk_boundary(self):
+        for payload in (b'API_KEY=synthetic', b'ghp_' + b'a' * 20,
+                        b'https://example.test/file?token=synthetic'):
+            for offset in (m.CHUNK - 7, m.CHUNK + 7):
+                with self.subTest(payload=payload, offset=offset), self.assertRaises(m.ArchiveError):
+                    m.scan(b' ' * offset + payload + b' ' * 20)
 
     def test_lock_and_budget_preserve_previous_generation(self):
         m.pack(self.source, self.store)

@@ -72,11 +72,20 @@ def safe_name(name):
 
 def scan(data):
     # Reject authentication material without reading any runtime secret.
-    patterns = (rb'-----BEGIN [A-Z ]*PRIVATE KEY-----',
-                rb'(?i)(?:x-api-key|authorization|api[_-]?key|access[_-]?token|refresh[_-]?token)\s*["\x27]?\s*[:=]',
-                rb'(?i)https?://[^\s"<>]*[?&](?:[^\s"<>]*)(?:signature|token|credential|x-amz-|x-goog-)',
-                rb'\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})')
-    if any(re.search(p, data) for p in patterns):
+    # Each marker is necessary for its original pattern to match. Literal byte
+    # searches avoid repeatedly running regexes over large market-data payloads;
+    # the regex still decides, against the complete, unmodified input.
+    lower = data.lower()
+    checks = (
+        (b'-----BEGIN ' in data, rb'-----BEGIN [A-Z ]*PRIVATE KEY-----'),
+        (any(marker in lower for marker in (b'key', b'token', b'authorization')),
+         rb'(?i)(?:x-api-key|authorization|api[_-]?key|access[_-]?token|refresh[_-]?token)\s*["\x27]?\s*[:=]'),
+        (b'http' in lower,
+         rb'(?i)https?://[^\s"<>]*[?&](?:[^\s"<>]*)(?:signature|token|credential|x-amz-|x-goog-)'),
+        (b'_' in data and (b'gh' in data or b'github_pat_' in data),
+         rb'\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})'),
+    )
+    if any(possible and re.search(pattern, data) for possible, pattern in checks):
         raise ArchiveError('credential or signed URL pattern rejected')
 
 
