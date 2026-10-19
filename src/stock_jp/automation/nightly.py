@@ -191,15 +191,6 @@ class Git:
                 "owner": {"login": "kkyosuke"}, "permissions": {"push": True},
                 "checked_at": datetime.now(timezone.utc).isoformat()}
 
-    def dispatch_ci(self, branch, head):
-        require(self.ref(branch) == head, "nightly candidate branch moved before CI dispatch")
-        response = self.api("POST", "/actions/workflows/ci.yml/dispatches",
-                            {"ref": branch, "return_run_details": True})
-        run_id = response.get("workflow_run_id") if isinstance(response, dict) else None
-        require(type(run_id) is int and run_id > 0, "CI dispatch run identity unavailable")
-        return run_id
-
-
 def scheduled_day(at):
     """Latest elapsed 21:00 JST boundary, not GitHub's nominal cron date."""
     require(at.tzinfo is not None and at.utcoffset() is not None, "aware timestamp required")
@@ -480,8 +471,9 @@ def wait_ci(git, run_id, head, branch, *, event, timeout, sleep, monotonic):
 
 
 def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
-    # A token-created PR has a separate approval-required CI run. Only approve
-    # that exact data-only candidate after its independent dispatch passed.
+    # The publisher has checked the complete candidate tree against its exact
+    # generated data. Approve and track that PR's own CI once; it is also the
+    # check suite used by branch protection.
     deadline = monotonic() + timeout
     while monotonic() < deadline:
         runs = publication.pages(git.request, "/actions/workflows/ci.yml/runs?event=pull_request&head_sha=" + head,
@@ -494,6 +486,7 @@ def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
             sleep(30)
             continue
         run = max(matches, key=lambda item: item["id"])
+        require(type(run.get("id")) is int and run["id"] > 0, "CI run identity unavailable")
         if run.get("conclusion") == "action_required":
             require(run.get("actor", {}).get("login") == "github-actions[bot]", "unexpected data CI approval actor")
             git.api("POST", "/actions/runs/" + str(run["id"]) + "/approve")
@@ -562,21 +555,14 @@ def publish(root, checkpoint, result, *, pr_only=False, timeout=1200, sleep=time
     })
     report["pull_request"] = pr["html_url"]
     require(pr["head"]["sha"] == head and pr["state"] == "open"
-            and pr["draft"] == checkpoint.preview, "nightly PR changed before CI dispatch")
+            and pr["draft"] == checkpoint.preview, "nightly PR changed before CI approval")
     checkpoint.observe()
     if pr_only:
         return {**report, "status": "DATA_PR_CREATED", "data_status": result["status"],
                 "head": head, "checkpoint_saved": True, "required_ci": "NOT_VERIFIED"}
-    run_id = git.dispatch_ci(branch, head)
-    report["ci_run_id"] = run_id
-    wait_ci(git, run_id, head, branch, event="workflow_dispatch", timeout=timeout, sleep=sleep, monotonic=monotonic)
-    checkpoint.observe()
-    current = git.api("GET", "/pulls/" + str(pr["number"]))
-    require(current["head"]["sha"] == head and current["state"] == "open"
-            and current["draft"] == checkpoint.preview,
-            "nightly PR changed before adoption")
-    report["pull_request_ci_run_id"] = approve_data_ci(git, current, branch, head,
-                                                      timeout=timeout, sleep=sleep, monotonic=monotonic)
+    require(git.ref(branch) == head, "nightly candidate branch moved before CI approval")
+    run_id = approve_data_ci(git, pr, branch, head, timeout=timeout, sleep=sleep, monotonic=monotonic)
+    report["ci_run_id"] = report["pull_request_ci_run_id"] = run_id
     checkpoint.observe()
     reviews = publication.pages(git.request, "/pulls/" + str(pr["number"]) + "/reviews")
     http.reject_negative_reviews(reviews, head)

@@ -12,7 +12,10 @@ GitHub Actionsの入口は `.github/workflows/`、取得設定は
 | `forward-holdout.yml` | 22:30 JSTに凍結したPAPER研究と採用済みデータを読み取り、不足・実装変更をartifactへ保存 |
 
 依存関係は `pyproject.toml` を参照する。夜間取得は実行commitと採用済み市場データを
-checkoutする。CIと運用監視は市場データをcheckoutせず、実データの準備完了を判定しない。
+checkoutする。CIはGitの全差分を比較し、アーカイブ・観測CSV・夜間取得記録だけの変更では
+市場データをcheckoutして保存世代・ハッシュ・取得記録・観測ビューを検証する。
+コードや設定を含む変更、差分の基点が不明な場合、手動CIでは全テスト・compile・smokeを行う。
+運用監視は市場データをcheckoutしない。CIの成功は実データの準備完了を意味しない。
 forward holdoutの観測は採用済みデータもcheckoutする。正式入力が不足した開始日以降は
 失敗として記録するが、市場データの取得・保存・本人のLIVE承認は行わない。
 固定した条件と現時点の不足は[正式検証の記録](../../research/formal-validation-2026-10-05/README.md)を参照する。
@@ -31,17 +34,16 @@ GitHub Secretにはデータ取得用の `JQUANTS_API_KEY` だけを登録する
 1. 採用済み世代を復元・検証し、通信前に消費記録をcheckpoint branchへ保存する。
 2. Light契約の公開時刻に従って日足・master・財務・カレンダーなどを取得する。
 3. 財務・株数・予想・決算予定・価格調整の観測CSVを更新し、検証した保存世代と取得完了記録のPRを作る。
-4. データbranchを指定して `ci.yml` を明示dispatchし、返されたrun IDを追跡する。
-5. そのrunが同じPR headで実行され、対応するcheck suiteの `format`、`test`、`guardrail`
-   が全て成功した後、そのデータPRの承認待ちCIを起動する。このCIも3項目の成功を確認し、同じheadをsquash mergeする。
+4. 全ファイルの差分が生成済みのデータと一致することを確認し、そのPRの承認待ちCIだけを起動する。
+5. 同じPR・branch・head・workflowのrun IDとcheck suiteを追跡し、`format`、`test`、`guardrail`
+   が全て成功した後、同じheadをsquash mergeする。
 
-`GITHUB_TOKEN` で作成したPRのCIは承認待ちになるため、自動の `pull_request` 起動に
-依存しない。`workflow_dispatch` は標準トークンでも起動できる。
-ただしmainの必須チェックはPR側のCIに紐づく。独立したdispatchの成功後に、
-検証済みデータ差分・同じhead・同じPR・bot起動のCIだけを承認する。
+`GITHUB_TOKEN` で作成したPRのCIは承認待ちになる。検証済みデータ差分・同じhead・同じPR・
+bot起動のCIだけを承認し、mainの必須チェックに紐づくPR側CIを1回実行する。
+データ更新のために同じCIを別途dispatchしない。再試行時も同じheadの結果を確認する。
 承認APIの拒否、PR側CIの失敗・未完了でも採用せず、保護ルールを変更しない。
 詳細は[GitHubのトークン仕様](https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs)を参照する。
-dispatch失敗、run ID不明、対象headの不一致、CI失敗・未完了ではmergeしない。
+承認失敗、run ID不明、対象headの不一致、CI失敗・未完了ではmergeしない。
 標準トークンのAPI上限に合わせた通信予算は
 [`automation/rate.py`](../../src/stock_jp/automation/rate.py) で管理し、再実行にも引き継ぐ。
 

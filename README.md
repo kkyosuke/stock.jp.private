@@ -26,10 +26,8 @@ python3 -m venv .venv
 CIの成功は実データの鮮度やLIVE許可を意味しません。発注は `HUMAN_ONLY` です。
 
 ローカルの全テストは `.venv/bin/python -m unittest discover -s tests -t .` で実行します。
-CIでは全テストを `standard`・`history`・`integration` の3組に分けて並行実行し、
-全組が成功したときだけ必須チェック `test` が成功します。各組の遅いテスト上位25件を
-ログに残します。Python 3.13で1組を再現するには、次のように実行します。
-
-```bash
-CI_TEST_GROUP=history .venv/bin/python -m unittest tests.ci_suite --durations 25
-```
+CIはGitの全差分から検証内容を選びます。市場アーカイブ・観測CSV・夜間取得記録だけの
+変更では、保存データのハッシュ・世代・スキーマ・取得記録・観測ビューを検証します。
+コードや設定などを含む変更と手動実行では、全テスト・compile・20日smokeを実行します。
+全テストは1つのランナーで実行し、遅い上位25件をログに残します。
+`format`・`test`・`guardrail` の3チェックは、どちらの変更でも実行します。

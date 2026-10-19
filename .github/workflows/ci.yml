@@ -37,28 +37,13 @@ jobs:
           ruby -e 'require "yaml"; (Dir[".github/workflows/*.{yml,yaml}"] + [".markdownlint-cli2.yaml", "lefthook.yml"]).each { |path| YAML.parse_file(path) }'
 
   test:
-    needs: test-groups
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Require every test group to succeed
-        env:
-          TEST_RESULT: ${{ needs.test-groups.result }}
-        run: test "$TEST_RESULT" = success
-
-  test-groups:
-    name: tests (${{ matrix.group }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        group: [standard, history, integration]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /*
@@ -70,14 +55,34 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - run: python -m pip install -e '.[dev]'
-      - name: Run test group with timings
+      - name: Select validation from the complete Git diff
+        id: scope
         env:
-          CI_TEST_GROUP: ${{ matrix.group }}
-        run: python -m unittest tests.ci_suite --durations 25
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python -m stock_jp.automation.ci plan --base "$CI_BASE_SHA"
+      - name: Check out data for integrity validation
+        if: steps.scope.outputs.mode == 'data'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          clean: false
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/market/legacy-prices/
+      - name: Verify published data, acquisition records and observation views
+        if: steps.scope.outputs.mode == 'data'
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python -m stock_jp.automation.ci validate --base "$CI_BASE_SHA"
+      - name: Run full code tests with timings
+        if: steps.scope.outputs.mode != 'data'
+        run: python -m unittest discover -s tests -t . --durations 25
       - run: python -m compileall -q src tests
-        if: matrix.group == 'standard'
+        if: steps.scope.outputs.mode != 'data'
       - name: Twenty-day synthetic operation smoke
-        if: matrix.group == 'standard'
+        if: steps.scope.outputs.mode != 'data'
         run: python -m stock_jp operation smoke --days 20 --start-date 2026-09-01
 
   guardrail:
