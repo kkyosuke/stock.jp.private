@@ -6,7 +6,7 @@ GitHub Actionsの入口は `.github/workflows/`、取得設定は
 
 | Workflow | 責務 |
 | --- | --- |
-| `ci.yml` | `format`、`test`、`guardrail`。静的検証と合成データのテスト |
+| `ci.yml` | `format`、`test`、`guardrail`。差分に応じた保存データ検証または全テスト |
 | `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。21:20に再試行。取得後に一次資料収集とPAPER調査準備 |
 | `operation-health.yml` | 保存済みPAPER runメタデータの監視結果をartifactへ保存 |
 | `forward-holdout.yml` | 22:30 JSTに凍結したPAPER研究と採用済みデータを読み取り、不足・実装変更をartifactへ保存 |
