@@ -497,7 +497,7 @@ def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
 
 
 
-def publish(root, checkpoint, result, *, pr_only=False, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
+def publish(root, checkpoint, result, *, pr_only=False, timeout=300, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
     observation_report = observations.rebuild(root)
     candidate = storage.stage(root, checkpoint.git.private_metadata())

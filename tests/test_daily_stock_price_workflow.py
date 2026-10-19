@@ -20,7 +20,7 @@ class DailyStockPriceWorkflowTest(unittest.TestCase):
                     self.assertFalse(step['with']['persist-credentials'])
         for forbidden in ('secrets.', 'git push', 'pull_request_target:', 'schedule:', 'AUTOMATION_PAT'):
             self.assertNotIn(forbidden, text)
-        self.assertIn('python -m unittest discover -s tests -t . --durations 25', text)
+        self.assertIn('python -m tests.ci_suite --profile "$TEST_PROFILE"', text)
         self.assertIn('python -m compileall -q src tests', text)
         self.assertIn('python -m stock_jp operation smoke --days 20', text)
         self.assertIn('python -m stock_jp automation validate', text)
@@ -40,8 +40,11 @@ class DailyStockPriceWorkflowTest(unittest.TestCase):
         for step in steps:
             self.assertNotIn('continue-on-error', step)
             command = step.get('run', '')
-            if 'unittest ' in command or 'compileall ' in command or 'operation smoke' in command:
+            if 'tests.ci_suite' in command:
                 self.assertEqual(step['if'], "steps.scope.outputs.mode != 'data'")
+                self.assertEqual(step['env']['TEST_PROFILE'], '${{ steps.scope.outputs.mode }}')
+            if 'compileall ' in command or 'operation smoke' in command:
+                self.assertEqual(step['if'], "steps.scope.outputs.mode == 'code' || steps.scope.outputs.mode == 'full'")
             if 'ci validate' in command:
                 self.assertEqual(step['if'], "steps.scope.outputs.mode == 'data'")
                 self.assertEqual(step['env'], selection['env'])
@@ -50,6 +53,38 @@ class DailyStockPriceWorkflowTest(unittest.TestCase):
         self.assertIn('!/data/market/jquants/', checkouts[0]['with']['sparse-checkout'])
         self.assertEqual(checkouts[1]['if'], "steps.scope.outputs.mode == 'data'")
         self.assertNotIn('!/data/market/jquants/', checkouts[1]['with']['sparse-checkout'])
+
+    def test_full_suite_is_weekly_and_pr_validation_does_not_repeat_on_main_push(self):
+        ci = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())
+        triggers = ci.get('on', ci.get(True))
+        self.assertEqual(set(triggers), {'pull_request', 'workflow_dispatch'})
+        self.assertEqual(triggers['pull_request']['branches'], ['main'])
+        full = yaml.safe_load((ROOT / '.github/workflows/ci-full.yml').read_text())
+        triggers = full.get('on', full.get(True))
+        self.assertEqual(set(triggers), {'schedule', 'workflow_dispatch'})
+        self.assertEqual(triggers['schedule'], [{'cron': '17 4 * * 0', 'timezone': 'Asia/Tokyo'}])
+        self.assertEqual(full['permissions'], {'contents': 'read'})
+        self.assertEqual(set(full['jobs']), {'full'})
+        job = full['jobs']['full']
+        self.assertLessEqual(job['timeout-minutes'], 15)
+        self.assertTrue(any(step.get('run') == 'python -m tests.ci_suite --profile full' for step in job['steps']))
+        self.assertNotIn('continue-on-error', job)
+        self.assertTrue(all('continue-on-error' not in step for step in job['steps']))
+
+    def test_acquisition_and_monitors_allocate_only_once_per_day(self):
+        expected = {'market-data-manual.yml': '0 21 * * *',
+                    'operation-health.yml': '17 23 * * *',
+                    'forward-holdout.yml': '30 22 * * *'}
+        for name, cron in expected.items():
+            with self.subTest(workflow=name):
+                workflow = yaml.safe_load((ROOT / '.github/workflows' / name).read_text())
+                triggers = workflow.get('on', workflow.get(True))
+                self.assertEqual(set(triggers), {'schedule', 'workflow_dispatch'})
+                self.assertEqual(triggers['schedule'], [{'cron': cron, 'timezone': 'Asia/Tokyo'}])
+        market = yaml.safe_load((ROOT / '.github/workflows/market-data-manual.yml').read_text())
+        self.assertEqual(market['jobs']['nightly-market-data']['timeout-minutes'],
+                         "${{ github.event_name == 'schedule' && 20 || 90 }}")
+        self.assertEqual(market['jobs']['paper-research']['timeout-minutes'], 15)
 
     def test_python_installation_reads_the_project_definition(self):
         with (ROOT / 'pyproject.toml').open('rb') as source:

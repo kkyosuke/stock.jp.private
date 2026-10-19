@@ -6,19 +6,65 @@ GitHub Actionsの入口は `.github/workflows/`、取得設定は
 
 | Workflow | 責務 |
 | --- | --- |
-| `ci.yml` | `format`、`test`、`guardrail`。差分に応じた保存データ検証または全テスト |
-| `market-data-manual.yml` | 毎日21:00 JSTに市場データを取得・検証・保存。21:20に再試行。取得後に一次資料収集とPAPER調査準備 |
-| `operation-health.yml` | 保存済みPAPER runメタデータの監視結果をartifactへ保存 |
+| `ci.yml` | PRの`format`、`test`、`guardrail`。差分に応じてデータ・文書・通常回帰を検証。手動実行は全件 |
+| `ci-full.yml` | 日曜04:17 JSTに全テスト。280日・4,000銘柄・600予約などの上限検証も実行 |
+| `market-data-manual.yml` | 毎日21:00 JSTに1回、市場データを取得・検証・保存。取得後に一次資料収集とPAPER調査準備 |
+| `operation-health.yml` | 毎日23:17 JSTに保存済みPAPER runメタデータの監視結果をartifactへ保存 |
 | `forward-holdout.yml` | 22:30 JSTに凍結したPAPER研究と採用済みデータを読み取り、不足・実装変更をartifactへ保存 |
 
 依存関係は `pyproject.toml` を参照する。夜間取得は実行commitと採用済み市場データを
 checkoutする。CIはGitの全差分を比較し、アーカイブ・観測CSV・夜間取得記録だけの変更では
 市場データをcheckoutして保存世代・ハッシュ・取得記録・観測ビューを検証する。
-コードや設定を含む変更、差分の基点が不明な場合、手動CIでは全テスト・compile・smokeを行う。
+コードや設定を含むPRでは通常回帰・compile・smokeを行う。READMEと`docs/`のMarkdownだけなら
+文書の契約テストを行うが、凍結ルールの`docs/rules/`は通常回帰の対象にする。
+差分の基点が不明な場合と手動CIでは全テストを行う。PR検証済みの変更をmainへmergeしても
+CIを重ねて起動しないため、コード変更は必須チェック付きのPR経由で反映する。
 運用監視は市場データをcheckoutしない。CIの成功は実データの準備完了を意味しない。
 forward holdoutの観測は採用済みデータもcheckoutする。正式入力が不足した開始日以降は
 失敗として記録するが、市場データの取得・保存・本人のLIVE承認は行わない。
 固定した条件と現時点の不足は[正式検証の記録](../../research/formal-validation-2026-10-05/README.md)を参照する。
+
+## Actionsの使用分数
+
+月3,000分の枠では、壁時計の待ち時間ではなく、各jobを分単位で切り上げた合計を管理する。
+集計仕様は[GitHubの料金説明](https://docs.github.com/en/billing/reference/actions-runner-pricing)を参照する。
+2026-10-01〜20日朝の履歴では、データ更新を除くPRの異なるheadは140件だった。
+同じ開発ペースを31日に延ばし、通常コードCIを月220回として見積もる。
+
+| 用途 | 月の回数 | 1回の使用分数の目安 | 月の使用分数 |
+| --- | ---: | ---: | ---: |
+| コードPRの通常CI | 220 | 6 | 1,320 |
+| 日次データのCI | 31 | 3 | 93 |
+| 日次取得・保存・CI待機 | 31 | 15 | 465 |
+| 一次資料・PAPER調査準備 | 31 | 12 | 372 |
+| 保存済み状態の監視 | 31 | 1 | 31 |
+| forward holdout観測 | 31 | 1 | 31 |
+| 週次全テスト | 5 | 9 | 45 |
+| 合計 | | | 2,357 |
+
+この目安では643分を手動の再開・履歴取得・実行時間の変動に残せる。資料だけのPRは
+通常CIより短くなるが、上表では全220回をコード変更として数えている。
+日次経路の新しい実績は適用後に確認する。GitHubの請求明細、他repositoryの使用量、
+追加の手動実行はこの推計に含まない。通常CIが1分延びると月220分増えるため、
+追加テストの実行時間もPRで確認する。
+
+通常回帰から週次へ移すのは[`tests/ci_suite.py`](../../tests/ci_suite.py)に列挙した4件だけ。
+直近の全件実行510秒のうち、この4件で297秒を占めた。小規模の履歴・保存・認可・
+予算境界の回帰テストは毎回残し、新しい通常テストは自動的にPRの対象にする。
+テストのrenameや削除で上限テストが消えた場合、一覧の不一致としてCIを失敗させる。
+週次を待たずに全件を確認する場合は「Weekly full regression」または「CI」を手動実行する。
+
+```bash
+python -m tests.ci_suite --profile code
+python -m tests.ci_suite --profile full
+```
+
+毎日の21:20の無条件再実行は廃止する。成功後に同じ取得・研究を再実行しない。
+失敗時は保存されたcheckpointとjobのログを確認し、必要なjobだけを手動で再開する。
+定時取得jobは20分、PAPER準備は15分、監視は3分、holdoutは5分、週次全件は15分で停止する。
+取得job内のCI待機も5分までとし、未完了・失敗したデータをmergeしない。
+途中で停止した場合は成功扱いにせず、保存済み取得記録と消費予算を引き継ぐ。
+大量の手動履歴取得だけは従来の90分枠を残すので、必要な対象日を指定して使う。
 
 ## 夜間取得
 
@@ -126,7 +172,7 @@ cache hitは課金を返却せず、共有12要求上限と既存charge/receipt�
 復元対象は同夜に再開できるcutoffのscopeだけ。過去分はGitのsnapshotへ残し、
 翌夜のcacheや取得・復元量へ累積させない。
 運用state、判断、注文、承認は復元しない。同日の21:00以後の検証済みcutoffだけを
-再開メタデータとして返し、21:20の再試行でquery pageを再利用する。朝のcutoffは
+再開メタデータとして返し、手動の再試行でquery pageを再利用する。朝のcutoffは
 ownerの明示previewでしか再利用しない。checkpoint branchを削除しない。
 
 `paper-research-<run ID>` artifactは90日保持する受け取り口。repositoryの実上限も90日であり、
@@ -179,7 +225,7 @@ J-Quants・EDINET・JPX・公開原本を含むPAPER側の各HTTP試行を、通
 失敗・redirect・retry・通信直前のcrashでも予約を返却しない。
 GitHubのcheckpoint保存通信には、既存のGitHub専用予算が別途適用される。
 
-定期21:00/21:20、同じcutoff、異なるcutoff、再起動は残枠を共有する。
+定期21:00、手動再開、同じcutoff、異なるcutoff、再起動は残枠を共有する。
 Actions runの論理日を保存し、日付をまたぐretryで枠を再発行しない。
 writer concurrencyに加え、checkpoint/mainの移動・保存失敗・実行終了を検出して通信前に停止する。
 同日の旧PAPER inboxに共有課金記録がない場合は、既往の消費が不明なため停止する。

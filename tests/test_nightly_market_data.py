@@ -736,6 +736,20 @@ class NightlyMarketDataTest(unittest.TestCase):
                       monotonic=lambda: ticks[0], sleep=sleep)
         self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
 
+    def test_default_ci_wait_stops_after_five_minutes_and_keeps_saved_budget(self):
+        result = self.run_preview()
+        saved = copy.deepcopy(self.repo.journal())
+        requests = len(self.fixture.calls)
+        self.repo.run_change = {"status": "in_progress", "conclusion": None}
+        ticks = [0]
+        def sleep(seconds): ticks[0] += seconds
+        with self.assertRaisesRegex(n.RemoteStop, "CI pending"):
+            n.publish(self.root, self.checkpoint(), result, monotonic=lambda: ticks[0], sleep=sleep)
+        self.assertEqual(ticks[0], 300)
+        self.assertEqual(self.repo.journal(), saved)
+        self.assertEqual(len(self.fixture.calls), requests)
+        self.assertFalse(any(c[0] == "PUT" for c in self.repo.calls))
+
     def test_ci_checks_must_match_approved_suite_and_head(self):
         result = self.run_preview()
         for change in ({"head_sha": "f" * 40}, {"check_suite": {"id": 1}}):
