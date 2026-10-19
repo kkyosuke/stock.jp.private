@@ -24,3 +24,12 @@ python3 -m venv .venv
 
 現在の設定・取得許可は `config/`、運用状態・台帳は `operations/` が正本です。
 CIの成功は実データの鮮度やLIVE許可を意味しません。発注は `HUMAN_ONLY` です。
+
+ローカルの全テストは `.venv/bin/python -m unittest discover -s tests -t .` で実行します。
+CIでは全テストを `standard`・`history`・`integration` の3組に分けて並行実行し、
+全組が成功したときだけ必須チェック `test` が成功します。各組の遅いテスト上位25件を
+ログに残します。Python 3.13で1組を再現するには、次のように実行します。
+
+```bash
+CI_TEST_GROUP=history .venv/bin/python -m unittest tests.ci_suite --durations 25
+```
