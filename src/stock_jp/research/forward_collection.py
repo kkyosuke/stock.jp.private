@@ -45,7 +45,7 @@ def initialize(root):
     return path
 
 
-def capture(root: Path, *, cutoff: datetime, download=None):
+def capture(root: Path, *, cutoff: datetime, download=None, logical_day=None):
     if cutoff.tzinfo is None or cutoff > datetime.now(JST):
         raise ValueError("collection cutoff must be aware and cannot be in the future")
     policy = json.loads((root / "config/policy.json").read_text())
@@ -68,7 +68,7 @@ def capture(root: Path, *, cutoff: datetime, download=None):
         latest_metadata = json.loads(store.read(f"jquants/datasets/equities_daily/{latest}/latest.json"))
         if date.fromisoformat(latest) > cutoff.astimezone(JST).date():
             raise ValueError("adopted prices are after the collection cutoff")
-    primary = collect(root, cutoff=cutoff, download=download)
+    primary = collect(root, cutoff=cutoff, download=download, logical_day=logical_day)
     register_sources(root, manifest_path, primary)
     try:
         _, quality = validate_inputs(root=root, manifest_path=manifest_path)
@@ -136,7 +136,7 @@ def register_sources(root, manifest_path, primary):
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 
 
-def main(*, bound_cutoff=None):
+def main(*, bound_cutoff=None, logical_day=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cutoff", help="aware JST cutoff; defaults to actual collection time")
     parser.add_argument("--output", type=Path, required=True)
@@ -147,7 +147,7 @@ def main(*, bound_cutoff=None):
     selected = bound_cutoff or args.cutoff
     cutoff = datetime.fromisoformat(selected) if selected else datetime.now(JST)
     output = confined(root, str(args.output))
-    result, receipt = capture(root, cutoff=cutoff)
+    result, receipt = capture(root, cutoff=cutoff, logical_day=logical_day)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps({"status": result["status"], "receipt": receipt.relative_to(root).as_posix(),

@@ -113,7 +113,14 @@ Actionsのjobごとに確認する。
 `automation/paper-source-inbox` branchへ、原本・未完了run・forward記録・J-Quantsページを
 内容ハッシュ付きの追記snapshotとして保存する。期限のあるartifactに長期保存を依存しない。
 このjobの`contents: write`はこの未レビューの保管先に使い、mainを更新しない。
-次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheだけを復元する。
+次回は設定ハッシュとページのcutoff・query・原本ハッシュを検証し、query cacheを復元する。
+一次資料は同じlogical day・固定cutoffの追記snapshotを検証して復元する。
+最新inboxだけでは前attemptの成功資料が欠けるため、同日の過去snapshotも照合する。
+collection receiptのSHA256、Git blob、原本の長さ・SHA256、設定済みURL、issuer feedの
+公表日時・文書ID・対象企業を照合し、改変・不明資料・同URLの矛盾する原本は停止する。
+復元結果は`.work/paper-research/primary-reuse.json`へ束縛し、collectorは再検証後に再利用する。
+元の取得時刻と未レビュー状態を保持し、欠落資料だけが既存の共有予算境界へ進む。
+cache hitは課金を返却せず、共有12要求上限と既存charge/receiptを変更しない。
 復元対象は同夜に再開できるcutoffのscopeだけ。過去分はGitのsnapshotへ残し、
 翌夜のcacheや取得・復元量へ累積させない。
 運用state、判断、注文、承認は復元しない。同日の21:00以後の検証済みcutoffだけを
@@ -282,3 +289,66 @@ TMPDIR="$PWD/.work/tmp" python -m tests.benchmark_collection --output .work/coll
 100件の合成テキスト原本と2件の運用ファイルをPAPER inboxに保存する比較では、
 GitHub書き込みは106回から3回、固定間隔の待機は1,076.5秒から34.6秒になった。
 実際の原本がPDFなどのバイナリの場合はblob送信を使うため、削減量は原本の構成に依存する。
+
+## Actions停止中の外部市場データ実行
+
+Actionsの定時実行とowner手動実行は引き続き`market-data-manual.yml`を使い、
+実際のActions環境内で`python -m stock_jp.automation.nightly`を起動する。
+スケジュール、既存のCI検証・採用経路は変更しない。
+外部実行のためにActionsの環境変数やrun IDを捏造しない。
+
+`python -m stock_jp.automation.external_market --root <checkout> --session <name>`
+は、ユーザーが外部取得と保存PRを明示承認した場合の市場データ専用入口。
+PAPER調査、取引、Actions dispatch、CI承認、mergeは実行しない。
+資格情報は既存の`GH_TOKEN`と`JQUANTS_API_KEY`をメモリ内で使用する。
+旧`config/automation.json`の期限切れ外部campaignを再有効化しない。
+
+修正を採用した最新mainからのみ実行できる。未マージの修正branchを
+実取得に使ってはいけない。既存のfinancial-history経路は独立checkpointを使い、
+旧コードは外部writerを認識しないため、ローカル試験成功と一時点のActions停止だけでは
+相互排他が成立しない。mainの採用には通常のexact-head CIと独立レビューを必要とし、
+Actionsの支払・利用上限による未実行をローカル成功で置き換えない。
+旧branchからの取得workflowや別の外部collectorを同時に開始しない。
+
+外部writerは`external-market-v1`とランダムsession UUID、main SHA、論理日、
+解決時刻で識別する。Actions actor/run IDは生成しない。
+ローカルreceiptは`.work/external-market/<name>.json`に保存し、全session共通の
+`flock`で同一checkoutの並行プロセスを拒否する。receiptを別環境へコピーしない。
+共有日次checkpointの`external_writer`を非force Git更新とreadbackで確保し、
+異なるsession、通常の日次/PAPER writer、financial-historyを停止する。
+競合したclaimは非fast-forwardで失敗する。既に走っている旧Actionsも含め、
+queued/in-progress/waiting/pending/requested runがあれば開始・通信を拒否する。
+
+通信前にmain/code/config不変、checkpoint所有権、既存の履歴課金basis、PAPER込み
+日付別12回上限を検証する。各要求は既存collectorが通信前に共有checkpointへ保存し、
+保存済みstateと予約を再読してから通信する。ページ・失敗・不明応答・再起動も消費し、
+既存の予約やreceiptを返却・修正しない。GitHub通信は別の既存rate budgetに従う。
+
+初回は最新の経過済み21時JSTを論理日とする。日曜朝なら土曜を対象にcalendarで確認し、
+架空の取引日を作らない。同じsessionの再開では元の論理日を維持し、過去日指定で
+新しい取得枠を作るオプションは設けない。欠損日のbackfillは既存campaignと別途判断する。
+
+取得後は現在の非圧縮保存形式を検証し、mainを親とするデータ専用PRを作成して停止する。
+コードはデータPRに入らない。`DATA_PR_CREATED`と`required_ci=NOT_VERIFIED`は
+保存候補の作成だけを意味し、採用や日次運用完了を意味しない。
+PR作成後に外部fenceを解除し、writer来歴はcheckpointのGit履歴に残す。
+途中停止・不明応答ではfenceを保持し、同じreceiptでのみ再開する。
+中断した外部実行をActionsへ切り替える場合は、元のプロセスが停止した同じcheckoutで
+次の明示handoffを行う。ローカルlockとUUID所有権を確認してfenceだけを解除し、
+不明応答も含む要求・journal・課金basis・PAPER課金はそのまま残す。
+
+```bash
+python -m stock_jp.automation.external_market --root <checkout> --session <name> --handoff-to-actions
+```
+
+handoff自体はprovider通信もActions dispatchも行わない。
+その後のowner Actions手動実行ではreceiptに記録された論理日を`target_date`へ指定する。
+Actions中断から外部実行へ切り替える場合も、Actionsが終了していることを確認し、
+同じ論理日の共有journalから再開する。日をまたいで未完了runが残る場合は、新しい日を
+開始せず、元の日のActions再開または既存外部sessionの再開で解消する。
+外部完了後のActions再実行も既存receiptを再利用し、要求枠をリセットしない。
+receipt紛失、main移動、未解決PR、認証停止は明示的な運用照合が必要。
+公開途中に追跡対象の生成ファイルが残った場合も、保存済みcheckpointと照合し、
+取得原本を保持したままmainの追跡ツリーを復元してから再開する。
+タイムアウトによる自動takeover、台帳reset、main追随の自動再bindは行わない。
+98%基準、PAPER/HUMAN_ONLY、凍結研究と実LIVE承認条件は変更しない。

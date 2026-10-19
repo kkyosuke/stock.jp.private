@@ -205,7 +205,7 @@ def main():
     target = resolve(project_root(), budget.checkpoint, budget.clock())
     with guard(budget):
         if action == "forward":
-            return forward_collection.main(bound_cutoff=target["cutoff_at_jst"])
+            return forward_collection.main(bound_cutoff=target["cutoff_at_jst"], logical_day=target["day"])
         return paper_preparation.main(logical_target=target,
             budget_remaining=budget.limit - shared_usage(budget.checkpoint.document, budget.day))
 

@@ -221,7 +221,7 @@ class Checkpoint:
             self.document = json.loads(git.read(self.tree[JOURNAL]))
             require(self.document.get("version") == 1
                     and {"version", "runs", "files", "github_budget"} <= set(self.document)
-                    and set(self.document) <= {"version", "runs", "files", "github_budget", "scheduled_targets", "paper_requests", "provider_debit_bases"},
+                    and set(self.document) <= {"version", "runs", "files", "github_budget", "scheduled_targets", "paper_requests", "provider_debit_bases", "external_writer"},
                     "invalid nightly checkpoint")
             for day, state in self.document["runs"].items():
                 daily.validate_state(state)
@@ -232,6 +232,7 @@ class Checkpoint:
             require(not any(p.startswith(RECORDS) for p in self.tree),
                     "published nightly records exist but checkpoint was deleted")
             self.document = {"version": 1, "runs": {}, "files": {}, "github_budget": None}
+        self.validate_writer()
         from stock_jp.automation.provider_budget import validate_charges
         validate_charges(self.document)
         bindings = self.document.get("scheduled_targets", {})
@@ -248,6 +249,9 @@ class Checkpoint:
         self.saved = ingest.encoded({k: v for k, v in self.document.items() if k != "github_budget"})
         self.pending_bytes = {}
         self.signatures = {}
+
+    def validate_writer(self):
+        require("external_writer" not in self.document, "external market-data writer owns checkpoint")
 
     def bind_schedule(self, now):
         # Persist before preparing a collector: even a failed preparation must
@@ -272,7 +276,8 @@ class Checkpoint:
             storage.restore(self.root / "data/market/jquants", source)
         prices = ingest.read_json(source / "daily-prices/latest.json", {})
         latest_day = prices.get("latest_trading_date")
-        require(not latest_day or self.target_day >= date.fromisoformat(latest_day),
+        recorded_complete = self.document["runs"].get(self.target_day.isoformat(), {}).get("status") in {"COLLECTED", "HOLIDAY"}
+        require(not latest_day or self.target_day >= date.fromisoformat(latest_day) or recorded_complete,
                 "historical backfill must use its existing campaign and budget")
         self.signatures = {p.relative_to(source).as_posix(): (p.stat().st_size, p.stat().st_mtime_ns)
                            for p in source.rglob("*") if p.is_file()}
@@ -499,7 +504,7 @@ def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
 
 
 
-def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
+def publish(root, checkpoint, result, *, pr_only=False, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
     observation_report = observations.rebuild(root)
     candidate = storage.stage(root, checkpoint.git.private_metadata())
@@ -559,6 +564,9 @@ def publish(root, checkpoint, result, *, timeout=1200, sleep=time.sleep, monoton
     require(pr["head"]["sha"] == head and pr["state"] == "open"
             and pr["draft"] == checkpoint.preview, "nightly PR changed before CI dispatch")
     checkpoint.observe()
+    if pr_only:
+        return {**report, "status": "DATA_PR_CREATED", "data_status": result["status"],
+                "head": head, "checkpoint_saved": True, "required_ci": "NOT_VERIFIED"}
     run_id = git.dispatch_ci(branch, head)
     report["ci_run_id"] = run_id
     wait_ci(git, run_id, head, branch, event="workflow_dispatch", timeout=timeout, sleep=sleep, monotonic=monotonic)

@@ -12,6 +12,20 @@ on:
         description: 'Target date (YYYY-MM-DD); empty uses today in JST'
         required: false
         type: string
+      backfill:
+        description: 'Plan or resume existing historical runs without allocating new budgets'
+        required: false
+        default: false
+        type: boolean
+      backfill_through:
+        description: 'Inclusive final date; empty selects target_date only'
+        required: false
+        type: string
+      backfill_plan_only:
+        description: 'Read-only plan; missing historical budgets block acquisition'
+        required: false
+        default: true
+        type: boolean
       preview:
         description: 'Verify a draft data PR and CI without adopting it to main'
         required: false
@@ -59,14 +73,36 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install runtime dependencies
         run: python -m pip install -e .
+      - name: Validate historical mode
+        if: ${{ inputs.backfill }}
+        env:
+          FINANCIAL: ${{ inputs.financial_history }}
+          PREVIEW: ${{ inputs.preview }}
+          PAPER: ${{ inputs.paper_research }}
+        run: test "$FINANCIAL" != "true" && test "$PREVIEW" != "true" && test "$PAPER" != "true"
       - name: Collect, verify and save market data
         if: ${{ !inputs.financial_history }}
         env:
           STOCK_TARGET_DATE: ${{ inputs.target_date }}
           STOCK_PREVIEW: ${{ inputs.preview }}
+          STOCK_BACKFILL: ${{ inputs.backfill }}
+          STOCK_BACKFILL_THROUGH: ${{ inputs.backfill_through }}
+          STOCK_BACKFILL_PLAN_ONLY: ${{ inputs.backfill_plan_only }}
           GITHUB_TOKEN: ${{ github.token }}
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: |
+          if [ "$STOCK_BACKFILL" = "true" ]; then
+            test "$STOCK_PREVIEW" != "true"
+            args=(--root "$GITHUB_WORKSPACE" --mode actions)
+            if [ -n "$STOCK_BACKFILL_THROUGH" ]; then
+              args+=(--from-date "$STOCK_TARGET_DATE" --through-date "$STOCK_BACKFILL_THROUGH")
+            else
+              args+=(--target-date "$STOCK_TARGET_DATE")
+            fi
+            if [ "$STOCK_BACKFILL_PLAN_ONLY" = "true" ]; then args+=(--plan-only); fi
+            python -m stock_jp.automation.market_backfill "${args[@]}"
+            exit
+          fi
           args=()
           if [ -n "$STOCK_TARGET_DATE" ]; then args+=(--target-date "$STOCK_TARGET_DATE"); fi
           if [ "$STOCK_PREVIEW" = "true" ]; then args+=(--preview); fi
@@ -83,7 +119,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: nightly-market-data-${{ github.run_id }}
-          path: .work/nightly-market-data.json
+          path: |
+            .work/nightly-market-data.json
+            .work/market-backfill.json
           if-no-files-found: warn
           retention-days: 30
       - name: Save financial-history inputs and execution summary
@@ -99,7 +137,7 @@ jobs:
           compression-level: 0
   paper-research:
     needs: nightly-market-data
-    if: ${{ always() && !cancelled() && !inputs.financial_history && github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && ((needs.nightly-market-data.result == 'success' && !inputs.preview) || (github.event_name == 'workflow_dispatch' && inputs.paper_research && (github.ref == 'refs/heads/main' || inputs.preview))) }}
+    if: ${{ always() && !cancelled() && !inputs.backfill && !inputs.financial_history && github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && ((needs.nightly-market-data.result == 'success' && !inputs.preview) || (github.event_name == 'workflow_dispatch' && inputs.paper_research && (github.ref == 'refs/heads/main' || inputs.preview))) }}
     permissions:
       contents: write
       actions: read
