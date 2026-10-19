@@ -13,7 +13,7 @@ class DailyStockPriceWorkflowTest(unittest.TestCase):
         text = (ROOT / '.github/workflows/ci.yml').read_text()
         workflow = yaml.safe_load(text)
         self.assertEqual(workflow['permissions'], {'contents': 'read'})
-        self.assertEqual(set(workflow['jobs']), {'format', 'test', 'guardrail'})
+        self.assertEqual(set(workflow['jobs']), {'format'})
         for job in workflow['jobs'].values():
             for step in job['steps']:
                 if step.get('uses', '').startswith('actions/checkout@'):
@@ -29,7 +29,7 @@ class DailyStockPriceWorkflowTest(unittest.TestCase):
 
     def test_data_validation_replaces_only_code_tests_and_keeps_required_check(self):
         workflow = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())
-        job = workflow['jobs']['test']
+        job = workflow['jobs']['format']
         self.assertNotIn('if', job)
         self.assertNotIn('strategy', job)
         self.assertNotIn('continue-on-error', job)
@@ -43,6 +43,10 @@ class DailyStockPriceWorkflowTest(unittest.TestCase):
             if 'tests.ci_suite' in command:
                 self.assertEqual(step['if'], "steps.scope.outputs.mode != 'data'")
                 self.assertEqual(step['env']['TEST_PROFILE'], '${{ steps.scope.outputs.mode }}')
+                self.assertEqual(step['env']['CI_BASE_SHA'], selection['env']['CI_BASE_SHA'])
+                self.assertIn('--base "$CI_BASE_SHA"', command)
+            if any(required in command for required in ('lint:markdown', 'YAML.parse_file', 'automation validate')):
+                self.assertNotIn('if', step)
             if 'compileall ' in command or 'operation smoke' in command:
                 self.assertEqual(step['if'], "steps.scope.outputs.mode == 'code' || steps.scope.outputs.mode == 'full'")
             if 'ci validate' in command:
