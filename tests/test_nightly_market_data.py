@@ -110,7 +110,13 @@ class Repository:
                 return {"sha": self.blob(base64.b64decode(body["content"]))}
             if route == "/git/trees":
                 tree = {e["path"]: e for e in self.objects[body["base_tree"]]["tree"]}
-                tree.update({e["path"]: e for e in body["tree"]})
+                for entry in body["tree"]:
+                    entry = dict(entry)
+                    if "content" in entry:
+                        if "sha" in entry:
+                            raise AssertionError("tree entry has both content and SHA")
+                        entry["sha"] = self.blob(entry.pop("content").encode("utf-8"))
+                    tree[entry["path"]] = entry
                 return {"sha": self.put({"tree": list(tree.values()), "truncated": False})}
             if route == "/git/commits":
                 return {"sha": self.put({"tree": {"sha": body["tree"]}, "parents": body["parents"]})}

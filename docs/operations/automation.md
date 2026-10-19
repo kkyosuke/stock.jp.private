@@ -252,6 +252,44 @@ cutoff後の観測は明記し、取得時刻を前夜へ戻さず、過去時�
 旧研究との結果差は運用adapterの適用有無として区別する。
 新しい研究結果や投資可能判定を自動承認するものではない。
 
+## 収集・保存の高速化
+
+日次市場データとPAPER原本のGit保存は、UTF-8テキストを
+[Git Trees APIのcontent指定](https://docs.github.com/en/rest/git/trees#create-a-tree)でまとめて送る。
+JSONのエスケープ後のリクエストを4 MiB以下に分割し、バイナリと単独で上限を超える
+ファイルは従来のblob送信を使う。全batchの保存後にpath・mode・blob hashを照合し、
+1つのcommitに確定する。途中失敗ではcheckpointのrefを進めない。
+検証済みblobとcommitに対応するtreeの識別子は同じプロセスで再利用する。
+branch、実行状態、権限の確認は通信で取得する。
+
+取得前の消費予約、取得後の応答保存、要求間隔と通信予算は維持する。
+同時取得数は増やさず、変更のない情報の通信とファイル別の書き込みを減らす。
+アーカイブのpackは既存保存量を一度集計し、新規objectの容量を加算する。
+既存objectの内容検査と、公開前の世代全体の検証は毎回実行する。
+
+全Python jobは`pyproject.toml`をキーに
+[pipのダウンロードキャッシュ](https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#caching-packages)を共有する。
+毎回の依存インストールは続ける。財務履歴artifactはgzip済みの原本を再圧縮せず、
+PAPER原本artifactは圧縮レベル1を使う。CPU時間を減らす代わりにartifactが大きくなる
+場合がある。仕様は[upload-artifactの圧縮設定](https://github.com/actions/upload-artifact#altering-compressions-level-speed-v-size)を参照。
+
+外部通信を使わない比較は次で再現できる。
+
+```bash
+mkdir -p .work/tmp
+TMPDIR="$PWD/.work/tmp" python -m tests.benchmark_collection --output .work/collection-benchmark.json
+```
+
+合成の1営業日・9回取得・preview公開までを比較した結果、GitHub書き込みは185回から
+98回、API呼び出しは449回から360回、固定の通信間隔による待機は2,006.1秒から
+1,080.1秒になった。ネットワーク転送、runnerの起動、CIの実行時間を含まない計算値である。
+1,000ファイルのpackも変更前後で同じgeneration hashになり、保存形式は変わらない。
+実行時間は環境に依存するため、出力JSONの`pack.seconds`で比較する。
+
+100件の合成テキスト原本と2件の運用ファイルをPAPER inboxに保存する比較では、
+GitHub書き込みは106回から3回、固定間隔の待機は1,076.5秒から34.6秒になった。
+実際の原本がPDFなどのバイナリの場合はblob送信を使うため、削減量は原本の構成に依存する。
+
 ## Actions停止中の外部市場データ実行
 
 Actionsの定時実行とowner手動実行は引き続き`market-data-manual.yml`を使い、

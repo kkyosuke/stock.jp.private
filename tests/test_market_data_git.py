@@ -77,6 +77,49 @@ class ArchiveTests(unittest.TestCase):
             with self.assertRaises(m.ArchiveError): m.pack(self.source,self.store)
         self.assertFalse((self.store/'current.json').exists())
 
+    def test_pack_budget_counts_all_new_objects_and_existing_unreachable_bytes(self):
+        m.pack(self.source, self.store)
+        previous = (self.store / 'current.json').read_bytes()
+        m.put_plain(self.store, b'not reachable from the current generation', '.bin')
+        existing_size = sum(p.stat().st_size for p in self.store.rglob('*') if p.is_file())
+        for i in range(3):
+            (self.source / 'jquants' / f'new-{i}.json').write_bytes(bytes([48 + i]) * 100)
+        with patch.object(m, 'MAX_STORE', existing_size + 250):
+            with self.assertRaisesRegex(m.ArchiveError, 'size budget'):
+                m.pack(self.source, self.store)
+            self.assertLessEqual(sum(p.stat().st_size for p in self.store.rglob('*') if p.is_file()), m.MAX_STORE)
+        self.assertEqual((self.store / 'current.json').read_bytes(), previous)
+
+    def test_pack_store_walks_do_not_grow_with_new_object_count(self):
+        rglob = Path.rglob
+        walks = []
+
+        def counted(path, *args, **kwargs):
+            if path == self.store:
+                walks.append(path)
+            return rglob(path, *args, **kwargs)
+
+        for i in range(30):
+            (self.source / 'jquants' / f'new-{i}.json').write_text(json.dumps({'id': i}))
+        with patch.object(Path, 'rglob', counted):
+            m.pack(self.source, self.store)
+        first = len(walks)
+        for i in range(30, 90):
+            (self.source / 'jquants' / f'new-{i}.json').write_text(json.dumps({'id': i}))
+        walks.clear()
+        with patch.object(Path, 'rglob', counted):
+            m.pack(self.source, self.store)
+        self.assertEqual(len(walks), first)
+
+    def test_pack_rechecks_existing_object_bytes(self):
+        m.pack(self.source, self.store)
+        obj = next((self.store / 'objects').rglob('*.json'))
+        obj.write_bytes(b'corrupt')
+        previous = (self.store / 'current.json').read_bytes()
+        with self.assertRaisesRegex(m.ArchiveError, 'checksum mismatch'):
+            m.pack(self.source, self.store)
+        self.assertEqual((self.store / 'current.json').read_bytes(), previous)
+
     def test_unsafe_paths_and_symlinks(self):
         for name in ('../escape', '/tmp/escape', 'jquants/../escape', 'jquants/.env', 'jquants//test'):
             with self.assertRaises(m.ArchiveError):

@@ -14,6 +14,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
+import stat
 import tempfile
 
 CHUNK = 1024 * 1024
@@ -54,10 +55,14 @@ def atomic(path, data):
 
 
 def safe_tree(root):
-    if root.is_symlink() or any(p.is_symlink() for p in root.rglob('*')):
+    if root.is_symlink():
         raise ArchiveError('symlink in archive tree')
-    if any(not p.is_file() and not p.is_dir() for p in root.rglob('*')):
-        raise ArchiveError('special file in archive tree')
+    for path in root.rglob('*'):
+        mode = path.lstat().st_mode
+        if stat.S_ISLNK(mode):
+            raise ArchiveError('symlink in archive tree')
+        if not stat.S_ISREG(mode) and not stat.S_ISDIR(mode):
+            raise ArchiveError('special file in archive tree')
 
 
 def safe_name(name):
@@ -151,22 +156,35 @@ def store_member(name):
 
 
 def put_plain(store, data, suffix, kind='objects'):
-    if suffix not in {'.json', '.csv', '.bin'} or kind not in {'objects', 'generations'}:
-        raise ArchiveError('invalid plain object type')
-    if len(data) > MAX_SHARD:
-        raise ArchiveError('plain file exceeds 22 MiB; no implicit lossy splitting')
-    sha = digest(data)
-    name = f'{kind}/{sha[:2]}/{sha}{suffix}'
-    path = Path(store)/name
-    if path.exists():
-        if path.read_bytes() != data:
-            raise ArchiveError('existing plain object checksum mismatch')
-    else:
-        size = sum(p.stat().st_size for p in Path(store).rglob('*') if p.is_file())
-        if size + len(data) > MAX_STORE:
-            raise ArchiveError('private Git store exceeds conservative size budget')
-        atomic(path, data)
-    return name
+    return _PlainWriter(store).put(data, suffix, kind)
+
+
+class _PlainWriter:
+    """Count existing bytes once per pack, then account for each new object."""
+
+    def __init__(self, store):
+        self.store = Path(store)
+        self.size = None
+
+    def put(self, data, suffix, kind='objects'):
+        if suffix not in {'.json', '.csv', '.bin'} or kind not in {'objects', 'generations'}:
+            raise ArchiveError('invalid plain object type')
+        if len(data) > MAX_SHARD:
+            raise ArchiveError('plain file exceeds 22 MiB; no implicit lossy splitting')
+        sha = digest(data)
+        name = f'{kind}/{sha[:2]}/{sha}{suffix}'
+        path = self.store / name
+        if path.exists():
+            if path.read_bytes() != data:
+                raise ArchiveError('existing plain object checksum mismatch')
+        else:
+            if self.size is None:
+                self.size = sum(p.stat().st_size for p in self.store.rglob('*') if p.is_file())
+            if self.size + len(data) > MAX_STORE:
+                raise ArchiveError('private Git store exceeds conservative size budget')
+            atomic(path, data)
+            self.size += len(data)
+        return name
 
 
 def plain_bytes(store, name, sha, limit):
@@ -237,6 +255,7 @@ def pack(source, store):
                     raise ArchiveError('another nightly cache writer holds the lock') from None
         safe_tree(source)
         entries = {}
+        writer = _PlainWriter(store)
         for path in sorted(source.rglob('*')):
             if path.is_dir():
                 continue
@@ -251,12 +270,12 @@ def pack(source, store):
             data = path.read_bytes()
             scan(data)
             suffix = path.suffix if path.suffix in {'.json', '.csv'} else '.bin'
-            member = put_plain(store, data, suffix)
+            member = writer.put(data, suffix)
             entries[name] = {'sha256': digest(data), 'bytes': len(data), 'object': member}
         manifest = encoded({'version': 2, 'files': entries})
         if len(manifest) > MAX_INDEX:
             raise ArchiveError('generation index exceeds limit')
-        generation = Path(put_plain(store, manifest, '.json', 'generations')).stem
+        generation = Path(writer.put(manifest, '.json', 'generations')).stem
         pointer = {'version': 2, 'generation': generation, 'file_count': len(entries),
                    'raw_bytes': sum(e['bytes'] for e in entries.values())}
         # Validate the complete candidate before making it visible.
