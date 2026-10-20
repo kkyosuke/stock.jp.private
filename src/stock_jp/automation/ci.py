@@ -34,8 +34,16 @@ def plan(root, base, head):
         paths = [path.decode() for path in paths if path]
     except (subprocess.CalledProcessError, UnicodeError):
         return {"mode": "full", "reason": "comparison unavailable"}
-    data_only = bool(paths) and all(path.startswith(DATA_PREFIXES) for path in paths)
-    return {"mode": "data" if data_only else "full", "changed_files": len(paths)}
+    if not paths:
+        return {"mode": "full", "changed_files": 0}
+    if all(path.startswith(DATA_PREFIXES) for path in paths):
+        mode = "data"
+    elif all(path == "README.md" or (path.startswith("docs/") and path.endswith(".md")
+                                    and not path.startswith("docs/rules/")) for path in paths):
+        mode = "docs"
+    else:
+        mode = "code"
+    return {"mode": mode, "changed_files": len(paths)}
 
 
 def validate_record(root, path, store, pointer, manifest, base, status):

@@ -2,7 +2,6 @@ name: CI
 
 on:
   pull_request:
-  push:
     branches: [main]
   workflow_dispatch:
 
@@ -14,13 +13,16 @@ permissions:
   contents: read
 
 jobs:
+  # Keep the required ruleset context. All validation shares this runner so
+  # short format/guardrail jobs do not each consume a rounded billing minute.
   format:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /*
@@ -36,25 +38,17 @@ jobs:
         run: |
           ruby -e 'require "yaml"; (Dir[".github/workflows/*.{yml,yaml}"] + [".markdownlint-cli2.yaml", "lefthook.yml"]).each { |path| YAML.parse_file(path) }'
 
-  test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /*
-            !/data/market/jquants/
-            !/data/market/legacy-prices/
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: pyproject.toml
       - run: python -m pip install -e '.[dev]'
+      - name: Validate tracked state and PAPER policy
+        run: |
+          python -m stock_jp automation validate
+          git diff --exit-code -- config operations data/market/observations
+          test -z "$(git ls-files --others --exclude-standard -- config operations data/market/observations)"
       - name: Select validation from the complete Git diff
         id: scope
         env:
@@ -76,35 +70,15 @@ jobs:
         env:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: python -m stock_jp.automation.ci validate --base "$CI_BASE_SHA"
-      - name: Run full code tests with timings
+      - name: Run the selected regression tests with timings
         if: steps.scope.outputs.mode != 'data'
-        run: python -m unittest discover -s tests -t . --durations 25
+        timeout-minutes: ${{ steps.scope.outputs.mode == 'full' && 12 || 5 }}
+        env:
+          TEST_PROFILE: ${{ steps.scope.outputs.mode }}
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python -m tests.ci_suite --profile "$TEST_PROFILE" --base "$CI_BASE_SHA"
       - run: python -m compileall -q src tests
-        if: steps.scope.outputs.mode != 'data'
+        if: steps.scope.outputs.mode == 'code' || steps.scope.outputs.mode == 'full'
       - name: Twenty-day synthetic operation smoke
-        if: steps.scope.outputs.mode != 'data'
+        if: steps.scope.outputs.mode == 'code' || steps.scope.outputs.mode == 'full'
         run: python -m stock_jp operation smoke --days 20 --start-date 2026-09-01
-
-  guardrail:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /*
-            !/data/market/jquants/
-            !/data/market/legacy-prices/
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.13"
-          cache: pip
-          cache-dependency-path: pyproject.toml
-      - run: python -m pip install -e '.[dev]'
-      - name: Validate tracked state and PAPER policy
-        run: |
-          python -m stock_jp automation validate
-          git diff --exit-code -- config operations data/market/observations
-          test -z "$(git ls-files --others --exclude-standard -- config operations data/market/observations)"

@@ -38,8 +38,8 @@ class GuardrailOwnershipTest(unittest.TestCase):
                 if "actions/checkout@" in content:
                     self.assertIn("persist-credentials: false", content)
 
-    def test_only_acquisition_and_readonly_monitors_have_schedules(self):
-        scheduled = {"operation-health.yml", "market-data-manual.yml", "forward-holdout.yml"}
+    def test_only_acquisition_and_readonly_checks_have_schedules(self):
+        scheduled = {"operation-health.yml", "market-data-manual.yml", "forward-holdout.yml", "ci-full.yml"}
         for path in (ROOT / ".github/workflows").glob("*.yml"):
             if path.name not in scheduled:
                 self.assertNotIn("  schedule:", path.read_text())

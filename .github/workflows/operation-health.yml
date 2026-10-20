@@ -2,18 +2,9 @@ name: operation-health
 
 on:
   schedule:
-    - cron: "17 1,7,13,19 * * *"
+    - cron: "17 23 * * *"
       timezone: "Asia/Tokyo"
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - src/**
-      - config/**
-      - operations/**
-      - templates/**
-      - pyproject.toml
-      - .github/workflows/operation-health.yml
 
 concurrency:
   group: operation-health
@@ -27,7 +18,7 @@ permissions:
 jobs:
   health:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 3
     steps:
       - name: Check out canonical main
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

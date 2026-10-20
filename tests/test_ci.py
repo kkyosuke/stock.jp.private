@@ -51,12 +51,12 @@ class DataCITest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'checksum'):
             ci.validate_data(self.root, self.base, head)
 
-    def test_source_change_beyond_300_data_files_still_runs_full_suite(self):
+    def test_source_change_beyond_300_data_files_still_runs_code_suite(self):
         for index in range(305):
             storage.atomic(self.store / f'synthetic-{index}.json', b'{}')
         storage.atomic(self.root / 'src/changed.py', b'print("synthetic")\n')
         head = self.commit()
-        self.assertEqual(ci.plan(self.root, self.base, head), {'mode': 'full', 'changed_files': 306})
+        self.assertEqual(ci.plan(self.root, self.base, head), {'mode': 'code', 'changed_files': 306})
 
     def test_unknown_empty_and_nonancestor_comparisons_use_full_suite(self):
         head = self.new_archive()
@@ -65,15 +65,30 @@ class DataCITest(unittest.TestCase):
             with self.subTest(base=base):
                 self.assertEqual(ci.plan(self.root, base, target)['mode'], 'full')
 
-    def test_config_workflow_docs_and_source_deletion_require_full_suite(self):
-        for path in ('config/policy.json', '.github/workflows/ci.yml', 'README.md', 'src/logic.py'):
+    def test_config_workflow_rules_and_source_deletion_require_code_suite(self):
+        for path in ('config/policy.json', '.github/workflows/ci.yml', 'docs/rules/policy.md', 'src/logic.py'):
             with self.subTest(path=path):
                 storage.atomic(self.root / path, b'{}\n')
                 head = self.commit()
-                self.assertEqual(ci.plan(self.root, self.base, head)['mode'], 'full')
+                self.assertEqual(ci.plan(self.root, self.base, head)['mode'], 'code')
                 (self.root / path).unlink()
                 deleted = self.commit()
-                self.assertEqual(ci.plan(self.root, head, deleted)['mode'], 'full')
+                self.assertEqual(ci.plan(self.root, head, deleted)['mode'], 'code')
+
+    def test_only_documentation_runs_document_contracts_but_mixed_changes_do_not(self):
+        for path in ('README.md', 'docs/operations/automation.md'):
+            storage.atomic(self.root / path, b'# Synthetic documentation\n')
+        docs = self.commit()
+        self.assertEqual(ci.plan(self.root, self.base, docs)['mode'], 'docs')
+        (self.root / 'README.md').unlink()
+        deleted = self.commit()
+        self.assertEqual(ci.plan(self.root, docs, deleted)['mode'], 'docs')
+        for path in ('docs/example.py', 'pyproject.toml', 'data/market/observations/new.csv'):
+            with self.subTest(path=path):
+                storage.atomic(self.root / path, b'synthetic')
+                head = self.commit()
+                self.assertEqual(ci.plan(self.root, self.base, head)['mode'], 'code')
+                (self.root / path).unlink()
 
     def test_immutable_archive_rewrites_deletions_and_symlinks_are_rejected(self):
         original = next((self.store / 'objects').rglob('*.json'))

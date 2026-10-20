@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: '0 21 * * *'
       timezone: Asia/Tokyo
-    - cron: '20 21 * * *'
-      timezone: Asia/Tokyo
   workflow_dispatch:
     inputs:
       target_date:
@@ -56,7 +54,7 @@ jobs:
   nightly-market-data:
     if: ${{ !inputs.paper_research && github.repository == 'kkyosuke/stock.jp.private' && github.actor == 'kkyosuke' && github.triggering_actor == 'kkyosuke' && (github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.preview)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: ${{ github.event_name == 'schedule' && 20 || 90 }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -142,7 +140,7 @@ jobs:
       contents: write
       actions: read
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

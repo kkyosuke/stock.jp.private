@@ -61,6 +61,16 @@ class DailyGateTest(unittest.TestCase):
         e=self.evidence();e['fetched_at']=(datetime.now(timezone.utc)-timedelta(minutes=2)).isoformat()
         with self.assertRaises(p.Blocked):p.allow_auto_merge(self.proof(),e)
 
+    def test_green_format_cannot_hide_a_failed_old_multi_job_workflow(self):
+        evidence = self.evidence()
+        evidence['workflow_runs'][0]['conclusion'] = 'failure'
+        with self.assertRaises(p.Blocked):
+            p.allow_auto_merge(self.proof(), evidence)
+        evidence = self.evidence()
+        evidence['checks'].append({**evidence['checks'][0], 'name': 'test', 'conclusion': 'failure'})
+        with self.assertRaises(p.Blocked):
+            p.allow_auto_merge(self.proof(), evidence)
+
     def test_allowlists_reject_configuration_financial_ledger_and_prior_run(self):
         for kind,path in [('market','scripts/x.py'),('market','data/market/legacy-prices/latest.json'),
                           ('personal','config/policy.json'),
@@ -314,7 +324,7 @@ class SingleRepositoryBoundaryTest(unittest.TestCase):
             p.classify('personal', '2026-10-02', [pointer])
         self.assertEqual(set(p.REPOS.values()), {'kkyosuke/stock.jp.private'})
         for checks in p.CHECKS.values():
-            self.assertEqual(checks, {'format', 'test', 'guardrail'})
+            self.assertEqual(checks, {'format'})
 
     def test_old_repository_and_missing_private_checks_cannot_enable_auto_merge(self):
         fixtures = DailyGateTest()

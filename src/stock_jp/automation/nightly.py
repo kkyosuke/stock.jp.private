@@ -25,7 +25,7 @@ RAW_PREFIX = "nightly-checkpoint/"
 WORKFLOW = ".github/workflows/market-data-manual.yml"
 CI_WORKFLOW = ".github/workflows/ci.yml"
 RECORDS = "operations/acquisition/nightly/"
-CHECKS = {"format", "test", "guardrail"}
+CHECKS = {"format"}  # Required CI job includes tests and PAPER guardrails.
 FINANCIAL_CHECKPOINT = "automation/financial-history"
 FINANCIAL_JOURNAL = "operations/acquisition/financial-history-checkpoint.json"
 FINANCIAL_RAW_PREFIX = "financial-history-checkpoint/"
@@ -497,7 +497,7 @@ def approve_data_ci(git, pr, branch, head, *, timeout, sleep, monotonic):
 
 
 
-def publish(root, checkpoint, result, *, pr_only=False, timeout=1200, sleep=time.sleep, monotonic=time.monotonic):
+def publish(root, checkpoint, result, *, pr_only=False, timeout=300, sleep=time.sleep, monotonic=time.monotonic):
     checkpoint.observe()
     observation_report = observations.rebuild(root)
     candidate = storage.stage(root, checkpoint.git.private_metadata())

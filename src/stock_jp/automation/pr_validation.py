@@ -16,7 +16,7 @@ import shutil
 import stock_jp.market_data.storage as codec
 
 REPOS = {'market': 'kkyosuke/stock.jp.private', 'personal': 'kkyosuke/stock.jp.private'}
-CHECKS = {kind: {'format', 'test', 'guardrail'} for kind in REPOS}
+CHECKS = {kind: {'format'} for kind in REPOS}  # One job runs all CI validation.
 WORKFLOWS = {kind: {'.github/workflows/ci.yml'} for kind in REPOS}
 ARTIFACTS = {'work-plan.json', 'sources.csv', 'research-results.md', 'research-queue.json',
              'report.md', 'provider-health.json', 'pretrade-check.md', 'orders.csv',

@@ -17,7 +17,7 @@ class SingleRepositoryTest(unittest.TestCase):
     def test_one_package_and_explicit_workflow_responsibilities(self):
         workflows = ROOT / '.github/workflows'
         self.assertEqual({p.name for p in workflows.glob('*.yml')},
-                         {'ci.yml', 'market-data-manual.yml', 'operation-health.yml', 'forward-holdout.yml'})
+                         {'ci.yml', 'ci-full.yml', 'market-data-manual.yml', 'operation-health.yml', 'forward-holdout.yml'})
         for file in workflows.glob('*.yml'):
             text = file.read_text()
             for forbidden in ('submodules:', 'git submodule', 'working-directory: stock.jp'):
